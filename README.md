@@ -4,7 +4,7 @@
 
 ## 실행
 
-- GitHub Pages: 저장소 루트를 배포하면 `index.html`이 열립니다.
+- GitHub Pages: `main`에 푸시하면 `.github/workflows/pages.yml`이 저장소 루트의 정적 파일을 배포합니다.
 - 다른 정적 호스팅: `index.html`, `app.js`, `styles.css`, `sw.js`, `manifest.json`, `icon.svg`, `404.html`을 같은 폴더에 배치합니다.
 - 인터넷 없는 단일 파일: `halloween_edu_app.html`을 브라우저에서 엽니다. 로컬 파일 실행 시 서비스 워커는 사용하지 않습니다.
 - 로컬 개발: `npm ci`, `npm run build`, 정적 HTTP 서버로 루트 폴더를 제공합니다. `npm run check`는 Chromium 브라우저 흐름과 오프라인 재접속을 검사합니다.
