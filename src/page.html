@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="theme-color" content="#17153b" />
+  <meta name="theme-color" content="#fff8ee" />
   <link rel="icon" type="image/svg+xml" href="./icon.svg" />
   <link rel="apple-touch-icon" href="./icon.svg" />
   <link rel="manifest" href="./manifest.json" />
-  <title>신나는 할로윈 안전 놀이터 | 초등 계기교육 웹앱</title>
+  <title>호박마을 안전 탐험 | 초등 할로윈 수업</title>
   <!-- APP_STYLE -->
 </head>
-<body class="antialiased selection:bg-orange-500 selection:text-white">
+<body class="storybook antialiased selection:bg-orange-200 selection:text-slate-900">
 
   <!-- Top Notification Toast & Candy Confetti Layer -->
   <div id="toastContainer" class="fixed top-3 right-3 left-3 sm:left-auto z-50 flex flex-col items-center sm:items-end gap-2 pointer-events-none" role="status" aria-live="polite"></div>
@@ -23,16 +23,16 @@
   <div id="appMainWrapper" class="min-h-[100dvh] flex flex-col justify-between">
 
     <!-- Compact Non-Clipping Header -->
-    <header class="sticky top-0 z-40 border-b border-orange-500/30 bg-indigo-950/95 backdrop-blur-md shadow-lg">
+    <header class="site-header border-b border-orange-500/30 bg-indigo-950/95">
       <div class="max-w-5xl mx-auto px-3 sm:px-4 py-2 space-y-1.5">
 
         <!-- Row 1: Full Unclipped Title on Left + Fullscreen & Exit Buttons on Right -->
         <div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-1.5 min-w-0">
-            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-orange-400 to-amber-600 flex items-center justify-center shadow border border-amber-200/40 shrink-0" aria-hidden="true">
-              <span class="text-sm sm:text-base">🎃</span>
+            <div class="brand-mark w-7 h-7 sm:w-8 sm:h-8 rounded-lg shrink-0" aria-hidden="true">
+              <svg viewBox="0 0 40 40" focusable="false"><path d="M20 9V5m-3 5c-9-5-16 1-16 11s7 16 16 13c2 2 4 2 6 0 9 3 16-3 16-13S32 5 23 10" fill="#f49a45" stroke="#7d411f" stroke-width="2" stroke-linejoin="round"/><path d="m11 19 4 2-4 2m18-4-4 2 4 2M15 27q5 5 10 0" fill="none" stroke="#63351c" stroke-width="2" stroke-linecap="round"/></svg>
             </div>
-            <h1 class="font-title text-base sm:text-xl text-white nowrap">신나는 할로윈 안전 놀이터</h1>
+            <h1 class="font-title text-base sm:text-xl text-white nowrap">호박마을 안전 탐험</h1>
           </div>
 
           <div class="flex items-center gap-1 shrink-0">
@@ -51,38 +51,38 @@
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-1.5 items-center">
           <div class="sm:col-span-6 grid grid-cols-3 gap-1 bg-indigo-900/90 p-0.5 rounded-xl border border-indigo-700/80" role="group" aria-label="학년 선택">
             <button type="button" id="gradeBtn12" data-grade="1-2" class="grade-btn nowrap px-2 py-1 rounded-lg text-xs font-bold text-indigo-200 hover:text-white transition text-center min-h-[30px]">
-              🌱 1~2학년
+              1~2학년
             </button>
             <button type="button" id="gradeBtn34" data-grade="3-4" class="grade-btn grade-active nowrap px-2 py-1 rounded-lg text-xs font-bold transition text-center min-h-[30px]">
-              🍀 3~4학년
+              3~4학년
             </button>
             <button type="button" id="gradeBtn56" data-grade="5-6" class="grade-btn nowrap px-2 py-1 rounded-lg text-xs font-bold text-indigo-200 hover:text-white transition text-center min-h-[30px]">
-              🌟 5~6학년
+              5~6학년
             </button>
           </div>
 
           <div class="sm:col-span-6 grid grid-cols-4 gap-1">
             <button type="button" id="btnBoardMode" class="nowrap px-2 py-1 rounded-lg text-[11px] sm:text-xs font-bold bg-indigo-900 hover:bg-indigo-800 text-indigo-100 border border-indigo-700 transition flex items-center justify-center gap-0.5 min-h-[30px]" title="글씨 크게 보기">
-              <span aria-hidden="true">🔍</span>
+              <span aria-hidden="true">가</span>
               <span id="boardModeLabel">글씨</span>
             </button>
             <button type="button" id="btnSoundToggle" class="nowrap px-2 py-1 rounded-lg text-[11px] sm:text-xs font-bold bg-indigo-900 hover:bg-indigo-800 text-indigo-100 border border-indigo-700 transition flex items-center justify-center gap-0.5 min-h-[30px]" title="효과음 켜기/끄기">
-              <span id="soundIcon" aria-hidden="true">🔊</span>
+              <span id="soundIcon" aria-hidden="true">♪</span>
               <span id="soundLabel">소리 ON</span>
             </button>
             <button type="button" id="btnTeacherGuide" class="nowrap px-2 py-1 rounded-lg text-[11px] sm:text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/40 transition flex items-center justify-center gap-0.5 min-h-[30px]">
-              <span aria-hidden="true">👩‍🏫</span>
+              <span aria-hidden="true">?</span>
               <span>안내</span>
             </button>
             <button type="button" id="btnResetProgress" class="nowrap px-2 py-1 rounded-lg text-[11px] sm:text-xs font-bold bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-400/40 transition flex items-center justify-center gap-0.5 min-h-[30px]" title="새 수업 시작">
-              <span aria-hidden="true">🔄</span>
+              <span aria-hidden="true">↻</span>
               <span>리셋</span>
             </button>
           </div>
         </div>
 
         <!-- Row 3: Gamified Candy Point + Level + Stamp Bar -->
-        <div class="flex items-center justify-between gap-1 bg-indigo-950/90 px-2.5 py-1 rounded-xl border border-indigo-800 overflow-x-auto">
+        <div class="legacy-rewards flex items-center justify-between gap-1 bg-indigo-950/90 px-2.5 py-1 rounded-xl border border-indigo-800 overflow-x-auto">
           <div class="flex items-center gap-1 shrink-0">
             <span class="text-[11px] font-bold text-amber-300 nowrap">🍬 활동 기록</span>
             <span id="stampCountText" class="nowrap text-[11px] px-1.5 py-0.5 rounded-full bg-orange-500 text-white font-black">0/4</span>
@@ -111,23 +111,23 @@
         <nav class="grid grid-cols-5 gap-1 pt-0.5" aria-label="놀이 단계 이동">
           <button type="button" id="navTab1" data-tab="tab-culture" class="nav-tab tab-active nowrap rounded-xl px-1 py-1.5 text-xs sm:text-sm font-title border border-indigo-700/80 glass-panel transition flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 min-h-[42px]">
             <span class="text-sm sm:text-base leading-none">🎃</span>
-            <span class="leading-tight">1. 이야기</span>
+            <span class="leading-tight">이야기</span>
           </button>
           <button type="button" id="navTab2" data-tab="tab-safety" class="nav-tab nowrap rounded-xl px-1 py-1.5 text-xs sm:text-sm font-title border border-indigo-700/80 glass-panel text-indigo-100 hover:bg-indigo-900/60 transition flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 min-h-[42px]">
             <span class="text-sm sm:text-base leading-none">🚶</span>
-            <span class="leading-tight">2. 길안전</span>
+            <span class="leading-tight">길안전</span>
           </button>
           <button type="button" id="navTab3" data-tab="tab-costume" class="nav-tab nowrap rounded-xl px-1 py-1.5 text-xs sm:text-sm font-title border border-indigo-700/80 glass-panel text-indigo-100 hover:bg-indigo-900/60 transition flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 min-h-[42px]">
             <span class="text-sm sm:text-base leading-none">🧙</span>
-            <span class="leading-tight">3. 옷장</span>
+            <span class="leading-tight">옷 고르기</span>
           </button>
           <button type="button" id="navTab4" data-tab="tab-quiz" class="nav-tab nowrap rounded-xl px-1 py-1.5 text-xs sm:text-sm font-title border border-indigo-700/80 glass-panel text-indigo-100 hover:bg-indigo-900/60 transition flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 min-h-[42px]">
             <span class="text-sm sm:text-base leading-none">⭕</span>
-            <span class="leading-tight">4. 퀴즈</span>
+            <span class="leading-tight">생각 확인</span>
           </button>
           <button type="button" id="navTab5" data-tab="tab-cert" class="nav-tab nowrap rounded-xl px-1 py-1.5 text-xs sm:text-sm font-title border border-indigo-700/80 glass-panel text-amber-300 hover:bg-indigo-900/60 transition flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 min-h-[42px]">
             <span class="text-sm sm:text-base leading-none">🎖️</span>
-            <span class="leading-tight">5. 임명장</span>
+            <span class="leading-tight">배움 기록</span>
           </button>
         </nav>
       </div>
@@ -136,12 +136,26 @@
     <!-- Main Content Container -->
     <main class="max-w-5xl w-full mx-auto px-3 sm:px-4 py-4 space-y-4 flex-1">
 
+      <div class="lesson-hero" aria-label="오늘의 탐험 안내">
+        <div>
+          <p class="hero-kicker">우리 반 계기교육 · 할로윈</p>
+          <h2>이야기를 읽고, 안전한 선택을 해 봐요.</h2>
+          <p>즐거운 축제를 만드는 방법을 그림·상황·질문으로 함께 배워요.</p>
+        </div>
+        <div class="hero-progress" aria-live="polite"><span>나의 배움</span><strong id="journeyCount">0 / 4</strong><small>완료한 활동</small></div>
+      </div>
+
       <!-- ==================== TAB 1: STORY CARDS + JACK-O'-LANTERN WORKSHOP + WORLD FESTIVALS ==================== -->
       <section id="tab-culture" class="tab-panel space-y-4">
-        <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-xl">
+        <nav class="culture-steps" aria-label="이야기 활동 순서">
+          <button type="button" data-culture-step="story" class="culture-step is-current" aria-current="step"><span>01</span> 그림 이야기</button>
+          <button type="button" data-culture-step="craft" class="culture-step"><span>02</span> 호박 꾸미기</button>
+          <button type="button" data-culture-step="compare" class="culture-step"><span>03</span> 문화 살펴보기</button>
+        </nav>
+        <div id="storyChapter" data-culture-stage="story" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-xl">
           <div class="border-b border-indigo-800/80 pb-2.5 space-y-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="nowrap text-xs font-bold text-orange-400">놀이 1 · 할로윈 백과사전 (6장)</span>
+              <span class="nowrap text-xs font-bold text-orange-400">이야기 1 · 그림 카드 6장</span>
               <div class="flex flex-wrap items-center gap-1.5">
                 <button type="button" id="btnSpeakStory" class="nowrap px-2.5 py-1 rounded-lg bg-indigo-800 hover:bg-indigo-700 text-amber-300 text-xs font-bold border border-indigo-600 transition flex items-center gap-1 min-h-[32px]">
                   <span aria-hidden="true">🔈</span> <span id="speakBtnLabel">소리 듣기</span>
@@ -151,13 +165,13 @@
                 </span>
               </div>
             </div>
-            <h2 id="cultureSectionTitle" class="font-title text-base sm:text-xl text-white nowrap">할로윈은 어떤 날일까요?</h2>
+            <h2 id="cultureSectionTitle" class="font-title text-base sm:text-xl text-white nowrap">호박마을 이야기</h2>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-stretch">
             <div class="md:col-span-4 rounded-2xl bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 p-4 flex flex-col items-center justify-center text-center border border-indigo-700/70 min-h-[165px]">
-              <button type="button" id="btnTapStoryEmoji" class="text-6xl mb-2.5 select-none float-anim focus:outline-none" title="누르면 재미있는 소리가 나요!">
-                <span id="storyEmojiGraphic">🎃</span>
+              <button type="button" id="btnTapStoryEmoji" class="story-art-button select-none focus:outline-none" title="그림을 누르면 소리가 나요!" aria-label="이야기 그림 소리 듣기">
+                <span id="storyEmojiGraphic" class="story-art" role="img" aria-label="이야기 그림"></span>
               </button>
               <div id="storyVisualCaption" class="nowrap text-xs font-bold text-amber-300 bg-indigo-950/90 px-3 py-1 rounded-full border border-amber-400/30">
                 매년 10월 31일
@@ -174,9 +188,10 @@
                 <h3 id="storySlideTitle" class="font-title text-base sm:text-lg text-amber-200 nowrap"></h3>
                 <p id="storySlideBody" class="text-xs sm:text-sm text-gray-100 leading-relaxed"></p>
                 <div class="rounded-xl bg-indigo-950/90 border border-amber-400/40 p-2.5">
-                  <div class="text-[11px] font-extrabold text-amber-400 mb-0.5">💡 핵심 쏙쏙!</div>
+                  <div class="text-[11px] font-extrabold text-amber-400 mb-0.5">한 문장으로 기억해요</div>
                   <p id="storySlideKeyPoint" class="text-xs sm:text-sm text-indigo-100 font-bold"></p>
                 </div>
+                <div class="thinking-prompt"><span>함께 이야기해요</span><p id="storyThinkingQuestion"></p></div>
               </div>
 
               <div class="flex items-center justify-between pt-2 border-t border-indigo-800/80 gap-2">
@@ -192,14 +207,14 @@
         </div>
 
         <!-- FUN INTERACTIVE ACTIVITY 1: JACK-O'-LANTERN MAKER WORKSHOP -->
-        <div id="pumpkinWorkshopCard" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
+        <div id="pumpkinWorkshopCard" data-culture-stage="craft" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5 hidden">
           <div class="flex items-center justify-between gap-2 border-b border-indigo-800 pb-2">
             <div>
               <span class="nowrap text-xs font-bold text-amber-400">체험 놀이터 · 나만의 호박 등불 만들기</span>
-              <h3 class="font-title text-base sm:text-lg text-white nowrap">🕯️ 반짝반짝! 잭오랜턴 공방</h3>
+              <h3 class="font-title text-base sm:text-lg text-white nowrap">나만의 호박등 만들기</h3>
             </div>
             <button type="button" id="btnToggleLanternLight" class="nowrap px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-indigo-950 font-black text-xs shadow-lg transition min-h-[34px]">
-              🕯️ 등불 켜기 (+30🍬)
+              등불 켜기
             </button>
           </div>
 
@@ -248,12 +263,13 @@
               </div>
             </div>
           </div>
+          <button type="button" id="btnToCompare" class="chapter-next">다음: 다른 문화 살펴보기 →</button>
         </div>
 
-        <!-- Enriched World Festival Comparison + Interactive Detail Box -->
-        <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3">
+        <!-- Different traditions are presented in their own context. -->
+        <div data-culture-stage="compare" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3 hidden">
           <div class="flex items-center justify-between gap-2">
-            <h3 class="font-title text-sm sm:text-lg text-amber-300 nowrap">🌏 세계의 가을·영혼 축제 비교</h3>
+            <h3 class="font-title text-sm sm:text-lg text-amber-300 nowrap">날짜가 가까워도 서로 다른 문화예요</h3>
             <span class="nowrap text-[11px] font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2 py-0.5 rounded-full">
               카드를 눌러 비교해요
             </span>
@@ -262,41 +278,44 @@
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             <button type="button" data-festival="halloween" class="festival-card text-left glass-panel hover:border-orange-400 rounded-xl p-3 transition border border-indigo-700/70 space-y-1 ring-2 ring-amber-400">
               <div class="flex items-center justify-between">
-                <span class="text-xl font-title text-white nowrap">🎃 할로윈데이</span>
-                <span class="nowrap text-[11px] font-bold px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300">미국·유럽</span>
+                <span class="text-xl font-title text-white nowrap">할로윈</span>
+                <span class="nowrap text-[11px] font-bold px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300">여러 지역</span>
               </div>
               <p id="festDetail-halloween" class="text-xs text-amber-200">
-                10월 31일 · 호박 등불과 분장으로 악령을 막고 이웃과 사탕을 나눠요.
+                10월 31일 · 지역마다 다양한 방식으로 즐겨요.
               </p>
             </button>
 
             <button type="button" data-festival="muertos" class="festival-card text-left glass-panel hover:border-pink-400 rounded-xl p-3 transition border border-indigo-700/70 space-y-1">
               <div class="flex items-center justify-between">
-                <span class="text-xl font-title text-white nowrap">🌼 죽은 자들의 날</span>
+                <span class="text-xl font-title text-white nowrap">죽은 자들의 날</span>
                 <span class="nowrap text-[11px] font-bold px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300">멕시코</span>
               </div>
               <p id="festDetail-muertos" class="text-xs text-pink-200">
-                10월 말~11월 초 · 마리골드꽃과 촛불로 그리운 가족을 기쁘게 환영해요.
+                세상을 떠난 가족을 기억하는 멕시코의 고유한 전통이에요.
               </p>
             </button>
 
             <button type="button" data-festival="korea" class="festival-card text-left glass-panel hover:border-emerald-400 rounded-xl p-3 transition border border-indigo-700/70 space-y-1">
               <div class="flex items-center justify-between">
-                <span class="text-xl font-title text-white nowrap">🌕 추석·동지·백중</span>
+                <span class="text-xl font-title text-white nowrap">추석</span>
                 <span class="nowrap text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">대한민국</span>
               </div>
               <p id="festDetail-korea" class="text-xs text-emerald-200">
-                가을·겨울 · 햇곡식 송편과 붉은 팥죽을 나누며 가족의 건강을 빌어요.
+                음력 8월 15일 · 가족과 모여 수확을 돌아보아요.
               </p>
             </button>
           </div>
 
           <div id="festivalCompareDetailBox" class="rounded-xl bg-indigo-950/90 border border-indigo-700/80 p-3.5 text-xs sm:text-sm space-y-1.5">
-            <div id="festivalCompareTitle" class="font-title text-amber-300 text-sm sm:text-base nowrap">🎃 미국·유럽의 할로윈데이 (10월 31일)</div>
+            <div id="festivalCompareTitle" class="font-title text-amber-300 text-sm sm:text-base nowrap">할로윈 · 10월 31일</div>
             <p id="festivalCompareDesc" class="text-indigo-100 leading-relaxed">
-              고대 켈트족의 가을 추수 감사 축제(서우인)와 만성절 전날 밤(All Hallows' Eve)이 합쳐진 날이에요. 주황색 호박 등불(잭오랜턴)을 켜고 이웃집 문을 두드리며 간식을 나누고, 유니세프 기부 상자로 세계 어린이를 돕기도 해요.
+              옛 켈트 지역의 계절 풍습과 만성절 전야 등 여러 역사적 요소가 전해져요. 오늘날에는 지역과 가족에 따라 다른 방식으로 즐깁니다.
             </p>
+            <p id="festivalCompareQuestion" class="festival-question">모든 지역의 할로윈 모습이 같을까요?</p>
+            <a id="festivalSourceLink" href="https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/" target="_blank" rel="noopener noreferrer">자료: 미국 의회도서관 ↗</a>
           </div>
+          <button type="button" id="btnToSafety" class="chapter-next">다음: 안전한 선택 연습하기 →</button>
         </div>
       </section>
 
@@ -310,12 +329,12 @@
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
           <div class="border-b border-indigo-800 pb-2.5 space-y-1">
             <div class="flex items-center justify-between gap-2">
-              <span class="nowrap text-xs font-bold text-rose-400">놀이 2 · 행정안전부 인파 안전 약속 (6단계)</span>
+              <span class="nowrap text-xs font-bold text-rose-400">상황 활동 · 사람이 많을 때의 안전 선택</span>
               <span id="scenarioStepBadge" class="nowrap px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-200 text-xs font-bold">
                 약속 1 / 6
               </span>
             </div>
-            <h2 class="font-title text-base sm:text-xl text-white nowrap">사람이 많은 곳에서 어떻게 할까요?</h2>
+            <h2 class="font-title text-base sm:text-xl text-white nowrap">지금 어떤 행동이 안전할까요?</h2>
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -421,10 +440,10 @@
           <div class="flex items-center justify-between gap-2 border-b border-indigo-800 pb-2">
             <div>
               <span class="nowrap text-xs font-bold text-pink-400">코디 놀이터 · 안전한 코스프레 패션쇼</span>
-              <h3 class="font-title text-base sm:text-lg text-white nowrap">🎭 나만의 안전 할로윈 아바타 꾸미기</h3>
+              <h3 class="font-title text-base sm:text-lg text-white nowrap">안전한 옷차림 꾸미기</h3>
             </div>
             <button type="button" id="btnRunwayShow" class="nowrap px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-amber-500 text-indigo-950 font-black text-xs shadow-lg transition min-h-[34px]">
-              📸 런웨이 출발! (+40🍬)
+              내 선택 설명하기
             </button>
           </div>
 
@@ -515,7 +534,7 @@
 
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3">
           <div class="flex items-center justify-between gap-2">
-            <h3 class="font-title text-sm sm:text-lg text-amber-300 nowrap">🍬 할로윈 배려 예절 & 간식 안전 약속</h3>
+            <h3 class="font-title text-sm sm:text-lg text-amber-300 nowrap">친구를 배려하는 간식 약속</h3>
             <span id="etiquetteCheckBadge" class="nowrap text-xs font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2.5 py-0.5 rounded-full">
               약속 체크 0 / 4
             </span>
@@ -529,7 +548,7 @@
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
           <div class="border-b border-indigo-800 pb-2.5 space-y-1">
             <div class="flex items-center justify-between gap-2">
-              <span id="quizGradeLabel" class="nowrap text-xs font-bold text-emerald-400">놀이 4 · 스피드 퀴즈 (8문제)</span>
+              <span id="quizGradeLabel" class="nowrap text-xs font-bold text-emerald-400">생각 확인 · 8가지 질문</span>
               <div class="flex items-center gap-1.5 shrink-0">
                 <span id="quizComboBadge" class="nowrap px-2 py-1 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-black">
                   🔥 0연속
@@ -542,7 +561,7 @@
                 </button>
               </div>
             </div>
-            <h2 class="font-title text-base sm:text-xl text-white nowrap">할로윈 안전 대장 골든벨!</h2>
+            <h2 class="font-title text-base sm:text-xl text-white nowrap">내 생각을 확인해요</h2>
           </div>
 
           <div id="quizActiveContainer" class="glass-panel rounded-2xl p-4 sm:p-5 space-y-3.5">
@@ -687,11 +706,12 @@
 
     </main>
 
-    <!-- Compact Footer -->
+    <!-- Sources remain available for teachers without crowding the student view. -->
     <footer class="max-w-5xl w-full mx-auto px-4 py-4 text-xs text-indigo-300/80 border-t border-indigo-900/80">
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span class="font-bold text-indigo-200 nowrap">📚 출처:</span>
+        <details class="source-details">
+          <summary>교사용 근거 자료 보기</summary>
+          <div class="source-links flex flex-wrap items-center gap-x-3 gap-y-1">
           <a href="https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html" target="_blank" rel="noopener noreferrer" class="underline hover:text-amber-300 nowrap">국민재난안전포털</a>
           <a href="https://ich.unesco.org/en/RL/dia-de-muertos-the-indigenous-festivity-dedicated-to-the-dead-00054" target="_blank" rel="noopener noreferrer" class="underline hover:text-amber-300 nowrap">유네스코 죽은 자들의 날</a>
           <a href="https://www.nfm.go.kr/kids/user/content.do?pageId=PAGE_000000000000051" target="_blank" rel="noopener noreferrer" class="underline hover:text-amber-300 nowrap">국립민속박물관 한국 명절</a>
@@ -701,7 +721,8 @@
           <a href="https://www.law.go.kr/" target="_blank" rel="noopener noreferrer" class="underline hover:text-amber-300 nowrap">국가법령정보센터</a>
           <a href="https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&amp;lsJoLnkSeq=1008601875" target="_blank" rel="noopener noreferrer" class="underline hover:text-amber-300 nowrap">경찰제복·장비 규정 제9조</a>
           <a href="https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&amp;lsJoLnkSeq=1028626005" target="_blank" rel="noopener noreferrer" class="underline hover:text-amber-300 nowrap">군복·군용장구 규정 제9조</a>
-        </div>
+          </div>
+        </details>
         <span id="offlineStatus" class="nowrap px-2 py-0.5 rounded bg-indigo-950 border border-indigo-800 text-[11px] text-indigo-300">오프라인 자료 준비 전</span>
       </div>
     </footer>
@@ -741,10 +762,10 @@
         <div class="rounded-xl bg-indigo-950/90 p-3.5 border border-indigo-800 space-y-1.5">
           <div class="font-extrabold text-amber-300">📌 참여형 계기교육 활동 구성</div>
           <ul class="list-disc pl-4 space-y-1">
-            <li><strong>1. 이야기:</strong> 6장 백과사전 + <strong>나만의 잭오랜턴 등불 공방</strong> + 세계 축제 비교</li>
+            <li><strong>1. 이야기:</strong> 학년별 그림 이야기 6장과 생각 질문 → 호박등 만들기 → 서로 다른 축제 문화 살펴보기</li>
             <li><strong>2. 길안전:</strong> 6가지 공식 행동요령 판단 + 경로 선택 미니게임</li>
-            <li><strong>3. 옷장:</strong> <strong>안전 아바타 패션쇼 런웨이</strong> + 12종 의상 O/X + 예절 체크리스트</li>
-            <li><strong>4. 퀴즈 & 5. 임명장:</strong> 보기 랜덤 셔플·콤보·힌트·50:50 찬스 골든벨 및 테마별 맞춤 임명장 발급</li>
+            <li><strong>3. 옷장:</strong> 안전한 옷차림과 선택 이유 설명, 12종 옷차림 판단, 배려 약속</li>
+            <li><strong>4. 생각 확인과 5. 배움 기록:</strong> 학년별 질문 8개와 해설, 학습 결과지·참여 확인서·안전 목표 임명장</li>
           </ul>
         </div>
 

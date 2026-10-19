@@ -42,14 +42,14 @@
     function renderQuiz() {
       const quizzes=EDUCATION_DATA[state.grade].quizzes;
       const limit=state.quizReview ? state.quizReviewItems.length : quizzes.length;
-      document.getElementById('quizGradeLabel').textContent=`놀이 4 · ${EDUCATION_DATA[state.grade].label} 퀴즈 (${quizzes.length}문제)`;
+      document.getElementById('quizGradeLabel').textContent=`생각 확인 · ${EDUCATION_DATA[state.grade].label} · ${quizzes.length}가지 질문`;
       const active=document.getElementById('quizActiveContainer');
       const result=document.getElementById('quizResultContainer');
       if(state.quizIndex>=limit){
         active.classList.add('hidden');result.classList.remove('hidden');
         const first=firstQuizScore();
         const reviewed=reviewedQuizScore();
-        document.getElementById('quizFinalScoreTitle').textContent=`처음 결과 ${first}/${quizzes.length} · 도움 없이 ${firstUnassistedScore()}/${quizzes.length} · 다시 확인한 내용 ${reviewed}/${quizzes.length}`;
+        document.getElementById('quizFinalScoreTitle').textContent=`처음 이해한 질문 ${first}/${quizzes.length}`;
         document.getElementById('quizFinalScoreDesc').textContent=first===quizzes.length
           ? '처음 확인한 문항을 모두 맞혔어요. 안전 목표 확인은 길안전의 새 질문에서 따로 진행해요.'
           : `처음 틀리거나 확인하지 못한 문항 ${quizzes.length-first}개가 있어요. 다시 판단해 보세요. 해설을 읽는 것만으로 이해 완료로 기록하지 않습니다.`;
@@ -66,7 +66,7 @@
       const round=state.quizReview ? state.quizAttemptRound : 0;
       const existing=(state.quizAttempts[id]||[]).find(a=>a.round===round);
       document.getElementById('quizComboBadge').textContent=`🔥 ${state.quizCombo}연속`;
-      document.getElementById('quizProgressBadge').textContent=`${state.quizIndex+1} / ${limit} · 처음 ${firstQuizScore()}/${quizzes.length}`;
+      document.getElementById('quizProgressBadge').textContent=`질문 ${state.quizIndex+1} / ${limit}`;
       document.getElementById('quizQuestionNumber').textContent=`Q${qi+1}${state.quizReview?' 복습':''}`;
       document.getElementById('quizCategoryBadge').textContent=q.category;
       document.getElementById('quizQuestionText').textContent=q.q;

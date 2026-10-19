@@ -114,3 +114,167 @@
       body > :not(#printResultImage) { display: none !important; }
       #printResultImage { display: block !important; width: 100%; height: auto; }
     }
+
+    /* Picture-book learning theme. Source content stays usable without external assets. */
+    body.storybook {
+      --ink: #293449;
+      --muted: #526074;
+      --paper: #fffaf1;
+      --line: #e8d9c8;
+      --accent: #b65d36;
+      --plum: #59496e;
+      background: radial-gradient(circle at 85% 0%, #fff1da 0, transparent 28%),
+                  linear-gradient(180deg, #fff8ed 0%, #f8f0e5 75%, #f5eee5 100%);
+      color: var(--ink);
+      font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      font-size: 16px;
+    }
+    .storybook h1, .storybook h2, .storybook h3, .storybook .font-title {
+      font-family: 'Gowun Dodum', 'Malgun Gothic', sans-serif;
+      font-weight: 400;
+      letter-spacing: -0.025em;
+    }
+    .storybook h1 { font-size: clamp(1.25rem, 2vw, 1.55rem); }
+    .storybook .site-header {
+      position: relative;
+      background: #fffdf8;
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 8px 25px rgba(80, 56, 43, .05);
+      backdrop-filter: none;
+    }
+    .storybook .site-header > div { padding-top: 14px; padding-bottom: 12px; gap: 10px; }
+    .storybook .brand-mark { width: 38px; height: 38px; }
+    .storybook .brand-mark svg { width: 100%; height: 100%; }
+    .storybook .legacy-rewards { display: none; }
+    .storybook #quizComboBadge { display: none; }
+    .storybook .glass-card {
+      background: #fffdf9;
+      border: 1px solid var(--line);
+      box-shadow: 0 15px 36px rgba(78, 54, 41, .07);
+      backdrop-filter: none;
+    }
+    .storybook .glass-panel {
+      background: #fff8ec;
+      border: 1px solid #eadbc9;
+      backdrop-filter: none;
+    }
+    .storybook [class*="bg-indigo-"],
+    .storybook [class*="bg-slate-"],
+    .storybook [class*="bg-purple-"],
+    .storybook [class*="bg-amber-950"],
+    .storybook [class*="bg-emerald-950"] { background-color: #f5ecdf !important; }
+    .storybook [class*="text-indigo-"],
+    .storybook [class*="text-gray-"],
+    .storybook [class*="text-slate-"],
+    .storybook .text-white { color: var(--ink) !important; }
+    .storybook [class*="text-amber-"], .storybook [class*="text-orange-"] { color: #9b502d !important; }
+    .storybook [class*="text-rose-"], .storybook [class*="text-pink-"] { color: #9b5061 !important; }
+    .storybook [class*="text-emerald-"] { color: #286c59 !important; }
+    .storybook [class*="text-sky-"] { color: #2e6380 !important; }
+    .storybook [class*="border-indigo-"], .storybook [class*="border-slate-"] { border-color: var(--line) !important; }
+    .storybook [class*="border-amber-"], .storybook [class*="border-orange-"] { border-color: #edc8a9 !important; }
+    .storybook .site-header .grade-btn,
+    .storybook .site-header #btnBoardMode,
+    .storybook .site-header #btnSoundToggle,
+    .storybook .site-header #btnTeacherGuide,
+    .storybook .site-header #btnResetProgress,
+    .storybook .site-header #btnFullscreen,
+    .storybook .site-header #btnExitApp {
+      background: #fffaf2 !important;
+      color: var(--ink) !important;
+      border: 1px solid var(--line) !important;
+      font-size: .8rem;
+      border-radius: 11px;
+      box-shadow: none;
+    }
+    .storybook .site-header .grade-btn.grade-active {
+      background: #f7d29b !important;
+      color: #4b3226 !important;
+      border-color: #dbad74 !important;
+    }
+    .storybook .site-header [role="group"] { background: #f3eadf !important; border: 0; padding: 3px; }
+    .storybook .nav-tab {
+      background: transparent !important;
+      border: 1px solid transparent !important;
+      color: var(--muted) !important;
+      box-shadow: none;
+      transform: none;
+      font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      font-weight: 700;
+      min-height: 45px;
+    }
+    .storybook .nav-tab > span:first-child { display: none; }
+    .storybook .nav-tab.tab-active {
+      background: #5f4d70 !important;
+      border-color: #5f4d70 !important;
+      color: #fff !important;
+    }
+    .storybook .lesson-hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      padding: 24px 28px;
+      border-radius: 25px;
+      border: 1px solid #ead0af;
+      background: linear-gradient(125deg,#fff0d9 0%,#fffbf3 70%);
+      box-shadow: 0 10px 28px rgba(99, 65, 38, .06);
+    }
+    .storybook .hero-kicker { color: #a85e34; font-size: .78rem; font-weight: 800; letter-spacing: .08em; }
+    .storybook .lesson-hero h2 { color: #4d3d5d; font-size: clamp(1.45rem, 2.5vw, 2rem); line-height: 1.3; margin: 5px 0 7px; }
+    .storybook .lesson-hero p:last-child { color: var(--muted); font-size: .95rem; line-height: 1.5; }
+    .storybook .hero-progress { flex: 0 0 104px; width: 104px; height: 104px; border-radius: 50%; background:#fffdf8; border: 2px solid #e5c698; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+    .storybook .hero-progress span, .storybook .hero-progress small { font-size:.72rem; color:var(--muted); }
+    .storybook .hero-progress strong { color:#9a542f; font-size:1.35rem; line-height:1.35; }
+    .storybook .culture-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+    .storybook .culture-step { background:#fffdf8; border:1px solid var(--line); border-radius:14px; color:var(--muted); padding:10px 8px; font-size:.88rem; font-weight:800; text-align:center; }
+    .storybook .culture-step span { display:inline-grid; place-items:center; margin-right:7px; width:25px; height:25px; border-radius:50%; background:#f2e6d8; color:#80533b; font-size:.72rem; }
+    .storybook .culture-step.is-current { color:#fff; background:#5f4d70; border-color:#5f4d70; }
+    .storybook .culture-step.is-current span { background:#fff3df; color:#5f4d70; }
+    .storybook #storyChapter [class*="from-indigo-"] { background-image:none !important; background-color:#f7e8d5 !important; }
+    .storybook #btnTapStoryEmoji { width:100%; max-width:236px; min-height:160px; border:0; background:transparent; padding:0; margin:0 auto 8px; }
+    .storybook .story-art, .storybook .story-art svg { display:block; width:100%; height:auto; }
+    .storybook #storyVisualCaption { border:0; background:#fff8ec !important; color:#89512e !important; font-size:.78rem; }
+    .storybook #storyStepPills button { width:27px; height:8px; min-height:8px; border-radius:8px; }
+    .storybook #storySlideBody { color:var(--ink); font-size:1rem; line-height:1.7; }
+    .storybook #storySlideTitle { color:#503e61 !important; font-size:1.3rem; line-height:1.4; }
+    .storybook #storySlideKeyPoint { color:#375f55 !important; font-size:.92rem; line-height:1.55; }
+    .storybook #storySourceLink, .storybook #festivalSourceLink { color:#526274 !important; font-size:.78rem; }
+    .storybook .thinking-prompt { padding:12px 14px; border-radius:14px; background:#eaf2e9; border:1px solid #cddfce; }
+    .storybook .thinking-prompt span { color:#2f6556; font-weight:800; font-size:.75rem; }
+    .storybook .thinking-prompt p { color:#2e4f47; font-weight:700; line-height:1.5; margin-top:3px; }
+    .storybook .chapter-next { display:block; margin-left:auto; padding:10px 16px; border-radius:12px; background:#5f4d70; color:white; font-weight:800; }
+    .storybook .festival-card { min-height:145px; }
+    .storybook .festival-card.ring-2 { outline:2px solid #bf7e49; outline-offset:1px; }
+    .storybook .festival-card p { font-size:.84rem; line-height:1.55; }
+    .storybook .festival-question { font-weight:800; color:#356555; }
+    .storybook #avatarRunwayStage { background-image:none !important; background-color:#f9edda !important; border-color:#e4c7a2 !important; }
+    .storybook #avatarRunwayStage > div:first-child { background:#fffaf2 !important; color:#765574 !important; border-color:#e4c7a2 !important; }
+    .storybook #tab-costume [class*="bg-rose-950"] { background:#fff0ea !important; border-color:#e8bec0 !important; }
+    .storybook .tab-panel p { line-height:1.65; }
+    .storybook #scenarioDesc, .storybook #quizQuestionText { font-size:1rem; line-height:1.6; }
+    .storybook button[class*="bg-orange-500"],
+    .storybook button[class*="from-orange-"],
+    .storybook button[class*="from-amber-"] { background:#c97542 !important; background-image:none !important; color:#fff !important; box-shadow:none; }
+    .storybook button[class*="bg-emerald-500"], .storybook button[class*="from-emerald-"] { background:#4f816d !important; background-image:none !important; color:#fff !important; }
+    .storybook button:focus-visible, .storybook select:focus-visible, .storybook input:focus-visible, .storybook canvas:focus-visible { outline:3px solid #8b689a; outline-offset:2px; }
+    .storybook footer { color:#566273 !important; border-color:var(--line) !important; line-height:1.7; }
+    .storybook footer a { color:#6a567e; }
+    .storybook .source-details summary { cursor:pointer; color:#574768; font-weight:800; font-size:.82rem; list-style-position:inside; }
+    .storybook .source-links { max-width:760px; margin-top:10px; padding:12px; border-radius:12px; background:#fffaf1; border:1px solid var(--line); }
+    @media (max-width:640px) {
+      .storybook .site-header > div { padding-top:10px; padding-bottom:9px; }
+      .storybook .site-header .brand-mark { width:32px; height:32px; }
+      .storybook .site-header h1 { font-size:1.1rem; }
+      .storybook .site-header #btnFullscreen, .storybook .site-header #btnExitApp { padding:6px; font-size:.72rem; }
+      .storybook .nav-tab { font-size:.72rem; min-height:44px; padding:5px 2px; }
+      .storybook .lesson-hero { padding:17px; border-radius:20px; gap:10px; align-items:flex-start; }
+      .storybook .lesson-hero h2 { font-size:1.32rem; }
+      .storybook .lesson-hero p:last-child { font-size:.83rem; }
+      .storybook .hero-progress { flex-basis:76px; width:76px; height:76px; }
+      .storybook .hero-progress strong { font-size:1rem; }
+      .storybook .hero-progress small { display:none; }
+      .storybook .culture-step { font-size:.75rem; line-height:1.25; }
+      .storybook .culture-step span { margin-right:0; margin-bottom:3px; }
+      .storybook #storySlideBody { font-size:.96rem; }
+    }

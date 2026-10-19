@@ -1,16 +1,22 @@
     // ==================== ENRICHED GRADE-LEVEL EDUCATIONAL DATASET ====================
     const FESTIVAL_DETAILS = {
       halloween: {
-        title: "🎃 미국·유럽의 할로윈데이 (10월 31일)",
-        desc: "고대 켈트족의 서우인 풍습과 만성절 전날 밤(All Hallows' Eve)이 오늘날 할로윈의 여러 역사적 배경으로 설명돼요. 오늘날에는 호박 장식, 이웃과 간식 나누기, UNICEF 모금처럼 다양한 방식으로 참여해요. 어른이 준비한 장소에서도 주변 이동로를 살펴요."
+        title: "할로윈 · 10월 31일",
+        desc: "옛 켈트 지역의 계절 풍습과 만성절 전야 등 여러 역사적 요소가 전해져요. 오늘날에는 지역과 가족에 따라 분장, 호박 장식, 이웃 행사 등 다른 방식으로 즐깁니다.",
+        question: "모든 지역의 할로윈 모습이 같을까요?",
+        sourceText: "미국 의회도서관", sourceUrl: "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
       },
       muertos: {
-        title: "🌼 멕시코의 죽은 자들의 날 (10월 31일 ~ 11월 2일)",
-        desc: "2008년 유네스코 인류무형문화유산에 등재된 멕시코의 전통 명절이에요. 세상을 떠난 가족을 기리며 꽃잎과 촛불, 제물을 놓아 가족의 영혼을 맞이해요. 할로윈과는 다른 문화적 맥락을 지녀요."
+        title: "죽은 자들의 날 · 멕시코",
+        desc: "세상을 떠난 가족을 기억하고 맞이하는 고유한 전통입니다. 지역과 가족마다 기리는 모습이 다르며, 할로윈과 날짜가 가깝더라도 같은 축제로 묶을 수 없어요.",
+        question: "이 문화를 소개할 때 먼저 말해야 할 뜻은 무엇일까요?",
+        sourceText: "유네스코", sourceUrl: "https://ich.unesco.org/en/RL/dia-de-muertos-the-indigenous-festivity-dedicated-to-the-dead-00054"
       },
       korea: {
-        title: "🌕 대한민국의 추석 · 동지",
-        desc: "우리나라에도 가을 수확에 감사하며 송편을 나누는 '추석', 일 년 중 밤이 가장 긴 날 붉은 팥죽을 쑤어 나쁜 기운을 물리치고 이웃과 나누는 '동지'가 있어요. 나라마다 모습은 달라도 가족과 이웃의 평안을 바라는 따뜻한 마음은 모두 같답니다!"
+        title: "추석 · 대한민국",
+        desc: "음력 8월 15일을 중심으로 가족이 모여 수확을 돌아보고 음식을 나누는 명절입니다. 할로윈이나 죽은 자들의 날과 기원도 날짜도 다르므로 각각의 의미를 따로 배웁니다.",
+        question: "가까운 시기의 명절이라도 무엇이 서로 다를까요?",
+        sourceText: "국립민속박물관 어린이박물관", sourceUrl: "https://www.nfm.go.kr/kids/user/content.do?pageId=PAGE_000000000000051"
       }
     };
 
@@ -20,124 +26,162 @@
         classDefault: "1학년 1반",
         stories: [
           {
-            emoji: "🎃",
-            caption: "매년 10월 31일 가을 축제",
-            title: "1. 할로윈데이는 무슨 날일까요?",
-            body: "매년 10월 31일은 외국의 가을 축제인 '할로윈데이'예요! 옛날 사람들이 추운 겨울이 오기 전에 나쁜 유령이 오지 못하도록 재미있는 가면을 쓰던 놀이에서 시작되었어요.",
-            keyPoint: "10월 31일에 재미있게 변장하며 즐기는 외국의 가을 축제예요!",
-            sourceText: "출처: 미국 의회도서관",
-            sourceUrl: "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
+            "art": "pumpkin",
+            "caption": "10월 31일",
+            "title": "할로윈은 어떤 날일까요?",
+            "body": "10월 31일, 여러 나라에서 분장하거나 호박을 꾸미며 즐겨요. 모든 사람이 같은 방법으로 보내는 날은 아니에요.",
+            "keyPoint": "날짜와 놀이 모습을 알아보아요.",
+            "question": "우리 반에서는 어떤 놀이를 해 보고 싶나요?",
+            "sourceText": "미국 의회도서관",
+            "sourceUrl": "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
           },
           {
-            emoji: "🕯️",
-            caption: "웃고 있는 호박 등불",
-            title: "2. 주황색 호박 등불 '잭오랜턴'",
-            body: "커다란 주황색 호박 속을 파내고 눈·코·입 모양을 만든 장식을 '잭오랜턴'이라고 불러요. 옛날에는 안에 불빛을 넣기도 했어요. 오늘날에는 축제 장식으로 많이 보여요.",
-            keyPoint: "호박으로 만든 환한 등불 이름은 '잭오랜턴'이에요!",
-            sourceText: "출처: 스미스소니언 정원 기록",
-            sourceUrl: "https://gardens.si.edu/american-garden-story/ghosts-of-pumpkins-past/"
+            "art": "lantern",
+            "caption": "호박 등불",
+            "title": "호박에 얼굴을 그려요",
+            "body": "속을 파낸 호박에 얼굴을 새긴 장식을 잭오랜턴이라고 해요. 옛날에는 순무로 만들기도 했어요.",
+            "keyPoint": "잭오랜턴은 호박 등불이에요.",
+            "question": "내 호박에는 어떤 표정을 그릴까요?",
+            "sourceText": "스미스소니언",
+            "sourceUrl": "https://gardens.si.edu/american-garden-story/ghosts-of-pumpkins-past/"
           },
           {
-            emoji: "🍬",
-            caption: "달콤한 간식과 따뜻한 나눔",
-            title: "3. '트릭 오어 트릿!' 사탕 주세요!",
-            body: "외국 친구들은 이웃집 문을 똑똑 두드리며 '트릭 오어 트릿(과자 안 주면 장난칠 거예요)!' 하고 인사해요. 사탕 대신 어려운 친구들을 돕는 저금통을 들고 나눔을 실천하기도 해요.",
-            keyPoint: "이웃과 반갑게 인사하고 따뜻한 마음을 나누는 날이에요!",
-            sourceText: "출처: UNICEF USA",
-            sourceUrl: "https://www.unicefusa.org/trick-or-treat/groups"
+            "art": "neighbor",
+            "caption": "이웃과 인사",
+            "title": "간식을 나눌 때 지킬 약속",
+            "body": "어떤 지역에서는 아이들이 어른과 함께 이웃을 찾아가 간식을 받아요. 처음 보는 집에 혼자 찾아가지는 않아요.",
+            "keyPoint": "간식보다 어른과 함께하는 안전한 약속이 먼저예요.",
+            "question": "방문하기 전에 누구와 상의해야 할까요?",
+            "sourceText": "UNICEF USA",
+            "sourceUrl": "https://www.unicefusa.org/trick-or-treat/groups"
           },
           {
-            emoji: "🐈‍⬛",
-            caption: "주황색과 검은색의 비밀",
-            title: "4. 할로윈 대표 색깔은 무엇일까요?",
-            body: "할로윈에는 '주황색'과 '검은색'을 가장 많이 써요! 주황색은 잘 익은 가을 호박과 추수를 뜻하고, 검은색은 깊어 가는 가을밤을 뜻한답니다.",
-            keyPoint: "주황색은 가을 수확을, 검은색은 어두운 밤하늘을 나타내요!",
-            sourceText: "출처: 미국 의회도서관",
-            sourceUrl: "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
+            "art": "path",
+            "caption": "잘 보이고 잘 걷기",
+            "title": "분장 옷도 안전하게 골라요",
+            "body": "앞이 잘 보이는 가면과 걷기 편한 옷을 골라요. 어두운 곳에서는 밝은 표시가 도움이 돼요.",
+            "keyPoint": "멋진 옷보다 잘 보고 잘 걷는 일이 중요해요.",
+            "question": "길게 끌리는 망토는 어떻게 고치면 좋을까요?",
+            "sourceText": "국민재난안전포털",
+            "sourceUrl": "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
           },
           {
-            emoji: "🌼",
-            caption: "세계 친구들의 가을 명절",
-            title: "5. 멕시코와 우리나라의 다른 명절",
-            body: "멕시코에서는 '죽은 자들의 날'에 노란 꽃으로 보고 싶은 가족을 맞이하고, 우리나라에서는 '동지'에 따뜻한 팥죽을 먹으며 나쁜 기운을 물리쳐요.",
-            keyPoint: "나라마다 축제는 달라도 가족을 사랑하는 마음은 똑같아요!",
-            sourceText: "멕시코 명절 근거: 유네스코",
-            sourceUrl: "https://ich.unesco.org/en/RL/dia-de-muertos-the-indigenous-festivity-dedicated-to-the-dead-00054"
+            "art": "flower",
+            "caption": "서로 다른 문화",
+            "title": "멕시코에는 다른 기념일이 있어요",
+            "body": "멕시코의 죽은 자들의 날에는 세상을 떠난 가족을 기억해요. 할로윈과 날짜가 가깝지만 서로 다른 뜻을 지닌 날이에요.",
+            "keyPoint": "다른 문화의 이름과 뜻을 존중해요.",
+            "question": "두 날이 다르다는 걸 친구에게 어떻게 설명할까요?",
+            "sourceText": "유네스코",
+            "sourceUrl": "https://ich.unesco.org/en/RL/dia-de-muertos-the-indigenous-festivity-dedicated-to-the-dead-00054"
           },
           {
-            emoji: "🏠",
-            caption: "안전하고 즐거운 홈로윈",
-            title: "6. 집과 교실에서 안전하게 즐겨요!",
-            body: "밤늦게 사람이 많은 길에 나가지 않아도, 집이나 교실에서 친구들과 동화책을 읽고 간식을 나누는 '홈로윈(집에서 즐기는 할로윈)'으로 안전하게 즐길 수 있어요!",
-            keyPoint: "어른 손을 꼭 잡고, 안전하고 기분 좋게 즐기는 것이 최고예요!",
-            sourceText: "교사용 안전 근거: 국민재난안전포털",
-            sourceUrl: "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
+            "art": "classroom",
+            "caption": "우리 반 축제",
+            "title": "안전하고 다정하게 마무리해요",
+            "body": "교실에서 꾸미고 인사하며 즐길 수도 있어요. 친구가 싫다는 장난은 멈추고, 쓰레기는 함께 치워요.",
+            "keyPoint": "즐거움은 모두가 편안할 때 더 커져요.",
+            "question": "우리 반에서 지킬 약속 하나를 말해 볼까요?",
+            "sourceText": "국민재난안전포털",
+            "sourceUrl": "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
           }
         ],
         quizzes: [
           {
-            category: "할로윈 이야기",
-            q: "주황색 호박에 눈·코·입을 그려 만든 할로윈 등불의 이름은 무엇일까요?",
-            options: ["🎃 잭오랜턴 (호박 등불)", "🧦 크리스마스 양말", "🎂 생일 케이크", "⛄ 눈사람"],
-            answer: 0,
-            hint: "힌트: '잭(Jack)'이라는 이름이 들어가는 주황색 호박 등불이에요!",
-            explanation: "주황색 호박으로 만든 등불은 '잭오랜턴'이라고 불러요!"
+            "category": "할로윈 이야기",
+            "q": "호박에 얼굴을 새긴 장식은 무엇일까요?",
+            "options": [
+              "잭오랜턴",
+              "송편",
+              "마리골드꽃"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "호박 등불을 잭오랜턴이라고 불러요."
           },
           {
-            category: "할로윈 색깔",
-            q: "할로윈을 대표하는 두 가지 색깔로, 가을 호박과 어두운 밤을 뜻하는 색은?",
-            options: ["🧡 주황색과 🖤 검은색", "💙 파란색과 🤍 하얀색", "💗 분홍색과 💚 연두색", "💛 노란색과 🤎 갈색"],
-            answer: 0,
-            hint: "힌트: 호박의 색깔(🧡)과 밤하늘의 색깔(🖤)을 떠올려 보세요!",
-            explanation: "가을 수확(호박)을 뜻하는 주황색과 가을밤을 뜻하는 검은색이 대표 색깔이에요!"
+            "category": "함께 즐기기",
+            "q": "이웃을 방문하는 놀이를 한다면 먼저 어떻게 할까요?",
+            "options": [
+              "보호자와 함께 갈 곳을 정해요",
+              "혼자 낯선 집에 가요",
+              "친구를 밀며 먼저 가요"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "장소와 시간을 어른과 함께 정해요."
           },
           {
-            category: "길 걷기 약속",
-            q: "사람이 많은 길이나 복도를 걸을 때 부딪히지 않으려면 어느 쪽으로 걸어야 할까요?",
-            options: ["👉 오른쪽으로 차근차근 걸어요", "🏃 앞사람을 밀면서 뛰어가요", "🙈 눈을 감고 걸어요", "🛑 길 한가운데에 드러누워요"],
-            answer: 0,
-            hint: "힌트: 우리나라 보행 안전 약속인 '우측통행'을 생각해 보세요!",
-            explanation: "평상시 양방향 통행에서는 오른쪽으로 걷고 주변 흐름을 살펴요. 떠밀리는 상황에는 다른 행동요령이 필요해요."
+            "category": "길 살피기",
+            "q": "축제장에 도착하면 먼저 무엇을 볼까요?",
+            "options": [
+              "넓은 길과 나가는 곳",
+              "가장 긴 간식 줄",
+              "사람이 몰린 좁은 길"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "들어가기 전에 이동로와 출구를 확인해요."
           },
           {
-            category: "인파 안전",
-            q: "사람이 아주 많은 길에서 걷다가 사탕이 바닥에 떨어졌어요! 어떻게 할까요?",
-            options: ["🙅 줍지 않고 어른 손을 잡고 이동해요", "🙇 바로 바닥에 엎드려 사탕을 찾아요", "😭 그 자리에 주저앉아 울어요", "🦵 다른 사람 다리를 잡아요"],
-            answer: 0,
-            hint: "힌트: 사람이 많은 곳에서 허리를 숙이면 매우 위험해요!",
-            explanation: "사람이 많은 곳에서 허리를 숙이면 뒤따라오는 사람과 부딪혀 다칠 수 있어요. 내 안전이 제일 소중해요!"
+            "category": "혼잡 신호",
+            "q": "걸음이 느려지고 어깨가 자꾸 닿으면?",
+            "options": [
+              "어른에게 알리고 흐름을 살펴 벗어나요",
+              "더 안쪽으로 가요",
+              "그 자리에 갑자기 멈춰요"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "몸이 자꾸 닿는 것은 혼잡 신호예요."
           },
           {
-            category: "옷 고르기",
-            q: "할로윈에 입으면 진짜 경찰관·소방관과 헷갈릴 수 있어 피하면 좋은 옷은?",
-            options: ["🚓 진짜 같은 경찰복·소방복", "🎃 귀여운 호박 망토", "🧙 별 무늬 마법사 모자", "🧚 반짝이는 요정 날개"],
-            answer: 0,
-            hint: "힌트: 실제 대원과 헷갈리는 옷은 피하는 편이 좋아요.",
-            explanation: "진짜 경찰관·소방관 옷을 따라 입으면 위급할 때 누가 진짜인지 헷갈려서 위험해요!"
+            "category": "몸 먼저",
+            "q": "붐비는 길에 물건을 떨어뜨렸어요.",
+            "options": [
+              "숙이지 않고 몸을 먼저 지켜요",
+              "바로 허리를 숙여요",
+              "뒤로 뛰어가요"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "혼잡한 곳에서는 물건보다 몸을 먼저 보호해요."
           },
           {
-            category: "안전한 옷",
-            q: "어두운 저녁에 길을 걸을 때 자동차나 사람들이 나를 잘 볼 수 있게 도와주는 것은?",
-            options: ["✨ 밝은색 옷과 야광 스티커", "🕶️ 눈이 안 보이는 까만 선글라스", "🎭 앞이 잘 안 보이는 좁은 가면", "🧣 바닥에 길게 끌리는 망토"],
-            answer: 0,
-            hint: "힌트: 어두운 곳에서도 반짝반짝 빛을 반사해 주는 것이 좋아요!",
-            explanation: "밝은 옷이나 눈에 띄는 표시가 보행자를 알아보는 데 도움이 될 수 있어요. 밤길에서는 어른과 함께 주변을 계속 살펴요."
+            "category": "옷 고르기",
+            "q": "즐겁고 안전한 분장 옷은?",
+            "options": [
+              "앞이 보이고 걷기 편한 옷",
+              "눈을 가리는 가면",
+              "바닥에 끌리는 망토"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "잘 보고 잘 움직일 수 있는 옷을 골라요."
           },
           {
-            category: "간식 안전",
-            q: "할로윈에 받은 사탕이나 과자를 먹기 전에 꼭 확인해야 할 약속은 무엇일까요?",
-            options: ["🍬 포장지가 잘 막혀 있는지 어른과 확인해요", "🍂 바닥에 떨어진 사탕을 주워 먹어요", "📦 포장지가 찢어진 과자를 그냥 먹어요", "🐶 강아지 간식을 몰래 먹어요"],
-            answer: 0,
-            hint: "힌트: 껍질이 열려 있거나 유통기한이 지난 것은 먹으면 안 돼요!",
-            explanation: "포장지가 열려 있거나 이상한 간식은 먹지 않고 부모님·선생님과 먼저 확인해요!"
+            "category": "다른 문화",
+            "q": "멕시코의 죽은 자들의 날을 소개할 때 알맞은 말은?",
+            "options": [
+              "가족을 기억하는 고유한 기념일이에요",
+              "할로윈과 똑같은 날이에요",
+              "모든 멕시코 사람이 같은 놀이만 해요"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "날짜가 가까워도 문화의 의미는 달라요."
           },
           {
-            category: "세계 문화",
-            q: "멕시코의 '죽은 자들의 날'에는 노란 꽃으로 집을 예쁘게 꾸며 보고 싶은 가족을 반갑게 맞이해요. 맞을까요?",
-            options: ["⭕ 맞아요!", "❌ 아니에요!"],
-            answer: 0,
-            hint: "힌트: 마리골드꽃으로 가족을 기쁘게 환영하는 멕시코의 전통 축제예요!",
-            explanation: "딩동댕! 나라마다 축제를 즐기는 모습은 달라도 가족을 사랑하는 마음은 모두 따뜻해요."
+            "category": "우리 반 약속",
+            "q": "친구가 싫다는 장난을 한다면?",
+            "options": [
+              "바로 멈추고 마음을 물어요",
+              "웃으면서 계속해요",
+              "더 큰 장난을 해요"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "모두가 편안할 때 즐거운 축제가 돼요."
           }
         ]
       },
@@ -146,124 +190,170 @@
         classDefault: "3학년 1반",
         stories: [
           {
-            emoji: "🎃",
-            caption: "10월 31일 켈트족의 수확 축제",
-            title: "1. 왜 할로윈에 재미있는 분장을 할까요?",
-            body: "옛날 아일랜드와 스코틀랜드의 켈트족은 10월 31일에 한 해의 추수를 끝내고 새해를 맞이했어요. 이날 밤 나쁜 유령이 찾아와도 자기네 동료인 줄 알고 지나가도록 분장을 한 데서 시작되었답니다.",
-            keyPoint: "나쁜 기운을 막고 가을 수확을 축하하던 옛날 풍습에서 시작되었어요!",
-            sourceText: "출처: 미국 의회도서관",
-            sourceUrl: "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
+            "art": "pumpkin",
+            "caption": "여러 풍습이 만난 날",
+            "title": "할로윈의 이야기는 하나일까요?",
+            "body": "할로윈에는 옛 켈트 지역의 계절 풍습과 만성절 전야에 얽힌 이야기가 함께 전해져요. 지금은 지역마다 즐기는 방식도 달라요.",
+            "keyPoint": "한 가지 이야기로 기원을 단정하지 않아요.",
+            "question": "오래된 풍습이 오늘날 놀이로 바뀐 예가 있나요?",
+            "sourceText": "미국 의회도서관",
+            "sourceUrl": "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
           },
           {
-            emoji: "🕯️",
-            caption: "순무 등불에서 호박 등불로!",
-            title: "2. 호박 등불 '잭오랜턴'의 비밀",
-            body: "원래 아일랜드에서는 작은 '순무'의 속을 파서 등불을 만들었어요. 그러다 사람들이 미국으로 건너간 뒤, 순무보다 훨씬 크고 조각하기 쉬운 주황색 '호박'으로 등불을 만들게 되었답니다!",
-            keyPoint: "처음에는 순무로 만들다가 미국에서 주황색 호박 등불로 바뀌었어요!",
-            sourceText: "출처: 스미스소니언 정원 기록",
-            sourceUrl: "https://gardens.si.edu/american-garden-story/ghosts-of-pumpkins-past/"
+            "art": "lantern",
+            "caption": "순무에서 호박으로",
+            "title": "등불 재료가 바뀐 까닭",
+            "body": "아일랜드에서는 순무에 얼굴을 새기기도 했어요. 사람들이 미국으로 이주하면서 조각하기 쉬운 호박이 널리 쓰이게 되었어요.",
+            "keyPoint": "사람이 이동하면 문화의 모습도 변해요.",
+            "question": "재료가 달라져도 이어진 것은 무엇일까요?",
+            "sourceText": "스미스소니언",
+            "sourceUrl": "https://gardens.si.edu/american-garden-story/ghosts-of-pumpkins-past/"
           },
           {
-            emoji: "🍪",
-            caption: "소울 케이크에서 유니세프 기부까지",
-            title: "3. '트릭 오어 트릿'에 담긴 나눔 정신",
-            body: "옛날 유럽의 '소울링'은 오늘날 사탕을 나누는 '트릭 오어 트릿'의 여러 기원 설명 중 하나예요. 요즘엔 UNICEF 모금 상자를 들고 전 세계 어린이를 돕는 캠페인도 열린답니다.",
-            keyPoint: "단순히 사탕만 받는 날이 아니라 이웃과 정을 나누는 날이에요!",
-            sourceText: "출처: 미국 의회도서관",
-            sourceUrl: "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
+            "art": "neighbor",
+            "caption": "함께 정하는 놀이",
+            "title": "간식을 나누는 방법도 다양해요",
+            "body": "이웃을 방문하는 지역도 있고, 학교나 어른이 마련한 장소에서 즐기는 지역도 있어요. 참여하기 전에는 보호자와 장소·시간을 정해요.",
+            "keyPoint": "낯선 곳을 혼자 찾아가는 놀이는 하지 않아요.",
+            "question": "행사 전에 어른과 어떤 두 가지를 확인할까요?",
+            "sourceText": "UNICEF USA",
+            "sourceUrl": "https://www.unicefusa.org/trick-or-treat/groups"
           },
           {
-            emoji: "🚗",
-            caption: "안전하게 진화한 현대 풍습",
-            title: "4. 자동차 트렁크에서 간식을 나누는 이유!",
-            body: "어른이 준비한 행사 장소에서 자동차 짐칸(트렁크)을 꾸미고 간식을 나누는 '트렁크 오어 트리팅'을 즐기기도 해요. 주차장에서는 차가 움직이는 길을 살피고 어른의 안내를 따라야 해요.",
-            keyPoint: "장소가 어디든 주변 이동로와 어른의 안내를 살피는 것이 중요해요!",
-            sourceText: "사례: UNICEF USA 행사",
-            sourceUrl: "https://www.unicefusa.org/stories/unicef-clubs-add-meaning-their-halloweening"
+            "art": "path",
+            "caption": "축제장에 도착하면",
+            "title": "길과 출구를 먼저 살펴요",
+            "body": "축제장에 들어가기 전에는 혼잡한 곳과 이동로를 확인해요. 사람이 몰리기 시작하면 사진보다 안전한 길을 먼저 생각해요.",
+            "keyPoint": "들어가기 전에 나갈 길도 확인해요.",
+            "question": "입구는 넓지만 안쪽 길이 좁다면 어떻게 할까요?",
+            "sourceText": "국민재난안전포털",
+            "sourceUrl": "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
           },
           {
-            emoji: "🌼",
-            caption: "유네스코 무형유산 비교하기",
-            title: "5. 할로윈 vs 멕시코 '죽은 자들의 날'",
-            body: "10월 말부터 11월 초까지 멕시코에서는 '죽은 자들의 날'을 기념해요. 할로윈의 옛 분장 풍습과 달리, 꽃잎과 촛불, 제물로 그리운 가족의 영혼을 맞이하는 의미가 있어요.",
-            keyPoint: "나라마다 다른 문화를 비교해 보고 서로 존중하는 마음을 길러요!",
-            sourceText: "멕시코 명절 근거: 유네스코",
-            sourceUrl: "https://ich.unesco.org/en/RL/dia-de-muertos-the-indigenous-festivity-dedicated-to-the-dead-00054"
+            "art": "flower",
+            "caption": "비슷한 날짜, 다른 뜻",
+            "title": "죽은 자들의 날과 비교해요",
+            "body": "멕시코의 죽은 자들의 날은 세상을 떠난 가족을 기리는 전통이에요. 할로윈과 날짜가 가깝다는 이유로 같은 축제라고 부르지 않아요.",
+            "keyPoint": "이름·뜻·방식을 따로 살펴보아요.",
+            "question": "두 문화를 비교할 때 먼저 확인할 것은 무엇일까요?",
+            "sourceText": "유네스코",
+            "sourceUrl": "https://ich.unesco.org/en/RL/dia-de-muertos-the-indigenous-festivity-dedicated-to-the-dead-00054"
           },
           {
-            emoji: "🏠",
-            caption: "배려와 안전이 먼저인 축제",
-            title: "6. 집에서 즐기는 '홈로윈'과 공공예절",
-            body: "사람이 많이 붐비는 거리로 나가는 대신 집이나 교실에서 안전하게 즐기는 '홈로윈'이 인기예요. 이웃에게 시끄러운 소음을 내지 않고 쓰레기를 스스로 치우는 성숙한 예절을 지켜요!",
-            keyPoint: "이웃을 배려하고 안전 약속을 지킬 때 진짜 즐거운 축제가 됩니다!",
-            sourceText: "교사용 안전 근거: 국민재난안전포털",
-            sourceUrl: "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
+            "art": "classroom",
+            "caption": "함께 만드는 축제",
+            "title": "우리 반의 안전 계획을 세워요",
+            "body": "교실에서도 분장과 만들기를 즐길 수 있어요. 이동하는 길은 비워 두고, 싫어하는 장난은 하지 않으며, 끝나면 함께 정리해요.",
+            "keyPoint": "재미와 배려를 함께 계획해요.",
+            "question": "우리 반 축제 규칙을 한 문장으로 써 볼까요?",
+            "sourceText": "국민재난안전포털",
+            "sourceUrl": "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
           }
         ],
         quizzes: [
           {
-            category: "할로윈 유래",
-            q: "할로윈의 상징인 '잭오랜턴'은 미국에서 호박으로 만들기 전에 원래 어떤 채소로 만들었을까요?",
-            options: ["🌱 순무", "🍉 수박", "🥒 오이", "🍓 딸기"],
-            answer: 0,
-            hint: "힌트: 아일랜드에서 많이 자라던 무와 비슷한 뿌리채소예요!",
-            explanation: "아일랜드와 스코틀랜드에서는 원래 '순무'를 파서 등불을 만들다가, 미국에서 모양 내기 쉬운 '호박'으로 바뀌었어요!"
+            "category": "문화의 변화",
+            "q": "순무 등불이 호박 등불로 바뀐 이유에 가까운 것은?",
+            "options": [
+              "이주한 사람들이 구하기 쉽고 조각하기 좋은 재료를 썼기 때문",
+              "순무 등불이 법으로 금지됐기 때문",
+              "모든 지역에 순무가 없었기 때문",
+              "호박이 항상 같은 크기였기 때문"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "이주와 환경 변화가 장식 재료를 바꾸었어요."
           },
           {
-            category: "안전 문화",
-            q: "어른이 준비한 행사에서 자동차 트렁크를 꾸며 간식을 나누는 방식은?",
-            options: ["🚗 트렁크 오어 트리팅", "🏊 수영장 파티", "⛷️ 스키장 캠프", "⛺ 사막 캠핑"],
-            answer: 0,
-            hint: "힌트: 자동차 뒤쪽 짐칸을 뜻하는 영어 단어 '트렁크(Trunk)'가 들어가요!",
-            explanation: "자동차 트렁크를 꾸며 간식을 나누는 활동을 '트렁크 오어 트리팅'이라고 불러요. 주차장에서도 차량 이동 구역과 어른의 안내를 확인해요."
+            "category": "참여 계획",
+            "q": "학교 밖 할로윈 행사에 가기 전 먼저 정할 것은?",
+            "options": [
+              "동행할 어른과 장소·시간",
+              "받을 간식의 개수",
+              "사진 찍을 차례",
+              "분장 점수"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "보호자와 동행 계획을 세우고 이동로를 확인해요."
           },
           {
-            category: "인파 안전",
-            q: "구경하러 간 거리에 사람이 너무 많아져서 옆 사람과 자꾸 어깨가 부딪혀요. 어떻게 해야 할까요?",
-            options: ["↗️ 사람들의 흐름을 따라 대각선 방향 넓은 곳으로 빠져나온다", "🏃 더 좁은 골목길 안쪽으로 뛰어 들어간다", "🛑 걸음을 멈추고 길 한가운데 앉는다", "😤 반대 방향으로 사람들을 세게 밀친다"],
-            answer: 0,
-            hint: "힌트: 흐름을 거스르지 않고 비스듬히(대각선으로) 가장자리로 나오는 것이 안전해요!",
-            explanation: "어깨가 자꾸 부딪히고 걸음이 느려지면 위험 신호예요! 흐름을 따라 대각선 방향으로 넓고 안전한 곳으로 이동해요."
+            "category": "길 살피기",
+            "q": "입구는 넓지만 안쪽 통로가 좁다면?",
+            "options": [
+              "혼잡과 주변 이동로를 먼저 살핀다",
+              "안쪽으로 달려가 사진을 찍는다",
+              "출구는 나중에 생각한다",
+              "사람이 몰릴 때까지 기다린다"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "출구와 주변 이동로를 미리 확인해요."
           },
           {
-            category: "인파 안전",
-            q: "사람들에게 밀릴 때 내가 숨을 편하게 쉴 수 있도록 가슴 앞 공간을 지키는 자세는 무엇일까요?",
-            options: ["🛡️ 두 손으로 팔짱을 끼거나 가방을 가슴 앞에 꼭 안는다", "🧍 양팔을 차렷 자세로 몸에 딱 붙인다", "🙌 두 손을 머리 위로 만세 부른다", "🙇 바닥에 떨어진 물건을 주우려고 허리를 굽힌다"],
-            answer: 0,
-            hint: "힌트: 가슴(폐)이 눌리지 않도록 두 팔이나 가방으로 앞 공간을 만들어 줘요!",
-            explanation: "떠밀리는 상황에서는 가슴 앞 공간을 보호해 숨쉬기를 돕습니다. 이 자세가 사고를 막아 주는 능력은 아니에요."
+            "category": "위험 신호",
+            "q": "옆 사람과 계속 부딪히고 걸음이 느려진다면?",
+            "options": [
+              "이동 흐름에 맞춰 가능한 넓은 쪽으로 벗어난다",
+              "더 좁은 길로 들어간다",
+              "가운데서 멈춰 친구를 기다린다",
+              "반대 방향으로 밀어붙인다"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "몸이 닿고 보행이 느려지는 것은 혼잡 신호예요."
           },
           {
-            category: "위기 대처",
-            q: "사람이 많은 곳에서 만약 넘어져서 바로 일어날 수 없을 때 내 몸을 보호하는 올바른 자세는?",
-            options: ["🙆 머리를 두 팔로 감싸고 다리를 당겨 공처럼 둥글게 만다", "🛌 팔다리를 넓게 펴고 반듯하게 눕는다", "📱 떨어진 휴대폰을 찾으려고 바닥을 더듬는다", "👟 벗겨진 신발 끈을 다시 묶는다"],
-            answer: 0,
-            hint: "힌트: 소중한 머리와 가슴을 보호하려면 몸을 둥근 공처럼 말아야 해요!",
-            explanation: "일어날 수 없을 때는 머리를 두 팔로 감싸고 몸을 공처럼 둥글게 말아 가슴과 머리를 보호해야 합니다!"
+            "category": "떠밀릴 때",
+            "q": "내 의지와 다르게 떠밀릴 때 가슴 앞 공간을 지키는 이유는?",
+            "options": [
+              "가슴을 보호하고 숨 쉴 공간을 확보하려고",
+              "다른 사람을 밀어내려고",
+              "사진을 잘 찍으려고",
+              "물건을 줍기 편하려고"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "군중의 힘에 무리하게 맞서지 않고 가슴을 보호해요."
           },
           {
-            category: "법규와 예절",
-            q: "할로윈에 진짜 경찰관이나 소방관처럼 보이는 옷을 피하면 좋은 이유는 무엇일까요?",
-            options: ["🚨 실제 대원과 헷갈릴 수 있어 피하고, 옷에 따라 적용 법도 달라서", "🎨 주황색 호박과 색깔이 안 어울려서", "🧺 빨래하기가 힘들어서", "📸 사진이 예쁘게 안 나와서"],
-            answer: 0,
-            hint: "힌트: 위급한 사고가 났을 때 누가 진짜 경찰·소방관인지 헷갈리면 큰일 나요!",
-            explanation: "실제 대원처럼 보이는 옷은 혼동을 줄 수 있어 피합니다. 경찰제복과 소방복의 법률 조건은 서로 다릅니다."
+            "category": "물건보다 몸",
+            "q": "붐비는 길에서 신발이 벗겨졌다면?",
+            "options": [
+              "허리를 숙이지 않고 안전한 곳으로 벗어난다",
+              "그 자리에서 신발을 찾는다",
+              "친구를 멈춰 세운다",
+              "반대 방향으로 달린다"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "혼잡한 곳에서는 물건보다 몸을 먼저 지켜요."
           },
           {
-            category: "세계 문화",
-            q: "꽃잎과 촛불로 그리운 가족의 영혼을 맞이하는 멕시코의 축제는?",
-            options: ["🌼 죽은 자들의 날", "🎄 크리스마스", "💦 송크란 물축제", "🍅 토마토 축제"],
-            answer: 0,
-            hint: "힌트: 영화 <코코>의 배경이 된 멕시코의 유네스코 무형유산 명절이에요!",
-            explanation: "멕시코의 '죽은 자들의 날'은 마리골드꽃과 해골 가면으로 세상을 떠난 가족을 기쁘게 맞이하는 전통 축제예요!"
+            "category": "옷 고르기",
+            "q": "실제 경찰관처럼 보이는 옷 대신 어떤 옷이 좋을까요?",
+            "options": [
+              "움직이기 편하고 혼동을 주지 않는 창의적인 옷",
+              "실제 제복과 같은 옷",
+              "얼굴 전체를 가리는 가면",
+              "긴 끈이 끌리는 옷"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "다른 사람이 실제 대원으로 오해하지 않도록 해요."
           },
           {
-            category: "한국 명절 비교",
-            q: "우리나라 세시풍속 중 밤이 가장 긴 날에 붉은 팥죽을 쑤어 나쁜 기운을 물리치고 이웃과 나누어 먹던 날은?",
-            options: ["🥣 동지", "🎋 칠석", "🌸 삼짇날", "🍉 유두"],
-            answer: 0,
-            hint: "힌트: '동지팥죽'이라는 말을 떠올려 보세요!",
-            explanation: "우리나라에서도 '동지'에 붉은 팥죽으로 나쁜 액운을 쫓고 가족·이웃의 건강을 기원했답니다!"
+            "category": "문화 존중",
+            "q": "죽은 자들의 날과 할로윈을 비교하는 방법은?",
+            "options": [
+              "각각의 뜻과 전통을 따로 알아본다",
+              "날짜가 가까우니 같은 축제라고 부른다",
+              "한쪽이 다른 쪽을 따라 했다고 단정한다",
+              "무서운 그림만 보고 뜻을 추측한다"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "겉모습보다 그 문화를 기리는 사람들의 의미를 살펴요."
           }
         ]
       },
@@ -272,124 +362,170 @@
         classDefault: "5학년 1반",
         stories: [
           {
-            emoji: "🏛️",
-            caption: "All Hallows' Eve와 서우인 축제",
-            title: "1. '할로윈(Halloween)'의 역사적 어원",
-            body: "할로윈은 11월 1일 모든 성인을 기리는 만성절(All Hallows' Day)의 전날 밤을 뜻하는 'All Hallows' Eve'가 줄어들어 생긴 이름이에요. 여기에 고대 켈트족이 여름의 끝과 새해를 기리던 '서우인(Samhain)' 풍습이 결합되었답니다.",
-            keyPoint: "만성절 전야(All Hallows' Eve)와 고대 켈트족의 수확 축제가 결합해 탄생했어요!",
-            sourceText: "출처: 미국 의회도서관",
-            sourceUrl: "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
+            "art": "pumpkin",
+            "caption": "역사를 읽는 눈",
+            "title": "할로윈은 어떻게 형성됐을까요?",
+            "body": "켈트 지역의 서우인 풍습과 만성절 전야를 비롯한 여러 역사적 요소가 오늘날 할로윈 설명에 등장합니다. 각 풍습의 관계를 단순한 한 줄의 기원으로 단정하지 않습니다.",
+            "keyPoint": "문화의 역사는 여러 자료를 함께 읽어야 합니다.",
+            "question": "기원에 관한 설명이 서로 다르면 무엇을 확인해야 할까요?",
+            "sourceText": "미국 의회도서관",
+            "sourceUrl": "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
           },
           {
-            emoji: "🕯️",
-            caption: "아일랜드 이민과 문화 전파",
-            title: "2. 순무 등불이 미국 호박 등불이 된 까닭",
-            body: "아일랜드 민담 속 '잭(Jack)'이 속을 파낸 순무에 숯불을 넣고 떠돌았다는 이야기에서 잭오랜턴이 시작되었어요. 이후 19세기 아일랜드인들이 미국으로 이주하면서 순무보다 크고 조각하기 쉬운 호박을 사용하게 되었습니다.",
-            keyPoint: "사람들의 이주와 환경 변화에 따라 전통 축제의 상징물도 함께 변화했어요!",
-            sourceText: "출처: 스미스소니언 정원 기록",
-            sourceUrl: "https://gardens.si.edu/american-garden-story/ghosts-of-pumpkins-past/"
+            "art": "lantern",
+            "caption": "이주와 변화",
+            "title": "순무 등불이 호박 등불이 되다",
+            "body": "아일랜드의 순무 조각 풍습은 이주와 함께 북미로 전해졌고 호박 장식으로 변했습니다. 같은 상징도 재료와 환경에 따라 달라질 수 있습니다.",
+            "keyPoint": "문화는 이동하며 변화합니다.",
+            "question": "재료의 변화가 문화 전체의 변화와 어떻게 연결될까요?",
+            "sourceText": "스미스소니언",
+            "sourceUrl": "https://gardens.si.edu/american-garden-story/ghosts-of-pumpkins-past/"
           },
           {
-            emoji: "🚗",
-            caption: "소울링(Souling)과 트렁크 오어 트리팅",
-            title: "3. 나눔과 안전 중심으로 진화한 축제 문화",
-            body: "중세 유럽의 '소울링' 등 여러 풍습이 오늘날 '트릭 오어 트릿'의 기원으로 설명돼요. 현대에는 UNICEF 모금 활동이나 어른이 준비한 장소에서 간식을 나누는 방식도 있어요.",
-            keyPoint: "옛 풍습과 오늘날의 다양한 참여 방식을 구분해 살펴보아요!",
-            sourceText: "출처: 미국 의회도서관",
-            sourceUrl: "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
+            "art": "neighbor",
+            "caption": "참여와 선택",
+            "title": "축제 방식은 누가 정할까요?",
+            "body": "지역마다 이웃 방문, 학교 행사, 모금 활동처럼 참여 방식이 다릅니다. 참여하지 않을 자유도 존중하고, 참여한다면 장소와 동행할 어른을 먼저 정합니다.",
+            "keyPoint": "모든 사람이 같은 방식으로 즐길 필요는 없습니다.",
+            "question": "친구가 참여하고 싶지 않다면 어떻게 배려할까요?",
+            "sourceText": "UNICEF USA",
+            "sourceUrl": "https://www.unicefusa.org/trick-or-treat/groups"
           },
           {
-            emoji: "⚖️",
-            caption: "복장과 배려",
-            title: "4. 실제 제복처럼 보이는 옷은 피하기",
-            body: "축제 옷이 실제 경찰관이나 구조대원의 제복처럼 보이면 다른 사람이 혼동할 수 있어요. 경찰제복·군복에는 각각 별도의 법률과 예외 조건이 있으므로, 교사와 확인하고 나만의 창의적인 옷을 선택해요.",
-            keyPoint: "표현의 자유만큼 사회 안전망과 공공질서를 지키는 시민 의식이 중요해요!",
-            sourceText: "출처: 국가법령정보센터",
-            sourceUrl: "https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1008601875"
+            "art": "path",
+            "caption": "위험 신호 읽기",
+            "title": "좁은 길에서 걸음이 느려진다면",
+            "body": "사람과 자꾸 몸이 닿고 보행 속도가 떨어지면 혼잡 신호입니다. 이동 흐름을 살피며 벗어나고, 떠밀릴 때는 무리하게 역행하지 않습니다.",
+            "keyPoint": "혼잡을 일찍 알아차리는 판단이 중요합니다.",
+            "question": "출구로 가는 길이 더 붐빈다면 어떤 경로를 찾을까요?",
+            "sourceText": "국민재난안전포털",
+            "sourceUrl": "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
           },
           {
-            emoji: "🌏",
-            caption: "유네스코 인류무형문화유산 비교",
-            title: "5. 세계의 영혼·수확 명절과 다문화 존중",
-            body: "할로윈의 옛 풍습과 달리, 멕시코의 '죽은 자들의 날(유네스코 무형유산)'은 꽃잎과 촛불, 제물로 세상을 떠난 가족을 기려요. 한국의 추석·동지처럼 각 나라의 고유한 문화적 맥락을 비교해 봐요.",
-            keyPoint: "각 나라가 삶과 죽음, 수확을 기리는 고유한 문화적 맥락을 이해하고 존중해요!",
-            sourceText: "멕시코 명절 근거: 유네스코",
-            sourceUrl: "https://ich.unesco.org/en/RL/dia-de-muertos-the-indigenous-festivity-dedicated-to-the-dead-00054"
+            "art": "flower",
+            "caption": "문화의 맥락",
+            "title": "날짜가 비슷해도 같은 축제일까요?",
+            "body": "멕시코의 죽은 자들의 날에는 세상을 떠난 가족을 기억하는 고유한 전통이 있습니다. 할로윈이나 한국의 추석과 닮은 점을 찾더라도 각각의 역사와 의미를 먼저 설명해야 합니다.",
+            "keyPoint": "비교는 차이를 지우는 일이 아닙니다.",
+            "question": "다른 문화를 소개할 때 피해야 할 단정은 무엇일까요?",
+            "sourceText": "유네스코",
+            "sourceUrl": "https://ich.unesco.org/en/RL/dia-de-muertos-the-indigenous-festivity-dedicated-to-the-dead-00054"
           },
           {
-            emoji: "🏠",
-            caption: "비판적 수용과 건강한 홈로윈",
-            title: "6. 상업적 유행을 넘어 주체적으로 즐기기",
-            body: "과도한 소비나 인파 밀집, 야간 소음은 축제의 본래 의미를 흐릴 수 있어요. 외래 문화를 비판적으로 성찰하고, 가족·친구와 안전하고 소박하게 즐기는 '홈로윈' 문화를 직접 만들어 가요!",
-            keyPoint: "무분별한 모방 대신 나와 이웃의 안전을 지키는 주체적인 문화 시민이 되어요!",
-            sourceText: "교사용 안전 근거: 국민재난안전포털",
-            sourceUrl: "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
+            "art": "classroom",
+            "caption": "기획자의 관점",
+            "title": "우리 반 축제를 다시 설계한다면",
+            "body": "이동로, 참여 선택권, 쓰레기 정리, 싫은 장난을 멈출 규칙을 함께 정해 봅니다. 안전 대책이 있으면 어떤 학생도 소외되지 않는 축제를 만들 수 있습니다.",
+            "keyPoint": "즐거움과 안전은 함께 설계할 수 있습니다.",
+            "question": "우리 반 행사 안내문에 넣을 규칙 두 가지는 무엇일까요?",
+            "sourceText": "국민재난안전포털",
+            "sourceUrl": "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
           }
         ],
         quizzes: [
           {
-            category: "역사와 어원",
-            q: "할로윈(Halloween)이라는 이름의 유래가 된 서방 기독교의 10월 31일 저녁 명칭은 무엇인가요?",
-            options: ["🏛️ All Hallows' Eve (만성절 전야)", "🎄 Christmas Eve (성탄절 전야)", "🐣 Easter Sunday (부활절)", "🦃 Thanksgiving (추수감사절)"],
-            answer: 0,
-            hint: "힌트: 11월 1일 만성절(All Hallows' Day)의 전날 밤(Eve)을 줄인 말이에요!",
-            explanation: "11월 1일 만성절(All Hallows' Day)의 전날 밤인 'All Hallows' Eve'가 축약되어 할로윈이 되었어요!"
+            "category": "역사 읽기",
+            "q": "할로윈의 기원을 설명할 때 가장 신중한 표현은?",
+            "options": [
+              "여러 풍습과 역사적 요소가 영향을 주었다",
+              "단 하나의 사건에서 갑자기 만들어졌다",
+              "모든 지역이 늘 같은 방식으로 즐겼다",
+              "분장 풍습의 유래는 모두 확정됐다"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "자료마다 강조점이 달라 한 가지 기원으로 단정하지 않습니다."
           },
           {
-            category: "문화의 기원",
-            q: "중세 유럽에서 기도와 함께 '소울 케이크'를 받던 풍습으로, 트릭 오어 트릿의 여러 기원 설명 중 하나는?",
-            options: ["🍪 소울링 (Souling)", "🍎 애플 보빙 (Apple bobbing)", "🏇 로데오 (Rodeo)", "🎿 컬링 (Curling)"],
-            answer: 0,
-            hint: "힌트: '소울 케이크(Soul cake)'에서 유래한 풍습 이름을 찾아보세요!",
-            explanation: "소울링과 가이징 등 여러 옛 풍습이 오늘날 트릭 오어 트릿의 기원으로 설명돼요. 한 가지 이야기만으로 단정하지 않아요."
+            "category": "문화 존중",
+            "q": "멕시코의 죽은 자들의 날을 소개하는 태도는?",
+            "options": [
+              "고유한 역사와 가족을 기리는 뜻을 설명한다",
+              "할로윈의 다른 이름이라고 부른다",
+              "겉모습만 보고 같은 축제라고 한다",
+              "모든 참여 방식이 같다고 말한다"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "비슷한 시기라도 고유한 맥락을 존중합니다."
           },
           {
-            category: "안전 문화",
-            q: "어른이 준비한 행사 장소에서 자동차 트렁크를 꾸미고 간식을 나누는 방식은 무엇인가요?",
-            options: ["🚗 트렁크 오어 트리팅 (Trunk-or-treating)", "🎢 테마파크 퍼레이드", "🏕️ 글램핑 페스티벌", "🚤 보트 레이싱"],
-            answer: 0,
-            hint: "힌트: 자동차의 짐칸(Trunk)을 꾸미는 활동이에요.",
-            explanation: "자동차 짐칸을 꾸며 간식을 나누는 방식을 '트렁크 오어 트리팅'이라고 해요. 주차장에서는 차량 이동 구역과 어른의 안내를 확인해야 해요."
+            "category": "사전 계획",
+            "q": "행사 안내도에서 가장 먼저 확인할 정보는?",
+            "options": [
+              "혼잡 구간과 주변 이동로·출구",
+              "사진이 잘 나오는 장소",
+              "간식 종류",
+              "친구들의 의상 색"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "장소에 가기 전 혼잡 상황과 이동로를 확인합니다."
           },
           {
-            category: "다중밀집 안전",
-            q: "인파가 빽빽한 곳에서 옆 사람과 신체가 닿고 보행 속도가 느려질 때 국민재난안전포털이 권장하는 행동은?",
-            options: ["↗️ 사람들의 이동 흐름에 따라 대각선 방향으로 즉시 벗어난다", "🛑 그 자리에 갑자기 멈춰 서서 친구를 기다린다", "🏃 인파가 걸어오는 정반대 방향으로 밀치며 역행한다", "🙇 바닥에 떨어진 물건을 주우려고 즉시 허리를 숙인다"],
-            answer: 0,
-            hint: "힌트: 흐름을 정면으로 거스르지 않고 대각선 방향 가장자리로 빠져나와야 해요!",
-            explanation: "보행 속도가 느려지거나 어깨가 닿으면 위험 신호이므로 인파 흐름에 맞춰 대각선 방향으로 빠져나와야 안전합니다!"
+            "category": "위험 판단",
+            "q": "좁은 통로에서 속도가 줄고 몸이 닿는다면?",
+            "options": [
+              "흐름을 살피며 가능한 가장자리로 벗어난다",
+              "사람을 밀며 정면으로 역행한다",
+              "통로 가운데서 멈춘다",
+              "더 좁은 길로 방향을 바꾼다"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "움직임을 살펴 대각선으로 벗어나는 것이 권장됩니다."
           },
           {
-            category: "위기 대응",
-            q: "군중 속에서 넘어져 즉시 일어날 수 없는 위급한 상황일 때, 신체를 보호하기 위한 가장 올바른 자세는?",
-            options: ["🙆 머리를 두 팔로 감싸고 다리를 몸쪽으로 당겨 공처럼 둥글게 만다", "🛌 팔다리를 대(大)자로 넓게 펴고 반듯하게 눕는다", "📱 떨어진 스마트폰을 찾기 위해 바닥을 더듬는다", "👟 벗겨진 신발을 다시 신으려고 앉아 있는다"],
-            answer: 0,
-            hint: "힌트: 머리와 흉강(가슴)을 보호하기 위해 몸을 둥글게 말아야 해요!",
-            explanation: "일어날 수 없을 때는 머리를 두 팔로 감싸고 다리를 당겨 공처럼 둥글게 말아 흉강(가슴)과 머리를 보호해야 합니다!"
+            "category": "떠밀림 대응",
+            "q": "군중 속에서 의지와 다르게 떠밀릴 때는?",
+            "options": [
+              "무리하게 저항하지 않고 가슴 앞 공간을 보호한다",
+              "앞사람을 강하게 밀어낸다",
+              "반대 방향으로 뛰어간다",
+              "몸을 숙여 소지품을 찾는다"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "가슴을 보호해 숨 쉴 공간을 확보합니다."
           },
           {
-            category: "법과 질서",
-            q: "축제에서 실제 경찰관 제복과 거의 같은 옷을 입고 싶어 하는 친구에게 어떤 말을 하면 좋을까요?",
-            options: ["👮 실제 경찰관과 혼동될 수 있으니 피하고, 관련 규정과 예외는 선생님과 확인하자", "🎨 모자 색만 바꾸면 언제나 괜찮아", "📸 사진을 찍을 때만 입으면 어떤 경우에도 괜찮아", "🚨 다른 사람이 경찰관으로 착각할수록 재미있어"],
-            answer: 0,
-            hint: "힌트: 실제 공무원과 혼동될 가능성과 조건을 함께 생각해 보세요.",
-            explanation: "경찰제복·유사경찰제복에는 별도 규정과 예외 조건이 있습니다. 학생 활동에서는 실제 경찰관과 혼동될 복장을 피하고, 자세한 법률 판단은 교사와 확인합니다."
+            "category": "넘어짐 대응",
+            "q": "넘어져 바로 일어날 수 없다면?",
+            "options": [
+              "두 팔로 머리를 감싸고 몸을 둥글게 한다",
+              "팔과 다리를 넓게 뻗는다",
+              "가방부터 찾는다",
+              "주변 사람을 붙잡아 세게 끌어당긴다"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "머리와 몸을 보호하는 자세를 취합니다."
           },
           {
-            category: "다문화 비교",
-            q: "2008년 유네스코 인류무형문화유산에 등재된 멕시코의 명절로, 마리골드꽃과 제단으로 가족의 영혼을 환영하는 축제는?",
-            options: ["🌼 죽은 자들의 날 (Día de Muertos)", "🎭 베네치아 카니발", "🏮 중추절 등불축제", "💃 리우 삼바 축제"],
-            answer: 0,
-            hint: "힌트: 스페인어로 'Día de Muertos'라고 부르는 멕시코의 전통 축제예요!",
-            explanation: "멕시코의 '죽은 자들의 날'은 악령을 쫓는 할로윈과 달리 세상을 떠난 가족의 영혼을 기쁘게 맞이하는 전통 명절입니다."
+            "category": "분장과 공공성",
+            "q": "실제 대원과 혼동되는 복장을 피하는 까닭은?",
+            "options": [
+              "긴급 상황에서 대원을 알아보기 어렵게 할 수 있어서",
+              "사진 색감이 달라져서",
+              "호박 장식과 어울리지 않아서",
+              "모든 분장이 금지되어서"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "실제 제복과 혼동될 가능성을 줄이고 세부 법률은 교사와 확인합니다."
           },
           {
-            category: "시민 의식",
-            q: "할로윈데이를 대하는 성숙한 태도로 가장 바람직한 것은 무엇일까요?",
-            options: ["🏠 외래 문화의 유래를 바로 알고 안전수칙과 타인 배려 예절을 지키며 즐긴다", "📢 밤늦게 주택가에서 큰 소리로 소음을 내며 돌아다닌다", "🗡️ 사람이 많은 곳에서 날카로운 모형 무기를 휘두른다", "🚮 길거리에 사탕 포장지와 쓰레기를 마음대로 버린다"],
-            answer: 0,
-            hint: "힌트: 나와 이웃의 안전, 공공예절을 먼저 생각하는 성숙한 시민 의식이 정답이에요!",
-            explanation: "문화적 유래를 이해하고 나와 이웃의 안전을 배려하며 건전하게 즐기는 태도가 가장 중요합니다!"
+            "category": "축제 설계",
+            "q": "우리 반 행사 계획에서 우선할 것은?",
+            "options": [
+              "이동로·참여 선택권·정리 약속을 함께 정한다",
+              "인기 활동만 좁은 공간에 모은다",
+              "싫다는 장난도 계속한다",
+              "안내 없이 동시에 입장한다"
+            ],
+            "answer": 0,
+            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "explanation": "안전과 배려는 행사 기획 단계에서 함께 고려합니다."
           }
         ]
       }
@@ -750,7 +886,7 @@
       return state.teacher.required.length > 0 && state.teacher.required.every(activityDone);
     }
     function confirmedGoalCount() {
-      return SAFETY_GOALS.filter(goal => state.safetyConfirmed[goal.id]?.contentVersion === CONTENT_VERSION).length;
+      return SAFETY_GOALS.filter(goal => state.safetyConfirmed[goal.id]?.contentVersion === SAFETY_CONTENT_VERSION).length;
     }
     function canDownloadSafetyCertificate() { return confirmedGoalCount() === SAFETY_GOALS.length; }
 
@@ -915,7 +1051,8 @@
           const match=id.match(/^([1-5]-[2-6]):q(\d+)$/);
           const index=match ? Number(match[2])-1 : -1;
           const question=match && match[1]===grade ? EDUCATION_DATA[grade].quizzes[index] : null;
-          return question && Array.isArray(order) && order.length===question.options.length &&
+          return question && Array.isArray(order) && order.length>=2 && order.length<=6 &&
+            (parsed.contentVersion!==CONTENT_VERSION || order.length===question.options.length) &&
             new Set(order).size===order.length && order.every(option=>Number.isInteger(option) && option>=0 && option<order.length);
         });
       }))return false;
@@ -929,12 +1066,37 @@
       return true;
     }
     let preserveExistingProgress = false;
+    function migrateLearningContent(parsed, raw) {
+      if (parsed.contentVersion === CONTENT_VERSION) return;
+      try { localStorage.setItem(`${PROGRESS_KEY}_before_content_${Date.now()}`, raw); }
+      catch (error) { state.storageAvailable = false; preserveExistingProgress = true; return; }
+      Object.values(parsed.gradeRecords).forEach(record => {
+        record.storyIndex = 0;
+        record.readStories = {0:true};
+        record.quizIndex = 0;
+        record.quizScore = 0;
+        record.quizCombo = 0;
+        record.quizFiftyUsed = false;
+        record.quizFirst = {};
+        record.quizAttempts = {};
+        record.quizOrders = {};
+        record.quizHints = {};
+        record.quizFifties = {};
+        record.quizReview = false;
+        record.quizReviewItems = [];
+        record.quizAttemptRound = 0;
+        record.stamps = {...record.stamps, s1:false, s4:false};
+      });
+      parsed.contentVersion = CONTENT_VERSION;
+    }
     function loadSavedProgress() {
       try {
         const raw = localStorage.getItem(PROGRESS_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
           if (validSaved(parsed)) {
+            const contentMigrated = parsed.contentVersion !== CONTENT_VERSION;
+            migrateLearningContent(parsed, raw);
             state.sessionId = parsed.sessionId;
             state.grade = parsed.grade;
             state.gradeRecords = parsed.gradeRecords;
@@ -945,6 +1107,7 @@
             state.teacher = sanitizeTeacher(parsed.teacher);
             state.activeTab = ['tab-culture','tab-safety','tab-costume','tab-quiz','tab-cert'].includes(parsed.activeTab) ? parsed.activeTab : state.teacher.start;
             restoreGrade(state.grade);
+            if (contentMigrated && !preserveExistingProgress) saveProgress();
             return;
           }
           preserveExistingProgress = true;
@@ -1091,6 +1254,7 @@
         }
       });
       document.getElementById("stampCountText").textContent = `${count}/4`;
+      document.getElementById("journeyCount").textContent = `${count} / 4`;
     }
 
     // ==================== SPEECH SYNTHESIS CLEANUP ====================
@@ -1116,6 +1280,36 @@
     }
 
     // ==================== TAB 1: STORY & JACK-O'-LANTERN WORKSHOP ====================
+    const STORY_SCENES = {
+      pumpkin: '<ellipse cx="110" cy="101" rx="60" ry="47" fill="#f59d52"/><path d="M110 55V40q12-10 23-4" fill="none" stroke="#65835b" stroke-width="8" stroke-linecap="round"/><path d="M76 68q-19 39 0 66m68-66q19 39 0 66" fill="none" stroke="#dc773a" stroke-width="4"/><path d="m84 91 11 7-11 5m52-12-11 7 11 5M91 116q19 19 38 0" fill="none" stroke="#703f33" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>',
+      lantern: '<circle cx="110" cy="91" r="58" fill="#ffe1a5"/><path d="M110 55V42q10-8 20-5" fill="none" stroke="#62815b" stroke-width="7" stroke-linecap="round"/><ellipse cx="110" cy="105" rx="52" ry="42" fill="#ed9952"/><path d="m85 92 10 5m40-5-10 5M91 116q19 16 38 0" fill="none" stroke="#613b30" stroke-width="4" stroke-linecap="round"/>',
+      neighbor: '<path d="M31 94 67 63l36 31v45H31zM118 94l36-31 36 31v45h-72z" fill="#f6b47c" stroke="#8b5a4a" stroke-width="3" stroke-linejoin="round"/><path d="M30 95h74m13 0h74" stroke="#8b5a4a" stroke-width="3"/><rect x="50" y="108" width="20" height="31" rx="3" fill="#fff4de"/><rect x="143" y="108" width="20" height="31" rx="3" fill="#fff4de"/><path d="M103 61q7-13 14 0-7 13-14 20-7-7-14-20 7-13 14 0" fill="#d98073"/>',
+      path: '<path d="M67 145q48-52 20-75Q67 50 85 32" fill="none" stroke="#d8b98d" stroke-width="35" stroke-linecap="round"/><path d="M67 145q48-52 20-75Q67 50 85 32" fill="none" stroke="#fff5db" stroke-width="25" stroke-linecap="round"/><rect x="133" y="57" width="54" height="34" rx="8" fill="#6d8d81"/><path d="M145 74h27m-12-9 12 9-12 9" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M143 92v42" stroke="#6d8d81" stroke-width="6"/>',
+      flower: '<path d="M110 76v60m-30-26q30-8 30 11m30-11q-30-8-30 11" fill="none" stroke="#69906a" stroke-width="5" stroke-linecap="round"/><g fill="#f5b96a"><ellipse cx="110" cy="50" rx="12" ry="23"/><ellipse cx="110" cy="91" rx="12" ry="23"/><ellipse cx="89" cy="70" rx="23" ry="12"/><ellipse cx="131" cy="70" rx="23" ry="12"/><ellipse cx="95" cy="55" rx="12" ry="21" transform="rotate(-45 95 55)"/><ellipse cx="125" cy="85" rx="12" ry="21" transform="rotate(-45 125 85)"/></g><circle cx="110" cy="70" r="14" fill="#8d6246"/>',
+      classroom: '<rect x="38" y="35" width="144" height="105" rx="12" fill="#f8cda2" stroke="#b77b60" stroke-width="3"/><path d="M48 49h124m-115 0 10 16 10-16 10 16 10-16 10 16 10-16 10 16 10-16 10 16 10-16" fill="none" stroke="#c77660" stroke-width="3"/><rect x="58" y="81" width="53" height="43" rx="5" fill="#fff7e7"/><path d="M71 95h28m-28 10h21" stroke="#8e9b89" stroke-width="3" stroke-linecap="round"/><ellipse cx="146" cy="106" rx="20" ry="18" fill="#ed9d58"/><path d="M140 107h12m-9 8q7 5 13-1" fill="none" stroke="#794735" stroke-width="3" stroke-linecap="round"/>'
+    };
+    function storyArtwork(kind) {
+      const scene = STORY_SCENES[kind] || STORY_SCENES.pumpkin;
+      return `<svg viewBox="0 0 220 170" focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect width="220" height="170" rx="25" fill="#fff1da"/><circle cx="35" cy="37" r="6" fill="#ffe0a0"/><circle cx="181" cy="35" r="4" fill="#ffe0a0"/><path d="M0 146q110-28 220 0v24H0z" fill="#e3e9d6"/>${scene}</svg>`;
+    }
+    let cultureStage = 'story';
+    function setCultureStage(stage, focus = false) {
+      if (!['story','craft','compare'].includes(stage)) return;
+      cultureStage = stage;
+      document.querySelectorAll('[data-culture-stage]').forEach(panel => {
+        panel.classList.toggle('hidden', panel.dataset.cultureStage !== stage);
+      });
+      document.querySelectorAll('[data-culture-step]').forEach(button => {
+        const selected = button.dataset.cultureStep === stage;
+        button.classList.toggle('is-current', selected);
+        if (selected) button.setAttribute('aria-current', 'step');
+        else button.removeAttribute('aria-current');
+      });
+      if (focus) {
+        const heading = document.querySelector(`[data-culture-stage="${stage}"] h2, [data-culture-stage="${stage}"] h3`);
+        if (heading) { heading.tabIndex = -1; heading.focus(); }
+      }
+    }
     function renderStorySlide() {
       stopSpeaking();
       const gradeData = EDUCATION_DATA[state.grade];
@@ -1123,12 +1317,15 @@
       const current = stories[state.storyIndex];
 
       document.getElementById("currentGradeBadge").textContent = gradeData.label;
-      document.getElementById("storyEmojiGraphic").textContent = current.emoji;
+      const picture = document.getElementById("storyEmojiGraphic");
+      picture.innerHTML = storyArtwork(current.art);
+      picture.setAttribute('aria-label', current.caption);
       document.getElementById("storyVisualCaption").textContent = current.caption;
       document.getElementById("storySlideTag").textContent = `카드 ${state.storyIndex + 1} / ${stories.length}`;
       document.getElementById("storySlideTitle").textContent = current.title;
       document.getElementById("storySlideBody").textContent = current.body;
       document.getElementById("storySlideKeyPoint").textContent = current.keyPoint;
+      document.getElementById("storyThinkingQuestion").textContent = current.question;
       document.getElementById("storySourceLink").innerHTML = `<a href="${current.sourceUrl}" target="_blank" rel="noopener noreferrer" class="underline hover:text-amber-300">${current.sourceText} ↗</a>`;
 
       const pillsEl = document.getElementById("storyStepPills");
@@ -1155,7 +1352,7 @@
       document.getElementById("btnPrevStory").disabled = state.storyIndex === 0;
       const nextBtn = document.getElementById("btnNextStory");
       if (state.storyIndex === stories.length - 1) {
-        nextBtn.textContent = "2. 길안전 놀이로 →";
+        nextBtn.textContent = "호박 꾸미기로 →";
       } else {
         nextBtn.textContent = "다음 카드 →";
       }
@@ -1182,12 +1379,12 @@
       if (state.lantern.lit) {
         bodyEl.classList.add("lantern-lit");
         boxEl.classList.add("border-amber-400");
-        btnEl.textContent = "🕯️ 등불 켜짐 ✨";
-        capEl.textContent = "우와! 나만의 잭오랜턴이 밤길을 환하게 밝혀요!";
+        btnEl.textContent = "등불 끄기";
+        capEl.textContent = "빛나는 호박등이 완성됐어요. 꾸민 모양을 설명해 보세요!";
       } else {
         bodyEl.classList.remove("lantern-lit");
         boxEl.classList.remove("border-amber-400");
-        btnEl.textContent = state.lantern.rewarded ? "🕯️ 등불 다시 켜기" : "🕯️ 등불 켜기 (+30🍬)";
+        btnEl.textContent = "등불 켜기";
         capEl.textContent = "눈·입·모자를 고르고 등불을 켜 보세요!";
       }
     }
@@ -1295,9 +1492,9 @@
         button.disabled = !!state.safetyConfirmed[goal.id];
         button.addEventListener('click', () => {
           if (index === check[2]) {
-            state.safetyConfirmed[goal.id] = {contentVersion: CONTENT_VERSION, at: Date.now()};
+            state.safetyConfirmed[goal.id] = {contentVersion: SAFETY_CONTENT_VERSION, at: Date.now()};
             awardOnce(`goal:${goal.id}`, 'confirmed', 20, '안전 목표 다시 확인');
-            if (SAFETY_GOALS.every(g => state.safetyConfirmed[g.id]?.contentVersion === CONTENT_VERSION)) unlockStamp('s2', '안전 목표 6개 확인');
+            if (SAFETY_GOALS.every(g => state.safetyConfirmed[g.id]?.contentVersion === SAFETY_CONTENT_VERSION)) unlockStamp('s2', '안전 목표 6개 확인');
             document.getElementById('importantStatus').textContent = `${goal.title} 목표를 새 질문으로 확인했어요.`;
           } else {
             document.getElementById('importantStatus').textContent = '이 선택의 이유를 다시 살피고 판단해 보세요.';
@@ -1545,6 +1742,7 @@
       document.getElementById('avatarSafetyReason').value=state.avatarReason||'';
       document.getElementById('avatarReasonText').value=state.avatarReasonText||'';
       renderCertificateCanvas();renderLearningSummary();
+      setCultureStage('story');
       switchTab(state.activeTab);
       resizeSafetyCanvas();renderGameChoices();
     }
@@ -1646,6 +1844,7 @@
       });
 
       document.getElementById("certClassInput").value = EDUCATION_DATA[gradeKey].classDefault;
+      setCultureStage('story');
       renderStorySlide();
       renderScenario();
       renderCostumeCards();
@@ -1763,7 +1962,7 @@
       document.getElementById("btnExitApp").addEventListener("click", () => {
         playSound("click");
         const count = Object.values(state.stamps).filter(Boolean).length;
-        document.getElementById("exitStampSummaryText").textContent = `오늘 모은 안전 스탬프: ${count}/4개 · 사탕 ${state.candyPoints}점`;
+        document.getElementById("exitStampSummaryText").textContent = `오늘 살펴본 활동: ${count}/4개`;
         openModal(exitModal);
       });
       document.getElementById("btnCancelExit").addEventListener("click", () => {
@@ -1903,9 +2102,15 @@
           playSound("click");
           renderStorySlide();
         } else {
-          switchTab("tab-safety");
+          setCultureStage('craft', true);
         }
       });
+
+      document.querySelectorAll('[data-culture-step]').forEach(button => {
+        button.addEventListener('click', () => setCultureStage(button.dataset.cultureStep, true));
+      });
+      document.getElementById('btnToCompare').addEventListener('click', () => setCultureStage('compare', true));
+      document.getElementById('btnToSafety').addEventListener('click', () => switchTab('tab-safety'));
 
       document.querySelectorAll(".festival-card").forEach(card => {
         card.addEventListener("click", () => {
@@ -1916,6 +2121,10 @@
           if (FESTIVAL_DETAILS[key]) {
             document.getElementById("festivalCompareTitle").textContent = FESTIVAL_DETAILS[key].title;
             document.getElementById("festivalCompareDesc").textContent = FESTIVAL_DETAILS[key].desc;
+            document.getElementById('festivalCompareQuestion').textContent = FESTIVAL_DETAILS[key].question;
+            const link = document.getElementById('festivalSourceLink');
+            link.href = FESTIVAL_DETAILS[key].sourceUrl;
+            link.textContent = `자료: ${FESTIVAL_DETAILS[key].sourceText} ↗`;
           }
         });
       });

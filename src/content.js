@@ -1,4 +1,5 @@
-const CONTENT_VERSION = '2026-10-20.1';
+const CONTENT_VERSION = '2026-10-20.2';
+const SAFETY_CONTENT_VERSION = '2026-10-20.1';
 const CONTENT_SOURCES = {
   crowd: {title: '국민재난안전포털 · 다중운집인파사고 대비 국민행동요령', url: 'https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html', checked: '2026-10-19'},
   police: {title: '경찰제복 및 경찰장비의 규제에 관한 법률 제9조', url: 'https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1008601875', checked: '2026-10-20'},

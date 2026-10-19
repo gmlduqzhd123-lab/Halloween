@@ -31,6 +31,17 @@ test('main browser flows and standalone file load without script errors', async 
   await page.goto(`http://127.0.0.1:${server.address().port}/`);
   await assert.doesNotReject(()=>page.locator('.grade-active').waitFor());
   assert.equal(await page.locator('.grade-active').count(),1);
+  assert.equal(await page.locator('[data-culture-stage="story"]').isVisible(),true);
+  assert.equal(await page.locator('[data-culture-stage="craft"]').isVisible(),false);
+  await page.locator('[data-culture-step="craft"]').click();
+  assert.equal(await page.locator('[data-culture-stage="craft"]').isVisible(),true);
+  await page.locator('#btnToCompare').click();
+  assert.equal(await page.locator('[data-culture-stage="compare"]').isVisible(),true);
+  await page.locator('[data-festival="muertos"]').click();
+  assert.match(await page.locator('#festivalCompareDesc').innerText(),/가족|기억/);
+  assert.match(await page.locator('#festivalCompareQuestion').innerText(),/뜻/);
+  await page.locator('[data-culture-step="story"]').click();
+  assert.equal(await page.locator('[data-culture-stage="story"]').isVisible(),true);
   await page.locator('#btnBoardMode').click();
   for(const width of [320,390,768,1366]){
     await page.setViewportSize({width,height:800});
@@ -38,6 +49,13 @@ test('main browser flows and standalone file load without script errors', async 
     assert.ok(bounds.scroll<=bounds.view+1,`${width}px overflow`);
   }
   await page.locator('#btnBoardMode').click();
+  await page.setViewportSize({width:320,height:700});
+  for (const tab of ['culture','safety','costume','quiz','cert']) {
+    await page.locator(`[data-tab="tab-${tab}"]`).first().click();
+    const bounds=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,view:document.documentElement.clientWidth}));
+    assert.ok(bounds.scroll<=bounds.view+1,`${tab} at 320px overflow`);
+  }
+  await page.locator('[data-tab="tab-culture"]').first().click();
   await page.getByRole('button',{name:/5~6학년/}).first().click();
   assert.match(await page.locator('.grade-active').innerText(),/5~6학년/);
   await page.locator('[data-tab="tab-safety"]').first().click();
@@ -59,6 +77,36 @@ test('main browser flows and standalone file load without script errors', async 
   assert.match(exported.suggestedFilename(),/\.json$/);
   const exportedBytes=await readFile(await exported.path());
   const exportedId=JSON.parse(exportedBytes.toString()).sessionId;
+  const previousProgress=JSON.parse(exportedBytes.toString());
+  previousProgress.contentVersion='2026-10-20.1';
+  previousProgress.grade='3-4';
+  previousProgress.activeTab='tab-culture';
+  Object.assign(previousProgress.gradeRecords['3-4'],{
+    storyIndex:3,readStories:{0:true,1:true,2:true,3:true},quizIndex:2,
+    quizFirst:{'3-4:q1':{correct:true}},
+    safetyConfirmed:{route:{contentVersion:'2026-10-20.1',at:123}},
+    stamps:{s1:true,s2:true,s3:false,s4:true}
+  });
+  const oldContent=await browser.newPage();
+  await oldContent.addInitScript(saved=>localStorage.setItem('halloween_edu_progress_v2',JSON.stringify(saved)),previousProgress);
+  await oldContent.goto(`http://127.0.0.1:${server.address().port}/`);
+  const upgraded=await oldContent.evaluate(()=>({
+    current:JSON.parse(localStorage.getItem('halloween_edu_progress_v2')),
+    backupKey:Object.keys(localStorage).find(key=>key.startsWith('halloween_edu_progress_v2_before_content_'))
+  }));
+  assert.ok(upgraded.backupKey);
+  assert.equal(upgraded.current.contentVersion,'2026-10-20.2');
+  assert.equal(upgraded.current.gradeRecords['3-4'].storyIndex,0);
+  assert.deepEqual(upgraded.current.gradeRecords['3-4'].quizFirst,{});
+  assert.equal(upgraded.current.gradeRecords['3-4'].safetyConfirmed.route.contentVersion,'2026-10-20.1');
+  assert.equal(upgraded.current.gradeRecords['3-4'].stamps.s2,true);
+  assert.equal(upgraded.current.gradeRecords['3-4'].stamps.s1,false);
+  assert.equal(await oldContent.evaluate(key=>JSON.parse(localStorage.getItem(key)).gradeRecords['3-4'].storyIndex,upgraded.backupKey),3);
+  await oldContent.locator('[data-tab="tab-cert"]').first().click();
+  assert.doesNotMatch(await oldContent.locator('#learningResultSummary').innerText(),/다시 확인할 목표: 이동로와 출구 확인/);
+  await oldContent.reload();
+  assert.equal(await oldContent.evaluate(()=>JSON.parse(localStorage.getItem('halloween_edu_progress_v2')).gradeRecords['3-4'].storyIndex),0);
+  await oldContent.close();
   await page.locator('#btnResetProgress').click();
   await page.locator('#btnConfirmReset').click();
   await page.locator('[data-tab="tab-cert"]').first().click();
@@ -158,7 +206,7 @@ test('main browser flows and standalone file load without script errors', async 
     assert.equal(await quiz.locator('#btnSpeakQuizFeedback').isVisible(),true);
     await quiz.locator('#btnNextQuizQuestion').click();
   }
-  assert.match(await quiz.locator('#quizFinalScoreTitle').innerText(),/처음 결과 0\/8/);
+  assert.match(await quiz.locator('#quizFinalScoreTitle').innerText(),/처음 이해한 질문 0\/8/);
   assert.doesNotMatch(await quiz.locator('#quizFinalScoreDesc').innerText(),/모두 마스터/);
   await quiz.locator('#btnReviewQuiz').click();
   for(let i=0;i<8;i++){
@@ -170,7 +218,7 @@ test('main browser flows and standalone file load without script errors', async 
     await quiz.locator('.quiz-opt-btn').nth(right).click();
     await quiz.locator('#btnNextQuizQuestion').click();
   }
-  assert.match(await quiz.locator('#quizFinalScoreTitle').innerText(),/처음 결과 0\/8 · 도움 없이 0\/8 · 다시 확인한 내용 8\/8/);
+  assert.match(await quiz.locator('#quizFinalScoreTitle').innerText(),/처음 이해한 질문 0\/8/);
   const reviewedPoints=await quiz.evaluate(()=>JSON.parse(localStorage.getItem('halloween_edu_progress_v2')).candyPoints);
   await quiz.locator('#btnReviewQuiz').click();
   for(let i=0;i<8;i++){
