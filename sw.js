@@ -1,4 +1,4 @@
-const VERSION = '210cefaa19fa76c1';
+const VERSION = '47a3a0c8892b5148';
 const SCOPE = new URL(self.registration.scope);
 const CACHE = `halloween-edu:${SCOPE.pathname}:${VERSION}`;
 const FILES = ['index.html', 'halloween_edu_app.html', 'app.js', 'styles.css', 'manifest.json', 'icon.svg', '404.html'];

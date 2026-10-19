@@ -2068,7 +2068,9 @@
       document.getElementById("btnBoardMode").addEventListener("click", () => {
         state.boardMode = !state.boardMode;
         document.documentElement.classList.toggle("board-mode", state.boardMode);
-        document.getElementById("boardModeLabel").textContent = state.boardMode ? "글씨 ON" : "글씨";
+        document.getElementById("boardModeLabel").textContent = state.boardMode ? "원래 크기" : "글자 확대";
+        document.getElementById("btnBoardMode").setAttribute("aria-pressed", String(state.boardMode));
+        document.getElementById("btnBoardMode").title = state.boardMode ? "원래 크기로" : "글자 확대";
         playSound("click");
         showToast(state.boardMode ? "글씨가 큼직해졌어요!" : "기본 글씨 크기로 돌아왔어요.", "🔍");
       });
