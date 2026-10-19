@@ -26,7 +26,41 @@ test('main browser flows and standalone file load without script errors', async 
   const executablePath=process.env.CHROME_PATH || (existsSync(windowsChrome) ? windowsChrome : undefined);
   const browser=await chromium.launch({...(executablePath?{executablePath}:{}),headless:true});
   t.after(()=>browser.close());
-  const page=await browser.newPage({viewport:{width:390,height:844}});
+  const welcome=await browser.newPage({viewport:{width:390,height:844}});
+  await welcome.goto(`http://127.0.0.1:${server.address().port}/`);
+  assert.equal(await welcome.locator('#welcomeScreen').isVisible(),true);
+  assert.equal(await welcome.locator('#tab-culture').isVisible(),false);
+  await welcome.locator('[data-welcome-grade="1-2"]').click();
+  assert.equal(await welcome.locator('[data-welcome-grade="1-2"]').getAttribute('aria-pressed'),'true');
+  await welcome.locator('#btnStartLesson').click();
+  assert.equal(await welcome.locator('#lessonStageTitle').innerText(),'문화 이야기');
+  assert.equal(await welcome.locator('#tab-culture').isVisible(),true);
+  assert.equal(await welcome.locator('.header-nav').isVisible(),false);
+  await welcome.locator('#storyStepPills button').last().click();
+  await welcome.locator('#btnNextStory').click();
+  assert.equal(await welcome.locator('[data-culture-stage="compare"]').isVisible(),true);
+  await welcome.locator('#btnOptionalCraft').click();
+  assert.equal(await welcome.locator('[data-culture-stage="craft"]').isVisible(),true);
+  await welcome.locator('#btnToCompare').click();
+  await welcome.locator('#btnToSafety').click();
+  assert.equal(await welcome.locator('#lessonStageTitle').innerText(),'안전한 선택');
+  assert.equal(await welcome.locator('#btnStartCanvasGame').isVisible(),false);
+  for(let i=0;i<6;i++)await welcome.locator('#btnNextScenario').click();
+  assert.equal(await welcome.locator('#lessonStageTitle').innerText(),'배려하는 옷차림');
+  assert.equal(await welcome.locator('#costumeCardsGrid > div').count(),4);
+  await welcome.locator('#btnNextCostumePage').click();
+  assert.equal(await welcome.locator('#costumePageLabel').innerText(),'2 / 3');
+  await welcome.locator('#btnToQuiz').click();
+  assert.equal(await welcome.locator('#lessonStageTitle').innerText(),'생각 정리');
+  await welcome.close();
+  const newPreparedPage=async options=>{
+    const candidate=await browser.newPage(options);
+    await candidate.addInitScript(()=>{
+      try {sessionStorage.setItem('halloween-lesson-started','1');sessionStorage.setItem('halloween-tools-open','true');} catch (_) {}
+    });
+    return candidate;
+  };
+  const page=await newPreparedPage({viewport:{width:390,height:844}});
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`http://127.0.0.1:${server.address().port}/`);
   await assert.doesNotReject(()=>page.locator('.grade-active').waitFor());
@@ -87,7 +121,7 @@ test('main browser flows and standalone file load without script errors', async 
     safetyConfirmed:{route:{contentVersion:'2026-10-20.1',at:123}},
     stamps:{s1:true,s2:true,s3:false,s4:true}
   });
-  const oldContent=await browser.newPage();
+  const oldContent=await newPreparedPage();
   await oldContent.addInitScript(saved=>localStorage.setItem('halloween_edu_progress_v2',JSON.stringify(saved)),previousProgress);
   await oldContent.goto(`http://127.0.0.1:${server.address().port}/`);
   const upgraded=await oldContent.evaluate(()=>({
@@ -147,7 +181,7 @@ test('main browser flows and standalone file load without script errors', async 
   await page.context().setOffline(false);
   assert.deepEqual(errors,[]);
 
-  const migration=await browser.newPage();
+  const migration=await newPreparedPage();
   await migration.addInitScript(()=>localStorage.setItem('halloween_edu_progress_v1',JSON.stringify({grade:'5-6',stamps:{s1:true,s2:true},candyPoints:90})));
   await migration.goto(`http://127.0.0.1:${server.address().port}/`);
   const migrated=await migration.evaluate(()=>({old:localStorage.getItem('halloween_edu_progress_v1'),next:JSON.parse(localStorage.getItem('halloween_edu_progress_v2'))}));
@@ -158,7 +192,7 @@ test('main browser flows and standalone file load without script errors', async 
   assert.equal(await migration.evaluate(()=>JSON.parse(localStorage.getItem('halloween_edu_progress_v2')).candyPoints),0);
   await migration.close();
 
-  const damaged=await browser.newPage();
+  const damaged=await newPreparedPage();
   await damaged.addInitScript(()=>localStorage.setItem('halloween_edu_progress_v2','{bad json'));
   await damaged.goto(`http://127.0.0.1:${server.address().port}/`);
   assert.equal(await damaged.evaluate(()=>localStorage.getItem('halloween_edu_progress_v2')),'{bad json');
@@ -170,7 +204,7 @@ test('main browser flows and standalone file load without script errors', async 
   assert.equal(await damaged.evaluate(key=>localStorage.getItem(key),recovered.old),'{bad json');
   await damaged.close();
 
-  const blocked=await browser.newPage();
+  const blocked=await newPreparedPage();
   const blockedErrors=[];blocked.on('pageerror',error=>blockedErrors.push(error.message));
   await blocked.addInitScript(()=>{Storage.prototype.setItem=()=>{throw new DOMException('Storage blocked','QuotaExceededError');};});
   await blocked.goto(`http://127.0.0.1:${server.address().port}/`);
@@ -180,7 +214,7 @@ test('main browser flows and standalone file load without script errors', async 
   assert.deepEqual(blockedErrors,[]);
   await blocked.close();
 
-  const grades=await browser.newPage();
+  const grades=await newPreparedPage();
   await grades.goto(`http://127.0.0.1:${server.address().port}/`);
   await grades.locator('#btnNextStory').click();
   assert.match(await grades.locator('#storySlideTag').innerText(),/카드 2/);
@@ -193,7 +227,7 @@ test('main browser flows and standalone file load without script errors', async 
   assert.equal(await grades.evaluate(()=>JSON.parse(localStorage.getItem('halloween_edu_progress_v2')).candyPoints),storyPoints);
   await grades.close();
 
-  const quiz=await browser.newPage();
+  const quiz=await newPreparedPage();
   await quiz.goto(`http://127.0.0.1:${server.address().port}/`);
   await quiz.locator('[data-tab="tab-quiz"]').first().click();
   for(let i=0;i<8;i++){
@@ -235,7 +269,7 @@ test('main browser flows and standalone file load without script errors', async 
   assert.equal(await quiz.locator('#btnDownloadCert').isDisabled(),true);
   await quiz.close();
 
-  const chance=await browser.newPage();
+  const chance=await newPreparedPage();
   await chance.goto(`http://127.0.0.1:${server.address().port}/`);
   await chance.locator('[data-tab="tab-quiz"]').first().click();
   const originalOptions=await chance.locator('.quiz-opt-btn').allTextContents();
@@ -259,7 +293,7 @@ test('main browser flows and standalone file load without script errors', async 
   assert.equal(firstAnswer.fiftyUsed,true);
   await chance.close();
 
-  const reward=await browser.newPage();
+  const reward=await newPreparedPage();
   await reward.goto(`http://127.0.0.1:${server.address().port}/`);
   await reward.locator('[data-tab="tab-costume"]').first().click();
   const firstRule=reward.locator('#etiquetteChecklist button').first();
@@ -279,7 +313,7 @@ test('main browser flows and standalone file load without script errors', async 
   assert.equal(await reward.evaluate(()=>JSON.parse(localStorage.getItem('halloween_edu_progress_v2')).candyPoints),20);
   await reward.close();
 
-  const culture=await browser.newPage();
+  const culture=await newPreparedPage();
   await culture.goto(`http://127.0.0.1:${server.address().port}/`);
   await culture.locator('#btnTeacherGuide').click();
   for(const id of ['safety','costume','quiz'])await culture.locator(`.teacherRequired[value="${id}"]`).uncheck();
@@ -293,7 +327,7 @@ test('main browser flows and standalone file load without script errors', async 
   assert.match((await participation).suggestedFilename(),/\.png$/);
   await culture.close();
 
-  const empty=await browser.newPage();
+  const empty=await newPreparedPage();
   await empty.goto(`http://127.0.0.1:${server.address().port}/`);
   await empty.locator('#btnTeacherGuide').click();
   for(const id of ['culture','safety','costume','quiz'])await empty.locator(`.teacherRequired[value="${id}"]`).uncheck();
@@ -303,7 +337,7 @@ test('main browser flows and standalone file load without script errors', async 
   assert.match(await empty.locator('#learningResultSummary').innerText(),/필수 활동이 선택되지 않았어요/);
   await empty.close();
 
-  const safety=await browser.newPage();
+  const safety=await newPreparedPage();
   await safety.goto(`http://127.0.0.1:${server.address().port}/`);
   await safety.locator('[data-tab="tab-safety"]').first().click();
   for(let i=0;i<6;i++){
@@ -327,9 +361,10 @@ test('main browser flows and standalone file load without script errors', async 
   assert.match((await certificate).suggestedFilename(),/\.png$/);
   await safety.close();
 
-  const game=await browser.newPage({viewport:{width:390,height:844}});
+  const game=await newPreparedPage({viewport:{width:390,height:844}});
   await game.goto(`http://127.0.0.1:${server.address().port}/`);
   await game.locator('[data-tab="tab-safety"]').first().click();
+  await game.locator('#btnToggleSafetyGame').click();
   await game.locator('#btnStartCanvasGame').click();
   await game.locator('#gameRouteChoices button').nth(0).click();
   await game.locator('.game-dpad-btn[data-dir="right"]').click();
@@ -349,6 +384,7 @@ test('main browser flows and standalone file load without script errors', async 
   await game.close();
 
   const scoped=await browser.newContext();
+  await scoped.addInitScript(()=>{try{sessionStorage.setItem('halloween-lesson-started','1');sessionStorage.setItem('halloween-tools-open','true');}catch(_){}});
   const route=await scoped.newPage();
   const appUrl=`http://127.0.0.1:${server.address().port}/Halloween/`;
   await route.goto(appUrl);
@@ -407,6 +443,7 @@ test('main browser flows and standalone file load without script errors', async 
   await scoped.close();
 
   const noWorker=await browser.newContext({serviceWorkers:'block'});
+  await noWorker.addInitScript(()=>{try{sessionStorage.setItem('halloween-lesson-started','1');sessionStorage.setItem('halloween-tools-open','true');}catch(_){}});
   const missing=await noWorker.newPage();
   await missing.goto(appUrl+'missing/nested/path');
   await missing.waitForURL(/\/Halloween\/index\.html$/);

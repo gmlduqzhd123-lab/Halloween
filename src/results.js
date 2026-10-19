@@ -1,4 +1,4 @@
-    const RESULT_FONT = '"Malgun Gothic", "Apple SD Gothic Neo", sans-serif';
+    const RESULT_FONT = '"Gowun Dodum", "Malgun Gothic", sans-serif';
     const REASON_LABELS = {vision:'앞이 잘 보이는 옷', movement:'움직이기 편한 옷', props:'뾰족하지 않은 소품', friends:'친구를 배려하는 모습'};
     function safeLabel(value, fallback, limit=160) {
       return typeof value==='string' && value.trim() ? value.trim().slice(0,limit) : fallback;
@@ -46,9 +46,9 @@
         state.legacy ? `이전 활동 기록: ${state.legacy.grade||'학년 미상'} · 스탬프 ${Object.values(state.legacy.stamps).filter(Boolean).length}개 · 사탕 ${state.legacy.candyPoints}점 (현재 회차와 별도)` : '이전 활동 기록 없음',
         state.storageAvailable ? '진행 기록은 현재 기기·브라우저에 저장됩니다.' : '현재 저장되지 않습니다. 탭을 닫기 전에 JSON으로 내보내세요.'
       ];
-      lines.forEach(line=>{const p=document.createElement('p');p.textContent=line;summary.appendChild(p);});
+      lines.forEach((line,index)=>{const p=document.createElement('p');p.textContent=line;if(index>=3)p.className='teacher-summary-detail';summary.appendChild(p);});
       const remaining=SAFETY_GOALS.filter(goal=>!state.safetyConfirmed[goal.id] || state.safetyConfirmed[goal.id].contentVersion!==SAFETY_CONTENT_VERSION);
-      if(remaining.length){const p=document.createElement('p');p.textContent=`다시 확인할 목표: ${remaining.map(g=>g.title).join(', ')}`;summary.appendChild(p);}
+      if(remaining.length){const p=document.createElement('p');p.className='teacher-summary-detail';p.textContent=`다시 확인할 목표: ${remaining.map(g=>g.title).join(', ')}`;summary.appendChild(p);}
       const certButton=document.getElementById('btnDownloadCert');
       const participationButton=document.getElementById('btnDownloadParticipation');
       if(certButton)certButton.disabled=!canDownloadSafetyCertificate();

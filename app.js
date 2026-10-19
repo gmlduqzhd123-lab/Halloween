@@ -3759,7 +3759,7 @@ const THEMES = {
       document.getElementById("btnPrevStory").disabled = state.storyIndex === 0;
       const nextBtn = document.getElementById("btnNextStory");
       if (state.storyIndex === stories.length - 1) {
-        nextBtn.textContent = "호박 꾸미기로 →";
+        nextBtn.textContent = "문화 살펴보기 →";
       } else {
         nextBtn.textContent = "다음 카드 →";
       }
@@ -3870,7 +3870,7 @@ const THEMES = {
 
       document.getElementById("btnPrevScenario").disabled = state.scenarioIndex === 0;
       const nextBtn = document.getElementById("btnNextScenario");
-      nextBtn.textContent = state.scenarioIndex === SAFETY_SCENARIOS.length - 1 ? "첫 약속으로" : "다음 약속 →";
+      nextBtn.textContent = state.scenarioIndex === SAFETY_SCENARIOS.length - 1 ? "다음: 옷차림 생각하기 →" : "다음 약속 →";
       renderSafetyFollowup();
     }
 
@@ -4157,14 +4157,14 @@ const THEMES = {
       ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(120,100);ctx.lineTo(460,58);ctx.lineTo(545,46);ctx.stroke();
       ctx.strokeStyle='#7f1d1d';ctx.lineWidth=32;
       ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(230,165);ctx.lineTo(400,170);ctx.stroke();
-      ctx.fillStyle='#fecaca';ctx.font='bold 12px sans-serif';ctx.fillText('🔴 혼잡한 길',220,205);
+      ctx.fillStyle='#fecaca';ctx.font='bold 12px "Gowun Dodum", sans-serif';ctx.fillText('🔴 혼잡한 길',220,205);
       const e=safetyGame.exitZone;
       ctx.fillStyle='#047857';ctx.fillRect(e.x,e.y,e.w,e.h);
-      ctx.fillStyle='white';ctx.font='bold 13px sans-serif';ctx.fillText('출구',e.x+18,e.y+29);
+      ctx.fillStyle='white';ctx.font='bold 13px "Gowun Dodum", sans-serif';ctx.fillText('출구',e.x+18,e.y+29);
       safetyGame.hazards.forEach(h=>{ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.fillStyle='#be123c88';ctx.fill();ctx.strokeStyle='#fb7185';ctx.stroke();});
       ctx.beginPath();ctx.arc(x,y,13,0,Math.PI*2);ctx.fillStyle='#f97316';ctx.fill();
-      ctx.fillStyle='white';ctx.font='16px sans-serif';ctx.fillText(state.avatar.char || '🧒',x-9,y+5);
-      if(safetyGame.won){ctx.fillStyle='#0f172adc';ctx.fillRect(0,0,600,250);ctx.fillStyle='#fde68a';ctx.font='bold 20px sans-serif';ctx.fillText('이동 가능한 출구를 찾았어요!',132,120);}
+      ctx.fillStyle='white';ctx.font='16px "Gowun Dodum", sans-serif';ctx.fillText(state.avatar.char || '🧒',x-9,y+5);
+      if(safetyGame.won){ctx.fillStyle='#0f172adc';ctx.fillRect(0,0,600,250);ctx.fillStyle='#fde68a';ctx.font='bold 20px "Gowun Dodum", sans-serif';ctx.fillText('이동 가능한 출구를 찾았어요!',132,120);}
     }
     function gameLoop(now=performance.now()) {
       if(gameAnimId!==null || safetyGame.paused || !safetyGame.running || state.activeTab!=='tab-safety' || document.hidden) return;
@@ -4194,17 +4194,19 @@ const THEMES = {
       syncButtonGroup(".cert-sticker-btn", "data-sticker", state.certSticker);
     }
 
+    let costumePage = 0;
     function renderCostumeCards() {
       const grid = document.getElementById("costumeCardsGrid");
       grid.innerHTML = "";
       let correctCount = 0;
 
-      COSTUME_ITEMS.forEach(item => {
+      COSTUME_ITEMS.forEach((item, itemIndex) => {
         const chosen = state.costumeChoices[item.id];
         const hasAnswered = chosen !== undefined;
         const isCorrect = hasAnswered && chosen === item.safe;
         if (isCorrect) correctCount++;
 
+        if (Math.floor(itemIndex / 4) !== costumePage) return;
         const card = document.createElement("div");
         card.className = `glass-panel rounded-2xl p-3 flex flex-col justify-between border transition ${
           !hasAnswered
@@ -4277,6 +4279,9 @@ const THEMES = {
       });
 
       document.getElementById("costumeScoreBadge").textContent = `${correctCount} / ${COSTUME_ITEMS.length}`;
+      document.getElementById('costumePageLabel').textContent = `${costumePage + 1} / ${Math.ceil(COSTUME_ITEMS.length / 4)}`;
+      document.getElementById('btnPrevCostumePage').disabled = costumePage === 0;
+      document.getElementById('btnNextCostumePage').disabled = costumePage === Math.ceil(COSTUME_ITEMS.length / 4) - 1;
       if (correctCount === COSTUME_ITEMS.length) {
         unlockStamp("s3", "놀이 3: 옷 고르기 놀이");
       }
@@ -4435,7 +4440,7 @@ const THEMES = {
     }
 
 
-    const RESULT_FONT = '"Malgun Gothic", "Apple SD Gothic Neo", sans-serif';
+    const RESULT_FONT = '"Gowun Dodum", "Malgun Gothic", sans-serif';
     const REASON_LABELS = {vision:'앞이 잘 보이는 옷', movement:'움직이기 편한 옷', props:'뾰족하지 않은 소품', friends:'친구를 배려하는 모습'};
     function safeLabel(value, fallback, limit=160) {
       return typeof value==='string' && value.trim() ? value.trim().slice(0,limit) : fallback;
@@ -4483,9 +4488,9 @@ const THEMES = {
         state.legacy ? `이전 활동 기록: ${state.legacy.grade||'학년 미상'} · 스탬프 ${Object.values(state.legacy.stamps).filter(Boolean).length}개 · 사탕 ${state.legacy.candyPoints}점 (현재 회차와 별도)` : '이전 활동 기록 없음',
         state.storageAvailable ? '진행 기록은 현재 기기·브라우저에 저장됩니다.' : '현재 저장되지 않습니다. 탭을 닫기 전에 JSON으로 내보내세요.'
       ];
-      lines.forEach(line=>{const p=document.createElement('p');p.textContent=line;summary.appendChild(p);});
+      lines.forEach((line,index)=>{const p=document.createElement('p');p.textContent=line;if(index>=3)p.className='teacher-summary-detail';summary.appendChild(p);});
       const remaining=SAFETY_GOALS.filter(goal=>!state.safetyConfirmed[goal.id] || state.safetyConfirmed[goal.id].contentVersion!==SAFETY_CONTENT_VERSION);
-      if(remaining.length){const p=document.createElement('p');p.textContent=`다시 확인할 목표: ${remaining.map(g=>g.title).join(', ')}`;summary.appendChild(p);}
+      if(remaining.length){const p=document.createElement('p');p.className='teacher-summary-detail';p.textContent=`다시 확인할 목표: ${remaining.map(g=>g.title).join(', ')}`;summary.appendChild(p);}
       const certButton=document.getElementById('btnDownloadCert');
       const participationButton=document.getElementById('btnDownloadParticipation');
       if(certButton)certButton.disabled=!canDownloadSafetyCertificate();
@@ -4618,12 +4623,28 @@ const THEMES = {
 
 
     // ==================== NAVIGATION & GRADE SWITCHING ====================
+    function syncWelcomeGrade() {
+      document.querySelectorAll('[data-welcome-grade]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.welcomeGrade === state.grade)));
+    }
+    const lessonSteps = {
+      'tab-culture':['1 / 4','문화 이야기','그림 이야기를 읽고 문화를 살펴봐요.'],
+      'tab-safety':['2 / 4','안전한 선택','여섯 가지 상황에서 안전한 행동을 골라요.'],
+      'tab-costume':['3 / 4','배려하는 옷차림','옷과 소품을 살피고 친구와의 약속을 정해요.'],
+      'tab-quiz':['4 / 4','생각 정리','배운 내용을 질문으로 확인해요.'],
+      'tab-cert':['마무리','나의 배움 기록','오늘의 결과를 보고 안전 약속을 남겨요.']
+    };
+    function enterLesson() {
+      document.body.classList.remove('lesson-not-started');
+      try { sessionStorage.setItem('halloween-lesson-started', '1'); } catch (_) {}
+      document.getElementById('lessonStageTitle').focus();
+    }
     function renderAllLearning() {
       document.querySelectorAll('.grade-btn').forEach(btn=>{
         const active=btn.dataset.grade===state.grade;
         btn.classList.toggle('grade-active',active);
         btn.setAttribute('aria-pressed',String(active));
       });
+      syncWelcomeGrade();
       renderStamps();renderCandyHeader();renderStorySlide();renderLanternWorkshop();
       renderScenario();renderThemeSituations();renderAvatarDressup();renderCostumeCards();
       renderEtiquetteChecklist();renderQuiz();renderTeacherSettings();
@@ -4691,6 +4712,10 @@ const THEMES = {
       stopSpeaking();
       if (state.activeTab === 'tab-safety' && tabId !== 'tab-safety') pauseSafetyGame();
       state.activeTab = tabId;
+      const step = lessonSteps[tabId] || lessonSteps['tab-culture'];
+      document.getElementById('lessonStageNumber').textContent = step[0];
+      document.getElementById('lessonStageTitle').textContent = step[1];
+      document.getElementById('lessonStageHint').textContent = step[2];
       document.querySelectorAll(".tab-panel").forEach(panel => {
         if (panel.id === tabId) {
           panel.classList.remove("hidden");
@@ -4722,6 +4747,7 @@ const THEMES = {
       pauseSafetyGame();
       rememberGrade();
       state.grade = gradeKey;
+      syncWelcomeGrade();
       state.teacher.grade = gradeKey;
       restoreGrade(gradeKey);
       saveProgress();
@@ -4770,6 +4796,10 @@ const THEMES = {
         offlineStatus.textContent='단독 파일 · 인터넷 없이 핵심 학습 가능';
       }
       loadSavedProgress();
+      if (state.activeTab !== 'tab-culture' || Object.values(state.stamps).some(Boolean)) {
+        document.getElementById('btnStartLesson').textContent = '이어서 시작하기 →';
+      }
+      try { if (sessionStorage.getItem('halloween-lesson-started') === '1') document.body.classList.remove('lesson-not-started'); } catch (_) {}
       const sharedTeacher = teacherFromUrl();
       if (sharedTeacher) {
         state.teacher = sharedTeacher;
@@ -4778,7 +4808,7 @@ const THEMES = {
         saveProgress();
       }
 
-      // Re-render certificate once Google Fonts finish loading so Jua/Noto Sans KR appear crisply
+      // Re-render exported artwork after the bundled Korean font is ready.
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => {
           renderCertificateCanvas();
@@ -4890,6 +4920,34 @@ const THEMES = {
           switchGrade(btn.getAttribute("data-grade"));
         });
       });
+      document.querySelectorAll('[data-welcome-grade]').forEach(button => button.addEventListener('click', () => switchGrade(button.dataset.welcomeGrade)));
+      document.getElementById('btnStartLesson').addEventListener('click', () => {
+        enterLesson();
+        switchTab(state.activeTab || 'tab-culture');
+      });
+      document.getElementById('btnMoreTools').addEventListener('click', () => {
+        const open = document.body.classList.toggle('tools-open');
+        document.getElementById('btnMoreTools').setAttribute('aria-expanded', String(open));
+        try { sessionStorage.setItem('halloween-tools-open', String(open)); } catch (_) {}
+      });
+      try {
+        if (sessionStorage.getItem('halloween-tools-open') === 'true') {
+          document.body.classList.add('tools-open');
+          document.getElementById('btnMoreTools').setAttribute('aria-expanded', 'true');
+        }
+      } catch (_) {}
+      [['btnToggleSafetyGame','optionalSafetyGame'],['btnToggleAvatar','avatarDressupCard']].forEach(([buttonId,cardId]) => {
+        const button=document.getElementById(buttonId);
+        button.addEventListener('click', () => {
+          const open=document.getElementById(cardId).classList.toggle('is-open');
+          button.setAttribute('aria-expanded', String(open));
+          if(open && cardId==='optionalSafetyGame') setTimeout(resizeSafetyCanvas, 50);
+        });
+      });
+      document.getElementById('btnOptionalCraft').addEventListener('click', () => setCultureStage('craft', true));
+      document.getElementById('btnToQuiz').addEventListener('click', () => switchTab('tab-quiz'));
+      document.getElementById('btnPrevCostumePage').addEventListener('click', () => { costumePage=Math.max(0,costumePage-1);renderCostumeCards(); });
+      document.getElementById('btnNextCostumePage').addEventListener('click', () => { costumePage=Math.min(Math.ceil(COSTUME_ITEMS.length/4)-1,costumePage+1);renderCostumeCards(); });
 
       document.querySelectorAll(".nav-tab").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -4993,7 +5051,7 @@ const THEMES = {
           playSound("click");
           renderStorySlide();
         } else {
-          setCultureStage('craft', true);
+          setCultureStage('compare', true);
         }
       });
 
@@ -5031,7 +5089,8 @@ const THEMES = {
         if (state.scenarioIndex < SAFETY_SCENARIOS.length - 1) {
           state.scenarioIndex++;
         } else {
-          state.scenarioIndex = 0;
+          switchTab('tab-costume');
+          return;
         }
         playSound("click");
         renderScenario();

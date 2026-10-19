@@ -166,14 +166,14 @@
       ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(120,100);ctx.lineTo(460,58);ctx.lineTo(545,46);ctx.stroke();
       ctx.strokeStyle='#7f1d1d';ctx.lineWidth=32;
       ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(230,165);ctx.lineTo(400,170);ctx.stroke();
-      ctx.fillStyle='#fecaca';ctx.font='bold 12px sans-serif';ctx.fillText('🔴 혼잡한 길',220,205);
+      ctx.fillStyle='#fecaca';ctx.font='bold 12px "Gowun Dodum", sans-serif';ctx.fillText('🔴 혼잡한 길',220,205);
       const e=safetyGame.exitZone;
       ctx.fillStyle='#047857';ctx.fillRect(e.x,e.y,e.w,e.h);
-      ctx.fillStyle='white';ctx.font='bold 13px sans-serif';ctx.fillText('출구',e.x+18,e.y+29);
+      ctx.fillStyle='white';ctx.font='bold 13px "Gowun Dodum", sans-serif';ctx.fillText('출구',e.x+18,e.y+29);
       safetyGame.hazards.forEach(h=>{ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.fillStyle='#be123c88';ctx.fill();ctx.strokeStyle='#fb7185';ctx.stroke();});
       ctx.beginPath();ctx.arc(x,y,13,0,Math.PI*2);ctx.fillStyle='#f97316';ctx.fill();
-      ctx.fillStyle='white';ctx.font='16px sans-serif';ctx.fillText(state.avatar.char || '🧒',x-9,y+5);
-      if(safetyGame.won){ctx.fillStyle='#0f172adc';ctx.fillRect(0,0,600,250);ctx.fillStyle='#fde68a';ctx.font='bold 20px sans-serif';ctx.fillText('이동 가능한 출구를 찾았어요!',132,120);}
+      ctx.fillStyle='white';ctx.font='16px "Gowun Dodum", sans-serif';ctx.fillText(state.avatar.char || '🧒',x-9,y+5);
+      if(safetyGame.won){ctx.fillStyle='#0f172adc';ctx.fillRect(0,0,600,250);ctx.fillStyle='#fde68a';ctx.font='bold 20px "Gowun Dodum", sans-serif';ctx.fillText('이동 가능한 출구를 찾았어요!',132,120);}
     }
     function gameLoop(now=performance.now()) {
       if(gameAnimId!==null || safetyGame.paused || !safetyGame.running || state.activeTab!=='tab-safety' || document.hidden) return;

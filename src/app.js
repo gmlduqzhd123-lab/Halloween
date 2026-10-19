@@ -1352,7 +1352,7 @@
       document.getElementById("btnPrevStory").disabled = state.storyIndex === 0;
       const nextBtn = document.getElementById("btnNextStory");
       if (state.storyIndex === stories.length - 1) {
-        nextBtn.textContent = "호박 꾸미기로 →";
+        nextBtn.textContent = "문화 살펴보기 →";
       } else {
         nextBtn.textContent = "다음 카드 →";
       }
@@ -1463,7 +1463,7 @@
 
       document.getElementById("btnPrevScenario").disabled = state.scenarioIndex === 0;
       const nextBtn = document.getElementById("btnNextScenario");
-      nextBtn.textContent = state.scenarioIndex === SAFETY_SCENARIOS.length - 1 ? "첫 약속으로" : "다음 약속 →";
+      nextBtn.textContent = state.scenarioIndex === SAFETY_SCENARIOS.length - 1 ? "다음: 옷차림 생각하기 →" : "다음 약속 →";
       renderSafetyFollowup();
     }
 
@@ -1596,17 +1596,19 @@
       syncButtonGroup(".cert-sticker-btn", "data-sticker", state.certSticker);
     }
 
+    let costumePage = 0;
     function renderCostumeCards() {
       const grid = document.getElementById("costumeCardsGrid");
       grid.innerHTML = "";
       let correctCount = 0;
 
-      COSTUME_ITEMS.forEach(item => {
+      COSTUME_ITEMS.forEach((item, itemIndex) => {
         const chosen = state.costumeChoices[item.id];
         const hasAnswered = chosen !== undefined;
         const isCorrect = hasAnswered && chosen === item.safe;
         if (isCorrect) correctCount++;
 
+        if (Math.floor(itemIndex / 4) !== costumePage) return;
         const card = document.createElement("div");
         card.className = `glass-panel rounded-2xl p-3 flex flex-col justify-between border transition ${
           !hasAnswered
@@ -1679,6 +1681,9 @@
       });
 
       document.getElementById("costumeScoreBadge").textContent = `${correctCount} / ${COSTUME_ITEMS.length}`;
+      document.getElementById('costumePageLabel').textContent = `${costumePage + 1} / ${Math.ceil(COSTUME_ITEMS.length / 4)}`;
+      document.getElementById('btnPrevCostumePage').disabled = costumePage === 0;
+      document.getElementById('btnNextCostumePage').disabled = costumePage === Math.ceil(COSTUME_ITEMS.length / 4) - 1;
       if (correctCount === COSTUME_ITEMS.length) {
         unlockStamp("s3", "놀이 3: 옷 고르기 놀이");
       }
@@ -1727,12 +1732,28 @@
     // RESULTS_MODULE
 
     // ==================== NAVIGATION & GRADE SWITCHING ====================
+    function syncWelcomeGrade() {
+      document.querySelectorAll('[data-welcome-grade]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.welcomeGrade === state.grade)));
+    }
+    const lessonSteps = {
+      'tab-culture':['1 / 4','문화 이야기','그림 이야기를 읽고 문화를 살펴봐요.'],
+      'tab-safety':['2 / 4','안전한 선택','여섯 가지 상황에서 안전한 행동을 골라요.'],
+      'tab-costume':['3 / 4','배려하는 옷차림','옷과 소품을 살피고 친구와의 약속을 정해요.'],
+      'tab-quiz':['4 / 4','생각 정리','배운 내용을 질문으로 확인해요.'],
+      'tab-cert':['마무리','나의 배움 기록','오늘의 결과를 보고 안전 약속을 남겨요.']
+    };
+    function enterLesson() {
+      document.body.classList.remove('lesson-not-started');
+      try { sessionStorage.setItem('halloween-lesson-started', '1'); } catch (_) {}
+      document.getElementById('lessonStageTitle').focus();
+    }
     function renderAllLearning() {
       document.querySelectorAll('.grade-btn').forEach(btn=>{
         const active=btn.dataset.grade===state.grade;
         btn.classList.toggle('grade-active',active);
         btn.setAttribute('aria-pressed',String(active));
       });
+      syncWelcomeGrade();
       renderStamps();renderCandyHeader();renderStorySlide();renderLanternWorkshop();
       renderScenario();renderThemeSituations();renderAvatarDressup();renderCostumeCards();
       renderEtiquetteChecklist();renderQuiz();renderTeacherSettings();
@@ -1800,6 +1821,10 @@
       stopSpeaking();
       if (state.activeTab === 'tab-safety' && tabId !== 'tab-safety') pauseSafetyGame();
       state.activeTab = tabId;
+      const step = lessonSteps[tabId] || lessonSteps['tab-culture'];
+      document.getElementById('lessonStageNumber').textContent = step[0];
+      document.getElementById('lessonStageTitle').textContent = step[1];
+      document.getElementById('lessonStageHint').textContent = step[2];
       document.querySelectorAll(".tab-panel").forEach(panel => {
         if (panel.id === tabId) {
           panel.classList.remove("hidden");
@@ -1831,6 +1856,7 @@
       pauseSafetyGame();
       rememberGrade();
       state.grade = gradeKey;
+      syncWelcomeGrade();
       state.teacher.grade = gradeKey;
       restoreGrade(gradeKey);
       saveProgress();
@@ -1879,6 +1905,10 @@
         offlineStatus.textContent='단독 파일 · 인터넷 없이 핵심 학습 가능';
       }
       loadSavedProgress();
+      if (state.activeTab !== 'tab-culture' || Object.values(state.stamps).some(Boolean)) {
+        document.getElementById('btnStartLesson').textContent = '이어서 시작하기 →';
+      }
+      try { if (sessionStorage.getItem('halloween-lesson-started') === '1') document.body.classList.remove('lesson-not-started'); } catch (_) {}
       const sharedTeacher = teacherFromUrl();
       if (sharedTeacher) {
         state.teacher = sharedTeacher;
@@ -1887,7 +1917,7 @@
         saveProgress();
       }
 
-      // Re-render certificate once Google Fonts finish loading so Jua/Noto Sans KR appear crisply
+      // Re-render exported artwork after the bundled Korean font is ready.
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => {
           renderCertificateCanvas();
@@ -1999,6 +2029,34 @@
           switchGrade(btn.getAttribute("data-grade"));
         });
       });
+      document.querySelectorAll('[data-welcome-grade]').forEach(button => button.addEventListener('click', () => switchGrade(button.dataset.welcomeGrade)));
+      document.getElementById('btnStartLesson').addEventListener('click', () => {
+        enterLesson();
+        switchTab(state.activeTab || 'tab-culture');
+      });
+      document.getElementById('btnMoreTools').addEventListener('click', () => {
+        const open = document.body.classList.toggle('tools-open');
+        document.getElementById('btnMoreTools').setAttribute('aria-expanded', String(open));
+        try { sessionStorage.setItem('halloween-tools-open', String(open)); } catch (_) {}
+      });
+      try {
+        if (sessionStorage.getItem('halloween-tools-open') === 'true') {
+          document.body.classList.add('tools-open');
+          document.getElementById('btnMoreTools').setAttribute('aria-expanded', 'true');
+        }
+      } catch (_) {}
+      [['btnToggleSafetyGame','optionalSafetyGame'],['btnToggleAvatar','avatarDressupCard']].forEach(([buttonId,cardId]) => {
+        const button=document.getElementById(buttonId);
+        button.addEventListener('click', () => {
+          const open=document.getElementById(cardId).classList.toggle('is-open');
+          button.setAttribute('aria-expanded', String(open));
+          if(open && cardId==='optionalSafetyGame') setTimeout(resizeSafetyCanvas, 50);
+        });
+      });
+      document.getElementById('btnOptionalCraft').addEventListener('click', () => setCultureStage('craft', true));
+      document.getElementById('btnToQuiz').addEventListener('click', () => switchTab('tab-quiz'));
+      document.getElementById('btnPrevCostumePage').addEventListener('click', () => { costumePage=Math.max(0,costumePage-1);renderCostumeCards(); });
+      document.getElementById('btnNextCostumePage').addEventListener('click', () => { costumePage=Math.min(Math.ceil(COSTUME_ITEMS.length/4)-1,costumePage+1);renderCostumeCards(); });
 
       document.querySelectorAll(".nav-tab").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -2102,7 +2160,7 @@
           playSound("click");
           renderStorySlide();
         } else {
-          setCultureStage('craft', true);
+          setCultureStage('compare', true);
         }
       });
 
@@ -2140,7 +2198,8 @@
         if (state.scenarioIndex < SAFETY_SCENARIOS.length - 1) {
           state.scenarioIndex++;
         } else {
-          state.scenarioIndex = 0;
+          switchTab('tab-costume');
+          return;
         }
         playSound("click");
         renderScenario();

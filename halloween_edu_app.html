@@ -16,18 +16,18 @@
       --font-scale: 1;
     }
     html {
-      font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      font-family: 'Gowun Dodum', 'Malgun Gothic', sans-serif;
       font-size: calc(16px * var(--font-scale));
       scroll-behavior: smooth;
       word-break: keep-all;
       overflow-wrap: break-word;
     }
     .font-title {
-      font-family: 'Jua', 'Noto Sans KR', sans-serif;
+      font-family: 'Gowun Dodum', 'Malgun Gothic', sans-serif;
       letter-spacing: 0.01em;
     }
     .font-soft {
-      font-family: 'Gowun Dodum', 'Noto Sans KR', sans-serif;
+      font-family: 'Gowun Dodum', 'Malgun Gothic', sans-serif;
     }
     body {
       background: linear-gradient(160deg, #17153b 0%, #2e1a47 55%, #111827 100%);
@@ -140,7 +140,7 @@
       background: radial-gradient(circle at 85% 0%, #fff1da 0, transparent 28%),
                   linear-gradient(180deg, #fff8ed 0%, #f8f0e5 75%, #f5eee5 100%);
       color: var(--ink);
-      font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      font-family: 'Gowun Dodum', 'Malgun Gothic', sans-serif;
       font-size: 16px;
     }
     .storybook h1, .storybook h2, .storybook h3, .storybook .font-title {
@@ -213,7 +213,7 @@
       color: var(--muted) !important;
       box-shadow: none;
       transform: none;
-      font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      font-family: 'Gowun Dodum', 'Malgun Gothic', sans-serif;
       font-weight: 700;
       min-height: 45px;
     }
@@ -292,9 +292,59 @@
       .storybook .culture-step span { margin-right:0; margin-bottom:3px; }
       .storybook #storySlideBody { font-size:.96rem; }
     }
+    .storybook, .storybook button, .storybook input, .storybook select, .storybook textarea {
+      font-family: 'Gowun Dodum', 'Malgun Gothic', sans-serif;
+    }
+    .storybook .lesson-hero { display: none; }
+    .storybook .site-header .utility-row,
+    .storybook .site-header .header-nav,
+    .storybook .site-header .header-extra { display: none; }
+    .storybook.tools-open .site-header .utility-row { display: grid; }
+    .storybook.tools-open .site-header .header-nav { display: grid; }
+    .storybook.tools-open .site-header .header-extra { display: flex; }
+    .storybook .culture-steps { display: none; }
+    .storybook.tools-open .culture-steps { display: grid; }
+    .storybook.lesson-not-started .lesson-stage,
+    .storybook.lesson-not-started .tab-panel { display: none !important; }
+    .storybook:not(.lesson-not-started) .welcome-screen { display: none; }
+    .storybook .welcome-screen { max-width: 720px; margin: clamp(16px, 5vw, 50px) auto; padding: clamp(26px, 5vw, 50px); background: #fffdf8; border: 1px solid #ead0af; border-radius: 28px; box-shadow: 0 20px 50px rgba(80,56,43,.09); text-align: center; }
+    .storybook .welcome-eyebrow { color: #9b502d; font-size: .93rem; font-weight: 700; }
+    .storybook .welcome-screen h2 { color: #493b59; font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.3; margin: 14px 0; }
+    .storybook .welcome-screen > p:not(.welcome-eyebrow) { color: #526074; line-height: 1.65; }
+    .storybook .welcome-grades { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 9px; margin: 32px 0 20px; }
+    .storybook .welcome-grades legend { width: 100%; margin-bottom: 10px; text-align: left; font-weight: 700; }
+    .storybook .welcome-grade-btn { min-height: 50px; border: 1px solid #d8c9b9; border-radius: 13px; background: #fff8ef; font-size: 1rem; }
+    .storybook .welcome-grade-btn[aria-pressed="true"] { border-color: #624f75; background: #624f75; color: #fff; }
+    .storybook .welcome-start { display: block; width: 100%; min-height: 55px; border-radius: 14px; background: #b65d36; color: #fff; font-size: 1.14rem; font-weight: 700; }
+    .storybook .welcome-footnote { margin-top: 14px; font-size: .84rem; }
+    .storybook .lesson-stage { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 17px 21px; border: 1px solid #ead0af; border-radius: 20px; background: #fff4e4; }
+    .storybook .lesson-stage span { display: block; color: #9b502d; font-weight: 700; font-size: .84rem; }
+    .storybook .lesson-stage strong { display: block; color: #493b59; font-size: 1.4rem; line-height: 1.45; }
+    .storybook .lesson-stage p { color: #526074; font-size: .93rem; }
+    .storybook #btnMoreTools { flex: 0 0 auto; min-height: 44px; padding: 8px 12px; border: 1px solid #d5c3b1; border-radius: 11px; background: #fffdf8; color: #493b59; font-size: .87rem; font-weight: 700; }
+    .storybook .chapter-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 9px; }
+    .storybook .secondary-action { padding: 9px 13px; color: #624f75; border: 1px solid #c9bbd4; border-radius: 12px; background: #fffaf2; font-weight: 700; }
+    .storybook .optional-toggle { display: block; width: 100%; min-height: 44px; text-align: left; color: #493b59; font-size: 1rem; font-weight: 700; }
+    .storybook .optional-toggle span { float: right; font-size: 1.3rem; }
+    .storybook .optional-card:not(.is-open) #safetyGameContents,
+    .storybook .optional-card:not(.is-open) #avatarContents { display: none; }
+    .storybook .costume-pager { display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .storybook .costume-pager button { min-height: 42px; padding: 8px 13px; border: 1px solid #d5c3b1; border-radius: 10px; background: #fff8ef; font-weight: 700; }
+    .storybook .costume-pager button:disabled { opacity: .4; }
+    .storybook:not(.tools-open) .safety-reminders { display: none; }
+    .storybook:not(.tools-open) .cert-identity-row { grid-template-columns: 1fr; }
+    .storybook .tab-panel [class*="text-[11px]"] { font-size: .81rem; }
+    .storybook:not(.tools-open) .cert-advanced,
+    .storybook:not(.tools-open) .teacher-summary-detail { display: none; }
+    @media (max-width:640px) {
+      .storybook .welcome-screen { margin: 4px auto; padding: 24px 18px; }
+      .storybook .lesson-stage { align-items: flex-start; padding: 14px; }
+      .storybook .lesson-stage strong { font-size: 1.2rem; }
+      .storybook #btnMoreTools { max-width: 112px; line-height: 1.25; }
+    }
 </style>
 </head>
-<body class="storybook antialiased selection:bg-orange-200 selection:text-slate-900">
+<body class="storybook lesson-not-started antialiased selection:bg-orange-200 selection:text-slate-900">
 
   <!-- Top Notification Toast & Candy Confetti Layer -->
   <div id="toastContainer" class="fixed top-3 right-3 left-3 sm:left-auto z-50 flex flex-col items-center sm:items-end gap-2 pointer-events-none" role="status" aria-live="polite"></div>
@@ -305,7 +355,7 @@
   <div id="appMainWrapper" class="min-h-[100dvh] flex flex-col justify-between">
 
     <!-- Compact Non-Clipping Header -->
-    <header class="site-header border-b border-orange-500/30 bg-indigo-950/95">
+    <header id="headerTools" class="site-header border-b border-orange-500/30 bg-indigo-950/95">
       <div class="max-w-5xl mx-auto px-3 sm:px-4 py-2 space-y-1.5">
 
         <!-- Row 1: Full Unclipped Title on Left + Fullscreen & Exit Buttons on Right -->
@@ -317,7 +367,7 @@
             <h1 class="font-title text-base sm:text-xl text-white nowrap">호박마을 안전 탐험</h1>
           </div>
 
-          <div class="flex items-center gap-1 shrink-0">
+          <div class="header-extra flex items-center gap-1 shrink-0">
             <button type="button" id="btnFullscreen" class="nowrap px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-800 hover:bg-indigo-700 text-amber-300 border border-indigo-600 transition flex items-center gap-1 min-h-[30px]" title="전체화면 전환">
               <span aria-hidden="true">⛶</span>
               <span id="fullscreenLabel">전체화면</span>
@@ -330,7 +380,7 @@
         </div>
 
         <!-- Row 2: 3-Column Grade Selector + 4 Quick Tool Buttons -->
-        <div class="grid grid-cols-1 sm:grid-cols-12 gap-1.5 items-center">
+        <div class="utility-row grid grid-cols-1 sm:grid-cols-12 gap-1.5 items-center">
           <div class="sm:col-span-6 grid grid-cols-3 gap-1 bg-indigo-900/90 p-0.5 rounded-xl border border-indigo-700/80" role="group" aria-label="학년 선택">
             <button type="button" id="gradeBtn12" data-grade="1-2" class="grade-btn nowrap px-2 py-1 rounded-lg text-xs font-bold text-indigo-200 hover:text-white transition text-center min-h-[30px]">
               1~2학년
@@ -390,7 +440,7 @@
         </div>
 
         <!-- Row 4: 5-Step Navigation Tabs -->
-        <nav class="grid grid-cols-5 gap-1 pt-0.5" aria-label="놀이 단계 이동">
+        <nav class="header-nav grid grid-cols-5 gap-1 pt-0.5" aria-label="놀이 단계 이동">
           <button type="button" id="navTab1" data-tab="tab-culture" class="nav-tab tab-active nowrap rounded-xl px-1 py-1.5 text-xs sm:text-sm font-title border border-indigo-700/80 glass-panel transition flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 min-h-[42px]">
             <span class="text-sm sm:text-base leading-none">🎃</span>
             <span class="leading-tight">이야기</span>
@@ -417,6 +467,25 @@
 
     <!-- Main Content Container -->
     <main class="max-w-5xl w-full mx-auto px-3 sm:px-4 py-4 space-y-4 flex-1">
+
+      <section id="welcomeScreen" class="welcome-screen" aria-labelledby="welcomeTitle">
+        <p class="welcome-eyebrow">우리 반 할로윈 계기교육</p>
+        <h2 id="welcomeTitle">이야기를 따라가며<br>안전한 선택을 배워요</h2>
+        <p>그림 이야기를 읽고, 사람이 많은 곳에서의 행동과 서로 배려하는 옷차림을 함께 생각해요.</p>
+        <fieldset class="welcome-grades">
+          <legend>우리 반 학년을 고르세요</legend>
+          <button type="button" class="welcome-grade-btn" data-welcome-grade="1-2" aria-pressed="false">1~2학년</button>
+          <button type="button" class="welcome-grade-btn" data-welcome-grade="3-4" aria-pressed="true">3~4학년</button>
+          <button type="button" class="welcome-grade-btn" data-welcome-grade="5-6" aria-pressed="false">5~6학년</button>
+        </fieldset>
+        <button type="button" id="btnStartLesson" class="welcome-start">수업 시작하기 →</button>
+        <p class="welcome-footnote">4단계로 진행해요 · 지난 활동 기록은 이 브라우저에 남아요</p>
+      </section>
+
+      <div id="lessonStage" class="lesson-stage" aria-live="polite">
+        <div><span id="lessonStageNumber">1 / 4</span><strong id="lessonStageTitle" tabindex="-1">문화 이야기</strong><p id="lessonStageHint">그림 이야기를 읽고 문화를 살펴봐요.</p></div>
+        <button type="button" id="btnMoreTools" aria-expanded="false" aria-controls="headerTools">설정·활동 이동</button>
+      </div>
 
       <div class="lesson-hero" aria-label="오늘의 탐험 안내">
         <div>
@@ -597,7 +666,7 @@
             <p id="festivalCompareQuestion" class="festival-question">모든 지역의 할로윈 모습이 같을까요?</p>
             <a id="festivalSourceLink" href="https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/" target="_blank" rel="noopener noreferrer">자료: 미국 의회도서관 ↗</a>
           </div>
-          <button type="button" id="btnToSafety" class="chapter-next">다음: 안전한 선택 연습하기 →</button>
+          <div class="chapter-actions"><button type="button" id="btnOptionalCraft" class="secondary-action">더 해보기 · 호박등 꾸미기</button><button type="button" id="btnToSafety" class="chapter-next">다음: 안전한 선택 연습하기 →</button></div>
         </div>
       </section>
 
@@ -619,7 +688,7 @@
             <h2 class="font-title text-base sm:text-xl text-white nowrap">지금 어떤 행동이 안전할까요?</h2>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div class="safety-reminders grid grid-cols-2 sm:grid-cols-4 gap-2">
             <div class="rounded-xl bg-indigo-950/90 border border-indigo-800 px-2.5 py-2 text-center">
               <div class="text-xs font-title text-amber-300">👉 양방향 통행</div>
               <div class="text-[11px] text-indigo-200">평상시 오른쪽으로 걷기</div>
@@ -664,7 +733,9 @@
           </div>
         </div>
 
-        <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3">
+        <div id="optionalSafetyGame" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3 optional-card">
+          <button type="button" id="btnToggleSafetyGame" class="optional-toggle" aria-expanded="false" aria-controls="safetyGameContents">더 해보기 · 안전한 길 찾기 게임 <span aria-hidden="true">＋</span></button>
+          <div id="safetyGameContents">
           <div class="border-b border-indigo-800 pb-2.5 space-y-1.5">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center gap-1">
@@ -712,13 +783,16 @@
               <div id="gameReasonChoices" class="w-full space-y-1"></div>
             </div>
           </div>
+          </div>
         </div>
       </section>
 
       <!-- ==================== TAB 3: AVATAR DRESS-UP RUNWAY + 12-ITEM COSTUME SORTING & ETIQUETTE ==================== -->
       <section id="tab-costume" class="tab-panel hidden space-y-4">
         <!-- FUN INTERACTIVE ACTIVITY 2: SAFE HALLOWEEN AVATAR DRESS-UP & RUNWAY -->
-        <div id="avatarDressupCard" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
+        <div id="avatarDressupCard" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5 optional-card">
+          <button type="button" id="btnToggleAvatar" class="optional-toggle" aria-expanded="false" aria-controls="avatarContents">더 해보기 · 안전한 옷차림 꾸미기 <span aria-hidden="true">＋</span></button>
+          <div id="avatarContents" class="space-y-3.5">
           <div class="flex items-center justify-between gap-2 border-b border-indigo-800 pb-2">
             <div>
               <span class="nowrap text-xs font-bold text-pink-400">코디 놀이터 · 안전한 코스프레 패션쇼</span>
@@ -784,6 +858,7 @@
           </div>
         </div>
 
+        </div>
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
           <div class="border-b border-indigo-800 pb-2.5 space-y-1">
             <div class="flex items-center justify-between gap-2">
@@ -812,6 +887,7 @@
           </div>
 
           <div id="costumeCardsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5"></div>
+          <div class="costume-pager"><button type="button" id="btnPrevCostumePage">← 이전 옷</button><span id="costumePageLabel">1 / 3</span><button type="button" id="btnNextCostumePage">다음 옷 →</button></div>
         </div>
 
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3">
@@ -822,6 +898,7 @@
             </span>
           </div>
           <div id="etiquetteChecklist" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+          <button type="button" id="btnToQuiz" class="chapter-next">다음: 내 생각 확인하기 →</button>
         </div>
       </section>
 
@@ -900,19 +977,19 @@
         <div id="learningResultSummary" class="glass-card rounded-xl p-4 space-y-2" aria-live="polite"></div>
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
           <div class="border-b border-indigo-800 pb-2.5 space-y-1">
-            <span class="nowrap text-xs font-bold text-amber-400">놀이 5 · 개인정보 안심 수료증</span>
+            <span class="nowrap text-xs font-bold text-amber-400">배움 기록 · 개인정보는 이 기기에만</span>
             <h2 class="font-title text-base sm:text-xl text-white nowrap">🎖️ 할로윈 안전 대장 임명장</h2>
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
             <div class="lg:col-span-5 glass-panel rounded-2xl p-4 space-y-3">
-              <div>
+              <div class="cert-advanced">
                 <label for="certSchoolInput" class="block text-xs font-bold text-indigo-200 mb-1">학교 이름</label>
                 <input id="certSchoolInput" type="text" value="" maxlength="40" placeholder="학교명은 선택 사항" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
               </div>
 
-              <div class="grid grid-cols-2 gap-2">
-                <div>
+              <div class="cert-identity-row grid grid-cols-2 gap-2">
+                <div class="cert-advanced">
                   <label for="certClassInput" class="block text-xs font-bold text-indigo-200 mb-1">학년 / 반</label>
                   <input id="certClassInput" type="text" value="3학년 1반" maxlength="15" placeholder="예: 3학년 1반" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
                 </div>
@@ -939,7 +1016,7 @@
               </div>
 
               <!-- Certificate Sticker & Theme Customizer -->
-              <div class="grid grid-cols-2 gap-2 pt-1">
+              <div class="cert-advanced grid grid-cols-2 gap-2 pt-1">
                 <div>
                   <div class="text-xs font-bold text-indigo-200 mb-1 nowrap">임명장 배경 테마</div>
                   <div class="grid grid-cols-3 gap-1">
@@ -959,7 +1036,7 @@
                   </div>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-2">
+              <div class="cert-advanced grid grid-cols-2 gap-2">
                 <button type="button" id="btnDownloadParticipation" class="rounded-xl bg-emerald-600 px-3 py-2 font-bold">참여 확인서 PNG</button>
                 <button type="button" id="btnDownloadResult" class="rounded-xl bg-indigo-600 px-3 py-2 font-bold">학습 결과지 PNG</button>
                 <button type="button" id="btnPrintResult" class="rounded-xl bg-indigo-700 px-3 py-2 font-bold">결과지 인쇄</button>
@@ -4874,7 +4951,7 @@ const THEMES = {
       document.getElementById("btnPrevStory").disabled = state.storyIndex === 0;
       const nextBtn = document.getElementById("btnNextStory");
       if (state.storyIndex === stories.length - 1) {
-        nextBtn.textContent = "호박 꾸미기로 →";
+        nextBtn.textContent = "문화 살펴보기 →";
       } else {
         nextBtn.textContent = "다음 카드 →";
       }
@@ -4985,7 +5062,7 @@ const THEMES = {
 
       document.getElementById("btnPrevScenario").disabled = state.scenarioIndex === 0;
       const nextBtn = document.getElementById("btnNextScenario");
-      nextBtn.textContent = state.scenarioIndex === SAFETY_SCENARIOS.length - 1 ? "첫 약속으로" : "다음 약속 →";
+      nextBtn.textContent = state.scenarioIndex === SAFETY_SCENARIOS.length - 1 ? "다음: 옷차림 생각하기 →" : "다음 약속 →";
       renderSafetyFollowup();
     }
 
@@ -5272,14 +5349,14 @@ const THEMES = {
       ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(120,100);ctx.lineTo(460,58);ctx.lineTo(545,46);ctx.stroke();
       ctx.strokeStyle='#7f1d1d';ctx.lineWidth=32;
       ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(230,165);ctx.lineTo(400,170);ctx.stroke();
-      ctx.fillStyle='#fecaca';ctx.font='bold 12px sans-serif';ctx.fillText('🔴 혼잡한 길',220,205);
+      ctx.fillStyle='#fecaca';ctx.font='bold 12px "Gowun Dodum", sans-serif';ctx.fillText('🔴 혼잡한 길',220,205);
       const e=safetyGame.exitZone;
       ctx.fillStyle='#047857';ctx.fillRect(e.x,e.y,e.w,e.h);
-      ctx.fillStyle='white';ctx.font='bold 13px sans-serif';ctx.fillText('출구',e.x+18,e.y+29);
+      ctx.fillStyle='white';ctx.font='bold 13px "Gowun Dodum", sans-serif';ctx.fillText('출구',e.x+18,e.y+29);
       safetyGame.hazards.forEach(h=>{ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.fillStyle='#be123c88';ctx.fill();ctx.strokeStyle='#fb7185';ctx.stroke();});
       ctx.beginPath();ctx.arc(x,y,13,0,Math.PI*2);ctx.fillStyle='#f97316';ctx.fill();
-      ctx.fillStyle='white';ctx.font='16px sans-serif';ctx.fillText(state.avatar.char || '🧒',x-9,y+5);
-      if(safetyGame.won){ctx.fillStyle='#0f172adc';ctx.fillRect(0,0,600,250);ctx.fillStyle='#fde68a';ctx.font='bold 20px sans-serif';ctx.fillText('이동 가능한 출구를 찾았어요!',132,120);}
+      ctx.fillStyle='white';ctx.font='16px "Gowun Dodum", sans-serif';ctx.fillText(state.avatar.char || '🧒',x-9,y+5);
+      if(safetyGame.won){ctx.fillStyle='#0f172adc';ctx.fillRect(0,0,600,250);ctx.fillStyle='#fde68a';ctx.font='bold 20px "Gowun Dodum", sans-serif';ctx.fillText('이동 가능한 출구를 찾았어요!',132,120);}
     }
     function gameLoop(now=performance.now()) {
       if(gameAnimId!==null || safetyGame.paused || !safetyGame.running || state.activeTab!=='tab-safety' || document.hidden) return;
@@ -5309,17 +5386,19 @@ const THEMES = {
       syncButtonGroup(".cert-sticker-btn", "data-sticker", state.certSticker);
     }
 
+    let costumePage = 0;
     function renderCostumeCards() {
       const grid = document.getElementById("costumeCardsGrid");
       grid.innerHTML = "";
       let correctCount = 0;
 
-      COSTUME_ITEMS.forEach(item => {
+      COSTUME_ITEMS.forEach((item, itemIndex) => {
         const chosen = state.costumeChoices[item.id];
         const hasAnswered = chosen !== undefined;
         const isCorrect = hasAnswered && chosen === item.safe;
         if (isCorrect) correctCount++;
 
+        if (Math.floor(itemIndex / 4) !== costumePage) return;
         const card = document.createElement("div");
         card.className = `glass-panel rounded-2xl p-3 flex flex-col justify-between border transition ${
           !hasAnswered
@@ -5392,6 +5471,9 @@ const THEMES = {
       });
 
       document.getElementById("costumeScoreBadge").textContent = `${correctCount} / ${COSTUME_ITEMS.length}`;
+      document.getElementById('costumePageLabel').textContent = `${costumePage + 1} / ${Math.ceil(COSTUME_ITEMS.length / 4)}`;
+      document.getElementById('btnPrevCostumePage').disabled = costumePage === 0;
+      document.getElementById('btnNextCostumePage').disabled = costumePage === Math.ceil(COSTUME_ITEMS.length / 4) - 1;
       if (correctCount === COSTUME_ITEMS.length) {
         unlockStamp("s3", "놀이 3: 옷 고르기 놀이");
       }
@@ -5550,7 +5632,7 @@ const THEMES = {
     }
 
 
-    const RESULT_FONT = '"Malgun Gothic", "Apple SD Gothic Neo", sans-serif';
+    const RESULT_FONT = '"Gowun Dodum", "Malgun Gothic", sans-serif';
     const REASON_LABELS = {vision:'앞이 잘 보이는 옷', movement:'움직이기 편한 옷', props:'뾰족하지 않은 소품', friends:'친구를 배려하는 모습'};
     function safeLabel(value, fallback, limit=160) {
       return typeof value==='string' && value.trim() ? value.trim().slice(0,limit) : fallback;
@@ -5598,9 +5680,9 @@ const THEMES = {
         state.legacy ? `이전 활동 기록: ${state.legacy.grade||'학년 미상'} · 스탬프 ${Object.values(state.legacy.stamps).filter(Boolean).length}개 · 사탕 ${state.legacy.candyPoints}점 (현재 회차와 별도)` : '이전 활동 기록 없음',
         state.storageAvailable ? '진행 기록은 현재 기기·브라우저에 저장됩니다.' : '현재 저장되지 않습니다. 탭을 닫기 전에 JSON으로 내보내세요.'
       ];
-      lines.forEach(line=>{const p=document.createElement('p');p.textContent=line;summary.appendChild(p);});
+      lines.forEach((line,index)=>{const p=document.createElement('p');p.textContent=line;if(index>=3)p.className='teacher-summary-detail';summary.appendChild(p);});
       const remaining=SAFETY_GOALS.filter(goal=>!state.safetyConfirmed[goal.id] || state.safetyConfirmed[goal.id].contentVersion!==SAFETY_CONTENT_VERSION);
-      if(remaining.length){const p=document.createElement('p');p.textContent=`다시 확인할 목표: ${remaining.map(g=>g.title).join(', ')}`;summary.appendChild(p);}
+      if(remaining.length){const p=document.createElement('p');p.className='teacher-summary-detail';p.textContent=`다시 확인할 목표: ${remaining.map(g=>g.title).join(', ')}`;summary.appendChild(p);}
       const certButton=document.getElementById('btnDownloadCert');
       const participationButton=document.getElementById('btnDownloadParticipation');
       if(certButton)certButton.disabled=!canDownloadSafetyCertificate();
@@ -5733,12 +5815,28 @@ const THEMES = {
 
 
     // ==================== NAVIGATION & GRADE SWITCHING ====================
+    function syncWelcomeGrade() {
+      document.querySelectorAll('[data-welcome-grade]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.welcomeGrade === state.grade)));
+    }
+    const lessonSteps = {
+      'tab-culture':['1 / 4','문화 이야기','그림 이야기를 읽고 문화를 살펴봐요.'],
+      'tab-safety':['2 / 4','안전한 선택','여섯 가지 상황에서 안전한 행동을 골라요.'],
+      'tab-costume':['3 / 4','배려하는 옷차림','옷과 소품을 살피고 친구와의 약속을 정해요.'],
+      'tab-quiz':['4 / 4','생각 정리','배운 내용을 질문으로 확인해요.'],
+      'tab-cert':['마무리','나의 배움 기록','오늘의 결과를 보고 안전 약속을 남겨요.']
+    };
+    function enterLesson() {
+      document.body.classList.remove('lesson-not-started');
+      try { sessionStorage.setItem('halloween-lesson-started', '1'); } catch (_) {}
+      document.getElementById('lessonStageTitle').focus();
+    }
     function renderAllLearning() {
       document.querySelectorAll('.grade-btn').forEach(btn=>{
         const active=btn.dataset.grade===state.grade;
         btn.classList.toggle('grade-active',active);
         btn.setAttribute('aria-pressed',String(active));
       });
+      syncWelcomeGrade();
       renderStamps();renderCandyHeader();renderStorySlide();renderLanternWorkshop();
       renderScenario();renderThemeSituations();renderAvatarDressup();renderCostumeCards();
       renderEtiquetteChecklist();renderQuiz();renderTeacherSettings();
@@ -5806,6 +5904,10 @@ const THEMES = {
       stopSpeaking();
       if (state.activeTab === 'tab-safety' && tabId !== 'tab-safety') pauseSafetyGame();
       state.activeTab = tabId;
+      const step = lessonSteps[tabId] || lessonSteps['tab-culture'];
+      document.getElementById('lessonStageNumber').textContent = step[0];
+      document.getElementById('lessonStageTitle').textContent = step[1];
+      document.getElementById('lessonStageHint').textContent = step[2];
       document.querySelectorAll(".tab-panel").forEach(panel => {
         if (panel.id === tabId) {
           panel.classList.remove("hidden");
@@ -5837,6 +5939,7 @@ const THEMES = {
       pauseSafetyGame();
       rememberGrade();
       state.grade = gradeKey;
+      syncWelcomeGrade();
       state.teacher.grade = gradeKey;
       restoreGrade(gradeKey);
       saveProgress();
@@ -5885,6 +5988,10 @@ const THEMES = {
         offlineStatus.textContent='단독 파일 · 인터넷 없이 핵심 학습 가능';
       }
       loadSavedProgress();
+      if (state.activeTab !== 'tab-culture' || Object.values(state.stamps).some(Boolean)) {
+        document.getElementById('btnStartLesson').textContent = '이어서 시작하기 →';
+      }
+      try { if (sessionStorage.getItem('halloween-lesson-started') === '1') document.body.classList.remove('lesson-not-started'); } catch (_) {}
       const sharedTeacher = teacherFromUrl();
       if (sharedTeacher) {
         state.teacher = sharedTeacher;
@@ -5893,7 +6000,7 @@ const THEMES = {
         saveProgress();
       }
 
-      // Re-render certificate once Google Fonts finish loading so Jua/Noto Sans KR appear crisply
+      // Re-render exported artwork after the bundled Korean font is ready.
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => {
           renderCertificateCanvas();
@@ -6005,6 +6112,34 @@ const THEMES = {
           switchGrade(btn.getAttribute("data-grade"));
         });
       });
+      document.querySelectorAll('[data-welcome-grade]').forEach(button => button.addEventListener('click', () => switchGrade(button.dataset.welcomeGrade)));
+      document.getElementById('btnStartLesson').addEventListener('click', () => {
+        enterLesson();
+        switchTab(state.activeTab || 'tab-culture');
+      });
+      document.getElementById('btnMoreTools').addEventListener('click', () => {
+        const open = document.body.classList.toggle('tools-open');
+        document.getElementById('btnMoreTools').setAttribute('aria-expanded', String(open));
+        try { sessionStorage.setItem('halloween-tools-open', String(open)); } catch (_) {}
+      });
+      try {
+        if (sessionStorage.getItem('halloween-tools-open') === 'true') {
+          document.body.classList.add('tools-open');
+          document.getElementById('btnMoreTools').setAttribute('aria-expanded', 'true');
+        }
+      } catch (_) {}
+      [['btnToggleSafetyGame','optionalSafetyGame'],['btnToggleAvatar','avatarDressupCard']].forEach(([buttonId,cardId]) => {
+        const button=document.getElementById(buttonId);
+        button.addEventListener('click', () => {
+          const open=document.getElementById(cardId).classList.toggle('is-open');
+          button.setAttribute('aria-expanded', String(open));
+          if(open && cardId==='optionalSafetyGame') setTimeout(resizeSafetyCanvas, 50);
+        });
+      });
+      document.getElementById('btnOptionalCraft').addEventListener('click', () => setCultureStage('craft', true));
+      document.getElementById('btnToQuiz').addEventListener('click', () => switchTab('tab-quiz'));
+      document.getElementById('btnPrevCostumePage').addEventListener('click', () => { costumePage=Math.max(0,costumePage-1);renderCostumeCards(); });
+      document.getElementById('btnNextCostumePage').addEventListener('click', () => { costumePage=Math.min(Math.ceil(COSTUME_ITEMS.length/4)-1,costumePage+1);renderCostumeCards(); });
 
       document.querySelectorAll(".nav-tab").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -6108,7 +6243,7 @@ const THEMES = {
           playSound("click");
           renderStorySlide();
         } else {
-          setCultureStage('craft', true);
+          setCultureStage('compare', true);
         }
       });
 
@@ -6146,7 +6281,8 @@ const THEMES = {
         if (state.scenarioIndex < SAFETY_SCENARIOS.length - 1) {
           state.scenarioIndex++;
         } else {
-          state.scenarioIndex = 0;
+          switchTab('tab-costume');
+          return;
         }
         playSound("click");
         renderScenario();

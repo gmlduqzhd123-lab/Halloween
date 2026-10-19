@@ -12,7 +12,7 @@
   <title>호박마을 안전 탐험 | 초등 할로윈 수업</title>
   <!-- APP_STYLE -->
 </head>
-<body class="storybook antialiased selection:bg-orange-200 selection:text-slate-900">
+<body class="storybook lesson-not-started antialiased selection:bg-orange-200 selection:text-slate-900">
 
   <!-- Top Notification Toast & Candy Confetti Layer -->
   <div id="toastContainer" class="fixed top-3 right-3 left-3 sm:left-auto z-50 flex flex-col items-center sm:items-end gap-2 pointer-events-none" role="status" aria-live="polite"></div>
@@ -23,7 +23,7 @@
   <div id="appMainWrapper" class="min-h-[100dvh] flex flex-col justify-between">
 
     <!-- Compact Non-Clipping Header -->
-    <header class="site-header border-b border-orange-500/30 bg-indigo-950/95">
+    <header id="headerTools" class="site-header border-b border-orange-500/30 bg-indigo-950/95">
       <div class="max-w-5xl mx-auto px-3 sm:px-4 py-2 space-y-1.5">
 
         <!-- Row 1: Full Unclipped Title on Left + Fullscreen & Exit Buttons on Right -->
@@ -35,7 +35,7 @@
             <h1 class="font-title text-base sm:text-xl text-white nowrap">호박마을 안전 탐험</h1>
           </div>
 
-          <div class="flex items-center gap-1 shrink-0">
+          <div class="header-extra flex items-center gap-1 shrink-0">
             <button type="button" id="btnFullscreen" class="nowrap px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-800 hover:bg-indigo-700 text-amber-300 border border-indigo-600 transition flex items-center gap-1 min-h-[30px]" title="전체화면 전환">
               <span aria-hidden="true">⛶</span>
               <span id="fullscreenLabel">전체화면</span>
@@ -48,7 +48,7 @@
         </div>
 
         <!-- Row 2: 3-Column Grade Selector + 4 Quick Tool Buttons -->
-        <div class="grid grid-cols-1 sm:grid-cols-12 gap-1.5 items-center">
+        <div class="utility-row grid grid-cols-1 sm:grid-cols-12 gap-1.5 items-center">
           <div class="sm:col-span-6 grid grid-cols-3 gap-1 bg-indigo-900/90 p-0.5 rounded-xl border border-indigo-700/80" role="group" aria-label="학년 선택">
             <button type="button" id="gradeBtn12" data-grade="1-2" class="grade-btn nowrap px-2 py-1 rounded-lg text-xs font-bold text-indigo-200 hover:text-white transition text-center min-h-[30px]">
               1~2학년
@@ -108,7 +108,7 @@
         </div>
 
         <!-- Row 4: 5-Step Navigation Tabs -->
-        <nav class="grid grid-cols-5 gap-1 pt-0.5" aria-label="놀이 단계 이동">
+        <nav class="header-nav grid grid-cols-5 gap-1 pt-0.5" aria-label="놀이 단계 이동">
           <button type="button" id="navTab1" data-tab="tab-culture" class="nav-tab tab-active nowrap rounded-xl px-1 py-1.5 text-xs sm:text-sm font-title border border-indigo-700/80 glass-panel transition flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 min-h-[42px]">
             <span class="text-sm sm:text-base leading-none">🎃</span>
             <span class="leading-tight">이야기</span>
@@ -135,6 +135,25 @@
 
     <!-- Main Content Container -->
     <main class="max-w-5xl w-full mx-auto px-3 sm:px-4 py-4 space-y-4 flex-1">
+
+      <section id="welcomeScreen" class="welcome-screen" aria-labelledby="welcomeTitle">
+        <p class="welcome-eyebrow">우리 반 할로윈 계기교육</p>
+        <h2 id="welcomeTitle">이야기를 따라가며<br>안전한 선택을 배워요</h2>
+        <p>그림 이야기를 읽고, 사람이 많은 곳에서의 행동과 서로 배려하는 옷차림을 함께 생각해요.</p>
+        <fieldset class="welcome-grades">
+          <legend>우리 반 학년을 고르세요</legend>
+          <button type="button" class="welcome-grade-btn" data-welcome-grade="1-2" aria-pressed="false">1~2학년</button>
+          <button type="button" class="welcome-grade-btn" data-welcome-grade="3-4" aria-pressed="true">3~4학년</button>
+          <button type="button" class="welcome-grade-btn" data-welcome-grade="5-6" aria-pressed="false">5~6학년</button>
+        </fieldset>
+        <button type="button" id="btnStartLesson" class="welcome-start">수업 시작하기 →</button>
+        <p class="welcome-footnote">4단계로 진행해요 · 지난 활동 기록은 이 브라우저에 남아요</p>
+      </section>
+
+      <div id="lessonStage" class="lesson-stage" aria-live="polite">
+        <div><span id="lessonStageNumber">1 / 4</span><strong id="lessonStageTitle" tabindex="-1">문화 이야기</strong><p id="lessonStageHint">그림 이야기를 읽고 문화를 살펴봐요.</p></div>
+        <button type="button" id="btnMoreTools" aria-expanded="false" aria-controls="headerTools">설정·활동 이동</button>
+      </div>
 
       <div class="lesson-hero" aria-label="오늘의 탐험 안내">
         <div>
@@ -315,7 +334,7 @@
             <p id="festivalCompareQuestion" class="festival-question">모든 지역의 할로윈 모습이 같을까요?</p>
             <a id="festivalSourceLink" href="https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/" target="_blank" rel="noopener noreferrer">자료: 미국 의회도서관 ↗</a>
           </div>
-          <button type="button" id="btnToSafety" class="chapter-next">다음: 안전한 선택 연습하기 →</button>
+          <div class="chapter-actions"><button type="button" id="btnOptionalCraft" class="secondary-action">더 해보기 · 호박등 꾸미기</button><button type="button" id="btnToSafety" class="chapter-next">다음: 안전한 선택 연습하기 →</button></div>
         </div>
       </section>
 
@@ -337,7 +356,7 @@
             <h2 class="font-title text-base sm:text-xl text-white nowrap">지금 어떤 행동이 안전할까요?</h2>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div class="safety-reminders grid grid-cols-2 sm:grid-cols-4 gap-2">
             <div class="rounded-xl bg-indigo-950/90 border border-indigo-800 px-2.5 py-2 text-center">
               <div class="text-xs font-title text-amber-300">👉 양방향 통행</div>
               <div class="text-[11px] text-indigo-200">평상시 오른쪽으로 걷기</div>
@@ -382,7 +401,9 @@
           </div>
         </div>
 
-        <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3">
+        <div id="optionalSafetyGame" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3 optional-card">
+          <button type="button" id="btnToggleSafetyGame" class="optional-toggle" aria-expanded="false" aria-controls="safetyGameContents">더 해보기 · 안전한 길 찾기 게임 <span aria-hidden="true">＋</span></button>
+          <div id="safetyGameContents">
           <div class="border-b border-indigo-800 pb-2.5 space-y-1.5">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center gap-1">
@@ -430,13 +451,16 @@
               <div id="gameReasonChoices" class="w-full space-y-1"></div>
             </div>
           </div>
+          </div>
         </div>
       </section>
 
       <!-- ==================== TAB 3: AVATAR DRESS-UP RUNWAY + 12-ITEM COSTUME SORTING & ETIQUETTE ==================== -->
       <section id="tab-costume" class="tab-panel hidden space-y-4">
         <!-- FUN INTERACTIVE ACTIVITY 2: SAFE HALLOWEEN AVATAR DRESS-UP & RUNWAY -->
-        <div id="avatarDressupCard" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
+        <div id="avatarDressupCard" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5 optional-card">
+          <button type="button" id="btnToggleAvatar" class="optional-toggle" aria-expanded="false" aria-controls="avatarContents">더 해보기 · 안전한 옷차림 꾸미기 <span aria-hidden="true">＋</span></button>
+          <div id="avatarContents" class="space-y-3.5">
           <div class="flex items-center justify-between gap-2 border-b border-indigo-800 pb-2">
             <div>
               <span class="nowrap text-xs font-bold text-pink-400">코디 놀이터 · 안전한 코스프레 패션쇼</span>
@@ -502,6 +526,7 @@
           </div>
         </div>
 
+        </div>
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
           <div class="border-b border-indigo-800 pb-2.5 space-y-1">
             <div class="flex items-center justify-between gap-2">
@@ -530,6 +555,7 @@
           </div>
 
           <div id="costumeCardsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5"></div>
+          <div class="costume-pager"><button type="button" id="btnPrevCostumePage">← 이전 옷</button><span id="costumePageLabel">1 / 3</span><button type="button" id="btnNextCostumePage">다음 옷 →</button></div>
         </div>
 
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3">
@@ -540,6 +566,7 @@
             </span>
           </div>
           <div id="etiquetteChecklist" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+          <button type="button" id="btnToQuiz" class="chapter-next">다음: 내 생각 확인하기 →</button>
         </div>
       </section>
 
@@ -618,19 +645,19 @@
         <div id="learningResultSummary" class="glass-card rounded-xl p-4 space-y-2" aria-live="polite"></div>
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
           <div class="border-b border-indigo-800 pb-2.5 space-y-1">
-            <span class="nowrap text-xs font-bold text-amber-400">놀이 5 · 개인정보 안심 수료증</span>
+            <span class="nowrap text-xs font-bold text-amber-400">배움 기록 · 개인정보는 이 기기에만</span>
             <h2 class="font-title text-base sm:text-xl text-white nowrap">🎖️ 할로윈 안전 대장 임명장</h2>
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
             <div class="lg:col-span-5 glass-panel rounded-2xl p-4 space-y-3">
-              <div>
+              <div class="cert-advanced">
                 <label for="certSchoolInput" class="block text-xs font-bold text-indigo-200 mb-1">학교 이름</label>
                 <input id="certSchoolInput" type="text" value="" maxlength="40" placeholder="학교명은 선택 사항" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
               </div>
 
-              <div class="grid grid-cols-2 gap-2">
-                <div>
+              <div class="cert-identity-row grid grid-cols-2 gap-2">
+                <div class="cert-advanced">
                   <label for="certClassInput" class="block text-xs font-bold text-indigo-200 mb-1">학년 / 반</label>
                   <input id="certClassInput" type="text" value="3학년 1반" maxlength="15" placeholder="예: 3학년 1반" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
                 </div>
@@ -657,7 +684,7 @@
               </div>
 
               <!-- Certificate Sticker & Theme Customizer -->
-              <div class="grid grid-cols-2 gap-2 pt-1">
+              <div class="cert-advanced grid grid-cols-2 gap-2 pt-1">
                 <div>
                   <div class="text-xs font-bold text-indigo-200 mb-1 nowrap">임명장 배경 테마</div>
                   <div class="grid grid-cols-3 gap-1">
@@ -677,7 +704,7 @@
                   </div>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-2">
+              <div class="cert-advanced grid grid-cols-2 gap-2">
                 <button type="button" id="btnDownloadParticipation" class="rounded-xl bg-emerald-600 px-3 py-2 font-bold">참여 확인서 PNG</button>
                 <button type="button" id="btnDownloadResult" class="rounded-xl bg-indigo-600 px-3 py-2 font-bold">학습 결과지 PNG</button>
                 <button type="button" id="btnPrintResult" class="rounded-xl bg-indigo-700 px-3 py-2 font-bold">결과지 인쇄</button>
