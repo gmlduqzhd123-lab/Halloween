@@ -1,0 +1,5018 @@
+//---------------------------------------------------------------------
+//
+// QR Code Generator for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+// The word 'QR Code' is registered trademark of
+// DENSO WAVE INCORPORATED
+//  http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+
+var qrcode = function() {
+
+  //---------------------------------------------------------------------
+  // qrcode
+  //---------------------------------------------------------------------
+
+  /**
+   * qrcode
+   * @param typeNumber 1 to 40
+   * @param errorCorrectionLevel 'L','M','Q','H'
+   */
+  var qrcode = function(typeNumber, errorCorrectionLevel) {
+
+    var PAD0 = 0xEC;
+    var PAD1 = 0x11;
+
+    var _typeNumber = typeNumber;
+    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
+    var _modules = null;
+    var _moduleCount = 0;
+    var _dataCache = null;
+    var _dataList = [];
+
+    var _this = {};
+
+    var makeImpl = function(test, maskPattern) {
+
+      _moduleCount = _typeNumber * 4 + 17;
+      _modules = function(moduleCount) {
+        var modules = new Array(moduleCount);
+        for (var row = 0; row < moduleCount; row += 1) {
+          modules[row] = new Array(moduleCount);
+          for (var col = 0; col < moduleCount; col += 1) {
+            modules[row][col] = null;
+          }
+        }
+        return modules;
+      }(_moduleCount);
+
+      setupPositionProbePattern(0, 0);
+      setupPositionProbePattern(_moduleCount - 7, 0);
+      setupPositionProbePattern(0, _moduleCount - 7);
+      setupPositionAdjustPattern();
+      setupTimingPattern();
+      setupTypeInfo(test, maskPattern);
+
+      if (_typeNumber >= 7) {
+        setupTypeNumber(test);
+      }
+
+      if (_dataCache == null) {
+        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
+      }
+
+      mapData(_dataCache, maskPattern);
+    };
+
+    var setupPositionProbePattern = function(row, col) {
+
+      for (var r = -1; r <= 7; r += 1) {
+
+        if (row + r <= -1 || _moduleCount <= row + r) continue;
+
+        for (var c = -1; c <= 7; c += 1) {
+
+          if (col + c <= -1 || _moduleCount <= col + c) continue;
+
+          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
+              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
+              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+            _modules[row + r][col + c] = true;
+          } else {
+            _modules[row + r][col + c] = false;
+          }
+        }
+      }
+    };
+
+    var getBestMaskPattern = function() {
+
+      var minLostPoint = 0;
+      var pattern = 0;
+
+      for (var i = 0; i < 8; i += 1) {
+
+        makeImpl(true, i);
+
+        var lostPoint = QRUtil.getLostPoint(_this);
+
+        if (i == 0 || minLostPoint > lostPoint) {
+          minLostPoint = lostPoint;
+          pattern = i;
+        }
+      }
+
+      return pattern;
+    };
+
+    var setupTimingPattern = function() {
+
+      for (var r = 8; r < _moduleCount - 8; r += 1) {
+        if (_modules[r][6] != null) {
+          continue;
+        }
+        _modules[r][6] = (r % 2 == 0);
+      }
+
+      for (var c = 8; c < _moduleCount - 8; c += 1) {
+        if (_modules[6][c] != null) {
+          continue;
+        }
+        _modules[6][c] = (c % 2 == 0);
+      }
+    };
+
+    var setupPositionAdjustPattern = function() {
+
+      var pos = QRUtil.getPatternPosition(_typeNumber);
+
+      for (var i = 0; i < pos.length; i += 1) {
+
+        for (var j = 0; j < pos.length; j += 1) {
+
+          var row = pos[i];
+          var col = pos[j];
+
+          if (_modules[row][col] != null) {
+            continue;
+          }
+
+          for (var r = -2; r <= 2; r += 1) {
+
+            for (var c = -2; c <= 2; c += 1) {
+
+              if (r == -2 || r == 2 || c == -2 || c == 2
+                  || (r == 0 && c == 0) ) {
+                _modules[row + r][col + c] = true;
+              } else {
+                _modules[row + r][col + c] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    var setupTypeNumber = function(test) {
+
+      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
+      }
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+      }
+    };
+
+    var setupTypeInfo = function(test, maskPattern) {
+
+      var data = (_errorCorrectionLevel << 3) | maskPattern;
+      var bits = QRUtil.getBCHTypeInfo(data);
+
+      // vertical
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 6) {
+          _modules[i][8] = mod;
+        } else if (i < 8) {
+          _modules[i + 1][8] = mod;
+        } else {
+          _modules[_moduleCount - 15 + i][8] = mod;
+        }
+      }
+
+      // horizontal
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 8) {
+          _modules[8][_moduleCount - i - 1] = mod;
+        } else if (i < 9) {
+          _modules[8][15 - i - 1 + 1] = mod;
+        } else {
+          _modules[8][15 - i - 1] = mod;
+        }
+      }
+
+      // fixed module
+      _modules[_moduleCount - 8][8] = (!test);
+    };
+
+    var mapData = function(data, maskPattern) {
+
+      var inc = -1;
+      var row = _moduleCount - 1;
+      var bitIndex = 7;
+      var byteIndex = 0;
+      var maskFunc = QRUtil.getMaskFunction(maskPattern);
+
+      for (var col = _moduleCount - 1; col > 0; col -= 2) {
+
+        if (col == 6) col -= 1;
+
+        while (true) {
+
+          for (var c = 0; c < 2; c += 1) {
+
+            if (_modules[row][col - c] == null) {
+
+              var dark = false;
+
+              if (byteIndex < data.length) {
+                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
+              }
+
+              var mask = maskFunc(row, col - c);
+
+              if (mask) {
+                dark = !dark;
+              }
+
+              _modules[row][col - c] = dark;
+              bitIndex -= 1;
+
+              if (bitIndex == -1) {
+                byteIndex += 1;
+                bitIndex = 7;
+              }
+            }
+          }
+
+          row += inc;
+
+          if (row < 0 || _moduleCount <= row) {
+            row -= inc;
+            inc = -inc;
+            break;
+          }
+        }
+      }
+    };
+
+    var createBytes = function(buffer, rsBlocks) {
+
+      var offset = 0;
+
+      var maxDcCount = 0;
+      var maxEcCount = 0;
+
+      var dcdata = new Array(rsBlocks.length);
+      var ecdata = new Array(rsBlocks.length);
+
+      for (var r = 0; r < rsBlocks.length; r += 1) {
+
+        var dcCount = rsBlocks[r].dataCount;
+        var ecCount = rsBlocks[r].totalCount - dcCount;
+
+        maxDcCount = Math.max(maxDcCount, dcCount);
+        maxEcCount = Math.max(maxEcCount, ecCount);
+
+        dcdata[r] = new Array(dcCount);
+
+        for (var i = 0; i < dcdata[r].length; i += 1) {
+          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
+        }
+        offset += dcCount;
+
+        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+        var modPoly = rawPoly.mod(rsPoly);
+        ecdata[r] = new Array(rsPoly.getLength() - 1);
+        for (var i = 0; i < ecdata[r].length; i += 1) {
+          var modIndex = i + modPoly.getLength() - ecdata[r].length;
+          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
+        }
+      }
+
+      var totalCodeCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalCodeCount += rsBlocks[i].totalCount;
+      }
+
+      var data = new Array(totalCodeCount);
+      var index = 0;
+
+      for (var i = 0; i < maxDcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < dcdata[r].length) {
+            data[index] = dcdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < maxEcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < ecdata[r].length) {
+            data[index] = ecdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      return data;
+    };
+
+    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
+
+      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
+
+      var buffer = qrBitBuffer();
+
+      for (var i = 0; i < dataList.length; i += 1) {
+        var data = dataList[i];
+        buffer.put(data.getMode(), 4);
+        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+        data.write(buffer);
+      }
+
+      // calc num max data.
+      var totalDataCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalDataCount += rsBlocks[i].dataCount;
+      }
+
+      if (buffer.getLengthInBits() > totalDataCount * 8) {
+        throw 'code length overflow. ('
+          + buffer.getLengthInBits()
+          + '>'
+          + totalDataCount * 8
+          + ')';
+      }
+
+      // end code
+      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+        buffer.put(0, 4);
+      }
+
+      // padding
+      while (buffer.getLengthInBits() % 8 != 0) {
+        buffer.putBit(false);
+      }
+
+      // padding
+      while (true) {
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD0, 8);
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD1, 8);
+      }
+
+      return createBytes(buffer, rsBlocks);
+    };
+
+    _this.addData = function(data, mode) {
+
+      mode = mode || 'Byte';
+
+      var newData = null;
+
+      switch(mode) {
+      case 'Numeric' :
+        newData = qrNumber(data);
+        break;
+      case 'Alphanumeric' :
+        newData = qrAlphaNum(data);
+        break;
+      case 'Byte' :
+        newData = qr8BitByte(data);
+        break;
+      case 'Kanji' :
+        newData = qrKanji(data);
+        break;
+      default :
+        throw 'mode:' + mode;
+      }
+
+      _dataList.push(newData);
+      _dataCache = null;
+    };
+
+    _this.isDark = function(row, col) {
+      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
+        throw row + ',' + col;
+      }
+      return _modules[row][col];
+    };
+
+    _this.getModuleCount = function() {
+      return _moduleCount;
+    };
+
+    _this.make = function() {
+      if (_typeNumber < 1) {
+        var typeNumber = 1;
+
+        for (; typeNumber < 40; typeNumber++) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
+          var buffer = qrBitBuffer();
+
+          for (var i = 0; i < _dataList.length; i++) {
+            var data = _dataList[i];
+            buffer.put(data.getMode(), 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+            data.write(buffer);
+          }
+
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) {
+            totalDataCount += rsBlocks[i].dataCount;
+          }
+
+          if (buffer.getLengthInBits() <= totalDataCount * 8) {
+            break;
+          }
+        }
+
+        _typeNumber = typeNumber;
+      }
+
+      makeImpl(false, getBestMaskPattern() );
+    };
+
+    _this.createTableTag = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var qrHtml = '';
+
+      qrHtml += '<table style="';
+      qrHtml += ' border-width: 0px; border-style: none;';
+      qrHtml += ' border-collapse: collapse;';
+      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
+      qrHtml += '">';
+      qrHtml += '<tbody>';
+
+      for (var r = 0; r < _this.getModuleCount(); r += 1) {
+
+        qrHtml += '<tr>';
+
+        for (var c = 0; c < _this.getModuleCount(); c += 1) {
+          qrHtml += '<td style="';
+          qrHtml += ' border-width: 0px; border-style: none;';
+          qrHtml += ' border-collapse: collapse;';
+          qrHtml += ' padding: 0px; margin: 0px;';
+          qrHtml += ' width: ' + cellSize + 'px;';
+          qrHtml += ' height: ' + cellSize + 'px;';
+          qrHtml += ' background-color: ';
+          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
+          qrHtml += ';';
+          qrHtml += '"/>';
+        }
+
+        qrHtml += '</tr>';
+      }
+
+      qrHtml += '</tbody>';
+      qrHtml += '</table>';
+
+      return qrHtml;
+    };
+
+    _this.createSvgTag = function(cellSize, margin, alt, title) {
+
+      var opts = {};
+      if (typeof arguments[0] == 'object') {
+        // Called by options.
+        opts = arguments[0];
+        // overwrite cellSize and margin.
+        cellSize = opts.cellSize;
+        margin = opts.margin;
+        alt = opts.alt;
+        title = opts.title;
+      }
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      // Compose alt property surrogate
+      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
+      alt.text = alt.text || null;
+      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
+
+      // Compose title property surrogate
+      title = (typeof title === 'string') ? {text: title} : title || {};
+      title.text = title.text || null;
+      title.id = (title.text) ? title.id || 'qrcode-title' : null;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var c, mc, r, mr, qrSvg='', rect;
+
+      rect = 'l' + cellSize + ',0 0,' + cellSize +
+        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
+
+      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
+      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
+      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
+      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
+      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
+          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
+      qrSvg += '>';
+      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
+          escapeXml(title.text) + '</title>' : '';
+      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
+          escapeXml(alt.text) + '</description>' : '';
+      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
+      qrSvg += '<path d="';
+
+      for (r = 0; r < _this.getModuleCount(); r += 1) {
+        mr = r * cellSize + margin;
+        for (c = 0; c < _this.getModuleCount(); c += 1) {
+          if (_this.isDark(r, c) ) {
+            mc = c*cellSize+margin;
+            qrSvg += 'M' + mc + ',' + mr + rect;
+          }
+        }
+      }
+
+      qrSvg += '" stroke="transparent" fill="black"/>';
+      qrSvg += '</svg>';
+
+      return qrSvg;
+    };
+
+    _this.createDataURL = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      return createDataURL(size, size, function(x, y) {
+        if (min <= x && x < max && min <= y && y < max) {
+          var c = Math.floor( (x - min) / cellSize);
+          var r = Math.floor( (y - min) / cellSize);
+          return _this.isDark(r, c)? 0 : 1;
+        } else {
+          return 1;
+        }
+      } );
+    };
+
+    _this.createImgTag = function(cellSize, margin, alt) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+
+      var img = '';
+      img += '<img';
+      img += '\u0020src="';
+      img += _this.createDataURL(cellSize, margin);
+      img += '"';
+      img += '\u0020width="';
+      img += size;
+      img += '"';
+      img += '\u0020height="';
+      img += size;
+      img += '"';
+      if (alt) {
+        img += '\u0020alt="';
+        img += escapeXml(alt);
+        img += '"';
+      }
+      img += '/>';
+
+      return img;
+    };
+
+    var escapeXml = function(s) {
+      var escaped = '';
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charAt(i);
+        switch(c) {
+        case '<': escaped += '&lt;'; break;
+        case '>': escaped += '&gt;'; break;
+        case '&': escaped += '&amp;'; break;
+        case '"': escaped += '&quot;'; break;
+        default : escaped += c; break;
+        }
+      }
+      return escaped;
+    };
+
+    var _createHalfASCII = function(margin) {
+      var cellSize = 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r1, r2, p;
+
+      var blocks = {
+        '██': '█',
+        '█ ': '▀',
+        ' █': '▄',
+        '  ': ' '
+      };
+
+      var blocksLastLineNoMargin = {
+        '██': '▀',
+        '█ ': '▀',
+        ' █': ' ',
+        '  ': ' '
+      };
+
+      var ascii = '';
+      for (y = 0; y < size; y += 2) {
+        r1 = Math.floor((y - min) / cellSize);
+        r2 = Math.floor((y + 1 - min) / cellSize);
+        for (x = 0; x < size; x += 1) {
+          p = '█';
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
+            p = ' ';
+          }
+
+          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
+            p += ' ';
+          }
+          else {
+            p += '█';
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
+        }
+
+        ascii += '\n';
+      }
+
+      if (size % 2 && margin > 0) {
+        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.createASCII = function(cellSize, margin) {
+      cellSize = cellSize || 1;
+
+      if (cellSize < 2) {
+        return _createHalfASCII(margin);
+      }
+
+      cellSize -= 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r, p;
+
+      var white = Array(cellSize+1).join('██');
+      var black = Array(cellSize+1).join('  ');
+
+      var ascii = '';
+      var line = '';
+      for (y = 0; y < size; y += 1) {
+        r = Math.floor( (y - min) / cellSize);
+        line = '';
+        for (x = 0; x < size; x += 1) {
+          p = 1;
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
+            p = 0;
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          line += p ? white : black;
+        }
+
+        for (r = 0; r < cellSize; r += 1) {
+          ascii += line + '\n';
+        }
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.renderTo2dContext = function(context, cellSize) {
+      cellSize = cellSize || 2;
+      var length = _this.getModuleCount();
+      for (var row = 0; row < length; row++) {
+        for (var col = 0; col < length; col++) {
+          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
+          context.fillRect(row * cellSize, col * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrcode.stringToBytes
+  //---------------------------------------------------------------------
+
+  qrcode.stringToBytesFuncs = {
+    'default' : function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        bytes.push(c & 0xff);
+      }
+      return bytes;
+    }
+  };
+
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
+
+  //---------------------------------------------------------------------
+  // qrcode.createStringToBytes
+  //---------------------------------------------------------------------
+
+  /**
+   * @param unicodeData base64 string of byte array.
+   * [16bit Unicode],[16bit Bytes], ...
+   * @param numChars
+   */
+  qrcode.createStringToBytes = function(unicodeData, numChars) {
+
+    // create conversion map.
+
+    var unicodeMap = function() {
+
+      var bin = base64DecodeInputStream(unicodeData);
+      var read = function() {
+        var b = bin.read();
+        if (b == -1) throw 'eof';
+        return b;
+      };
+
+      var count = 0;
+      var unicodeMap = {};
+      while (true) {
+        var b0 = bin.read();
+        if (b0 == -1) break;
+        var b1 = read();
+        var b2 = read();
+        var b3 = read();
+        var k = String.fromCharCode( (b0 << 8) | b1);
+        var v = (b2 << 8) | b3;
+        unicodeMap[k] = v;
+        count += 1;
+      }
+      if (count != numChars) {
+        throw count + ' != ' + numChars;
+      }
+
+      return unicodeMap;
+    }();
+
+    var unknownChar = '?'.charCodeAt(0);
+
+    return function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        if (c < 128) {
+          bytes.push(c);
+        } else {
+          var b = unicodeMap[s.charAt(i)];
+          if (typeof b == 'number') {
+            if ( (b & 0xff) == b) {
+              // 1byte
+              bytes.push(b);
+            } else {
+              // 2bytes
+              bytes.push(b >>> 8);
+              bytes.push(b & 0xff);
+            }
+          } else {
+            bytes.push(unknownChar);
+          }
+        }
+      }
+      return bytes;
+    };
+  };
+
+  //---------------------------------------------------------------------
+  // QRMode
+  //---------------------------------------------------------------------
+
+  var QRMode = {
+    MODE_NUMBER :    1 << 0,
+    MODE_ALPHA_NUM : 1 << 1,
+    MODE_8BIT_BYTE : 1 << 2,
+    MODE_KANJI :     1 << 3
+  };
+
+  //---------------------------------------------------------------------
+  // QRErrorCorrectionLevel
+  //---------------------------------------------------------------------
+
+  var QRErrorCorrectionLevel = {
+    L : 1,
+    M : 0,
+    Q : 3,
+    H : 2
+  };
+
+  //---------------------------------------------------------------------
+  // QRMaskPattern
+  //---------------------------------------------------------------------
+
+  var QRMaskPattern = {
+    PATTERN000 : 0,
+    PATTERN001 : 1,
+    PATTERN010 : 2,
+    PATTERN011 : 3,
+    PATTERN100 : 4,
+    PATTERN101 : 5,
+    PATTERN110 : 6,
+    PATTERN111 : 7
+  };
+
+  //---------------------------------------------------------------------
+  // QRUtil
+  //---------------------------------------------------------------------
+
+  var QRUtil = function() {
+
+    var PATTERN_POSITION_TABLE = [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+      [6, 30, 54],
+      [6, 32, 58],
+      [6, 34, 62],
+      [6, 26, 46, 66],
+      [6, 26, 48, 70],
+      [6, 26, 50, 74],
+      [6, 30, 54, 78],
+      [6, 30, 56, 82],
+      [6, 30, 58, 86],
+      [6, 34, 62, 90],
+      [6, 28, 50, 72, 94],
+      [6, 26, 50, 74, 98],
+      [6, 30, 54, 78, 102],
+      [6, 28, 54, 80, 106],
+      [6, 32, 58, 84, 110],
+      [6, 30, 58, 86, 114],
+      [6, 34, 62, 90, 118],
+      [6, 26, 50, 74, 98, 122],
+      [6, 30, 54, 78, 102, 126],
+      [6, 26, 52, 78, 104, 130],
+      [6, 30, 56, 82, 108, 134],
+      [6, 34, 60, 86, 112, 138],
+      [6, 30, 58, 86, 114, 142],
+      [6, 34, 62, 90, 118, 146],
+      [6, 30, 54, 78, 102, 126, 150],
+      [6, 24, 50, 76, 102, 128, 154],
+      [6, 28, 54, 80, 106, 132, 158],
+      [6, 32, 58, 84, 110, 136, 162],
+      [6, 26, 54, 82, 110, 138, 166],
+      [6, 30, 58, 86, 114, 142, 170]
+    ];
+    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
+    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
+    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
+
+    var _this = {};
+
+    var getBCHDigit = function(data) {
+      var digit = 0;
+      while (data != 0) {
+        digit += 1;
+        data >>>= 1;
+      }
+      return digit;
+    };
+
+    _this.getBCHTypeInfo = function(data) {
+      var d = data << 10;
+      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
+        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
+      }
+      return ( (data << 10) | d) ^ G15_MASK;
+    };
+
+    _this.getBCHTypeNumber = function(data) {
+      var d = data << 12;
+      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
+        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
+      }
+      return (data << 12) | d;
+    };
+
+    _this.getPatternPosition = function(typeNumber) {
+      return PATTERN_POSITION_TABLE[typeNumber - 1];
+    };
+
+    _this.getMaskFunction = function(maskPattern) {
+
+      switch (maskPattern) {
+
+      case QRMaskPattern.PATTERN000 :
+        return function(i, j) { return (i + j) % 2 == 0; };
+      case QRMaskPattern.PATTERN001 :
+        return function(i, j) { return i % 2 == 0; };
+      case QRMaskPattern.PATTERN010 :
+        return function(i, j) { return j % 3 == 0; };
+      case QRMaskPattern.PATTERN011 :
+        return function(i, j) { return (i + j) % 3 == 0; };
+      case QRMaskPattern.PATTERN100 :
+        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
+      case QRMaskPattern.PATTERN101 :
+        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+      case QRMaskPattern.PATTERN110 :
+        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
+      case QRMaskPattern.PATTERN111 :
+        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
+
+      default :
+        throw 'bad maskPattern:' + maskPattern;
+      }
+    };
+
+    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+      var a = qrPolynomial([1], 0);
+      for (var i = 0; i < errorCorrectLength; i += 1) {
+        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
+      }
+      return a;
+    };
+
+    _this.getLengthInBits = function(mode, type) {
+
+      if (1 <= type && type < 10) {
+
+        // 1 - 9
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 10;
+        case QRMode.MODE_ALPHA_NUM : return 9;
+        case QRMode.MODE_8BIT_BYTE : return 8;
+        case QRMode.MODE_KANJI     : return 8;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 27) {
+
+        // 10 - 26
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 12;
+        case QRMode.MODE_ALPHA_NUM : return 11;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 10;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 41) {
+
+        // 27 - 40
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 14;
+        case QRMode.MODE_ALPHA_NUM : return 13;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 12;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else {
+        throw 'type:' + type;
+      }
+    };
+
+    _this.getLostPoint = function(qrcode) {
+
+      var moduleCount = qrcode.getModuleCount();
+
+      var lostPoint = 0;
+
+      // LEVEL1
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount; col += 1) {
+
+          var sameCount = 0;
+          var dark = qrcode.isDark(row, col);
+
+          for (var r = -1; r <= 1; r += 1) {
+
+            if (row + r < 0 || moduleCount <= row + r) {
+              continue;
+            }
+
+            for (var c = -1; c <= 1; c += 1) {
+
+              if (col + c < 0 || moduleCount <= col + c) {
+                continue;
+              }
+
+              if (r == 0 && c == 0) {
+                continue;
+              }
+
+              if (dark == qrcode.isDark(row + r, col + c) ) {
+                sameCount += 1;
+              }
+            }
+          }
+
+          if (sameCount > 5) {
+            lostPoint += (3 + sameCount - 5);
+          }
+        }
+      };
+
+      // LEVEL2
+
+      for (var row = 0; row < moduleCount - 1; row += 1) {
+        for (var col = 0; col < moduleCount - 1; col += 1) {
+          var count = 0;
+          if (qrcode.isDark(row, col) ) count += 1;
+          if (qrcode.isDark(row + 1, col) ) count += 1;
+          if (qrcode.isDark(row, col + 1) ) count += 1;
+          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
+          if (count == 0 || count == 4) {
+            lostPoint += 3;
+          }
+        }
+      }
+
+      // LEVEL3
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount - 6; col += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row, col + 1)
+              &&  qrcode.isDark(row, col + 2)
+              &&  qrcode.isDark(row, col + 3)
+              &&  qrcode.isDark(row, col + 4)
+              && !qrcode.isDark(row, col + 5)
+              &&  qrcode.isDark(row, col + 6) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount - 6; row += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row + 1, col)
+              &&  qrcode.isDark(row + 2, col)
+              &&  qrcode.isDark(row + 3, col)
+              &&  qrcode.isDark(row + 4, col)
+              && !qrcode.isDark(row + 5, col)
+              &&  qrcode.isDark(row + 6, col) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      // LEVEL4
+
+      var darkCount = 0;
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount; row += 1) {
+          if (qrcode.isDark(row, col) ) {
+            darkCount += 1;
+          }
+        }
+      }
+
+      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+      lostPoint += ratio * 10;
+
+      return lostPoint;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // QRMath
+  //---------------------------------------------------------------------
+
+  var QRMath = function() {
+
+    var EXP_TABLE = new Array(256);
+    var LOG_TABLE = new Array(256);
+
+    // initialize tables
+    for (var i = 0; i < 8; i += 1) {
+      EXP_TABLE[i] = 1 << i;
+    }
+    for (var i = 8; i < 256; i += 1) {
+      EXP_TABLE[i] = EXP_TABLE[i - 4]
+        ^ EXP_TABLE[i - 5]
+        ^ EXP_TABLE[i - 6]
+        ^ EXP_TABLE[i - 8];
+    }
+    for (var i = 0; i < 255; i += 1) {
+      LOG_TABLE[EXP_TABLE[i] ] = i;
+    }
+
+    var _this = {};
+
+    _this.glog = function(n) {
+
+      if (n < 1) {
+        throw 'glog(' + n + ')';
+      }
+
+      return LOG_TABLE[n];
+    };
+
+    _this.gexp = function(n) {
+
+      while (n < 0) {
+        n += 255;
+      }
+
+      while (n >= 256) {
+        n -= 255;
+      }
+
+      return EXP_TABLE[n];
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrPolynomial
+  //---------------------------------------------------------------------
+
+  function qrPolynomial(num, shift) {
+
+    if (typeof num.length == 'undefined') {
+      throw num.length + '/' + shift;
+    }
+
+    var _num = function() {
+      var offset = 0;
+      while (offset < num.length && num[offset] == 0) {
+        offset += 1;
+      }
+      var _num = new Array(num.length - offset + shift);
+      for (var i = 0; i < num.length - offset; i += 1) {
+        _num[i] = num[i + offset];
+      }
+      return _num;
+    }();
+
+    var _this = {};
+
+    _this.getAt = function(index) {
+      return _num[index];
+    };
+
+    _this.getLength = function() {
+      return _num.length;
+    };
+
+    _this.multiply = function(e) {
+
+      var num = new Array(_this.getLength() + e.getLength() - 1);
+
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        for (var j = 0; j < e.getLength(); j += 1) {
+          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
+        }
+      }
+
+      return qrPolynomial(num, 0);
+    };
+
+    _this.mod = function(e) {
+
+      if (_this.getLength() - e.getLength() < 0) {
+        return _this;
+      }
+
+      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
+
+      var num = new Array(_this.getLength() );
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        num[i] = _this.getAt(i);
+      }
+
+      for (var i = 0; i < e.getLength(); i += 1) {
+        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
+      }
+
+      // recursive call
+      return qrPolynomial(num, 0).mod(e);
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // QRRSBlock
+  //---------------------------------------------------------------------
+
+  var QRRSBlock = function() {
+
+    var RS_BLOCK_TABLE = [
+
+      // L
+      // M
+      // Q
+      // H
+
+      // 1
+      [1, 26, 19],
+      [1, 26, 16],
+      [1, 26, 13],
+      [1, 26, 9],
+
+      // 2
+      [1, 44, 34],
+      [1, 44, 28],
+      [1, 44, 22],
+      [1, 44, 16],
+
+      // 3
+      [1, 70, 55],
+      [1, 70, 44],
+      [2, 35, 17],
+      [2, 35, 13],
+
+      // 4
+      [1, 100, 80],
+      [2, 50, 32],
+      [2, 50, 24],
+      [4, 25, 9],
+
+      // 5
+      [1, 134, 108],
+      [2, 67, 43],
+      [2, 33, 15, 2, 34, 16],
+      [2, 33, 11, 2, 34, 12],
+
+      // 6
+      [2, 86, 68],
+      [4, 43, 27],
+      [4, 43, 19],
+      [4, 43, 15],
+
+      // 7
+      [2, 98, 78],
+      [4, 49, 31],
+      [2, 32, 14, 4, 33, 15],
+      [4, 39, 13, 1, 40, 14],
+
+      // 8
+      [2, 121, 97],
+      [2, 60, 38, 2, 61, 39],
+      [4, 40, 18, 2, 41, 19],
+      [4, 40, 14, 2, 41, 15],
+
+      // 9
+      [2, 146, 116],
+      [3, 58, 36, 2, 59, 37],
+      [4, 36, 16, 4, 37, 17],
+      [4, 36, 12, 4, 37, 13],
+
+      // 10
+      [2, 86, 68, 2, 87, 69],
+      [4, 69, 43, 1, 70, 44],
+      [6, 43, 19, 2, 44, 20],
+      [6, 43, 15, 2, 44, 16],
+
+      // 11
+      [4, 101, 81],
+      [1, 80, 50, 4, 81, 51],
+      [4, 50, 22, 4, 51, 23],
+      [3, 36, 12, 8, 37, 13],
+
+      // 12
+      [2, 116, 92, 2, 117, 93],
+      [6, 58, 36, 2, 59, 37],
+      [4, 46, 20, 6, 47, 21],
+      [7, 42, 14, 4, 43, 15],
+
+      // 13
+      [4, 133, 107],
+      [8, 59, 37, 1, 60, 38],
+      [8, 44, 20, 4, 45, 21],
+      [12, 33, 11, 4, 34, 12],
+
+      // 14
+      [3, 145, 115, 1, 146, 116],
+      [4, 64, 40, 5, 65, 41],
+      [11, 36, 16, 5, 37, 17],
+      [11, 36, 12, 5, 37, 13],
+
+      // 15
+      [5, 109, 87, 1, 110, 88],
+      [5, 65, 41, 5, 66, 42],
+      [5, 54, 24, 7, 55, 25],
+      [11, 36, 12, 7, 37, 13],
+
+      // 16
+      [5, 122, 98, 1, 123, 99],
+      [7, 73, 45, 3, 74, 46],
+      [15, 43, 19, 2, 44, 20],
+      [3, 45, 15, 13, 46, 16],
+
+      // 17
+      [1, 135, 107, 5, 136, 108],
+      [10, 74, 46, 1, 75, 47],
+      [1, 50, 22, 15, 51, 23],
+      [2, 42, 14, 17, 43, 15],
+
+      // 18
+      [5, 150, 120, 1, 151, 121],
+      [9, 69, 43, 4, 70, 44],
+      [17, 50, 22, 1, 51, 23],
+      [2, 42, 14, 19, 43, 15],
+
+      // 19
+      [3, 141, 113, 4, 142, 114],
+      [3, 70, 44, 11, 71, 45],
+      [17, 47, 21, 4, 48, 22],
+      [9, 39, 13, 16, 40, 14],
+
+      // 20
+      [3, 135, 107, 5, 136, 108],
+      [3, 67, 41, 13, 68, 42],
+      [15, 54, 24, 5, 55, 25],
+      [15, 43, 15, 10, 44, 16],
+
+      // 21
+      [4, 144, 116, 4, 145, 117],
+      [17, 68, 42],
+      [17, 50, 22, 6, 51, 23],
+      [19, 46, 16, 6, 47, 17],
+
+      // 22
+      [2, 139, 111, 7, 140, 112],
+      [17, 74, 46],
+      [7, 54, 24, 16, 55, 25],
+      [34, 37, 13],
+
+      // 23
+      [4, 151, 121, 5, 152, 122],
+      [4, 75, 47, 14, 76, 48],
+      [11, 54, 24, 14, 55, 25],
+      [16, 45, 15, 14, 46, 16],
+
+      // 24
+      [6, 147, 117, 4, 148, 118],
+      [6, 73, 45, 14, 74, 46],
+      [11, 54, 24, 16, 55, 25],
+      [30, 46, 16, 2, 47, 17],
+
+      // 25
+      [8, 132, 106, 4, 133, 107],
+      [8, 75, 47, 13, 76, 48],
+      [7, 54, 24, 22, 55, 25],
+      [22, 45, 15, 13, 46, 16],
+
+      // 26
+      [10, 142, 114, 2, 143, 115],
+      [19, 74, 46, 4, 75, 47],
+      [28, 50, 22, 6, 51, 23],
+      [33, 46, 16, 4, 47, 17],
+
+      // 27
+      [8, 152, 122, 4, 153, 123],
+      [22, 73, 45, 3, 74, 46],
+      [8, 53, 23, 26, 54, 24],
+      [12, 45, 15, 28, 46, 16],
+
+      // 28
+      [3, 147, 117, 10, 148, 118],
+      [3, 73, 45, 23, 74, 46],
+      [4, 54, 24, 31, 55, 25],
+      [11, 45, 15, 31, 46, 16],
+
+      // 29
+      [7, 146, 116, 7, 147, 117],
+      [21, 73, 45, 7, 74, 46],
+      [1, 53, 23, 37, 54, 24],
+      [19, 45, 15, 26, 46, 16],
+
+      // 30
+      [5, 145, 115, 10, 146, 116],
+      [19, 75, 47, 10, 76, 48],
+      [15, 54, 24, 25, 55, 25],
+      [23, 45, 15, 25, 46, 16],
+
+      // 31
+      [13, 145, 115, 3, 146, 116],
+      [2, 74, 46, 29, 75, 47],
+      [42, 54, 24, 1, 55, 25],
+      [23, 45, 15, 28, 46, 16],
+
+      // 32
+      [17, 145, 115],
+      [10, 74, 46, 23, 75, 47],
+      [10, 54, 24, 35, 55, 25],
+      [19, 45, 15, 35, 46, 16],
+
+      // 33
+      [17, 145, 115, 1, 146, 116],
+      [14, 74, 46, 21, 75, 47],
+      [29, 54, 24, 19, 55, 25],
+      [11, 45, 15, 46, 46, 16],
+
+      // 34
+      [13, 145, 115, 6, 146, 116],
+      [14, 74, 46, 23, 75, 47],
+      [44, 54, 24, 7, 55, 25],
+      [59, 46, 16, 1, 47, 17],
+
+      // 35
+      [12, 151, 121, 7, 152, 122],
+      [12, 75, 47, 26, 76, 48],
+      [39, 54, 24, 14, 55, 25],
+      [22, 45, 15, 41, 46, 16],
+
+      // 36
+      [6, 151, 121, 14, 152, 122],
+      [6, 75, 47, 34, 76, 48],
+      [46, 54, 24, 10, 55, 25],
+      [2, 45, 15, 64, 46, 16],
+
+      // 37
+      [17, 152, 122, 4, 153, 123],
+      [29, 74, 46, 14, 75, 47],
+      [49, 54, 24, 10, 55, 25],
+      [24, 45, 15, 46, 46, 16],
+
+      // 38
+      [4, 152, 122, 18, 153, 123],
+      [13, 74, 46, 32, 75, 47],
+      [48, 54, 24, 14, 55, 25],
+      [42, 45, 15, 32, 46, 16],
+
+      // 39
+      [20, 147, 117, 4, 148, 118],
+      [40, 75, 47, 7, 76, 48],
+      [43, 54, 24, 22, 55, 25],
+      [10, 45, 15, 67, 46, 16],
+
+      // 40
+      [19, 148, 118, 6, 149, 119],
+      [18, 75, 47, 31, 76, 48],
+      [34, 54, 24, 34, 55, 25],
+      [20, 45, 15, 61, 46, 16]
+    ];
+
+    var qrRSBlock = function(totalCount, dataCount) {
+      var _this = {};
+      _this.totalCount = totalCount;
+      _this.dataCount = dataCount;
+      return _this;
+    };
+
+    var _this = {};
+
+    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+
+      switch(errorCorrectionLevel) {
+      case QRErrorCorrectionLevel.L :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+      case QRErrorCorrectionLevel.M :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+      case QRErrorCorrectionLevel.Q :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+      case QRErrorCorrectionLevel.H :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+      default :
+        return undefined;
+      }
+    };
+
+    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+
+      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
+
+      if (typeof rsBlock == 'undefined') {
+        throw 'bad rs block @ typeNumber:' + typeNumber +
+            '/errorCorrectionLevel:' + errorCorrectionLevel;
+      }
+
+      var length = rsBlock.length / 3;
+
+      var list = [];
+
+      for (var i = 0; i < length; i += 1) {
+
+        var count = rsBlock[i * 3 + 0];
+        var totalCount = rsBlock[i * 3 + 1];
+        var dataCount = rsBlock[i * 3 + 2];
+
+        for (var j = 0; j < count; j += 1) {
+          list.push(qrRSBlock(totalCount, dataCount) );
+        }
+      }
+
+      return list;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrBitBuffer
+  //---------------------------------------------------------------------
+
+  var qrBitBuffer = function() {
+
+    var _buffer = [];
+    var _length = 0;
+
+    var _this = {};
+
+    _this.getBuffer = function() {
+      return _buffer;
+    };
+
+    _this.getAt = function(index) {
+      var bufIndex = Math.floor(index / 8);
+      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+    };
+
+    _this.put = function(num, length) {
+      for (var i = 0; i < length; i += 1) {
+        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+      }
+    };
+
+    _this.getLengthInBits = function() {
+      return _length;
+    };
+
+    _this.putBit = function(bit) {
+
+      var bufIndex = Math.floor(_length / 8);
+      if (_buffer.length <= bufIndex) {
+        _buffer.push(0);
+      }
+
+      if (bit) {
+        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
+      }
+
+      _length += 1;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrNumber
+  //---------------------------------------------------------------------
+
+  var qrNumber = function(data) {
+
+    var _mode = QRMode.MODE_NUMBER;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _data;
+
+      var i = 0;
+
+      while (i + 2 < data.length) {
+        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
+        i += 3;
+      }
+
+      if (i < data.length) {
+        if (data.length - i == 1) {
+          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
+        } else if (data.length - i == 2) {
+          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
+        }
+      }
+    };
+
+    var strToNum = function(s) {
+      var num = 0;
+      for (var i = 0; i < s.length; i += 1) {
+        num = num * 10 + chatToNum(s.charAt(i) );
+      }
+      return num;
+    };
+
+    var chatToNum = function(c) {
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      }
+      throw 'illegal char :' + c;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrAlphaNum
+  //---------------------------------------------------------------------
+
+  var qrAlphaNum = function(data) {
+
+    var _mode = QRMode.MODE_ALPHA_NUM;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var s = _data;
+
+      var i = 0;
+
+      while (i + 1 < s.length) {
+        buffer.put(
+          getCode(s.charAt(i) ) * 45 +
+          getCode(s.charAt(i + 1) ), 11);
+        i += 2;
+      }
+
+      if (i < s.length) {
+        buffer.put(getCode(s.charAt(i) ), 6);
+      }
+    };
+
+    var getCode = function(c) {
+
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      } else if ('A' <= c && c <= 'Z') {
+        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+      } else {
+        switch (c) {
+        case ' ' : return 36;
+        case '$' : return 37;
+        case '%' : return 38;
+        case '*' : return 39;
+        case '+' : return 40;
+        case '-' : return 41;
+        case '.' : return 42;
+        case '/' : return 43;
+        case ':' : return 44;
+        default :
+          throw 'illegal char :' + c;
+        }
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qr8BitByte
+  //---------------------------------------------------------------------
+
+  var qr8BitByte = function(data) {
+
+    var _mode = QRMode.MODE_8BIT_BYTE;
+    var _data = data;
+    var _bytes = qrcode.stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _bytes.length;
+    };
+
+    _this.write = function(buffer) {
+      for (var i = 0; i < _bytes.length; i += 1) {
+        buffer.put(_bytes[i], 8);
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrKanji
+  //---------------------------------------------------------------------
+
+  var qrKanji = function(data) {
+
+    var _mode = QRMode.MODE_KANJI;
+    var _data = data;
+
+    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
+    if (!stringToBytes) {
+      throw 'sjis not supported.';
+    }
+    !function(c, code) {
+      // self test for sjis support.
+      var test = stringToBytes(c);
+      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
+        throw 'sjis not supported.';
+      }
+    }('\u53cb', 0x9746);
+
+    var _bytes = stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return ~~(_bytes.length / 2);
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _bytes;
+
+      var i = 0;
+
+      while (i + 1 < data.length) {
+
+        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
+
+        if (0x8140 <= c && c <= 0x9FFC) {
+          c -= 0x8140;
+        } else if (0xE040 <= c && c <= 0xEBBF) {
+          c -= 0xC140;
+        } else {
+          throw 'illegal char at ' + (i + 1) + '/' + c;
+        }
+
+        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
+
+        buffer.put(c, 13);
+
+        i += 2;
+      }
+
+      if (i < data.length) {
+        throw 'illegal char at ' + (i + 1);
+      }
+    };
+
+    return _this;
+  };
+
+  //=====================================================================
+  // GIF Support etc.
+  //
+
+  //---------------------------------------------------------------------
+  // byteArrayOutputStream
+  //---------------------------------------------------------------------
+
+  var byteArrayOutputStream = function() {
+
+    var _bytes = [];
+
+    var _this = {};
+
+    _this.writeByte = function(b) {
+      _bytes.push(b & 0xff);
+    };
+
+    _this.writeShort = function(i) {
+      _this.writeByte(i);
+      _this.writeByte(i >>> 8);
+    };
+
+    _this.writeBytes = function(b, off, len) {
+      off = off || 0;
+      len = len || b.length;
+      for (var i = 0; i < len; i += 1) {
+        _this.writeByte(b[i + off]);
+      }
+    };
+
+    _this.writeString = function(s) {
+      for (var i = 0; i < s.length; i += 1) {
+        _this.writeByte(s.charCodeAt(i) );
+      }
+    };
+
+    _this.toByteArray = function() {
+      return _bytes;
+    };
+
+    _this.toString = function() {
+      var s = '';
+      s += '[';
+      for (var i = 0; i < _bytes.length; i += 1) {
+        if (i > 0) {
+          s += ',';
+        }
+        s += _bytes[i];
+      }
+      s += ']';
+      return s;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64EncodeOutputStream
+  //---------------------------------------------------------------------
+
+  var base64EncodeOutputStream = function() {
+
+    var _buffer = 0;
+    var _buflen = 0;
+    var _length = 0;
+    var _base64 = '';
+
+    var _this = {};
+
+    var writeEncoded = function(b) {
+      _base64 += String.fromCharCode(encode(b & 0x3f) );
+    };
+
+    var encode = function(n) {
+      if (n < 0) {
+        // error.
+      } else if (n < 26) {
+        return 0x41 + n;
+      } else if (n < 52) {
+        return 0x61 + (n - 26);
+      } else if (n < 62) {
+        return 0x30 + (n - 52);
+      } else if (n == 62) {
+        return 0x2b;
+      } else if (n == 63) {
+        return 0x2f;
+      }
+      throw 'n:' + n;
+    };
+
+    _this.writeByte = function(n) {
+
+      _buffer = (_buffer << 8) | (n & 0xff);
+      _buflen += 8;
+      _length += 1;
+
+      while (_buflen >= 6) {
+        writeEncoded(_buffer >>> (_buflen - 6) );
+        _buflen -= 6;
+      }
+    };
+
+    _this.flush = function() {
+
+      if (_buflen > 0) {
+        writeEncoded(_buffer << (6 - _buflen) );
+        _buffer = 0;
+        _buflen = 0;
+      }
+
+      if (_length % 3 != 0) {
+        // padding
+        var padlen = 3 - _length % 3;
+        for (var i = 0; i < padlen; i += 1) {
+          _base64 += '=';
+        }
+      }
+    };
+
+    _this.toString = function() {
+      return _base64;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64DecodeInputStream
+  //---------------------------------------------------------------------
+
+  var base64DecodeInputStream = function(str) {
+
+    var _str = str;
+    var _pos = 0;
+    var _buffer = 0;
+    var _buflen = 0;
+
+    var _this = {};
+
+    _this.read = function() {
+
+      while (_buflen < 8) {
+
+        if (_pos >= _str.length) {
+          if (_buflen == 0) {
+            return -1;
+          }
+          throw 'unexpected end of file./' + _buflen;
+        }
+
+        var c = _str.charAt(_pos);
+        _pos += 1;
+
+        if (c == '=') {
+          _buflen = 0;
+          return -1;
+        } else if (c.match(/^\s$/) ) {
+          // ignore if whitespace.
+          continue;
+        }
+
+        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
+        _buflen += 6;
+      }
+
+      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
+      _buflen -= 8;
+      return n;
+    };
+
+    var decode = function(c) {
+      if (0x41 <= c && c <= 0x5a) {
+        return c - 0x41;
+      } else if (0x61 <= c && c <= 0x7a) {
+        return c - 0x61 + 26;
+      } else if (0x30 <= c && c <= 0x39) {
+        return c - 0x30 + 52;
+      } else if (c == 0x2b) {
+        return 62;
+      } else if (c == 0x2f) {
+        return 63;
+      } else {
+        throw 'c:' + c;
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // gifImage (B/W)
+  //---------------------------------------------------------------------
+
+  var gifImage = function(width, height) {
+
+    var _width = width;
+    var _height = height;
+    var _data = new Array(width * height);
+
+    var _this = {};
+
+    _this.setPixel = function(x, y, pixel) {
+      _data[y * _width + x] = pixel;
+    };
+
+    _this.write = function(out) {
+
+      //---------------------------------
+      // GIF Signature
+
+      out.writeString('GIF87a');
+
+      //---------------------------------
+      // Screen Descriptor
+
+      out.writeShort(_width);
+      out.writeShort(_height);
+
+      out.writeByte(0x80); // 2bit
+      out.writeByte(0);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Global Color Map
+
+      // black
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+
+      // white
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+
+      //---------------------------------
+      // Image Descriptor
+
+      out.writeString(',');
+      out.writeShort(0);
+      out.writeShort(0);
+      out.writeShort(_width);
+      out.writeShort(_height);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Local Color Map
+
+      //---------------------------------
+      // Raster Data
+
+      var lzwMinCodeSize = 2;
+      var raster = getLZWRaster(lzwMinCodeSize);
+
+      out.writeByte(lzwMinCodeSize);
+
+      var offset = 0;
+
+      while (raster.length - offset > 255) {
+        out.writeByte(255);
+        out.writeBytes(raster, offset, 255);
+        offset += 255;
+      }
+
+      out.writeByte(raster.length - offset);
+      out.writeBytes(raster, offset, raster.length - offset);
+      out.writeByte(0x00);
+
+      //---------------------------------
+      // GIF Terminator
+      out.writeString(';');
+    };
+
+    var bitOutputStream = function(out) {
+
+      var _out = out;
+      var _bitLength = 0;
+      var _bitBuffer = 0;
+
+      var _this = {};
+
+      _this.write = function(data, length) {
+
+        if ( (data >>> length) != 0) {
+          throw 'length over';
+        }
+
+        while (_bitLength + length >= 8) {
+          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
+          length -= (8 - _bitLength);
+          data >>>= (8 - _bitLength);
+          _bitBuffer = 0;
+          _bitLength = 0;
+        }
+
+        _bitBuffer = (data << _bitLength) | _bitBuffer;
+        _bitLength = _bitLength + length;
+      };
+
+      _this.flush = function() {
+        if (_bitLength > 0) {
+          _out.writeByte(_bitBuffer);
+        }
+      };
+
+      return _this;
+    };
+
+    var getLZWRaster = function(lzwMinCodeSize) {
+
+      var clearCode = 1 << lzwMinCodeSize;
+      var endCode = (1 << lzwMinCodeSize) + 1;
+      var bitLength = lzwMinCodeSize + 1;
+
+      // Setup LZWTable
+      var table = lzwTable();
+
+      for (var i = 0; i < clearCode; i += 1) {
+        table.add(String.fromCharCode(i) );
+      }
+      table.add(String.fromCharCode(clearCode) );
+      table.add(String.fromCharCode(endCode) );
+
+      var byteOut = byteArrayOutputStream();
+      var bitOut = bitOutputStream(byteOut);
+
+      // clear code
+      bitOut.write(clearCode, bitLength);
+
+      var dataIndex = 0;
+
+      var s = String.fromCharCode(_data[dataIndex]);
+      dataIndex += 1;
+
+      while (dataIndex < _data.length) {
+
+        var c = String.fromCharCode(_data[dataIndex]);
+        dataIndex += 1;
+
+        if (table.contains(s + c) ) {
+
+          s = s + c;
+
+        } else {
+
+          bitOut.write(table.indexOf(s), bitLength);
+
+          if (table.size() < 0xfff) {
+
+            if (table.size() == (1 << bitLength) ) {
+              bitLength += 1;
+            }
+
+            table.add(s + c);
+          }
+
+          s = c;
+        }
+      }
+
+      bitOut.write(table.indexOf(s), bitLength);
+
+      // end code
+      bitOut.write(endCode, bitLength);
+
+      bitOut.flush();
+
+      return byteOut.toByteArray();
+    };
+
+    var lzwTable = function() {
+
+      var _map = {};
+      var _size = 0;
+
+      var _this = {};
+
+      _this.add = function(key) {
+        if (_this.contains(key) ) {
+          throw 'dup key:' + key;
+        }
+        _map[key] = _size;
+        _size += 1;
+      };
+
+      _this.size = function() {
+        return _size;
+      };
+
+      _this.indexOf = function(key) {
+        return _map[key];
+      };
+
+      _this.contains = function(key) {
+        return typeof _map[key] != 'undefined';
+      };
+
+      return _this;
+    };
+
+    return _this;
+  };
+
+  var createDataURL = function(width, height, getPixel) {
+    var gif = gifImage(width, height);
+    for (var y = 0; y < height; y += 1) {
+      for (var x = 0; x < width; x += 1) {
+        gif.setPixel(x, y, getPixel(x, y) );
+      }
+    }
+
+    var b = byteArrayOutputStream();
+    gif.write(b);
+
+    var base64 = base64EncodeOutputStream();
+    var bytes = b.toByteArray();
+    for (var i = 0; i < bytes.length; i += 1) {
+      base64.writeByte(bytes[i]);
+    }
+    base64.flush();
+
+    return 'data:image/gif;base64,' + base64;
+  };
+
+  //---------------------------------------------------------------------
+  // returns qrcode function.
+
+  return qrcode;
+}();
+
+// multibyte support
+!function() {
+
+  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
+    // http://stackoverflow.com/questions/18729405/how-to-convert-utf8-string-to-byte-array
+    function toUTF8Array(str) {
+      var utf8 = [];
+      for (var i=0; i < str.length; i++) {
+        var charcode = str.charCodeAt(i);
+        if (charcode < 0x80) utf8.push(charcode);
+        else if (charcode < 0x800) {
+          utf8.push(0xc0 | (charcode >> 6),
+              0x80 | (charcode & 0x3f));
+        }
+        else if (charcode < 0xd800 || charcode >= 0xe000) {
+          utf8.push(0xe0 | (charcode >> 12),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+        // surrogate pair
+        else {
+          i++;
+          // UTF-16 encodes 0x10000-0x10FFFF by
+          // subtracting 0x10000 and splitting the
+          // 20 bits of 0x0-0xFFFFF into two halves
+          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
+            | (str.charCodeAt(i) & 0x3ff));
+          utf8.push(0xf0 | (charcode >>18),
+              0x80 | ((charcode>>12) & 0x3f),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+      }
+      return utf8;
+    }
+    return toUTF8Array(s);
+  };
+
+}();
+
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+      define([], factory);
+  } else if (typeof exports === 'object') {
+      module.exports = factory();
+  }
+}(function () {
+    return qrcode;
+}));
+
+//---------------------------------------------------------------------
+//
+// QR Code Generator for JavaScript UTF8 Support (optional)
+//
+// Copyright (c) 2011 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+// The word 'QR Code' is registered trademark of
+// DENSO WAVE INCORPORATED
+//  http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+
+!function(qrcode) {
+
+  //---------------------------------------------------------------------
+  // overwrite qrcode.stringToBytes
+  //---------------------------------------------------------------------
+
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8'];
+
+}(qrcode);
+
+const CONTENT_VERSION = '2026-10-20.1';
+const CONTENT_SOURCES = {
+  crowd: {title: '국민재난안전포털 · 다중운집인파사고 대비 국민행동요령', url: 'https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html', checked: '2026-10-19'},
+  police: {title: '경찰제복 및 경찰장비의 규제에 관한 법률 제9조', url: 'https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1008601875', checked: '2026-10-20'},
+  military: {title: '군복 및 군용장구의 단속에 관한 법률 제9조', url: 'https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1028626005', checked: '2026-10-20'},
+  education: {title: '교육부 다중밀집 안전교육 보완 발표 기사 (표준안 원문 아님)', url: 'https://www.korea.kr/news/policyNewsView.do?newsId=148907746', checked: '2026-10-19'}
+};
+
+// Confirmation questions ask for a new decision; viewing feedback does not complete an objective.
+const SAFETY_GOALS = [
+  {id:'route', title:'이동로와 출구 확인', source:'crowd', checks:{
+    '1-2': ['축제장에 들어가기 전에 무엇을 볼까요?', ['나갈 수 있는 길', '사탕 가게만'], 0],
+    '3-4': ['처음 가는 행사장에서 사람이 늘고 있습니다. 먼저 확인할 것은?', ['주변 이동로와 나갈 수 있는 곳', '가장 붐비는 사진 자리'], 0],
+    '5-6': ['입구는 넓지만 안쪽 길은 좁은 행사장입니다. 동선을 어떻게 점검할까요?', ['혼잡과 주변 이동로, 이용 가능한 출구를 먼저 확인한다', '안쪽으로 간 뒤 출구는 나중에 찾는다'], 0]
+  }},
+  {id:'two-way', title:'양방향 통행 살피기', source:'crowd', checks:{
+    '1-2': ['서로 마주 보고 걷는 길에서는?', ['오른쪽으로 차근차근', '가운데서 갑자기 멈추기'], 0],
+    '3-4': ['양방향으로 사람들이 걷는 평상시 길에서 왜 오른쪽으로 걸을까요?', ['서로의 흐름을 살피며 부딪힘을 줄이려고', '어떤 위험에서도 오른쪽만 고집하려고'], 0],
+    '5-6': ['행사장 양방향 길에서 우측통행 안내가 있습니다. 사람이 떠밀리는 상황에도 그대로 적용할까요?', ['아니다. 떠밀릴 때는 군중의 힘에 무리하게 저항하지 않는다', '그렇다. 언제나 오른쪽으로 밀어붙인다'], 0]
+  }},
+  {id:'warning', title:'혼잡 신호에 대응', source:'crowd', checks:{
+    '1-2': ['걸음이 느려지고 어깨가 닿으면?', ['움직임을 살피며 벗어나기', '더 안쪽으로 들어가기'], 0],
+    '3-4': ['어깨가 계속 닿기 시작했어요. 왜 그 자리를 벗어나야 할까요?', ['혼잡해지는 위험 신호이기 때문', '친구보다 빨리 가기 위해서'], 0],
+    '5-6': ['통행 속도가 갑자기 느려지는 구간을 발견했습니다. 적절한 경로 판단은?', ['주변 흐름을 보고 가능한 가장자리나 넓은 쪽으로 벗어난다', '좁은 중심부를 가로질러 무조건 빠르게 간다'], 0]
+  }},
+  {id:'chest', title:'떠밀릴 때 몸 보호', source:'crowd', checks:{
+    '1-2': ['사람들에게 떠밀릴 때 가슴 앞은?', ['두 손이나 가방으로 공간 지키기', '팔을 내려 꼭 붙이기'], 0],
+    '3-4': ['떠밀리는 상황에서 팔을 가슴 앞에 두는 이유는?', ['가슴을 보호하고 숨 쉴 공간을 확보하려고', '다른 사람을 밀어내려고'], 0],
+    '5-6': ['이미 군중 속에 갇혀 떠밀릴 때 적절한 설명은?', ['군중의 힘에 무리하게 저항하지 않고 가슴 앞 공간을 보호한다', '가슴 자세를 취하면 몇 초간 사고를 걱정하지 않아도 된다'], 0]
+  }},
+  {id:'belongings', title:'물건보다 몸 먼저', source:'crowd', checks:{
+    '1-2': ['사람이 많은 곳에서 물건이 떨어지면?', ['줍지 않고 내 몸부터 지키기', '바로 허리 숙여 줍기'], 0],
+    '3-4': ['붐비는 길에 신발이 벗겨졌어요. 무엇을 먼저 할까요?', ['허리를 숙이지 않고 이동 가능한 안전한 곳으로 벗어난다', '그 자리에서 신발을 찾느라 멈춘다'], 0],
+    '5-6': ['소지품을 잃어버렸다는 친구를 만났습니다. 어떤 설명이 적절할까요?', ['혼잡한 흐름에서 허리를 숙이면 위험하므로 몸을 먼저 보호한다', '값비싼 물건이면 즉시 돌아가 찾아야 한다'], 0]
+  }},
+  {id:'fallen', title:'넘어졌을 때 몸 보호', source:'crowd', checks:{
+    '1-2': ['넘어져 바로 일어날 수 없을 때는?', ['머리를 감싸고 몸을 둥글게', '팔과 다리를 길게 뻗기'], 0],
+    '3-4': ['넘어진 뒤 바로 일어날 수 없다면 몸을 어떻게 할까요?', ['두 팔로 머리를 감싸고 다리를 몸쪽으로 당긴다', '팔과 다리를 넓게 뻗어 움직이지 않는다'], 0],
+    '5-6': ['군중 속에서 넘어져 일어날 수 없는 상황에 맞는 행동은?', ['머리를 두 팔로 감싸고 다리를 당겨 몸을 둥글게 보호한다', '떨어진 물건을 찾으려고 주변을 더듬는다'], 0]
+  }}
+];
+
+const SAFETY_SCENARIO_LOW = [
+  {title:'축제에 도착했어요. 먼저 어디를 볼까요?', desc:'사람이 많아지기 전에 길을 살펴봐요.', choices:['넓은 길과 나가는 곳을 찾아요.','사람이 꽉 찬 좁은 길로 달려가요.']},
+  {title:'사람들이 마주 보고 걷는 길이에요.', desc:'서로 부딪히지 않으려면?', choices:['오른쪽으로 천천히 걷고 멈출 때도 살펴요.','길 가운데서 갑자기 멈춰요.']},
+  {title:'사람들과 어깨가 자꾸 닿아요.', desc:'걸음도 느려졌어요. 어떻게 할까요?', choices:['흐름을 보며 넓은 쪽으로 벗어나요.','사람들을 밀며 더 안쪽으로 가요.']},
+  {title:'사람들에게 떠밀리고 있어요.', desc:'가슴 앞 숨 쉴 공간을 지켜요.', choices:['두 손이나 가방을 가슴 앞에 두어요.','두 팔을 몸에 꼭 붙여요.']},
+  {title:'사람이 많은 길에 물건이 떨어졌어요.', desc:'물건보다 내 몸이 먼저예요.', choices:['숙이지 않고 먼저 안전한 쪽으로 가요.','바로 숙여서 물건을 주워요.']},
+  {title:'넘어져서 바로 일어날 수 없어요.', desc:'내 머리와 몸을 보호해요.', choices:['머리를 감싸고 몸을 둥글게 해요.','팔과 다리를 길게 뻗어요.']}
+];
+
+// Each theme is a distinct setting with three complete decisions. They reuse the reviewed crowd objectives.
+const THEMES = {
+  halloween: {label:'할로윈', icon:'🎃', situations:[]},
+  school: {label:'학교 축제', icon:'🏫', situations:[
+    ['교실 공연장 앞', '공연이 시작되자 교실 앞 복도가 붐빕니다.', '복도의 이동로를 보고 덜 붐비는 자리에서 기다린다', '친구들 사이를 비집고 공연장 문 앞으로 간다', 'route'],
+    ['체험 부스 줄', '인기 있는 부스의 줄이 좁은 계단까지 이어집니다.', '줄의 위치를 선생님께 알리고 다른 부스를 먼저 살핀다', '계단에서 줄을 계속 늘려 세운다', 'warning'],
+    ['떨어진 안내지', '여러 반이 함께 이동할 때 안내지를 떨어뜨렸습니다.', '숙여 줍지 않고 먼저 이동 가능한 곳으로 벗어난다', '친구들을 멈춰 세우고 바로 줍는다', 'belongings']
+  ]},
+  field: {label:'현장체험학습', icon:'🚌', situations:[
+    ['박물관 입구', '단체 관람객이 몰리는 입구에서 반 친구와 함께 들어갑니다.', '인솔 교사의 안내와 주변 이동로를 확인한다', '가장 좁은 문으로 먼저 달려간다', 'route'],
+    ['전시실 통로', '전시실 통로에서 다른 단체와 마주 걷습니다.', '양방향 이동 흐름을 보고 오른쪽으로 차근차근 걷는다', '중앙에 갑자기 서서 사진을 찍는다', 'two-way'],
+    ['기념품을 떨어뜨림', '출구 근처가 붐빌 때 작은 기념품이 떨어졌습니다.', '혼잡한 곳에서 숙이지 않고 몸을 먼저 보호한다', '즉시 허리를 숙여 찾는다', 'belongings']
+  ]},
+  trip: {label:'수학여행', icon:'🧳', situations:[
+    ['숙소 로비', '여러 학급이 동시에 로비로 들어옵니다.', '이동로를 먼저 살피고 인솔 교사의 안내에 따라 대기한다', '가방을 끌고 인파 가운데로 들어간다', 'route'],
+    ['관광지 골목', '관광지의 좁은 길에서 보행 속도가 느려집니다.', '몸이 닿기 시작하면 흐름을 살펴 가능한 넓은 쪽으로 벗어난다', '더 좁은 길로 방향을 꺾어 빨리 지나간다', 'warning'],
+    ['여행 가방', '사람이 밀려오는 길에서 가방이 넘어졌습니다.', '가방보다 몸을 먼저 보호하며 이동 가능한 곳으로 간다', '그 자리에서 가방을 바로 세운다', 'belongings']
+  ]},
+  sports: {label:'체육대회', icon:'🏅', situations:[
+    ['응원석 출입구', '경기가 끝나자 응원석 출입구로 학생들이 몰립니다.', '주변 이동로와 덜 붐비는 출입구를 확인한다', '한 출입구로 한꺼번에 뛰어간다', 'route'],
+    ['운동장 통로', '양쪽에서 학생들이 이동하는 운동장 통로입니다.', '오른쪽으로 걸으며 갑자기 멈추지 않는다', '통로 가운데에서 오래 서서 친구를 기다린다', 'two-way'],
+    ['떨어진 응원 도구', '많은 학생이 이동하는 중 응원 도구를 놓쳤습니다.', '허리를 숙이지 않고 몸부터 보호한다', '학생들 발 사이로 손을 넣어 줍는다', 'belongings']
+  ]},
+  local: {label:'지역 행사', icon:'🎪', situations:[
+    ['야외 무대 앞', '무대 앞으로 관람객이 점점 몰립니다.', '혼잡 상황과 주변 이동로를 확인한다', '무대와 가장 가까운 좁은 자리로 간다', 'route'],
+    ['푸드트럭 골목', '푸드트럭 사이 좁은 길에서 어깨가 자꾸 닿습니다.', '이동 흐름을 살피며 가능한 넓은 쪽으로 벗어난다', '사람들을 밀며 줄 사이로 들어간다', 'warning'],
+    ['뒤쪽에서 떠밀림', '공연이 끝난 뒤 내 의지와 달리 밀리고 있습니다.', '군중의 힘에 무리하게 저항하지 않고 가슴 앞 공간을 보호한다', '가슴 자세로 다른 사람을 밀어낸다', 'chest']
+  ]}
+};
+
+    // ==================== ENRICHED GRADE-LEVEL EDUCATIONAL DATASET ====================
+    const FESTIVAL_DETAILS = {
+      halloween: {
+        title: "🎃 미국·유럽의 할로윈데이 (10월 31일)",
+        desc: "고대 켈트족의 서우인 풍습과 만성절 전날 밤(All Hallows' Eve)이 오늘날 할로윈의 여러 역사적 배경으로 설명돼요. 오늘날에는 호박 장식, 이웃과 간식 나누기, UNICEF 모금처럼 다양한 방식으로 참여해요. 어른이 준비한 장소에서도 주변 이동로를 살펴요."
+      },
+      muertos: {
+        title: "🌼 멕시코의 죽은 자들의 날 (10월 31일 ~ 11월 2일)",
+        desc: "2008년 유네스코 인류무형문화유산에 등재된 멕시코의 전통 명절이에요. 세상을 떠난 가족을 기리며 꽃잎과 촛불, 제물을 놓아 가족의 영혼을 맞이해요. 할로윈과는 다른 문화적 맥락을 지녀요."
+      },
+      korea: {
+        title: "🌕 대한민국의 추석 · 동지",
+        desc: "우리나라에도 가을 수확에 감사하며 송편을 나누는 '추석', 일 년 중 밤이 가장 긴 날 붉은 팥죽을 쑤어 나쁜 기운을 물리치고 이웃과 나누는 '동지'가 있어요. 나라마다 모습은 달라도 가족과 이웃의 평안을 바라는 따뜻한 마음은 모두 같답니다!"
+      }
+    };
+
+    const EDUCATION_DATA = {
+      "1-2": {
+        label: "🌱 1~2학년",
+        classDefault: "1학년 1반",
+        stories: [
+          {
+            emoji: "🎃",
+            caption: "매년 10월 31일 가을 축제",
+            title: "1. 할로윈데이는 무슨 날일까요?",
+            body: "매년 10월 31일은 외국의 가을 축제인 '할로윈데이'예요! 옛날 사람들이 추운 겨울이 오기 전에 나쁜 유령이 오지 못하도록 재미있는 가면을 쓰던 놀이에서 시작되었어요.",
+            keyPoint: "10월 31일에 재미있게 변장하며 즐기는 외국의 가을 축제예요!",
+            sourceText: "출처: 미국 의회도서관",
+            sourceUrl: "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
+          },
+          {
+            emoji: "🕯️",
+            caption: "웃고 있는 호박 등불",
+            title: "2. 주황색 호박 등불 '잭오랜턴'",
+            body: "커다란 주황색 호박 속을 파내고 눈·코·입 모양을 만든 장식을 '잭오랜턴'이라고 불러요. 옛날에는 안에 불빛을 넣기도 했어요. 오늘날에는 축제 장식으로 많이 보여요.",
+            keyPoint: "호박으로 만든 환한 등불 이름은 '잭오랜턴'이에요!",
+            sourceText: "출처: 스미스소니언 정원 기록",
+            sourceUrl: "https://gardens.si.edu/american-garden-story/ghosts-of-pumpkins-past/"
+          },
+          {
+            emoji: "🍬",
+            caption: "달콤한 간식과 따뜻한 나눔",
+            title: "3. '트릭 오어 트릿!' 사탕 주세요!",
+            body: "외국 친구들은 이웃집 문을 똑똑 두드리며 '트릭 오어 트릿(과자 안 주면 장난칠 거예요)!' 하고 인사해요. 사탕 대신 어려운 친구들을 돕는 저금통을 들고 나눔을 실천하기도 해요.",
+            keyPoint: "이웃과 반갑게 인사하고 따뜻한 마음을 나누는 날이에요!",
+            sourceText: "출처: UNICEF USA",
+            sourceUrl: "https://www.unicefusa.org/trick-or-treat/groups"
+          },
+          {
+            emoji: "🐈‍⬛",
+            caption: "주황색과 검은색의 비밀",
+            title: "4. 할로윈 대표 색깔은 무엇일까요?",
+            body: "할로윈에는 '주황색'과 '검은색'을 가장 많이 써요! 주황색은 잘 익은 가을 호박과 추수를 뜻하고, 검은색은 깊어 가는 가을밤을 뜻한답니다.",
+            keyPoint: "주황색은 가을 수확을, 검은색은 어두운 밤하늘을 나타내요!",
+            sourceText: "출처: 미국 의회도서관",
+            sourceUrl: "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
+          },
+          {
+            emoji: "🌼",
+            caption: "세계 친구들의 가을 명절",
+            title: "5. 멕시코와 우리나라의 다른 명절",
+            body: "멕시코에서는 '죽은 자들의 날'에 노란 꽃으로 보고 싶은 가족을 맞이하고, 우리나라에서는 '동지'에 따뜻한 팥죽을 먹으며 나쁜 기운을 물리쳐요.",
+            keyPoint: "나라마다 축제는 달라도 가족을 사랑하는 마음은 똑같아요!",
+            sourceText: "멕시코 명절 근거: 유네스코",
+            sourceUrl: "https://ich.unesco.org/en/RL/dia-de-muertos-the-indigenous-festivity-dedicated-to-the-dead-00054"
+          },
+          {
+            emoji: "🏠",
+            caption: "안전하고 즐거운 홈로윈",
+            title: "6. 집과 교실에서 안전하게 즐겨요!",
+            body: "밤늦게 사람이 많은 길에 나가지 않아도, 집이나 교실에서 친구들과 동화책을 읽고 간식을 나누는 '홈로윈(집에서 즐기는 할로윈)'으로 안전하게 즐길 수 있어요!",
+            keyPoint: "어른 손을 꼭 잡고, 안전하고 기분 좋게 즐기는 것이 최고예요!",
+            sourceText: "교사용 안전 근거: 국민재난안전포털",
+            sourceUrl: "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
+          }
+        ],
+        quizzes: [
+          {
+            category: "할로윈 이야기",
+            q: "주황색 호박에 눈·코·입을 그려 만든 할로윈 등불의 이름은 무엇일까요?",
+            options: ["🎃 잭오랜턴 (호박 등불)", "🧦 크리스마스 양말", "🎂 생일 케이크", "⛄ 눈사람"],
+            answer: 0,
+            hint: "힌트: '잭(Jack)'이라는 이름이 들어가는 주황색 호박 등불이에요!",
+            explanation: "주황색 호박으로 만든 등불은 '잭오랜턴'이라고 불러요!"
+          },
+          {
+            category: "할로윈 색깔",
+            q: "할로윈을 대표하는 두 가지 색깔로, 가을 호박과 어두운 밤을 뜻하는 색은?",
+            options: ["🧡 주황색과 🖤 검은색", "💙 파란색과 🤍 하얀색", "💗 분홍색과 💚 연두색", "💛 노란색과 🤎 갈색"],
+            answer: 0,
+            hint: "힌트: 호박의 색깔(🧡)과 밤하늘의 색깔(🖤)을 떠올려 보세요!",
+            explanation: "가을 수확(호박)을 뜻하는 주황색과 가을밤을 뜻하는 검은색이 대표 색깔이에요!"
+          },
+          {
+            category: "길 걷기 약속",
+            q: "사람이 많은 길이나 복도를 걸을 때 부딪히지 않으려면 어느 쪽으로 걸어야 할까요?",
+            options: ["👉 오른쪽으로 차근차근 걸어요", "🏃 앞사람을 밀면서 뛰어가요", "🙈 눈을 감고 걸어요", "🛑 길 한가운데에 드러누워요"],
+            answer: 0,
+            hint: "힌트: 우리나라 보행 안전 약속인 '우측통행'을 생각해 보세요!",
+            explanation: "평상시 양방향 통행에서는 오른쪽으로 걷고 주변 흐름을 살펴요. 떠밀리는 상황에는 다른 행동요령이 필요해요."
+          },
+          {
+            category: "인파 안전",
+            q: "사람이 아주 많은 길에서 걷다가 사탕이 바닥에 떨어졌어요! 어떻게 할까요?",
+            options: ["🙅 줍지 않고 어른 손을 잡고 이동해요", "🙇 바로 바닥에 엎드려 사탕을 찾아요", "😭 그 자리에 주저앉아 울어요", "🦵 다른 사람 다리를 잡아요"],
+            answer: 0,
+            hint: "힌트: 사람이 많은 곳에서 허리를 숙이면 매우 위험해요!",
+            explanation: "사람이 많은 곳에서 허리를 숙이면 뒤따라오는 사람과 부딪혀 다칠 수 있어요. 내 안전이 제일 소중해요!"
+          },
+          {
+            category: "옷 고르기",
+            q: "할로윈에 입으면 진짜 경찰관·소방관과 헷갈릴 수 있어 피하면 좋은 옷은?",
+            options: ["🚓 진짜 같은 경찰복·소방복", "🎃 귀여운 호박 망토", "🧙 별 무늬 마법사 모자", "🧚 반짝이는 요정 날개"],
+            answer: 0,
+            hint: "힌트: 실제 대원과 헷갈리는 옷은 피하는 편이 좋아요.",
+            explanation: "진짜 경찰관·소방관 옷을 따라 입으면 위급할 때 누가 진짜인지 헷갈려서 위험해요!"
+          },
+          {
+            category: "안전한 옷",
+            q: "어두운 저녁에 길을 걸을 때 자동차나 사람들이 나를 잘 볼 수 있게 도와주는 것은?",
+            options: ["✨ 밝은색 옷과 야광 스티커", "🕶️ 눈이 안 보이는 까만 선글라스", "🎭 앞이 잘 안 보이는 좁은 가면", "🧣 바닥에 길게 끌리는 망토"],
+            answer: 0,
+            hint: "힌트: 어두운 곳에서도 반짝반짝 빛을 반사해 주는 것이 좋아요!",
+            explanation: "밝은 옷이나 눈에 띄는 표시가 보행자를 알아보는 데 도움이 될 수 있어요. 밤길에서는 어른과 함께 주변을 계속 살펴요."
+          },
+          {
+            category: "간식 안전",
+            q: "할로윈에 받은 사탕이나 과자를 먹기 전에 꼭 확인해야 할 약속은 무엇일까요?",
+            options: ["🍬 포장지가 잘 막혀 있는지 어른과 확인해요", "🍂 바닥에 떨어진 사탕을 주워 먹어요", "📦 포장지가 찢어진 과자를 그냥 먹어요", "🐶 강아지 간식을 몰래 먹어요"],
+            answer: 0,
+            hint: "힌트: 껍질이 열려 있거나 유통기한이 지난 것은 먹으면 안 돼요!",
+            explanation: "포장지가 열려 있거나 이상한 간식은 먹지 않고 부모님·선생님과 먼저 확인해요!"
+          },
+          {
+            category: "세계 문화",
+            q: "멕시코의 '죽은 자들의 날'에는 노란 꽃으로 집을 예쁘게 꾸며 보고 싶은 가족을 반갑게 맞이해요. 맞을까요?",
+            options: ["⭕ 맞아요!", "❌ 아니에요!"],
+            answer: 0,
+            hint: "힌트: 마리골드꽃으로 가족을 기쁘게 환영하는 멕시코의 전통 축제예요!",
+            explanation: "딩동댕! 나라마다 축제를 즐기는 모습은 달라도 가족을 사랑하는 마음은 모두 따뜻해요."
+          }
+        ]
+      },
+      "3-4": {
+        label: "🍀 3~4학년",
+        classDefault: "3학년 1반",
+        stories: [
+          {
+            emoji: "🎃",
+            caption: "10월 31일 켈트족의 수확 축제",
+            title: "1. 왜 할로윈에 재미있는 분장을 할까요?",
+            body: "옛날 아일랜드와 스코틀랜드의 켈트족은 10월 31일에 한 해의 추수를 끝내고 새해를 맞이했어요. 이날 밤 나쁜 유령이 찾아와도 자기네 동료인 줄 알고 지나가도록 분장을 한 데서 시작되었답니다.",
+            keyPoint: "나쁜 기운을 막고 가을 수확을 축하하던 옛날 풍습에서 시작되었어요!",
+            sourceText: "출처: 미국 의회도서관",
+            sourceUrl: "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
+          },
+          {
+            emoji: "🕯️",
+            caption: "순무 등불에서 호박 등불로!",
+            title: "2. 호박 등불 '잭오랜턴'의 비밀",
+            body: "원래 아일랜드에서는 작은 '순무'의 속을 파서 등불을 만들었어요. 그러다 사람들이 미국으로 건너간 뒤, 순무보다 훨씬 크고 조각하기 쉬운 주황색 '호박'으로 등불을 만들게 되었답니다!",
+            keyPoint: "처음에는 순무로 만들다가 미국에서 주황색 호박 등불로 바뀌었어요!",
+            sourceText: "출처: 스미스소니언 정원 기록",
+            sourceUrl: "https://gardens.si.edu/american-garden-story/ghosts-of-pumpkins-past/"
+          },
+          {
+            emoji: "🍪",
+            caption: "소울 케이크에서 유니세프 기부까지",
+            title: "3. '트릭 오어 트릿'에 담긴 나눔 정신",
+            body: "옛날 유럽의 '소울링'은 오늘날 사탕을 나누는 '트릭 오어 트릿'의 여러 기원 설명 중 하나예요. 요즘엔 UNICEF 모금 상자를 들고 전 세계 어린이를 돕는 캠페인도 열린답니다.",
+            keyPoint: "단순히 사탕만 받는 날이 아니라 이웃과 정을 나누는 날이에요!",
+            sourceText: "출처: 미국 의회도서관",
+            sourceUrl: "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
+          },
+          {
+            emoji: "🚗",
+            caption: "안전하게 진화한 현대 풍습",
+            title: "4. 자동차 트렁크에서 간식을 나누는 이유!",
+            body: "어른이 준비한 행사 장소에서 자동차 짐칸(트렁크)을 꾸미고 간식을 나누는 '트렁크 오어 트리팅'을 즐기기도 해요. 주차장에서는 차가 움직이는 길을 살피고 어른의 안내를 따라야 해요.",
+            keyPoint: "장소가 어디든 주변 이동로와 어른의 안내를 살피는 것이 중요해요!",
+            sourceText: "사례: UNICEF USA 행사",
+            sourceUrl: "https://www.unicefusa.org/stories/unicef-clubs-add-meaning-their-halloweening"
+          },
+          {
+            emoji: "🌼",
+            caption: "유네스코 무형유산 비교하기",
+            title: "5. 할로윈 vs 멕시코 '죽은 자들의 날'",
+            body: "10월 말부터 11월 초까지 멕시코에서는 '죽은 자들의 날'을 기념해요. 할로윈의 옛 분장 풍습과 달리, 꽃잎과 촛불, 제물로 그리운 가족의 영혼을 맞이하는 의미가 있어요.",
+            keyPoint: "나라마다 다른 문화를 비교해 보고 서로 존중하는 마음을 길러요!",
+            sourceText: "멕시코 명절 근거: 유네스코",
+            sourceUrl: "https://ich.unesco.org/en/RL/dia-de-muertos-the-indigenous-festivity-dedicated-to-the-dead-00054"
+          },
+          {
+            emoji: "🏠",
+            caption: "배려와 안전이 먼저인 축제",
+            title: "6. 집에서 즐기는 '홈로윈'과 공공예절",
+            body: "사람이 많이 붐비는 거리로 나가는 대신 집이나 교실에서 안전하게 즐기는 '홈로윈'이 인기예요. 이웃에게 시끄러운 소음을 내지 않고 쓰레기를 스스로 치우는 성숙한 예절을 지켜요!",
+            keyPoint: "이웃을 배려하고 안전 약속을 지킬 때 진짜 즐거운 축제가 됩니다!",
+            sourceText: "교사용 안전 근거: 국민재난안전포털",
+            sourceUrl: "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
+          }
+        ],
+        quizzes: [
+          {
+            category: "할로윈 유래",
+            q: "할로윈의 상징인 '잭오랜턴'은 미국에서 호박으로 만들기 전에 원래 어떤 채소로 만들었을까요?",
+            options: ["🌱 순무", "🍉 수박", "🥒 오이", "🍓 딸기"],
+            answer: 0,
+            hint: "힌트: 아일랜드에서 많이 자라던 무와 비슷한 뿌리채소예요!",
+            explanation: "아일랜드와 스코틀랜드에서는 원래 '순무'를 파서 등불을 만들다가, 미국에서 모양 내기 쉬운 '호박'으로 바뀌었어요!"
+          },
+          {
+            category: "안전 문화",
+            q: "어른이 준비한 행사에서 자동차 트렁크를 꾸며 간식을 나누는 방식은?",
+            options: ["🚗 트렁크 오어 트리팅", "🏊 수영장 파티", "⛷️ 스키장 캠프", "⛺ 사막 캠핑"],
+            answer: 0,
+            hint: "힌트: 자동차 뒤쪽 짐칸을 뜻하는 영어 단어 '트렁크(Trunk)'가 들어가요!",
+            explanation: "자동차 트렁크를 꾸며 간식을 나누는 활동을 '트렁크 오어 트리팅'이라고 불러요. 주차장에서도 차량 이동 구역과 어른의 안내를 확인해요."
+          },
+          {
+            category: "인파 안전",
+            q: "구경하러 간 거리에 사람이 너무 많아져서 옆 사람과 자꾸 어깨가 부딪혀요. 어떻게 해야 할까요?",
+            options: ["↗️ 사람들의 흐름을 따라 대각선 방향 넓은 곳으로 빠져나온다", "🏃 더 좁은 골목길 안쪽으로 뛰어 들어간다", "🛑 걸음을 멈추고 길 한가운데 앉는다", "😤 반대 방향으로 사람들을 세게 밀친다"],
+            answer: 0,
+            hint: "힌트: 흐름을 거스르지 않고 비스듬히(대각선으로) 가장자리로 나오는 것이 안전해요!",
+            explanation: "어깨가 자꾸 부딪히고 걸음이 느려지면 위험 신호예요! 흐름을 따라 대각선 방향으로 넓고 안전한 곳으로 이동해요."
+          },
+          {
+            category: "인파 안전",
+            q: "사람들에게 밀릴 때 내가 숨을 편하게 쉴 수 있도록 가슴 앞 공간을 지키는 자세는 무엇일까요?",
+            options: ["🛡️ 두 손으로 팔짱을 끼거나 가방을 가슴 앞에 꼭 안는다", "🧍 양팔을 차렷 자세로 몸에 딱 붙인다", "🙌 두 손을 머리 위로 만세 부른다", "🙇 바닥에 떨어진 물건을 주우려고 허리를 굽힌다"],
+            answer: 0,
+            hint: "힌트: 가슴(폐)이 눌리지 않도록 두 팔이나 가방으로 앞 공간을 만들어 줘요!",
+            explanation: "떠밀리는 상황에서는 가슴 앞 공간을 보호해 숨쉬기를 돕습니다. 이 자세가 사고를 막아 주는 능력은 아니에요."
+          },
+          {
+            category: "위기 대처",
+            q: "사람이 많은 곳에서 만약 넘어져서 바로 일어날 수 없을 때 내 몸을 보호하는 올바른 자세는?",
+            options: ["🙆 머리를 두 팔로 감싸고 다리를 당겨 공처럼 둥글게 만다", "🛌 팔다리를 넓게 펴고 반듯하게 눕는다", "📱 떨어진 휴대폰을 찾으려고 바닥을 더듬는다", "👟 벗겨진 신발 끈을 다시 묶는다"],
+            answer: 0,
+            hint: "힌트: 소중한 머리와 가슴을 보호하려면 몸을 둥근 공처럼 말아야 해요!",
+            explanation: "일어날 수 없을 때는 머리를 두 팔로 감싸고 몸을 공처럼 둥글게 말아 가슴과 머리를 보호해야 합니다!"
+          },
+          {
+            category: "법규와 예절",
+            q: "할로윈에 진짜 경찰관이나 소방관처럼 보이는 옷을 피하면 좋은 이유는 무엇일까요?",
+            options: ["🚨 실제 대원과 헷갈릴 수 있어 피하고, 옷에 따라 적용 법도 달라서", "🎨 주황색 호박과 색깔이 안 어울려서", "🧺 빨래하기가 힘들어서", "📸 사진이 예쁘게 안 나와서"],
+            answer: 0,
+            hint: "힌트: 위급한 사고가 났을 때 누가 진짜 경찰·소방관인지 헷갈리면 큰일 나요!",
+            explanation: "실제 대원처럼 보이는 옷은 혼동을 줄 수 있어 피합니다. 경찰제복과 소방복의 법률 조건은 서로 다릅니다."
+          },
+          {
+            category: "세계 문화",
+            q: "꽃잎과 촛불로 그리운 가족의 영혼을 맞이하는 멕시코의 축제는?",
+            options: ["🌼 죽은 자들의 날", "🎄 크리스마스", "💦 송크란 물축제", "🍅 토마토 축제"],
+            answer: 0,
+            hint: "힌트: 영화 <코코>의 배경이 된 멕시코의 유네스코 무형유산 명절이에요!",
+            explanation: "멕시코의 '죽은 자들의 날'은 마리골드꽃과 해골 가면으로 세상을 떠난 가족을 기쁘게 맞이하는 전통 축제예요!"
+          },
+          {
+            category: "한국 명절 비교",
+            q: "우리나라 세시풍속 중 밤이 가장 긴 날에 붉은 팥죽을 쑤어 나쁜 기운을 물리치고 이웃과 나누어 먹던 날은?",
+            options: ["🥣 동지", "🎋 칠석", "🌸 삼짇날", "🍉 유두"],
+            answer: 0,
+            hint: "힌트: '동지팥죽'이라는 말을 떠올려 보세요!",
+            explanation: "우리나라에서도 '동지'에 붉은 팥죽으로 나쁜 액운을 쫓고 가족·이웃의 건강을 기원했답니다!"
+          }
+        ]
+      },
+      "5-6": {
+        label: "🌟 5~6학년",
+        classDefault: "5학년 1반",
+        stories: [
+          {
+            emoji: "🏛️",
+            caption: "All Hallows' Eve와 서우인 축제",
+            title: "1. '할로윈(Halloween)'의 역사적 어원",
+            body: "할로윈은 11월 1일 모든 성인을 기리는 만성절(All Hallows' Day)의 전날 밤을 뜻하는 'All Hallows' Eve'가 줄어들어 생긴 이름이에요. 여기에 고대 켈트족이 여름의 끝과 새해를 기리던 '서우인(Samhain)' 풍습이 결합되었답니다.",
+            keyPoint: "만성절 전야(All Hallows' Eve)와 고대 켈트족의 수확 축제가 결합해 탄생했어요!",
+            sourceText: "출처: 미국 의회도서관",
+            sourceUrl: "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
+          },
+          {
+            emoji: "🕯️",
+            caption: "아일랜드 이민과 문화 전파",
+            title: "2. 순무 등불이 미국 호박 등불이 된 까닭",
+            body: "아일랜드 민담 속 '잭(Jack)'이 속을 파낸 순무에 숯불을 넣고 떠돌았다는 이야기에서 잭오랜턴이 시작되었어요. 이후 19세기 아일랜드인들이 미국으로 이주하면서 순무보다 크고 조각하기 쉬운 호박을 사용하게 되었습니다.",
+            keyPoint: "사람들의 이주와 환경 변화에 따라 전통 축제의 상징물도 함께 변화했어요!",
+            sourceText: "출처: 스미스소니언 정원 기록",
+            sourceUrl: "https://gardens.si.edu/american-garden-story/ghosts-of-pumpkins-past/"
+          },
+          {
+            emoji: "🚗",
+            caption: "소울링(Souling)과 트렁크 오어 트리팅",
+            title: "3. 나눔과 안전 중심으로 진화한 축제 문화",
+            body: "중세 유럽의 '소울링' 등 여러 풍습이 오늘날 '트릭 오어 트릿'의 기원으로 설명돼요. 현대에는 UNICEF 모금 활동이나 어른이 준비한 장소에서 간식을 나누는 방식도 있어요.",
+            keyPoint: "옛 풍습과 오늘날의 다양한 참여 방식을 구분해 살펴보아요!",
+            sourceText: "출처: 미국 의회도서관",
+            sourceUrl: "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
+          },
+          {
+            emoji: "⚖️",
+            caption: "복장과 배려",
+            title: "4. 실제 제복처럼 보이는 옷은 피하기",
+            body: "축제 옷이 실제 경찰관이나 구조대원의 제복처럼 보이면 다른 사람이 혼동할 수 있어요. 경찰제복·군복에는 각각 별도의 법률과 예외 조건이 있으므로, 교사와 확인하고 나만의 창의적인 옷을 선택해요.",
+            keyPoint: "표현의 자유만큼 사회 안전망과 공공질서를 지키는 시민 의식이 중요해요!",
+            sourceText: "출처: 국가법령정보센터",
+            sourceUrl: "https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1008601875"
+          },
+          {
+            emoji: "🌏",
+            caption: "유네스코 인류무형문화유산 비교",
+            title: "5. 세계의 영혼·수확 명절과 다문화 존중",
+            body: "할로윈의 옛 풍습과 달리, 멕시코의 '죽은 자들의 날(유네스코 무형유산)'은 꽃잎과 촛불, 제물로 세상을 떠난 가족을 기려요. 한국의 추석·동지처럼 각 나라의 고유한 문화적 맥락을 비교해 봐요.",
+            keyPoint: "각 나라가 삶과 죽음, 수확을 기리는 고유한 문화적 맥락을 이해하고 존중해요!",
+            sourceText: "멕시코 명절 근거: 유네스코",
+            sourceUrl: "https://ich.unesco.org/en/RL/dia-de-muertos-the-indigenous-festivity-dedicated-to-the-dead-00054"
+          },
+          {
+            emoji: "🏠",
+            caption: "비판적 수용과 건강한 홈로윈",
+            title: "6. 상업적 유행을 넘어 주체적으로 즐기기",
+            body: "과도한 소비나 인파 밀집, 야간 소음은 축제의 본래 의미를 흐릴 수 있어요. 외래 문화를 비판적으로 성찰하고, 가족·친구와 안전하고 소박하게 즐기는 '홈로윈' 문화를 직접 만들어 가요!",
+            keyPoint: "무분별한 모방 대신 나와 이웃의 안전을 지키는 주체적인 문화 시민이 되어요!",
+            sourceText: "교사용 안전 근거: 국민재난안전포털",
+            sourceUrl: "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
+          }
+        ],
+        quizzes: [
+          {
+            category: "역사와 어원",
+            q: "할로윈(Halloween)이라는 이름의 유래가 된 서방 기독교의 10월 31일 저녁 명칭은 무엇인가요?",
+            options: ["🏛️ All Hallows' Eve (만성절 전야)", "🎄 Christmas Eve (성탄절 전야)", "🐣 Easter Sunday (부활절)", "🦃 Thanksgiving (추수감사절)"],
+            answer: 0,
+            hint: "힌트: 11월 1일 만성절(All Hallows' Day)의 전날 밤(Eve)을 줄인 말이에요!",
+            explanation: "11월 1일 만성절(All Hallows' Day)의 전날 밤인 'All Hallows' Eve'가 축약되어 할로윈이 되었어요!"
+          },
+          {
+            category: "문화의 기원",
+            q: "중세 유럽에서 기도와 함께 '소울 케이크'를 받던 풍습으로, 트릭 오어 트릿의 여러 기원 설명 중 하나는?",
+            options: ["🍪 소울링 (Souling)", "🍎 애플 보빙 (Apple bobbing)", "🏇 로데오 (Rodeo)", "🎿 컬링 (Curling)"],
+            answer: 0,
+            hint: "힌트: '소울 케이크(Soul cake)'에서 유래한 풍습 이름을 찾아보세요!",
+            explanation: "소울링과 가이징 등 여러 옛 풍습이 오늘날 트릭 오어 트릿의 기원으로 설명돼요. 한 가지 이야기만으로 단정하지 않아요."
+          },
+          {
+            category: "안전 문화",
+            q: "어른이 준비한 행사 장소에서 자동차 트렁크를 꾸미고 간식을 나누는 방식은 무엇인가요?",
+            options: ["🚗 트렁크 오어 트리팅 (Trunk-or-treating)", "🎢 테마파크 퍼레이드", "🏕️ 글램핑 페스티벌", "🚤 보트 레이싱"],
+            answer: 0,
+            hint: "힌트: 자동차의 짐칸(Trunk)을 꾸미는 활동이에요.",
+            explanation: "자동차 짐칸을 꾸며 간식을 나누는 방식을 '트렁크 오어 트리팅'이라고 해요. 주차장에서는 차량 이동 구역과 어른의 안내를 확인해야 해요."
+          },
+          {
+            category: "다중밀집 안전",
+            q: "인파가 빽빽한 곳에서 옆 사람과 신체가 닿고 보행 속도가 느려질 때 국민재난안전포털이 권장하는 행동은?",
+            options: ["↗️ 사람들의 이동 흐름에 따라 대각선 방향으로 즉시 벗어난다", "🛑 그 자리에 갑자기 멈춰 서서 친구를 기다린다", "🏃 인파가 걸어오는 정반대 방향으로 밀치며 역행한다", "🙇 바닥에 떨어진 물건을 주우려고 즉시 허리를 숙인다"],
+            answer: 0,
+            hint: "힌트: 흐름을 정면으로 거스르지 않고 대각선 방향 가장자리로 빠져나와야 해요!",
+            explanation: "보행 속도가 느려지거나 어깨가 닿으면 위험 신호이므로 인파 흐름에 맞춰 대각선 방향으로 빠져나와야 안전합니다!"
+          },
+          {
+            category: "위기 대응",
+            q: "군중 속에서 넘어져 즉시 일어날 수 없는 위급한 상황일 때, 신체를 보호하기 위한 가장 올바른 자세는?",
+            options: ["🙆 머리를 두 팔로 감싸고 다리를 몸쪽으로 당겨 공처럼 둥글게 만다", "🛌 팔다리를 대(大)자로 넓게 펴고 반듯하게 눕는다", "📱 떨어진 스마트폰을 찾기 위해 바닥을 더듬는다", "👟 벗겨진 신발을 다시 신으려고 앉아 있는다"],
+            answer: 0,
+            hint: "힌트: 머리와 흉강(가슴)을 보호하기 위해 몸을 둥글게 말아야 해요!",
+            explanation: "일어날 수 없을 때는 머리를 두 팔로 감싸고 다리를 당겨 공처럼 둥글게 말아 흉강(가슴)과 머리를 보호해야 합니다!"
+          },
+          {
+            category: "법과 질서",
+            q: "축제에서 실제 경찰관 제복과 거의 같은 옷을 입고 싶어 하는 친구에게 어떤 말을 하면 좋을까요?",
+            options: ["👮 실제 경찰관과 혼동될 수 있으니 피하고, 관련 규정과 예외는 선생님과 확인하자", "🎨 모자 색만 바꾸면 언제나 괜찮아", "📸 사진을 찍을 때만 입으면 어떤 경우에도 괜찮아", "🚨 다른 사람이 경찰관으로 착각할수록 재미있어"],
+            answer: 0,
+            hint: "힌트: 실제 공무원과 혼동될 가능성과 조건을 함께 생각해 보세요.",
+            explanation: "경찰제복·유사경찰제복에는 별도 규정과 예외 조건이 있습니다. 학생 활동에서는 실제 경찰관과 혼동될 복장을 피하고, 자세한 법률 판단은 교사와 확인합니다."
+          },
+          {
+            category: "다문화 비교",
+            q: "2008년 유네스코 인류무형문화유산에 등재된 멕시코의 명절로, 마리골드꽃과 제단으로 가족의 영혼을 환영하는 축제는?",
+            options: ["🌼 죽은 자들의 날 (Día de Muertos)", "🎭 베네치아 카니발", "🏮 중추절 등불축제", "💃 리우 삼바 축제"],
+            answer: 0,
+            hint: "힌트: 스페인어로 'Día de Muertos'라고 부르는 멕시코의 전통 축제예요!",
+            explanation: "멕시코의 '죽은 자들의 날'은 악령을 쫓는 할로윈과 달리 세상을 떠난 가족의 영혼을 기쁘게 맞이하는 전통 명절입니다."
+          },
+          {
+            category: "시민 의식",
+            q: "할로윈데이를 대하는 성숙한 태도로 가장 바람직한 것은 무엇일까요?",
+            options: ["🏠 외래 문화의 유래를 바로 알고 안전수칙과 타인 배려 예절을 지키며 즐긴다", "📢 밤늦게 주택가에서 큰 소리로 소음을 내며 돌아다닌다", "🗡️ 사람이 많은 곳에서 날카로운 모형 무기를 휘두른다", "🚮 길거리에 사탕 포장지와 쓰레기를 마음대로 버린다"],
+            answer: 0,
+            hint: "힌트: 나와 이웃의 안전, 공공예절을 먼저 생각하는 성숙한 시민 의식이 정답이에요!",
+            explanation: "문화적 유래를 이해하고 나와 이웃의 안전을 배려하며 건전하게 즐기는 태도가 가장 중요합니다!"
+          }
+        ]
+      }
+    };
+
+    // ==================== STEP 2: 6-STEP CROWD SAFETY SCENARIOS ====================
+    const SAFETY_SCENARIOS = [
+      {
+        stage: "약속 1 · 방문 전 & 도착 직후",
+        emoji: "🗺️",
+        title: "축제 거리에 도착했어요! 제일 먼저 무엇을 확인할까요?",
+        desc: "신나는 구경을 시작하기 전에, 혹시 사람이 많아질 때를 대비해 꼭 먼저 눈으로 찾아두어야 하는 곳이 있어요.",
+        choices: [
+          {
+            text: "빠져나갈 수 있는 넓은 길과 비상 대피로(출구) 위치를 먼저 확인해요.",
+            correct: true,
+            feedback: "딩동댕! 도착하자마자 비상 이동로와 넓은 출구를 미리 확인해 두면 위급할 때 빠르게 대피할 수 있어요."
+          },
+          {
+            text: "사람이 제일 빽빽하게 모여 있는 좁은 골목으로 무조건 달려가요.",
+            correct: false,
+            feedback: "위험해요! 좁은 골목이나 가파른 비탈길에 사람이 많이 몰린 곳은 사고 위험이 높으니 피해야 해요."
+          }
+        ]
+      },
+      {
+        stage: "약속 2 · 길을 걸을 때",
+        emoji: "🚶‍♂️",
+        title: "양방향으로 사람이 많이 걷는 길에서는 어떻게 걸을까요?",
+        desc: "앞뒤에서 많은 사람들이 걸어오고 있어요. 서로 부딪히지 않고 원활하게 이동하려면 어떻게 걸어야 할까요?",
+        choices: [
+          {
+            text: "오른쪽(우측통행)으로 차근차근 걷고, 갑자기 멈추거나 방향을 바꾸지 않아요.",
+            correct: true,
+            feedback: "맞아요! 양방향 통행 시 오른쪽으로 걷고, 앞뒤 흐름을 살피며 걸어야 넘어지지 않고 안전해요."
+          },
+          {
+            text: "길 한가운데 갑자기 멈춰 서서 사진을 찍거나 반대 방향으로 밀치며 달려요.",
+            correct: false,
+            feedback: "위험해요! 많은 사람이 걷는 길에서 갑자기 멈추면 뒤따라오던 사람들이 연달아 넘어질 수 있어요."
+          }
+        ]
+      },
+      {
+        stage: "약속 3 · 위험 신호 감지",
+        emoji: "↗️",
+        title: "옆 사람과 자꾸 어깨가 부딪히고 걸음이 느려지기 시작했어요!",
+        desc: "점점 사람이 많아져서 내 몸이 다른 사람과 닿기 시작했어요. 인파 사고를 막기 위한 행동은 무엇일까요?",
+        choices: [
+          {
+            text: "위험 신호이므로 사람들의 이동 흐름에 맞춰 대각선 방향 넓은 곳으로 즉시 빠져나와요.",
+            correct: true,
+            feedback: "정확해요! 신체 접촉이 시작되면 흐름을 거스르지 말고 대각선 방향 가장자리나 넓은 곳으로 바로 벗어나야 해요."
+          },
+          {
+            text: "사람들이 걸어오는 정반대 방향으로 억지로 몸을 돌려 세게 밀쳐요.",
+            correct: false,
+            feedback: "위험해요! 인파의 흐름을 정면으로 거슬러 역행하면 더 큰 압력을 받아 넘어지기 쉬워요."
+          }
+        ]
+      },
+      {
+        stage: "약속 4 · 숨 쉴 공간 확보",
+        emoji: "🛡️",
+        title: "사람들에게 떠밀릴 때 내 가슴(숨 쉴 공간)을 지키는 자세는?",
+        desc: "사람이 너무 많아 내 의지와 상관없이 밀리고 있을 때, 답답하지 않게 숨 쉴 공간을 확보해야 해요!",
+        choices: [
+          {
+            text: "두 손을 가슴 앞으로 모으거나 팔짱을 끼고(또는 가방을 가슴 앞에 안아) 공간을 확보해요.",
+            correct: true,
+            feedback: "최고예요! 권투 선수처럼 두 손을 가슴 앞에 모으거나 팔짱을 끼면 폐가 숨을 쉴 수 있는 공간(흉강)을 지킬 수 있어요."
+          },
+          {
+            text: "양팔을 차렷 자세로 몸에 붙이거나 두 손을 머리 위로 높이 들어요.",
+            correct: false,
+            feedback: "위험해요! 팔을 내려놓으면 가슴이 압박되어 숨쉬기 어려워질 수 있어요. 꼭 가슴 앞 공간을 지켜 주세요."
+          }
+        ]
+      },
+      {
+        stage: "약속 5 · 떨어진 물건 대처",
+        emoji: "🙅",
+        title: "인파 속에서 걷다가 사탕 바구니나 신발이 바닥에 떨어졌어요!",
+        desc: "사람들이 계속 걸어오고 있는 복잡한 길에서 내 소지품이 발밑에 떨어졌을 때 어떻게 해야 할까요?",
+        choices: [
+          {
+            text: "절대 허리를 숙여 줍지 않고, 물건을 포기한 채 안전한 곳으로 먼저 빠져나와요.",
+            correct: true,
+            feedback: "맞아요! 국민재난안전포털에서도 '소지품이 떨어졌다고 주우려고 허리를 숙이면 매우 위험하다'고 강조하고 있어요."
+          },
+          {
+            text: "아까운 물건을 주우려고 그 자리에서 즉시 허리를 숙여 바닥을 짚어요.",
+            correct: false,
+            feedback: "절대 안 돼요! 인파 속에서 허리를 숙이면 뒤따라오는 사람들에게 밟히거나 넘어져 큰 사고로 이어질 수 있어요."
+          }
+        ]
+      },
+      {
+        stage: "약속 6 · 넘어졌을 때 & 신고",
+        emoji: "🚑",
+        title: "위험이 느껴지거나 넘어져서 바로 일어날 수 없을 때는?",
+        desc: "위급한 상황을 발견했거나, 만약 넘어졌는데 즉시 일어나기 어려운 순간의 행동요령이에요.",
+        choices: [
+          {
+            text: "위험 시 112·119에 바로 신고하고, 넘어졌을 땐 머리를 두 팔로 감싸고 다리를 당겨 공처럼 둥글게 말아요.",
+            correct: true,
+            feedback: "적절한 몸 보호 행동이에요. 다른 상황도 새 질문으로 다시 확인해 보세요."
+          },
+          {
+            text: "팔다리를 길게 뻗고 누워 있거나 장난으로 119에 거짓 신고를 해요.",
+            correct: false,
+            feedback: "넘어졌을 땐 머리와 가슴(장기)을 보호하기 위해 공처럼 둥글게 몸을 말아야 하며, 장난 신고는 절대 금물이에요!"
+          }
+        ]
+      }
+    ];
+
+    // ==================== STEP 3: 12 COSTUME ITEMS & 4 ETIQUETTE PLEDGES ====================
+    const COSTUME_ITEMS = [
+      {
+        id: "c1",
+        emoji: "👮‍♂️",
+        name: "경찰관 제복과 수갑",
+        safe: false,
+        reason: "실제 경찰관과 혼동될 수 있는 제복·장비는 피하고, 법률의 조건과 예외는 선생님과 확인해요."
+      },
+      {
+        id: "c2",
+        emoji: "🎃",
+        name: "주황색 호박 망토",
+        safe: true,
+        reason: "걷기도 편하고 친구들과 기분 좋게 즐길 수 있는 안전한 할로윈 옷이에요!"
+      },
+      {
+        id: "c3",
+        emoji: "🧑‍🚒",
+        name: "소방관 출동복과 헬멧",
+        safe: false,
+        reason: "실제 소방관과 혼동될 수 있는 출동복은 행사 분장으로 피하는 것이 좋아요. 경찰제복장비법이나 군복단속법이 똑같이 적용되는 것은 아니에요."
+      },
+      {
+        id: "c4",
+        emoji: "🧙‍♀️",
+        name: "별 무늬 마법사 옷",
+        safe: true,
+        reason: "동화 속 주인공처럼 재미있고 안전하게 즐길 수 있는 멋진 분장이에요!"
+      },
+      {
+        id: "c5",
+        emoji: "🗡️",
+        name: "뾰족한 장난감 칼·총",
+        safe: false,
+        reason: "사람이 많은 곳에서 뾰족하고 딱딱한 소품을 들면 옆 친구가 다칠 수 있어요!"
+      },
+      {
+        id: "c6",
+        emoji: "🪖",
+        name: "실제 군인 전투복",
+        safe: false,
+        reason: "실제 군복·군용장구는 별도 규정이 있어요. 단순한 무늬 옷까지 똑같이 판단하지 말고 선생님과 확인해요."
+      },
+      {
+        id: "c7",
+        emoji: "🩸",
+        name: "피 묻은 무서운 분장",
+        safe: false,
+        reason: "친구가 놀라고, 실제 다친 응급 환자가 생겼을 때 분장으로 오해받을 수 있어요!"
+      },
+      {
+        id: "c8",
+        emoji: "🧚",
+        name: "야광 스티커 붙인 옷",
+        safe: true,
+        reason: "눈에 잘 띄는 꾸미기는 좋지만, 밤길에서는 어른의 안내와 주변 이동로를 계속 살펴요."
+      },
+      {
+        id: "c9",
+        emoji: "🎭",
+        name: "앞이 안 보이는 가면",
+        safe: false,
+        reason: "눈구멍이 좁아 앞이 잘 안 보이는 가면을 쓰면 계단이나 길에서 넘어지기 쉬워요!"
+      },
+      {
+        id: "c10",
+        emoji: "🧣",
+        name: "바닥에 끌리는 긴 망토",
+        safe: false,
+        reason: "옷자락이 너무 길어 발에 걸리면 다른 사람과 엉켜 넘어질 위험이 커요!"
+      },
+      {
+        id: "c11",
+        emoji: "🚑",
+        name: "119 구급대원 조끼",
+        safe: false,
+        reason: "응급 현장에서 진짜 구급대원과 혼동을 주어 구조 활동을 방해할 수 있어요!"
+      },
+      {
+        id: "c12",
+        emoji: "🦸",
+        name: "활동하기 편한 동화 옷",
+        safe: true,
+        reason: "시야가 트여 있고 움직이기 편해서 안전하고 즐겁게 축제를 즐길 수 있어요!"
+      }
+    ];
+
+    const ETIQUETTE_RULES = [
+      { id: "e1", icon: "🍬", title: "포장이 잘 밀봉된 간식만 먹기", desc: "포장지가 뜯겨 있거나 알레르기 성분이 있는 간식은 먹지 않아요." },
+      { id: "e2", icon: "🤫", title: "밤늦게 소음 내지 않고 이웃 배려하기", desc: "약속되지 않은 집의 초인종을 누르거나 밤길에 큰 소리를 내지 않아요." },
+      { id: "e3", icon: "🗑️", title: "사탕 껍질과 쓰레기는 내 가방에!", desc: "길거리에 쓰레기를 버리지 않고 머문 자리를 깨끗하게 정리해요." },
+      { id: "e4", icon: "🤝", title: "친구가 싫어하는 무서운 장난 금지", desc: "모두가 기분 좋게 웃을 수 있도록 친구의 마음을 먼저 배려해요." }
+    ];
+
+    // ==================== APPLICATION STATE ====================
+    const state = {
+      sessionId: (globalThis.crypto && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+      legacy: null,
+      gradeRecords: {},
+      rewardLedger: {},
+      profile: {school:'',className:'',name:'',pledge:''},
+      storageAvailable: true,
+      teacher: {grade:'3-4', minutes:40, mode:'together', direction:'all', theme:'halloween', required:['culture','safety','costume','quiz'], optional:[], order:['culture','safety','costume','quiz'], start:'tab-culture'},
+      themeResponses: {},
+      safetyFirst: {},
+      safetyConfirmed: {},
+      quizFirst: {},
+      quizAttempts: {},
+      quizOrders: {},
+      quizHints: {},
+      quizFifties: {},
+      quizReview: false,
+      quizReviewItems: [],
+      quizAttemptRound: 0,
+      grade: "3-4",
+      activeTab: "tab-culture",
+      boardMode: false,
+      soundOn: true,
+      autoFullscreenAttempted: false,
+      candyPoints: 0,
+      storyIndex: 0,
+      readStories: { 0: true },
+      lantern: {
+        lit: false,
+        rewarded: false,
+        eye: "⭐ ⭐",
+        mouth: "😄 활짝",
+        hat: "🎩"
+      },
+      scenarioIndex: 0,
+      completedScenarios: {},
+      gameStage: 1,
+      avatar: {
+        char: "🧒",
+        costume: "🎃",
+        prop: "🕯️",
+        runwayRewarded: false
+      },
+      avatarReason: '',
+      avatarReasonText: '',
+      costumeChoices: {},
+      etiquetteChecked: { e1: false, e2: false, e3: false, e4: false },
+      quizIndex: 0,
+      quizScore: 0,
+      quizCombo: 0,
+      quizAnswered: false,
+      quizFiftyUsed: false,
+      currentShuffledOptions: [],
+      currentAnswerIndex: 0,
+      certTheme: "purple",
+      certSticker: "🎃",
+      stamps: {
+        s1: false,
+        s2: false,
+        s3: false,
+        s4: false
+      }
+    };
+
+    const ACTIVITY_IDS = ['culture','safety','costume','quiz'];
+    const ACTIVITY_TABS = {culture:'tab-culture', safety:'tab-safety', costume:'tab-costume', quiz:'tab-quiz'};
+    const LESSON_PLANS = {
+      10: '도입 2분: 오늘의 질문 · 안전 상황 5분 · 확인 퀴즈와 정리 3분',
+      20: '도입 3분: 주제 소개 · 안전 상황 8분 · 복장 판단 5분 · 확인과 정리 4분',
+      40: '도입 5분: 축제 비교 · 안전 상황 10분 · 복장 선택 10분 · 퀴즈와 복습 10분 · 정리 5분'
+    };
+    function sanitizeTeacher(input) {
+      const raw = input && typeof input === 'object' ? input : {};
+      const enumValue = (value, allowed, fallback) => allowed.includes(String(value)) ? String(value) : fallback;
+      const minutes = Number(raw.minutes);
+      const grade = enumValue(raw.grade, Object.keys(EDUCATION_DATA), '3-4');
+      const theme = enumValue(raw.theme, Object.keys(THEMES), 'halloween');
+      const direction = enumValue(raw.direction, ['culture','safety','all'], 'all');
+      const defaultRequired = theme !== 'halloween' ? ['safety','quiz'] : minutes === 10 ? ['safety','quiz'] : minutes === 20 ? ['safety','costume','quiz'] : ACTIVITY_IDS;
+      const required = Array.isArray(raw.required) ? [...new Set(raw.required.filter(id => ACTIVITY_IDS.includes(id)))] : defaultRequired;
+      const order = Array.isArray(raw.order) && raw.order.length === 4 && new Set(raw.order).size === 4 && raw.order.every(id => ACTIVITY_IDS.includes(id)) ? raw.order : ACTIVITY_IDS;
+      const start = enumValue(raw.start, Object.values(ACTIVITY_TABS), ACTIVITY_TABS[order[0]]);
+      return {grade, minutes:[10,20,40].includes(minutes) ? minutes : 40,
+        mode:enumValue(raw.mode, ['together','pairs','individual'], 'together'),
+        direction, theme, required, optional:ACTIVITY_IDS.filter(id => !required.includes(id)), order, start};
+    }
+    function teacherFromUrl() {
+      const params = new URLSearchParams(location.search);
+      if (params.get('lesson') !== '1') return null;
+      return sanitizeTeacher({grade:params.get('g'), minutes:params.get('m'), mode:params.get('mode'),
+        direction:params.get('d'), theme:params.get('t'), required:(params.get('req') || '').split(',').filter(Boolean),
+        order:(params.get('ord') || '').split(','), start:params.get('start')});
+    }
+    function shareLessonUrl() {
+      const url = new URL('./', location.href);
+      const t = state.teacher;
+      url.searchParams.set('lesson','1');
+      url.searchParams.set('g',t.grade);
+      url.searchParams.set('m',String(t.minutes));
+      url.searchParams.set('mode',t.mode);
+      url.searchParams.set('d',t.direction);
+      url.searchParams.set('t',t.theme);
+      url.searchParams.set('req',t.required.join(','));
+      url.searchParams.set('ord',t.order.join(','));
+      url.searchParams.set('start',t.start);
+      return url.href;
+    }
+    function renderTeacherSettings() {
+      const t = state.teacher;
+      [['teacherGrade',t.grade],['teacherMinutes',t.minutes],['teacherMode',t.mode],['teacherDirection',t.direction],['teacherTheme',t.theme],['teacherStart',t.start],['teacherOrder',t.order.join(',')]].forEach(([id,value]) => {document.getElementById(id).value = value;});
+      document.querySelectorAll('.teacherRequired').forEach(input => {input.checked = t.required.includes(input.value);});
+      document.getElementById('teacherPlan').textContent = LESSON_PLANS[t.minutes];
+      const url = shareLessonUrl();
+      document.getElementById('shareUrlInput').value = url;
+      const qrBox = document.getElementById('shareQr');
+      qrBox.replaceChildren();
+      try {
+        const code = qrcode(0,'M');
+        code.addData(url);
+        code.make();
+        qrBox.innerHTML = code.createSvgTag({cellSize:3, margin:4, scalable:true});
+      } catch (e) { qrBox.textContent = 'QR을 만들 수 없습니다. 주소를 복사해 사용하세요.'; }
+    }
+    function applyTeacherSettings() {
+      const read = id => document.getElementById(id).value;
+      const next = sanitizeTeacher({grade:read('teacherGrade'), minutes:read('teacherMinutes'), mode:read('teacherMode'),
+        direction:read('teacherDirection'), theme:read('teacherTheme'), required:[...document.querySelectorAll('.teacherRequired:checked')].map(input => input.value),
+        order:read('teacherOrder').split(','), start:read('teacherStart')});
+      state.teacher = next;
+      switchGrade(next.grade);
+      switchTab(next.start);
+      saveProgress();
+      renderTeacherSettings();
+      renderThemeSituations();
+      renderLearningSummary();
+    }
+    function activityDone(id) {
+      if (id === 'safety' && state.teacher.theme !== 'halloween') return THEMES[state.teacher.theme].situations.every((_, i) => {
+        const response=state.themeResponses[`${state.teacher.theme}:${i}`];
+        return response?.correct && typeof response.apply==='string' && response.apply.trim().length>0;
+      });
+      return !!state.stamps[{culture:'s1',safety:'s2',costume:'s3',quiz:'s4'}[id]];
+    }
+    function canDownloadParticipation() {
+      return state.teacher.required.length > 0 && state.teacher.required.every(activityDone);
+    }
+    function confirmedGoalCount() {
+      return SAFETY_GOALS.filter(goal => state.safetyConfirmed[goal.id]?.contentVersion === CONTENT_VERSION).length;
+    }
+    function canDownloadSafetyCertificate() { return confirmedGoalCount() === SAFETY_GOALS.length; }
+
+    // ==================== HELPER: SAFE BUTTON GROUP HIGHLIGHT SYNC ====================
+    function syncButtonGroup(selector, dataAttr, activeValue) {
+      document.querySelectorAll(selector).forEach(btn => {
+        const isMatch = btn.getAttribute(dataAttr) === String(activeValue);
+        if (isMatch) {
+          btn.classList.remove("border-indigo-700");
+          btn.classList.add("border-amber-400");
+        } else {
+          btn.classList.remove("border-amber-400");
+          btn.classList.add("border-indigo-700");
+        }
+      });
+    }
+
+    function syncStageButtons() {
+      document.querySelectorAll(".game-stage-btn").forEach(btn => {
+        const isCurrent = parseInt(btn.getAttribute("data-stage"), 10) === state.gameStage;
+        btn.className = isCurrent
+          ? "game-stage-btn nowrap px-2 py-0.5 rounded-lg bg-amber-400 text-indigo-950 text-xs font-black"
+          : "game-stage-btn nowrap px-2 py-0.5 rounded-lg bg-indigo-900 text-indigo-200 border border-indigo-700 text-xs font-bold";
+      });
+    }
+
+    // ==================== CANDY POINTS, LEVEL & CONFETTI BURST ====================
+    function getLevelTitle(pts) {
+      if (pts >= 250) return "Lv.4 안전대왕 👑";
+      if (pts >= 150) return "Lv.3 수호대장 🛡️";
+      if (pts >= 70) return "Lv.2 등불지기 🕯️";
+      return "Lv.1 새싹탐험 🌱";
+    }
+
+    function addCandyPoints(amount, reasonText) {
+      state.candyPoints += amount;
+      saveProgress();
+      renderCandyHeader();
+      renderCertificateCanvas();
+      if (reasonText) {
+        showToast(`${reasonText} (+${amount}🍬)`, "🍬");
+      }
+    }
+
+    function awardOnce(contentId, kind, amount, reasonText) {
+      const key = `${state.sessionId}:${contentId}:${kind}`;
+      if (state.rewardLedger[key]) return false;
+      state.rewardLedger[key] = {amount, at: Date.now()};
+      addCandyPoints(amount, reasonText);
+      return true;
+    }
+
+    function renderCandyHeader() {
+      const ptEl = document.getElementById("candyPointText");
+      const lvEl = document.getElementById("playerLevelText");
+      if (ptEl) ptEl.textContent = state.candyPoints;
+      if (lvEl) lvEl.textContent = getLevelTitle(state.candyPoints);
+    }
+
+    function burstCandyConfetti(count = 16) {
+      const container = document.getElementById("confettiContainer");
+      if (!container) return;
+      const icons = ["🍬", "🍭", "🎃", "⭐", "✨", "🏅", "🎈"];
+      for (let i = 0; i < count; i++) {
+        const span = document.createElement("span");
+        span.className = "candy-particle select-none";
+        span.textContent = icons[i % icons.length];
+        const startX = window.innerWidth * (0.25 + Math.random() * 0.5);
+        const startY = window.innerHeight * (0.35 + Math.random() * 0.25);
+        const tx = `${Math.round((Math.random() - 0.5) * 280)}px`;
+        const ty = `${Math.round(-90 - Math.random() * 190)}px`;
+        const rot = `${Math.round((Math.random() - 0.5) * 520)}deg`;
+        span.style.left = `${startX}px`;
+        span.style.top = `${startY}px`;
+        span.style.setProperty("--tx", tx);
+        span.style.setProperty("--ty", ty);
+        span.style.setProperty("--rot", rot);
+        container.appendChild(span);
+        setTimeout(() => span.remove(), 1200);
+      }
+    }
+
+    // ==================== FULLSCREEN & EXIT MANAGEMENT ====================
+    function isFullscreenActive() {
+      return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+    }
+
+    function updateFullscreenButtonLabel() {
+      const labelEl = document.getElementById("fullscreenLabel");
+      if (labelEl) {
+        labelEl.textContent = isFullscreenActive() ? "화면축소" : "전체화면";
+      }
+    }
+
+    function requestAppFullscreen() {
+      try {
+        const el = document.documentElement;
+        if (!isFullscreenActive()) {
+          if (el.requestFullscreen) {
+            el.requestFullscreen().catch(() => {});
+          } else if (el.webkitRequestFullscreen) {
+            el.webkitRequestFullscreen();
+          } else if (el.msRequestFullscreen) {
+            el.msRequestFullscreen();
+          }
+        }
+      } catch (e) {
+        // Ignore fullscreen restrictions in sandboxed environments
+      }
+    }
+
+    function exitAppFullscreen() {
+      try {
+        if (isFullscreenActive()) {
+          if (document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+          }
+        }
+      } catch (e) {
+        // Ignore fullscreen errors
+      }
+    }
+
+    function toggleFullscreen() {
+      if (isFullscreenActive()) {
+        exitAppFullscreen();
+      } else {
+        requestAppFullscreen();
+      }
+      setTimeout(updateFullscreenButtonLabel, 150);
+    }
+
+    // ==================== SAFE LOCALSTORAGE ====================
+    const PROGRESS_KEY = 'halloween_edu_progress_v2';
+    const GRADE_FIELDS = ['storyIndex','readStories','lantern','scenarioIndex','completedScenarios','gameStage','avatar','avatarReason','avatarReasonText','costumeChoices','etiquetteChecked','quizIndex','quizScore','quizCombo','quizFiftyUsed','quizFirst','quizAttempts','quizOrders','quizHints','quizFifties','quizReview','quizReviewItems','quizAttemptRound','safetyFirst','safetyConfirmed','stamps','themeResponses'];
+    const FRESH_GRADE = Object.fromEntries(GRADE_FIELDS.map(key => [key, JSON.parse(JSON.stringify(state[key]))]));
+    function rememberGrade() {
+      state.gradeRecords[state.grade] = Object.fromEntries(GRADE_FIELDS.map(key => [key, JSON.parse(JSON.stringify(state[key]))]));
+    }
+    function restoreGrade(grade) {
+      const saved = state.gradeRecords[grade] || {};
+      GRADE_FIELDS.forEach(key => { state[key] = JSON.parse(JSON.stringify(Object.hasOwn(saved, key) ? saved[key] : FRESH_GRADE[key])); });
+      state.quizAnswered = false;
+      state.currentShuffledOptions = [];
+      state.currentAnswerIndex = 0;
+    }
+    function validSaved(parsed) {
+      if(!parsed || !safeImportedTree(parsed) || parsed.schemaVersion!==2 ||
+        typeof parsed.contentVersion!=='string' || parsed.contentVersion.length>40 ||
+        typeof parsed.sessionId!=='string' || !parsed.sessionId || parsed.sessionId.length>100 ||
+        !Object.hasOwn(EDUCATION_DATA,parsed.grade) || !parsed.gradeRecords || Array.isArray(parsed.gradeRecords) ||
+        !parsed.rewardLedger || Array.isArray(parsed.rewardLedger) ||
+        !Number.isInteger(parsed.candyPoints) || parsed.candyPoints<0 || parsed.candyPoints>=1000000) return false;
+      if(!Object.entries(parsed.gradeRecords).every(([grade,record])=>{
+        if(!Object.hasOwn(EDUCATION_DATA,grade) || !record || typeof record!=='object' || Array.isArray(record))return false;
+        const orders=record.quizOrders || {};
+        return Object.entries(orders).every(([id,order])=>{
+          const match=id.match(/^([1-5]-[2-6]):q(\d+)$/);
+          const index=match ? Number(match[2])-1 : -1;
+          const question=match && match[1]===grade ? EDUCATION_DATA[grade].quizzes[index] : null;
+          return question && Array.isArray(order) && order.length===question.options.length &&
+            new Set(order).size===order.length && order.every(option=>Number.isInteger(option) && option>=0 && option<order.length);
+        });
+      }))return false;
+      const ledger=Object.entries(parsed.rewardLedger);
+      if(!ledger.every(([key,entry])=>key.startsWith(`${parsed.sessionId}:`) && entry &&
+        Number.isInteger(entry.amount) && entry.amount>=0 && entry.amount<=100))return false;
+      if(ledger.reduce((sum,[,entry])=>sum+entry.amount,0)!==parsed.candyPoints)return false;
+      const profile=parsed.profile;
+      if(!profile || typeof profile!=='object' || Array.isArray(profile) ||
+        !Object.entries({school:40,className:30,name:40,pledge:160}).every(([key,max])=>typeof profile[key]==='string' && profile[key].length<=max))return false;
+      return true;
+    }
+    let preserveExistingProgress = false;
+    function loadSavedProgress() {
+      try {
+        const raw = localStorage.getItem(PROGRESS_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (validSaved(parsed)) {
+            state.sessionId = parsed.sessionId;
+            state.grade = parsed.grade;
+            state.gradeRecords = parsed.gradeRecords;
+            state.rewardLedger = parsed.rewardLedger;
+            state.candyPoints = parsed.candyPoints;
+            state.legacy = parsed.legacy || null;
+            state.profile = parsed.profile && typeof parsed.profile === 'object' ? parsed.profile : state.profile;
+            state.teacher = sanitizeTeacher(parsed.teacher);
+            state.activeTab = ['tab-culture','tab-safety','tab-costume','tab-quiz','tab-cert'].includes(parsed.activeTab) ? parsed.activeTab : state.teacher.start;
+            restoreGrade(state.grade);
+            return;
+          }
+          preserveExistingProgress = true;
+          state.storageAvailable = false;
+          return;
+        }
+        const oldRaw = localStorage.getItem('halloween_edu_progress_v1');
+        if (oldRaw) {
+          const old = JSON.parse(oldRaw);
+          state.legacy = {
+            grade: EDUCATION_DATA[old.grade] ? old.grade : null,
+            stamps: old.stamps && typeof old.stamps === 'object' ? Object.fromEntries(['s1','s2','s3','s4'].map(key => [key, old.stamps[key] === true])) : {},
+            candyPoints: Number.isFinite(old.candyPoints) ? Math.max(0, Math.min(999999, old.candyPoints)) : 0
+          };
+          if (state.legacy.grade) state.grade = state.legacy.grade;
+        }
+      } catch (e) {
+        state.storageAvailable = false;
+        preserveExistingProgress = true;
+        return;
+      }
+      saveProgress();
+    }
+
+    function saveProgress() {
+      rememberGrade();
+      if (preserveExistingProgress) return;
+      try {
+        localStorage.setItem(PROGRESS_KEY, JSON.stringify({
+          schemaVersion: 2, contentVersion: CONTENT_VERSION, sessionId: state.sessionId,
+          grade: state.grade, gradeRecords: state.gradeRecords, rewardLedger: state.rewardLedger,
+          candyPoints: state.candyPoints, legacy: state.legacy, teacher: state.teacher, activeTab: state.activeTab
+          , profile: state.profile
+        }));
+        state.storageAvailable = true;
+      } catch (e) {
+        if (state.storageAvailable) showToast('이 기기에 저장할 수 없습니다. 현재 탭에서는 계속 학습할 수 있어요.', '⚠️');
+        state.storageAvailable = false;
+      }
+    }
+
+    // ==================== WEB AUDIO SYNTHESIZER ====================
+    let audioCtx = null;
+    function playSound(type) {
+      if (!state.soundOn) return;
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return;
+          audioCtx = new AudioContextClass();
+        }
+        if (audioCtx.state === "suspended") {
+          audioCtx.resume();
+        }
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === "correct") {
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.09);
+          osc.frequency.setValueAtTime(783.99, now + 0.18);
+          gain.gain.setValueAtTime(0.16, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === "wrong") {
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.setValueAtTime(175, now + 0.12);
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        } else if (type === "stamp") {
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.08);
+          osc.frequency.setValueAtTime(783.99, now + 0.16);
+          osc.frequency.setValueAtTime(1046.5, now + 0.24);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+          osc.start(now);
+          osc.stop(now + 0.5);
+        } else {
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(440, now);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        }
+      } catch (e) {
+        // Ignore audio errors
+      }
+    }
+
+    // ==================== TOAST NOTIFICATION ====================
+    function showToast(message, icon = "🎃") {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = "pointer-events-auto flex items-center gap-2 px-4 py-2 rounded-2xl bg-indigo-950/95 border border-amber-400/60 text-white text-xs sm:text-sm font-bold shadow-2xl transition-all duration-300";
+      toast.innerHTML = `<span class="text-base">${icon}</span><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(-8px)";
+        setTimeout(() => toast.remove(), 300);
+      }, 2600);
+    }
+
+    // ==================== STAMP & HEADER RENDER ====================
+    function unlockStamp(key, label) {
+      if (!state.stamps[key]) {
+        state.stamps[key] = true;
+        awardOnce(`stamp:${key}`, 'completion', 50, `${label} 활동 완료`);
+        saveProgress();
+        playSound("stamp");
+        burstCandyConfetti(22);
+        showToast(`[${label}] 활동 완료를 기록했어요.`, "🏅");
+        renderStamps();
+        renderCandyHeader();
+        renderCertificateCanvas();
+      }
+    }
+
+    function renderStamps() {
+      const keys = ["s1", "s2", "s3", "s4"];
+      let count = 0;
+      keys.forEach((k, idx) => {
+        const earned = !!state.stamps[k];
+        if (earned) count++;
+        const card = document.getElementById(`stampCard${idx + 1}`);
+        const icon = document.getElementById(`stampIcon${idx + 1}`);
+        if (earned) {
+          card.classList.add("stamp-earned");
+          icon.textContent = "🏅";
+        } else {
+          card.classList.remove("stamp-earned");
+          icon.textContent = "🔒";
+        }
+      });
+      document.getElementById("stampCountText").textContent = `${count}/4`;
+    }
+
+    // ==================== SPEECH SYNTHESIS CLEANUP ====================
+    function stopSpeaking() {
+      try {
+        if ("speechSynthesis" in window) {
+          window.speechSynthesis.cancel();
+        }
+      } catch (e) {}
+      const lbl = document.getElementById("speakBtnLabel");
+      if (lbl) lbl.textContent = "소리 듣기";
+    }
+    function speakText(text) {
+      stopSpeaking();
+      if (!state.soundOn || !('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+        showToast('이 기기에서 음성을 사용할 수 없어 화면의 글로 진행해요.', '🔈');
+        return;
+      }
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang='ko-KR';
+      utterance.rate=state.grade==='1-2' ? 0.85 : 0.95;
+      try { window.speechSynthesis.speak(utterance); } catch (e) { showToast('음성을 사용할 수 없어 화면의 글로 진행해요.', '🔈'); }
+    }
+
+    // ==================== TAB 1: STORY & JACK-O'-LANTERN WORKSHOP ====================
+    function renderStorySlide() {
+      stopSpeaking();
+      const gradeData = EDUCATION_DATA[state.grade];
+      const stories = gradeData.stories;
+      const current = stories[state.storyIndex];
+
+      document.getElementById("currentGradeBadge").textContent = gradeData.label;
+      document.getElementById("storyEmojiGraphic").textContent = current.emoji;
+      document.getElementById("storyVisualCaption").textContent = current.caption;
+      document.getElementById("storySlideTag").textContent = `카드 ${state.storyIndex + 1} / ${stories.length}`;
+      document.getElementById("storySlideTitle").textContent = current.title;
+      document.getElementById("storySlideBody").textContent = current.body;
+      document.getElementById("storySlideKeyPoint").textContent = current.keyPoint;
+      document.getElementById("storySourceLink").innerHTML = `<a href="${current.sourceUrl}" target="_blank" rel="noopener noreferrer" class="underline hover:text-amber-300">${current.sourceText} ↗</a>`;
+
+      const pillsEl = document.getElementById("storyStepPills");
+      pillsEl.innerHTML = "";
+      stories.forEach((_, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `w-5 h-2 rounded-full transition ${idx === state.storyIndex ? "bg-amber-400" : state.readStories[idx] ? "bg-orange-500/60" : "bg-indigo-700"}`;
+        btn.setAttribute("aria-label", `${idx + 1}번 카드로 이동`);
+        btn.addEventListener("click", () => {
+          const isNew = !state.readStories[idx];
+          state.storyIndex = idx;
+          state.readStories[idx] = true;
+          if (isNew) awardOnce(`story:${idx}`, 'read', 10, "이야기 카드 읽기");
+          playSound("click");
+          renderStorySlide();
+        });
+        pillsEl.appendChild(btn);
+      });
+
+      const readCount = Object.keys(state.readStories).length;
+      document.getElementById("storyReadCountBadge").textContent = `${readCount} / ${stories.length}`;
+
+      document.getElementById("btnPrevStory").disabled = state.storyIndex === 0;
+      const nextBtn = document.getElementById("btnNextStory");
+      if (state.storyIndex === stories.length - 1) {
+        nextBtn.textContent = "2. 길안전 놀이로 →";
+      } else {
+        nextBtn.textContent = "다음 카드 →";
+      }
+
+      if (readCount >= stories.length) {
+        unlockStamp("s1", "놀이 1: 할로윈 이야기");
+      }
+    }
+
+    function renderLanternWorkshop() {
+      document.getElementById("pumpkinEyesDisplay").textContent = state.lantern.eye;
+      document.getElementById("pumpkinMouthDisplay").textContent = state.lantern.mouth;
+      document.getElementById("pumpkinHatDisplay").textContent = state.lantern.hat;
+
+      syncButtonGroup(".lantern-eye-btn", "data-eye", state.lantern.eye);
+      syncButtonGroup(".lantern-mouth-btn", "data-mouth", state.lantern.mouth);
+      syncButtonGroup(".lantern-hat-btn", "data-hat", state.lantern.hat);
+
+      const bodyEl = document.getElementById("pumpkinBodyVisual");
+      const boxEl = document.getElementById("pumpkinPreviewBox");
+      const btnEl = document.getElementById("btnToggleLanternLight");
+      const capEl = document.getElementById("pumpkinStatusCaption");
+
+      if (state.lantern.lit) {
+        bodyEl.classList.add("lantern-lit");
+        boxEl.classList.add("border-amber-400");
+        btnEl.textContent = "🕯️ 등불 켜짐 ✨";
+        capEl.textContent = "우와! 나만의 잭오랜턴이 밤길을 환하게 밝혀요!";
+      } else {
+        bodyEl.classList.remove("lantern-lit");
+        boxEl.classList.remove("border-amber-400");
+        btnEl.textContent = state.lantern.rewarded ? "🕯️ 등불 다시 켜기" : "🕯️ 등불 켜기 (+30🍬)";
+        capEl.textContent = "눈·입·모자를 고르고 등불을 켜 보세요!";
+      }
+    }
+
+    function toggleSpeakCurrentStory() {
+      if (!("speechSynthesis" in window)) {
+        showToast("이 브라우저는 음성 읽기를 지원하지 않아요.", "ℹ️");
+        return;
+      }
+      if (window.speechSynthesis.speaking) {
+        stopSpeaking();
+        return;
+      }
+      const current = EDUCATION_DATA[state.grade].stories[state.storyIndex];
+      const utter = new SpeechSynthesisUtterance(`${current.title}. ${current.body}. 핵심 쏙쏙! ${current.keyPoint}`);
+      utter.lang = "ko-KR";
+      utter.rate = state.grade === "1-2" ? 0.92 : 1.0;
+      utter.onend = () => {
+        document.getElementById("speakBtnLabel").textContent = "소리 듣기";
+      };
+      utter.onerror = () => {
+        document.getElementById("speakBtnLabel").textContent = "소리 듣기";
+      };
+      document.getElementById("speakBtnLabel").textContent = "⏹️ 멈춤";
+      window.speechSynthesis.speak(utter);
+    }
+
+    // ==================== TAB 2: CROWD SAFETY SCENARIOS ====================
+    function renderScenario() {
+      const item = SAFETY_SCENARIOS[state.scenarioIndex];
+      const goal = SAFETY_GOALS[state.scenarioIndex];
+      const low = state.grade === '1-2' ? SAFETY_SCENARIO_LOW[state.scenarioIndex] : null;
+      document.getElementById("scenarioStepBadge").textContent = `약속 ${state.scenarioIndex + 1} / ${SAFETY_SCENARIOS.length}`;
+      document.getElementById("scenarioEmoji").textContent = item.emoji;
+      document.getElementById("scenarioStageTag").textContent = item.stage;
+      document.getElementById("scenarioTitle").textContent = low?.title || item.title;
+      document.getElementById("scenarioDesc").textContent = low?.desc || (state.grade === '5-6' ? `${item.desc} 두 행동의 위험과 근거를 비교해 보세요.` : item.desc);
+
+      const choicesEl = document.getElementById("scenarioChoices");
+      const feedbackBox = document.getElementById("scenarioFeedbackBox");
+      choicesEl.innerHTML = "";
+      feedbackBox.className = "hidden rounded-xl p-3 border text-xs sm:text-sm space-y-1";
+      feedbackBox.innerHTML = "";
+      document.getElementById('btnSpeakSafetyFeedback').classList.add('hidden');
+
+      item.choices.forEach((choice, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "w-full text-left p-3 rounded-xl bg-indigo-950/90 hover:bg-indigo-900 border border-indigo-700 hover:border-amber-400 transition flex items-start gap-2.5 min-h-[48px]";
+        btn.innerHTML = `
+          <span class="nowrap px-2 py-0.5 rounded-lg bg-indigo-800 text-amber-300 font-black text-xs">선택 ${idx + 1}</span>
+          <span class="text-xs sm:text-sm font-bold text-white leading-snug">${low?.choices[idx] || choice.text}</span>
+        `;
+        btn.addEventListener("click", () => {
+          if (!state.safetyFirst[goal.id]) state.safetyFirst[goal.id] = {correct: !!choice.correct, at: Date.now()};
+          if (choice.correct) {
+            playSound("correct");
+            if (!state.completedScenarios[state.scenarioIndex]) {
+              state.completedScenarios[state.scenarioIndex] = true;
+              awardOnce(`scenario:${goal.id}`, 'first-correct', 15, "안전 상황 판단");
+            }
+            feedbackBox.className = "rounded-xl p-3 border bg-emerald-950/80 border-emerald-400/60 text-emerald-100 text-xs sm:text-sm space-y-1";
+            feedbackBox.innerHTML = `<div class="font-black text-emerald-300">⭕ 적절한 선택이에요. 이유를 한 번 더 확인해요.</div><p>${choice.feedback}</p>`;
+          } else {
+            playSound("wrong");
+            feedbackBox.className = "rounded-xl p-3 border bg-rose-950/80 border-rose-400/60 text-rose-100 text-xs sm:text-sm space-y-1";
+            feedbackBox.innerHTML = `<div class="font-black text-rose-300">❌ 다시 골라 볼까요?</div><p>${choice.feedback}</p>`;
+          }
+          document.getElementById('importantStatus').textContent = choice.feedback;
+          document.getElementById('btnSpeakSafetyFeedback').classList.remove('hidden');
+          saveProgress();
+          renderSafetyFollowup();
+        });
+        choicesEl.appendChild(btn);
+      });
+
+      document.getElementById("btnPrevScenario").disabled = state.scenarioIndex === 0;
+      const nextBtn = document.getElementById("btnNextScenario");
+      nextBtn.textContent = state.scenarioIndex === SAFETY_SCENARIOS.length - 1 ? "첫 약속으로" : "다음 약속 →";
+      renderSafetyFollowup();
+    }
+
+    function renderSafetyFollowup() {
+      const goal = SAFETY_GOALS[state.scenarioIndex];
+      const box = document.getElementById('safetyFollowup');
+      box.replaceChildren();
+      const heading = document.createElement('strong');
+      heading.textContent = `${state.safetyConfirmed[goal.id] ? '✅ 확인 완료' : '🔎 다시 판단하기'} · ${goal.title}`;
+      box.appendChild(heading);
+      if (!state.completedScenarios[state.scenarioIndex]) {
+        const text = document.createElement('p');
+        text.textContent = '위 상황에서 적절한 행동을 고르면 새 질문이 열려요. 해설만 읽어서는 완료되지 않아요.';
+        box.appendChild(text);
+        return;
+      }
+      const check = goal.checks[state.grade];
+      const question = document.createElement('p');
+      question.textContent = check[0];
+      box.appendChild(question);
+      check[1].forEach((option, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'w-full text-left rounded-xl bg-indigo-900 border border-indigo-600 px-3 py-2';
+        button.textContent = `${index + 1}. ${option}`;
+        button.disabled = !!state.safetyConfirmed[goal.id];
+        button.addEventListener('click', () => {
+          if (index === check[2]) {
+            state.safetyConfirmed[goal.id] = {contentVersion: CONTENT_VERSION, at: Date.now()};
+            awardOnce(`goal:${goal.id}`, 'confirmed', 20, '안전 목표 다시 확인');
+            if (SAFETY_GOALS.every(g => state.safetyConfirmed[g.id]?.contentVersion === CONTENT_VERSION)) unlockStamp('s2', '안전 목표 6개 확인');
+            document.getElementById('importantStatus').textContent = `${goal.title} 목표를 새 질문으로 확인했어요.`;
+          } else {
+            document.getElementById('importantStatus').textContent = '이 선택의 이유를 다시 살피고 판단해 보세요.';
+          }
+          saveProgress();
+          renderSafetyFollowup();
+          renderCertificateCanvas();
+        });
+        box.appendChild(button);
+      });
+      const link = document.createElement('a');
+      link.href = CONTENT_SOURCES[goal.source].url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.className = 'underline text-sky-200';
+      link.textContent = `교사용 근거: ${CONTENT_SOURCES[goal.source].title}`;
+      box.appendChild(link);
+    }
+
+    function renderThemeSituations() {
+      const theme = THEMES[state.teacher.theme];
+      const card = document.getElementById('themeSituationCard');
+      card.classList.toggle('hidden', state.teacher.theme === 'halloween');
+      if (state.teacher.theme === 'halloween') return;
+      document.getElementById('themeSituationTitle').textContent = `${theme.icon} ${theme.label} · 상황 판단 3가지`;
+      document.getElementById('themeSituationGuide').textContent = state.grade === '1-2'
+        ? '그림과 짧은 문장을 보고 두 행동 중 하나를 골라요.'
+        : state.grade === '3-4' ? '행동을 고르고 친구에게 그 이유를 설명해 보세요.'
+        : '행사 동선을 떠올리고 더 나은 이동 방법을 근거와 함께 제안해 보세요.';
+      const list = document.getElementById('themeSituations');
+      list.replaceChildren();
+      theme.situations.forEach((row,index) => {
+        const [title,context,good,bad,goalId] = row;
+        const id = `${state.teacher.theme}:${index}`;
+        const saved = state.themeResponses[id];
+        const section = document.createElement('section');
+        section.className = 'rounded-xl bg-indigo-950 border border-indigo-700 p-3 space-y-2';
+        const heading = document.createElement('h3');
+        heading.className = 'font-bold text-amber-200';
+        heading.textContent = `${index+1}. ${title}`;
+        section.appendChild(heading);
+        const desc = document.createElement('p');
+        desc.textContent = state.grade === '1-2' ? context.replace('여러 학급이 동시에','여러 반이 함께').replace('내 의지와 달리','갑자기') : context;
+        section.appendChild(desc);
+        const choices = [good,bad];
+        choices.forEach((label,choiceIndex) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'w-full text-left rounded-xl bg-indigo-800 p-2 border border-indigo-600';
+          button.textContent = `${choiceIndex === 0 ? 'A' : 'B'}. ${label}`;
+          button.setAttribute('aria-pressed', String(saved?.choice === choiceIndex));
+          button.addEventListener('click', () => {
+            const first = state.themeResponses[id]?.first;
+            state.themeResponses[id] = {first:first || {choice:choiceIndex, correct:choiceIndex===0, at:Date.now()},
+              choice:choiceIndex, correct:choiceIndex===0, apply:state.themeResponses[id]?.apply || ''};
+            if (choiceIndex === 0) awardOnce(`theme:${id}`,'first-correct',10,'상황 판단');
+            saveProgress();
+            renderThemeSituations();
+            renderLearningSummary();
+          });
+          section.appendChild(button);
+        });
+        if (saved) {
+          const feedback = document.createElement('p');
+          feedback.className = saved.correct ? 'text-emerald-200' : 'text-rose-200';
+          feedback.textContent = saved.correct
+            ? `적절한 선택이에요. ${SAFETY_GOALS.find(goal=>goal.id===goalId).title}을 생각했어요. 출처: ${CONTENT_SOURCES.crowd.title}`
+            : `다시 살펴봐요. ${SAFETY_GOALS.find(goal=>goal.id===goalId).title} 행동을 먼저 생각해요.`;
+          section.appendChild(feedback);
+        }
+        const applyLabel = document.createElement('label');
+        applyLabel.textContent = state.grade === '1-2' ? '내가 할 행동 한마디: ' : state.grade === '3-4' ? '친구에게 이유를 한 문장으로 설명해요: ' : '이 장소의 이동 동선을 어떻게 바꿀지 근거를 적어 보세요: ';
+        const apply = document.createElement('input');
+        apply.type='text'; apply.maxLength=120;
+        apply.className='w-full rounded-xl bg-slate-900 border border-indigo-500 px-3 py-2';
+        apply.value = saved?.apply || '';
+        apply.addEventListener('change', () => {
+          state.themeResponses[id] = {...state.themeResponses[id],apply:apply.value.slice(0,120)};
+          saveProgress();
+          renderLearningSummary();
+        });
+        applyLabel.appendChild(apply);
+        section.appendChild(applyLabel);
+        list.appendChild(section);
+      });
+    }
+
+    // Canvas coordinates stay at 600×250. CSS scales only the display.
+    let gameAnimId = null;
+    const safetyGame = {
+      running:false, won:false, paused:false, route:null, lastFrame:0,
+      player:{x:42,y:210,r:13,targetX:null,targetY:null},
+      hazards:[], exitZone:{x:520,y:22,w:65,h:48}, keys:new Set(), decisionRecorded:false
+    };
+    function stopSafetyGameLoop() {
+      if (gameAnimId !== null) cancelAnimationFrame(gameAnimId);
+      gameAnimId = null;
+      safetyGame.lastFrame = 0;
+    }
+    function pauseSafetyGame() {
+      if (!safetyGame.running || safetyGame.won) return;
+      safetyGame.paused = true;
+      stopSafetyGameLoop();
+      updateGameStatusText('일시정지 · 계속하기를 누르세요');
+      document.getElementById('btnStartCanvasGame').textContent = '▶ 이어하기';
+    }
+    function resumeSafetyGame() {
+      if (!safetyGame.running || !safetyGame.paused) return;
+      safetyGame.paused = false;
+      document.getElementById('btnStartCanvasGame').textContent = '⏸ 일시정지';
+      updateGameStatusText('이동 중');
+      gameLoop();
+    }
+    function initSafetyGame() {
+      stopSafetyGameLoop();
+      safetyGame.running = true;
+      safetyGame.won = false;
+      safetyGame.paused = false;
+      safetyGame.route = null;
+      safetyGame.decisionRecorded = false;
+      safetyGame.player = {x:42,y:210,r:13,targetX:null,targetY:null};
+      const speed = 28 + (state.gameStage-1)*8; // logical pixels per second
+      safetyGame.hazards = [
+        {x:220,y:113,r:30,dx:speed,dy:0},
+        {x:355,y:165,r:27,dx:-speed*0.7,dy:0}
+      ];
+      safetyGame.keys.clear();
+      document.getElementById('btnStartCanvasGame').textContent = '⏸ 일시정지';
+      syncStageButtons();
+      updateGameStatusText('먼저 경로를 고르세요');
+      renderGameChoices();
+      gameLoop();
+    }
+    function resizeSafetyCanvas() {
+      const canvas = document.getElementById('safetyGameCanvas');
+      if (!canvas) return;
+      canvas.style.aspectRatio = '600 / 250';
+      canvas.style.height = 'auto';
+      drawSafetyGame();
+    }
+    function updateGameStatusText(msg) {
+      const el = document.getElementById('gameStatusBadge');
+      if (el) el.textContent = msg;
+    }
+    function movePlayer(dir) {
+      if (!safetyGame.running || safetyGame.paused || safetyGame.won || safetyGame.route !== 'wide') return;
+      const p = safetyGame.player;
+      const step = 18;
+      p.targetX = null; p.targetY = null;
+      if (dir==='up') p.y-=step;
+      if (dir==='down') p.y+=step;
+      if (dir==='left') p.x-=step;
+      if (dir==='right') p.x+=step;
+      p.x=Math.max(15,Math.min(585,p.x));
+      p.y=Math.max(15,Math.min(235,p.y));
+      checkGamePosition();
+      drawSafetyGame();
+    }
+    function activateChestGuardBoost() {
+      showToast('떠밀리는 상황에서는 군중을 밀어내지 말고 두 손이나 가방으로 가슴 앞 숨 쉴 공간을 보호해요. 이 자세가 안전을 보장하지는 않아요.', '👐');
+    }
+    function chooseGameRoute(choice) {
+      safetyGame.route=choice;
+      safetyGame.decisionRecorded=true;
+      if (choice==='wide') updateGameStatusText('혼잡한 길을 피해 출구로 이동해요');
+      else updateGameStatusText('혼잡한 길을 골랐어요. 경로를 다시 살펴보세요');
+      renderGameChoices();
+      drawSafetyGame();
+    }
+    function renderGameChoices() {
+      const routeBox=document.getElementById('gameRouteChoices');
+      routeBox.replaceChildren();
+      const prompt=document.createElement('p');
+      prompt.textContent='어느 길로 이동할까요?';
+      routeBox.appendChild(prompt);
+      [['wide','🟢 사람이 덜 몰린 넓은 길'],['crowded','🔴 사람이 몰리는 좁은 길']].forEach(([value,label])=>{
+        const btn=document.createElement('button');
+        btn.type='button';btn.className='w-full rounded-xl border border-indigo-500 bg-indigo-900 p-2 text-left';
+        btn.textContent=label;
+        btn.setAttribute('aria-pressed',String(safetyGame.route===value));
+        btn.addEventListener('click',()=>chooseGameRoute(value));
+        routeBox.appendChild(btn);
+      });
+      const reason=document.getElementById('gameReasonChoices');
+      reason.replaceChildren();
+      if (!safetyGame.won) return;
+      const title=document.createElement('p');
+      title.textContent='왜 이 경로가 더 적절할까요?';
+      reason.appendChild(title);
+      [['safe','혼잡을 피하고 이동 가능한 출구를 확인했기 때문'],['unsafe','방패를 모으면 밀집 구역도 안전해지기 때문']].forEach(([value,label])=>{
+        const btn=document.createElement('button');
+        btn.type='button';btn.className='w-full rounded-xl border border-indigo-500 bg-indigo-900 p-2 text-left';
+        btn.textContent=label;
+        btn.addEventListener('click',()=>{
+          if(value==='safe') {
+            awardOnce(`game:${state.gameStage}`,'reason',10,'경로 선택 이유 확인');
+            document.getElementById('importantStatus').textContent='혼잡한 곳을 피해 이동로를 확인하는 이유를 설명했어요.';
+          } else document.getElementById('importantStatus').textContent='방패나 자세가 밀집 사고를 막아 주지는 않아요. 다시 생각해 보세요.';
+          saveProgress();
+        });
+        reason.appendChild(btn);
+      });
+    }
+    function updateSafetyGame(seconds) {
+      if (!safetyGame.running || safetyGame.paused || safetyGame.won) return;
+      const p=safetyGame.player;
+      const speed=110;
+      let dx=0,dy=0;
+      if(safetyGame.keys.has('ArrowLeft')) dx--;
+      if(safetyGame.keys.has('ArrowRight')) dx++;
+      if(safetyGame.keys.has('ArrowUp')) dy--;
+      if(safetyGame.keys.has('ArrowDown')) dy++;
+      if(safetyGame.route==='wide' && (dx || dy)) {
+        const length=Math.hypot(dx,dy);
+        p.x+=dx/length*speed*seconds;
+        p.y+=dy/length*speed*seconds;
+      } else if(safetyGame.route==='wide' && p.targetX!==null) {
+        const tx=p.targetX-p.x,ty=p.targetY-p.y,dist=Math.hypot(tx,ty);
+        const move=Math.min(dist,speed*seconds);
+        if(dist>0){p.x+=tx/dist*move;p.y+=ty/dist*move;}
+        if(dist<2){p.targetX=null;p.targetY=null;}
+      }
+      p.x=Math.max(15,Math.min(585,p.x));
+      p.y=Math.max(15,Math.min(235,p.y));
+      safetyGame.hazards.forEach(h=>{
+        h.x+=h.dx*seconds;h.y+=h.dy*seconds;
+        if(h.x<190 || h.x>400) h.dx*=-1;
+      });
+      checkGamePosition();
+    }
+    function checkGamePosition() {
+      const p=safetyGame.player;
+      if(safetyGame.hazards.some(h=>Math.hypot(p.x-h.x,p.y-h.y)<p.r+h.r-3)) {
+        p.x=42;p.y=210;p.targetX=null;p.targetY=null;
+        updateGameStatusText('혼잡한 구역을 피해서 다시 이동해요');
+      }
+      const e=safetyGame.exitZone;
+      if(safetyGame.route==='wide' && p.x>e.x && p.x<e.x+e.w && p.y>e.y && p.y<e.y+e.h) {
+        safetyGame.won=true;safetyGame.running=false;
+        updateGameStatusText('이동 가능한 출구에 도착했어요 · 이유도 확인해요');
+        document.getElementById('btnStartCanvasGame').textContent=state.gameStage<3?'▶ 다음 단계':'▶ 다시 시작';
+        renderGameChoices();
+        stopSafetyGameLoop();
+      }
+    }
+    function drawSafetyGame() {
+      const canvas=document.getElementById('safetyGameCanvas');
+      if(!canvas)return;
+      const ctx=canvas.getContext('2d');
+      const {x,y}=safetyGame.player;
+      ctx.fillStyle='#0f172a';ctx.fillRect(0,0,600,250);
+      ctx.strokeStyle='#064e3b';ctx.lineWidth=38;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(120,100);ctx.lineTo(460,58);ctx.lineTo(545,46);ctx.stroke();
+      ctx.strokeStyle='#7f1d1d';ctx.lineWidth=32;
+      ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(230,165);ctx.lineTo(400,170);ctx.stroke();
+      ctx.fillStyle='#fecaca';ctx.font='bold 12px sans-serif';ctx.fillText('🔴 혼잡한 길',220,205);
+      const e=safetyGame.exitZone;
+      ctx.fillStyle='#047857';ctx.fillRect(e.x,e.y,e.w,e.h);
+      ctx.fillStyle='white';ctx.font='bold 13px sans-serif';ctx.fillText('출구',e.x+18,e.y+29);
+      safetyGame.hazards.forEach(h=>{ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.fillStyle='#be123c88';ctx.fill();ctx.strokeStyle='#fb7185';ctx.stroke();});
+      ctx.beginPath();ctx.arc(x,y,13,0,Math.PI*2);ctx.fillStyle='#f97316';ctx.fill();
+      ctx.fillStyle='white';ctx.font='16px sans-serif';ctx.fillText(state.avatar.char || '🧒',x-9,y+5);
+      if(safetyGame.won){ctx.fillStyle='#0f172adc';ctx.fillRect(0,0,600,250);ctx.fillStyle='#fde68a';ctx.font='bold 20px sans-serif';ctx.fillText('이동 가능한 출구를 찾았어요!',132,120);}
+    }
+    function gameLoop(now=performance.now()) {
+      if(gameAnimId!==null || safetyGame.paused || !safetyGame.running || state.activeTab!=='tab-safety' || document.hidden) return;
+      const tick=time=>{
+        gameAnimId=null;
+        if(safetyGame.paused || !safetyGame.running || state.activeTab!=='tab-safety' || document.hidden) return;
+        const seconds=safetyGame.lastFrame ? Math.min(0.05,(time-safetyGame.lastFrame)/1000) : 0;
+        safetyGame.lastFrame=time;
+        updateSafetyGame(seconds);
+        drawSafetyGame();
+        if(safetyGame.running) gameAnimId=requestAnimationFrame(tick);
+      };
+      safetyGame.lastFrame=now;
+      gameAnimId=requestAnimationFrame(tick);
+    }
+
+
+    // ==================== TAB 3: AVATAR DRESS-UP & COSTUME SORTING ====================
+    function renderAvatarDressup() {
+      document.getElementById("avatarCharIcon").textContent = state.avatar.char;
+      document.getElementById("avatarCostumeIcon").textContent = state.avatar.costume;
+      document.getElementById("avatarPropIcon").textContent = state.avatar.prop;
+
+      syncButtonGroup(".avatar-char-btn", "data-char", state.avatar.char);
+      syncButtonGroup(".avatar-costume-btn", "data-costume", state.avatar.costume);
+      syncButtonGroup(".avatar-prop-btn", "data-prop", state.avatar.prop);
+      syncButtonGroup(".cert-sticker-btn", "data-sticker", state.certSticker);
+    }
+
+    function renderCostumeCards() {
+      const grid = document.getElementById("costumeCardsGrid");
+      grid.innerHTML = "";
+      let correctCount = 0;
+
+      COSTUME_ITEMS.forEach(item => {
+        const chosen = state.costumeChoices[item.id];
+        const hasAnswered = chosen !== undefined;
+        const isCorrect = hasAnswered && chosen === item.safe;
+        if (isCorrect) correctCount++;
+
+        const card = document.createElement("div");
+        card.className = `glass-panel rounded-2xl p-3 flex flex-col justify-between border transition ${
+          !hasAnswered
+            ? "border-indigo-700/80"
+            : isCorrect
+            ? "border-emerald-400 bg-emerald-950/40"
+            : "border-rose-400 bg-rose-950/40"
+        }`;
+
+        card.innerHTML = `
+          <div class="text-center space-y-1">
+            <div class="text-3xl sm:text-4xl select-none py-0.5">${item.emoji}</div>
+            <h4 class="font-title text-xs sm:text-sm text-white nowrap">${item.name}</h4>
+          </div>
+
+          <div class="mt-2.5 space-y-1.5">
+            <div class="grid grid-cols-2 gap-1">
+              <button type="button" data-id="${item.id}" data-choice="safe" class="costume-choice-btn nowrap px-1.5 py-1.5 rounded-lg text-[11px] sm:text-xs font-black border transition min-h-[34px] ${
+                hasAnswered && chosen === true
+                  ? "bg-emerald-500 text-indigo-950 border-emerald-300"
+                  : "bg-indigo-900/90 hover:bg-emerald-600/40 text-emerald-200 border-emerald-500/40"
+              }">
+                ⭕ 안전
+              </button>
+              <button type="button" data-id="${item.id}" data-choice="unsafe" class="costume-choice-btn nowrap px-1.5 py-1.5 rounded-lg text-[11px] sm:text-xs font-black border transition min-h-[34px] ${
+                hasAnswered && chosen === false
+                  ? "bg-rose-500 text-white border-rose-300"
+                  : "bg-indigo-900/90 hover:bg-rose-600/40 text-rose-200 border-rose-500/40"
+              }">
+                ❌ 피하기
+              </button>
+            </div>
+            ${
+              hasAnswered
+                ? `<div class="rounded-lg p-2 text-[11px] leading-snug ${
+                    isCorrect ? "bg-emerald-950/90 text-emerald-200" : "bg-rose-950/90 text-rose-200"
+                  }">
+                    <div class="font-black mb-0.5 nowrap">${isCorrect ? "딩동댕! 👏" : "다시 확인!"}</div>
+                    <div>${item.reason}</div>
+                  </div><button type="button" class="speak-costume-feedback w-full rounded-lg bg-indigo-800 p-2 text-xs" data-id="${item.id}">🔈 이 옷의 이유 읽기</button>`
+                : ""
+            }
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      grid.querySelectorAll(".costume-choice-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-id");
+          const choice = btn.getAttribute("data-choice") === "safe";
+          const targetItem = COSTUME_ITEMS.find(c => c.id === id);
+          const wasCorrectBefore = state.costumeChoices[id] === (targetItem && targetItem.safe);
+          state.costumeChoices[id] = choice;
+          if (targetItem && targetItem.safe === choice) {
+            playSound("correct");
+            if (!wasCorrectBefore) awardOnce(`costume:${id}`, 'first-correct', 10, "옷장 안전 분류");
+          } else {
+            playSound("wrong");
+          }
+          saveProgress();
+          renderCostumeCards();
+        });
+      });
+      grid.querySelectorAll('.speak-costume-feedback').forEach(button=>{
+        button.addEventListener('click',()=>{
+          const item=COSTUME_ITEMS.find(row=>row.id===button.dataset.id);
+          if(item)speakText(`${item.name}. ${item.reason}`);
+        });
+      });
+
+      document.getElementById("costumeScoreBadge").textContent = `${correctCount} / ${COSTUME_ITEMS.length}`;
+      if (correctCount === COSTUME_ITEMS.length) {
+        unlockStamp("s3", "놀이 3: 옷 고르기 놀이");
+      }
+    }
+
+    function renderEtiquetteChecklist() {
+      const box = document.getElementById("etiquetteChecklist");
+      if (!box) return;
+      box.innerHTML = "";
+      let checkedCount = 0;
+
+      ETIQUETTE_RULES.forEach(rule => {
+        const isChecked = !!state.etiquetteChecked[rule.id];
+        if (isChecked) checkedCount++;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.setAttribute('aria-pressed', String(isChecked));
+        btn.className = `text-left p-3 rounded-xl border transition flex items-start gap-2.5 ${
+          isChecked
+            ? "bg-emerald-950/60 border-emerald-400 text-emerald-100"
+            : "bg-indigo-950/80 border-indigo-800 hover:border-amber-400 text-indigo-100"
+        }`;
+        btn.innerHTML = `
+          <span class="text-lg shrink-0">${isChecked ? "✅" : "⬜"}</span>
+          <div class="min-w-0">
+            <div class="font-title text-xs sm:text-sm text-white nowrap">${rule.icon} ${rule.title}</div>
+            <p class="text-[11px] sm:text-xs text-indigo-200 mt-0.5 leading-snug">${rule.desc}</p>
+          </div>
+        `;
+        btn.addEventListener("click", () => {
+          const nextState = !state.etiquetteChecked[rule.id];
+          state.etiquetteChecked[rule.id] = nextState;
+          if (nextState) awardOnce(`etiquette:${rule.id}`, 'checked', 10, "배려 약속 체크");
+          playSound(nextState ? "correct" : "click");
+          saveProgress();
+          renderEtiquetteChecklist();
+        });
+        box.appendChild(btn);
+      });
+
+      document.getElementById("etiquetteCheckBadge").textContent = `약속 체크 ${checkedCount} / ${ETIQUETTE_RULES.length}`;
+    }
+
+    function quizQuestionId(index) { return `${state.grade}:q${index+1}`; }
+    function quizOrder(index) {
+      const id=quizQuestionId(index);
+      const q=EDUCATION_DATA[state.grade].quizzes[index];
+      if (!Array.isArray(state.quizOrders[id]) || state.quizOrders[id].length!==q.options.length) {
+        const order=q.options.map((_,i)=>i);
+        if(order.length>2) for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+        state.quizOrders[id]=order;
+        saveProgress();
+      }
+      return state.quizOrders[id];
+    }
+    function currentQuizIndex() {
+      return state.quizReview ? state.quizReviewItems[state.quizIndex] : state.quizIndex;
+    }
+    function firstQuizScore() {
+      return EDUCATION_DATA[state.grade].quizzes.reduce((total,_,i)=>total+(state.quizFirst[quizQuestionId(i)]?.correct?1:0),0);
+    }
+    function firstUnassistedScore() {
+      return EDUCATION_DATA[state.grade].quizzes.reduce((total,_,i)=>{
+        const answer=state.quizFirst[quizQuestionId(i)];
+        return total+(answer?.correct && !answer.hintUsed && !answer.fiftyUsed ? 1:0);
+      },0);
+    }
+    function reviewedQuizScore() {
+      return EDUCATION_DATA[state.grade].quizzes.reduce((total,_,i)=>{
+        const attempts=state.quizAttempts[quizQuestionId(i)] || [];
+        return total+(attempts.length>1 && attempts.at(-1).correct ? 1:0);
+      },0);
+    }
+    function startQuizReview(onlyWrong) {
+      const quizzes=EDUCATION_DATA[state.grade].quizzes;
+      state.quizReviewItems=quizzes.map((_,i)=>i).filter(i=>!onlyWrong || !state.quizFirst[quizQuestionId(i)]?.correct);
+      state.quizReview=true;
+      state.quizAttemptRound=(state.quizAttemptRound||0)+1;
+      state.quizIndex=0;
+      state.quizFiftyUsed=false;
+      state.quizHints={};state.quizFifties={};
+      saveProgress();
+      renderQuiz();
+    }
+    function renderQuiz() {
+      const quizzes=EDUCATION_DATA[state.grade].quizzes;
+      const limit=state.quizReview ? state.quizReviewItems.length : quizzes.length;
+      document.getElementById('quizGradeLabel').textContent=`놀이 4 · ${EDUCATION_DATA[state.grade].label} 퀴즈 (${quizzes.length}문제)`;
+      const active=document.getElementById('quizActiveContainer');
+      const result=document.getElementById('quizResultContainer');
+      if(state.quizIndex>=limit){
+        active.classList.add('hidden');result.classList.remove('hidden');
+        const first=firstQuizScore();
+        const reviewed=reviewedQuizScore();
+        document.getElementById('quizFinalScoreTitle').textContent=`처음 결과 ${first}/${quizzes.length} · 도움 없이 ${firstUnassistedScore()}/${quizzes.length} · 다시 확인한 내용 ${reviewed}/${quizzes.length}`;
+        document.getElementById('quizFinalScoreDesc').textContent=first===quizzes.length
+          ? '처음 확인한 문항을 모두 맞혔어요. 안전 목표 확인은 길안전의 새 질문에서 따로 진행해요.'
+          : `처음 틀리거나 확인하지 못한 문항 ${quizzes.length-first}개가 있어요. 다시 판단해 보세요. 해설을 읽는 것만으로 이해 완료로 기록하지 않습니다.`;
+        document.getElementById('btnReviewQuiz').disabled=first===quizzes.length;
+        if(!state.quizReview && Object.keys(state.quizFirst).length>=quizzes.length) unlockStamp('s4','퀴즈 참여');
+        renderLearningSummary();
+        return;
+      }
+      active.classList.remove('hidden');result.classList.add('hidden');
+      const qi=currentQuizIndex();
+      const q=quizzes[qi];
+      const id=quizQuestionId(qi);
+      const order=quizOrder(qi);
+      const round=state.quizReview ? state.quizAttemptRound : 0;
+      const existing=(state.quizAttempts[id]||[]).find(a=>a.round===round);
+      document.getElementById('quizComboBadge').textContent=`🔥 ${state.quizCombo}연속`;
+      document.getElementById('quizProgressBadge').textContent=`${state.quizIndex+1} / ${limit} · 처음 ${firstQuizScore()}/${quizzes.length}`;
+      document.getElementById('quizQuestionNumber').textContent=`Q${qi+1}${state.quizReview?' 복습':''}`;
+      document.getElementById('quizCategoryBadge').textContent=q.category;
+      document.getElementById('quizQuestionText').textContent=q.q;
+      const hint=document.getElementById('quizHintBox');
+      hint.textContent=q.hint || '먼저 안전과 배려를 생각해 보세요.';
+      hint.classList.toggle('hidden',!state.quizHints[id]);
+      const fifty=document.getElementById('btnQuizFifty');
+      fifty.disabled=state.quizFiftyUsed || order.length<=2 || !!existing;
+      fifty.style.opacity=fifty.disabled?'0.45':'1';
+      document.getElementById('btnQuizHint').disabled=!!existing;
+      const options=document.getElementById('quizOptionsContainer');
+      options.replaceChildren();
+      const explanation=document.getElementById('quizExplanationBox');
+      explanation.replaceChildren();
+      explanation.className='hidden rounded-xl p-3 border text-xs sm:text-sm space-y-1';
+      document.getElementById('btnSpeakQuizFeedback').classList.toggle('hidden',!existing);
+      const next=document.getElementById('btnNextQuizQuestion');
+      next.classList.toggle('hidden',!existing);
+      next.textContent=state.quizIndex===limit-1?'결과 확인':'다음 문제 →';
+      order.forEach((originalIndex,displayIndex)=>{
+        const btn=document.createElement('button');
+        btn.type='button';btn.className='quiz-opt-btn text-left p-3 rounded-xl bg-indigo-950 border border-indigo-700 font-bold text-sm min-h-[48px]';
+        btn.dataset.optIdx=String(displayIndex);
+        btn.textContent=`${displayIndex+1}. ${q.options[originalIndex]}`;
+        if(state.quizFifties[id] && originalIndex!==q.answer && order.filter(x=>x!==q.answer).indexOf(originalIndex)<2){btn.disabled=true;btn.style.opacity='0.3';}
+        if(existing){btn.disabled=true;if(originalIndex===existing.selectedOriginalIndex)btn.classList.add(existing.correct?'border-emerald-400':'border-rose-400');}
+        btn.addEventListener('click',()=>{
+          if(existing)return;
+          const answer={round,selectedOriginalIndex:originalIndex,correct:originalIndex===q.answer,
+            hintUsed:!!state.quizHints[id],fiftyUsed:!!state.quizFifties[id],at:Date.now()};
+          if(!state.quizFirst[id])state.quizFirst[id]=answer;
+          (state.quizAttempts[id] ||= []).push(answer);
+          if(answer.correct){state.quizCombo++;awardOnce(`quiz:${id}`,'first-correct',20,'퀴즈 정답');}
+          else state.quizCombo=0;
+          document.getElementById('importantStatus').textContent=answer.correct?'정답입니다.':'오답입니다. 해설을 확인하고 다시 판단하세요.';
+          saveProgress();renderQuiz();
+        });
+        options.appendChild(btn);
+      });
+      if(existing){
+        explanation.className=`rounded-xl p-3 border ${existing.correct?'bg-emerald-950 border-emerald-400':'bg-rose-950 border-rose-400'} text-sm`;
+        explanation.textContent=`${existing.correct?'⭕ 이번 판단은 맞았어요.':'❌ 이번 판단은 다시 살펴봐요.'} ${q.explanation}`;
+      }
+    }
+
+
+    const RESULT_FONT = '"Malgun Gothic", "Apple SD Gothic Neo", sans-serif';
+    const REASON_LABELS = {vision:'앞이 잘 보이는 옷', movement:'움직이기 편한 옷', props:'뾰족하지 않은 소품', friends:'친구를 배려하는 모습'};
+    function safeLabel(value, fallback, limit=160) {
+      return typeof value==='string' && value.trim() ? value.trim().slice(0,limit) : fallback;
+    }
+    function printLines(ctx, text, x, y, maxWidth, lineHeight, maxLines=6) {
+      const words=Array.from(String(text));
+      let line='', count=0;
+      for(const char of words){
+        if(ctx.measureText(line+char).width>maxWidth && line){ctx.fillText(line,x,y+count*lineHeight);count++;line='';if(count>=maxLines)return y+count*lineHeight;}
+        line+=char;
+      }
+      if(line){ctx.fillText(line,x,y+count*lineHeight);count++;}
+      return y+count*lineHeight;
+    }
+    function drawSheetBase(canvas,title,subtitle) {
+      const ctx=canvas.getContext('2d');
+      const w=canvas.width,h=canvas.height;
+      const grad=ctx.createLinearGradient(0,0,w,h);
+      grad.addColorStop(0,state.certTheme==='emerald'?'#064e3b':'#1e1b4b');
+      grad.addColorStop(1,state.certTheme==='gold'?'#78350f':'#0f172a');
+      ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
+      ctx.strokeStyle='#fbbf24';ctx.lineWidth=8;ctx.strokeRect(24,24,w-48,h-48);
+      ctx.fillStyle='#fde68a';ctx.textAlign='center';ctx.font=`bold 39px ${RESULT_FONT}`;
+      ctx.fillText(title,w/2,108,w-100);
+      ctx.fillStyle='#e0e7ff';ctx.font=`19px ${RESULT_FONT}`;
+      ctx.fillText(subtitle,w/2,150,w-100);
+      ctx.textAlign='left';
+      return ctx;
+    }
+    function renderLearningSummary() {
+      const summary=document.getElementById('learningResultSummary');
+      if(!summary)return;
+      const required=state.teacher.required;
+      const done=required.filter(activityDone).length;
+      const first=firstQuizScore();
+      const all=EDUCATION_DATA[state.grade].quizzes.length;
+      const goals=confirmedGoalCount();
+      summary.replaceChildren();
+      const title=document.createElement('h2');title.className='font-title text-xl text-amber-300';title.textContent=`${THEMES[state.teacher.theme].label} · 오늘의 학습 결과`;
+      summary.appendChild(title);
+      const lines=[
+        required.length ? `필수 활동 ${done}/${required.length} · ${canDownloadParticipation()?'참여 확인서 발급 가능':'진행 중'}` : '필수 활동이 선택되지 않았어요. 참여 확인서는 발급할 수 없어요.',
+        `안전 핵심 목표 ${goals}/6 · ${canDownloadSafetyCertificate()?'안전 대장 임명장 발급 가능':`남은 확인 ${6-goals}개`}`,
+        `퀴즈 처음 결과 ${first}/${all} · 도움 없이 ${firstUnassistedScore()}/${all} · 다시 맞힌 내용 ${reviewedQuizScore()}/${all}`,
+        state.legacy ? `이전 활동 기록: ${state.legacy.grade||'학년 미상'} · 스탬프 ${Object.values(state.legacy.stamps).filter(Boolean).length}개 · 사탕 ${state.legacy.candyPoints}점 (현재 회차와 별도)` : '이전 활동 기록 없음',
+        state.storageAvailable ? '진행 기록은 현재 기기·브라우저에 저장됩니다.' : '현재 저장되지 않습니다. 탭을 닫기 전에 JSON으로 내보내세요.'
+      ];
+      lines.forEach(line=>{const p=document.createElement('p');p.textContent=line;summary.appendChild(p);});
+      const remaining=SAFETY_GOALS.filter(goal=>!state.safetyConfirmed[goal.id] || state.safetyConfirmed[goal.id].contentVersion!==CONTENT_VERSION);
+      if(remaining.length){const p=document.createElement('p');p.textContent=`다시 확인할 목표: ${remaining.map(g=>g.title).join(', ')}`;summary.appendChild(p);}
+      const certButton=document.getElementById('btnDownloadCert');
+      const participationButton=document.getElementById('btnDownloadParticipation');
+      if(certButton)certButton.disabled=!canDownloadSafetyCertificate();
+      if(participationButton)participationButton.disabled=!canDownloadParticipation();
+    }
+    function renderCertificateCanvas() {
+      const canvas=document.getElementById('certificateCanvas');
+      if(!canvas)return;
+      const ctx=drawSheetBase(canvas,canDownloadSafetyCertificate()?'안전 대장 임명장':'안전 목표 확인 현황 · 미완료',`${THEMES[state.teacher.theme].label} · ${EDUCATION_DATA[state.grade].label} · 안전 자료 ${CONTENT_VERSION}`);
+      syncButtonGroup('.cert-theme-btn','data-theme',state.certTheme);
+      syncButtonGroup('.cert-sticker-btn','data-sticker',state.certSticker);
+      ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font=`bold 17px ${RESULT_FONT}`;
+      const identity=[safeLabel(state.profile.school,'학교명 미입력',40),safeLabel(state.profile.className,'학급 미입력',30),safeLabel(state.profile.name,'별칭 없는 학습자',40)].join(' · ');
+      printLines(ctx,identity,canvas.width/2,190,680,26,3);
+      ctx.fillStyle='#fef3c7';ctx.font=`19px ${RESULT_FONT}`;
+      if(canDownloadSafetyCertificate()) {
+        ctx.fillText('안전 상황을 살피고 공통 안전 목표 6가지를',canvas.width/2,290,700);
+        ctx.fillText('새 질문으로 다시 판단해 확인했습니다.',canvas.width/2,324,700);
+      } else {
+        ctx.fillText(`현재 ${confirmedGoalCount()}/6개 목표를 확인했습니다.`,canvas.width/2,290,700);
+        ctx.fillText('남은 목표를 확인하면 임명장을 저장할 수 있습니다.',canvas.width/2,324,700);
+      }
+      ctx.fillStyle='#111827';ctx.fillRect(65,370,670,230);
+      ctx.fillStyle='#fde68a';ctx.font=`bold 16px ${RESULT_FONT}`;ctx.fillText('나의 안전 약속',canvas.width/2,405);
+      ctx.fillStyle='#fff';ctx.font=`16px ${RESULT_FONT}`;
+      printLines(ctx,safeLabel(state.profile.pledge,'안전 약속을 적어 보세요.'),canvas.width/2,440,620,28,5);
+      ctx.fillStyle='#e0e7ff';ctx.font=`15px ${RESULT_FONT}`;
+      ctx.fillText(`${state.certSticker} 확인 날짜 ${new Date().toLocaleDateString('ko-KR')}`,canvas.width/2,649);
+      ctx.fillText('학습 확인 기록 · 실제 안전을 보장하는 증명은 아닙니다.',canvas.width/2,683);
+      ctx.textAlign='left';
+      renderLearningSummary();
+    }
+    function downloadCanvas(canvas,filename) {
+      const link=document.createElement('a');
+      link.href=canvas.toDataURL('image/png');
+      link.download=filename.replace(/[\\/:*?"<>|]/g,'_');
+      document.body.appendChild(link);link.click();link.remove();
+    }
+    function downloadCertificatePNG() {
+      if(!canDownloadSafetyCertificate()){renderLearningSummary();showToast('안전 목표 6개를 새 질문으로 확인한 뒤 저장할 수 있어요.','🔎');return;}
+      renderCertificateCanvas();
+      downloadCanvas(document.getElementById('certificateCanvas'),`안전대장_임명장_${safeLabel(state.profile.name,'학습자',40)}.png`);
+      showToast('안전 대장 임명장을 저장했어요.','💾');
+    }
+    function drawParticipationCanvas() {
+      const canvas=document.createElement('canvas');canvas.width=900;canvas.height=650;
+      const ctx=drawSheetBase(canvas,'오늘의 활동 참여 확인서',`${THEMES[state.teacher.theme].label} · ${EDUCATION_DATA[state.grade].label}`);
+      ctx.fillStyle='#fff';ctx.font=`21px ${RESULT_FONT}`;
+      let y=205;
+      y=printLines(ctx,`${safeLabel(state.profile.name,'별칭 없는 학습자',40)} · ${safeLabel(state.profile.className,'학급 미입력',30)}`,70,y,760,35,2)+30;
+      ctx.fillText(`필수 활동 ${state.teacher.required.length}개 완료`,70,y);y+=50;
+      state.teacher.required.forEach(id=>{ctx.fillText(`✓ ${{culture:'이야기',safety:'안전 판단',costume:'옷장',quiz:'퀴즈'}[id]}`,85,y);y+=40;});
+      ctx.fillStyle='#fde68a';ctx.font=`16px ${RESULT_FONT}`;
+      ctx.fillText('참여 확인은 안전 핵심 목표 6개 확인과 별도입니다.',70,550);
+      return canvas;
+    }
+    function drawResultCanvas() {
+      const canvas=document.createElement('canvas');canvas.width=1100;canvas.height=1500;
+      const ctx=drawSheetBase(canvas,'나의 학습 결과지',`${THEMES[state.teacher.theme].label} · ${EDUCATION_DATA[state.grade].label} · ${state.teacher.minutes}분 수업`);
+      let y=200;
+      ctx.fillStyle='#fff';ctx.font=`24px ${RESULT_FONT}`;
+      y=printLines(ctx,`학습자: ${safeLabel(state.profile.name,'별칭 없는 학습자',40)} / ${safeLabel(state.profile.school,'학교명 미입력',40)} / ${safeLabel(state.profile.className,'학급 미입력',30)}`,75,y,950,36,3)+25;
+      ctx.fillStyle='#fde68a';ctx.font=`bold 26px ${RESULT_FONT}`;ctx.fillText('내가 꾸민 모습',75,y);y+=58;
+      ctx.font=`56px ${RESULT_FONT}`;ctx.fillText(`${state.avatar.costume}${state.avatar.char}${state.avatar.prop}`,85,y);y+=48;
+      ctx.fillStyle='#fff';ctx.font=`22px ${RESULT_FONT}`;
+      y=printLines(ctx,`안전한 이유: ${safeLabel(state.avatarReasonText,REASON_LABELS[state.avatarReason]||'나의 선택',120)}`,75,y,950,34,5)+28;
+      ctx.fillStyle='#fde68a';ctx.font=`bold 26px ${RESULT_FONT}`;ctx.fillText('완료한 활동',75,y);y+=42;
+      ctx.fillStyle='#fff';ctx.font=`20px ${RESULT_FONT}`;
+      y=printLines(ctx,state.teacher.order.map(id=>`${{culture:'이야기',safety:'안전 판단',costume:'옷장',quiz:'퀴즈'}[id]} ${activityDone(id)?'완료':'진행 중'}`).join('  /  '),75,y,950,32,4)+28;
+      ctx.fillStyle='#fde68a';ctx.font=`bold 26px ${RESULT_FONT}`;ctx.fillText('판단 기록',75,y);y+=43;
+      ctx.fillStyle='#fff';ctx.font=`21px ${RESULT_FONT}`;
+      y=printLines(ctx,`퀴즈 처음 결과 ${firstQuizScore()}/${EDUCATION_DATA[state.grade].quizzes.length} · 도움 없이 ${firstUnassistedScore()}개 · 복습 정답 ${reviewedQuizScore()}개 · 안전 목표 ${confirmedGoalCount()}/6`,75,y,950,34,3)+20;
+      const reviewed=SAFETY_GOALS.filter(goal=>state.safetyConfirmed[goal.id]?.contentVersion===CONTENT_VERSION).map(goal=>goal.title);
+      y=printLines(ctx,`다시 확인한 목표: ${reviewed.length?reviewed.join(', '):'아직 없음'}`,75,y,950,34,5)+28;
+      ctx.fillStyle='#fde68a';ctx.font=`bold 26px ${RESULT_FONT}`;ctx.fillText('내가 실천할 안전 약속',75,y);y+=44;
+      ctx.fillStyle='#fff';ctx.font=`22px ${RESULT_FONT}`;
+      printLines(ctx,safeLabel(state.profile.pledge,'아직 적지 않았어요.'),75,y,950,35,8);
+      ctx.fillStyle='#cbd5e1';ctx.font=`16px ${RESULT_FONT}`;
+      ctx.fillText(`학습 내용 버전 ${CONTENT_VERSION} · 이 기기에서 생성`,75,1430);
+      return canvas;
+    }
+    function exportProgressJSON() {
+      rememberGrade();
+      const data={schemaVersion:2,contentVersion:CONTENT_VERSION,sessionId:state.sessionId,grade:state.grade,
+        gradeRecords:state.gradeRecords,rewardLedger:state.rewardLedger,candyPoints:state.candyPoints,
+        legacy:state.legacy,teacher:state.teacher,activeTab:state.activeTab,profile:state.profile};
+      const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+      const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=`halloween-record-${state.sessionId}.json`;
+      document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(link.href),1000);
+    }
+    function safeImportedTree(value,depth=0) {
+      if(depth>14)return false;
+      if(typeof value==='string')return value.length<=500;
+      if(typeof value==='number')return Number.isFinite(value) && Math.abs(value)<10000000000000;
+      if(value===null || typeof value==='boolean')return true;
+      if(Array.isArray(value))return value.length<=1000 && value.every(item=>safeImportedTree(item,depth+1));
+      if(typeof value==='object'){
+        const entries=Object.entries(value);
+        return entries.length<=300 && entries.every(([key,item])=>key.length<=100 && !['__proto__','constructor','prototype'].includes(key) && safeImportedTree(item,depth+1));
+      }
+      return false;
+    }
+    async function importProgressFiles(files) {
+      const status=document.getElementById('importResults');
+      const records=[];
+      try {
+        for(const file of files){
+          if(file.size>1024*1024)throw new Error(`${file.name}: 파일이 1MB를 넘어요.`);
+          const data=JSON.parse(await file.text());
+          if(!safeImportedTree(data) || !validSaved(data))throw new Error(`${file.name}: 지원하지 않는 기록 형식이에요.`);
+          records.push(data);
+        }
+        if(records.length>1){
+          status.textContent=`이 기기에서 ${records.length}개 결과를 확인했어요: ${records.map(r=>`${r.profile?.name||'별칭 없음'} (${r.grade}, ${r.candyPoints}점)`).join(' · ')}`;
+          return;
+        }
+        if(records.length===1){
+          const data=records[0];
+          state.sessionId=data.sessionId;state.grade=data.grade;state.gradeRecords=data.gradeRecords;
+          state.rewardLedger=data.rewardLedger;state.candyPoints=data.candyPoints;
+          state.legacy=data.legacy||null;state.teacher=sanitizeTeacher(data.teacher);
+          state.profile=data.profile && typeof data.profile==='object' ? data.profile : {school:'',className:'',name:'',pledge:''};
+          state.activeTab=['tab-culture','tab-safety','tab-costume','tab-quiz','tab-cert'].includes(data.activeTab) ? data.activeTab : state.teacher.start;
+          restoreGrade(state.grade);saveProgress();
+          renderAllLearning();
+          status.textContent='기록을 이 기기의 현재 회차로 가져왔어요.';
+        }
+      } catch(error){status.textContent=error.message || '기록을 읽을 수 없어요.';}
+    }
+
+
+    // ==================== NAVIGATION & GRADE SWITCHING ====================
+    function renderAllLearning() {
+      document.querySelectorAll('.grade-btn').forEach(btn=>{
+        const active=btn.dataset.grade===state.grade;
+        btn.classList.toggle('grade-active',active);
+        btn.setAttribute('aria-pressed',String(active));
+      });
+      renderStamps();renderCandyHeader();renderStorySlide();renderLanternWorkshop();
+      renderScenario();renderThemeSituations();renderAvatarDressup();renderCostumeCards();
+      renderEtiquetteChecklist();renderQuiz();renderTeacherSettings();
+      [['certSchoolInput','school'],['certClassInput','className'],['certNameInput','name'],['certPledgeInput','pledge']].forEach(([id,key])=>{
+        document.getElementById(id).value=state.profile[key]||'';
+      });
+      document.getElementById('avatarSafetyReason').value=state.avatarReason||'';
+      document.getElementById('avatarReasonText').value=state.avatarReasonText||'';
+      renderCertificateCanvas();renderLearningSummary();
+      switchTab(state.activeTab);
+      resizeSafetyCanvas();renderGameChoices();
+    }
+    function startNewSession(kind) {
+      stopSpeaking();stopSafetyGameLoop();
+      if(preserveExistingProgress){
+        try{
+          const previous=localStorage.getItem(PROGRESS_KEY);
+          if(previous)localStorage.setItem(`${PROGRESS_KEY}_preserved_${Date.now()}`,previous);
+          preserveExistingProgress=false;
+        }catch(e){state.storageAvailable=false;}
+      }
+      state.sessionId=(globalThis.crypto && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+      state.gradeRecords={};state.rewardLedger={};state.candyPoints=0;
+      state.profile={school:'',className:'',name:'',pledge:''};
+      state.grade=state.teacher.grade;
+      restoreGrade(state.grade);
+      state.activeTab=state.teacher.start;
+      safetyGame.running=false;safetyGame.won=false;safetyGame.paused=false;safetyGame.route=null;
+      safetyGame.player={x:42,y:210,r:13,targetX:null,targetY:null};
+      safetyGame.hazards=[];
+      saveProgress();renderAllLearning();
+      showToast(kind==='student'?'다음 학생의 새 회차를 시작했어요.':'새 수업 회차를 시작했어요.','🌱');
+    }
+    let focusBeforeModal=null;
+    let activeModal=null;
+    function openModal(modal) {
+      pauseSafetyGame();stopSpeaking();
+      focusBeforeModal=document.activeElement;
+      activeModal=modal;
+      modal.classList.remove('hidden');
+      document.getElementById('appMainWrapper').inert=true;
+      const first=modal.querySelector('button,select,input');if(first)first.focus();
+    }
+    function closeModal(modal) {
+      modal.classList.add('hidden');
+      if(activeModal===modal)activeModal=null;
+      document.getElementById('appMainWrapper').inert=false;
+      if(focusBeforeModal && focusBeforeModal.isConnected)focusBeforeModal.focus();
+    }
+    document.addEventListener('keydown',event=>{
+      if(!activeModal)return;
+      if(event.key==='Escape'){
+        event.preventDefault();closeModal(activeModal);return;
+      }
+      if(event.key!=='Tab')return;
+      const focusables=[...activeModal.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),a[href]')]
+        .filter(element=>element.getClientRects().length);
+      if(!focusables.length){event.preventDefault();return;}
+      const first=focusables[0],last=focusables.at(-1);
+      if(event.shiftKey && document.activeElement===first){event.preventDefault();last.focus();}
+      else if(!event.shiftKey && document.activeElement===last){event.preventDefault();first.focus();}
+    });
+    function switchTab(tabId) {
+      stopSpeaking();
+      if (state.activeTab === 'tab-safety' && tabId !== 'tab-safety') pauseSafetyGame();
+      state.activeTab = tabId;
+      document.querySelectorAll(".tab-panel").forEach(panel => {
+        if (panel.id === tabId) {
+          panel.classList.remove("hidden");
+        } else {
+          panel.classList.add("hidden");
+        }
+      });
+      document.querySelectorAll(".nav-tab").forEach(btn => {
+        if (btn.getAttribute("data-tab") === tabId) {
+          btn.classList.add("tab-active");
+        } else {
+          btn.classList.remove("tab-active");
+        }
+      });
+      if (tabId === "tab-safety") {
+        setTimeout(resizeSafetyCanvas, 50);
+      } else {
+        if (tabId === "tab-cert") {
+          renderCertificateCanvas();
+        }
+      }
+      saveProgress();
+    }
+
+    function switchGrade(gradeKey) {
+      if (!EDUCATION_DATA[gradeKey]) return;
+      if (gradeKey === state.grade) return;
+      stopSpeaking();
+      pauseSafetyGame();
+      rememberGrade();
+      state.grade = gradeKey;
+      state.teacher.grade = gradeKey;
+      restoreGrade(gradeKey);
+      saveProgress();
+
+      document.querySelectorAll(".grade-btn").forEach(btn => {
+        if (btn.getAttribute("data-grade") === gradeKey) {
+          btn.classList.add("grade-active");
+        } else {
+          btn.classList.remove("grade-active");
+        }
+      });
+
+      document.getElementById("certClassInput").value = EDUCATION_DATA[gradeKey].classDefault;
+      renderStorySlide();
+      renderScenario();
+      renderCostumeCards();
+      renderEtiquetteChecklist();
+      renderStamps();
+      renderThemeSituations();
+      renderQuiz();
+      renderCertificateCanvas();
+      showToast(`${EDUCATION_DATA[gradeKey].label} 눈높이로 바뀌었어요!`, "🎈");
+    }
+
+    // ==================== INITIALIZATION & EVENT LISTENERS ====================
+    window.addEventListener("DOMContentLoaded", () => {
+      const offlineStatus=document.getElementById('offlineStatus');
+      if ('serviceWorker' in navigator && (location.protocol === 'https:' || ['localhost','127.0.0.1'].includes(location.hostname))) {
+        navigator.serviceWorker.register('./sw.js', {scope:'./'}).then(async()=>{
+          const registration=await navigator.serviceWorker.ready;
+          const prefix=`halloween-edu:${new URL(registration.scope).pathname}:`;
+          const files=['index.html','halloween_edu_app.html','app.js','styles.css','manifest.json','icon.svg','404.html'];
+          const names=(await caches.keys()).filter(name=>name.startsWith(prefix));
+          for(const name of names){
+            const cache=await caches.open(name);
+            const found=await Promise.all(files.map(file=>cache.match(new URL(file,registration.scope).href)));
+            if(found.every(Boolean)){
+              offlineStatus.textContent='오프라인 사용 준비 완료';
+              return;
+            }
+          }
+          offlineStatus.textContent='오프라인 자료 준비 중';
+        }).catch(()=>{offlineStatus.textContent='오프라인 자료를 준비하지 못했어요';});
+      } else if(location.protocol==='file:') {
+        offlineStatus.textContent='단독 파일 · 인터넷 없이 핵심 학습 가능';
+      }
+      loadSavedProgress();
+      const sharedTeacher = teacherFromUrl();
+      if (sharedTeacher) {
+        state.teacher = sharedTeacher;
+        if (state.grade !== sharedTeacher.grade) { rememberGrade(); state.grade = sharedTeacher.grade; restoreGrade(state.grade); }
+        state.activeTab = sharedTeacher.start;
+        saveProgress();
+      }
+
+      // Re-render certificate once Google Fonts finish loading so Jua/Noto Sans KR appear crisply
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          renderCertificateCanvas();
+        }).catch(() => {});
+      }
+
+      // Fullscreen is requested only by the explicit button below.
+      document.addEventListener("fullscreenchange", updateFullscreenButtonLabel);
+      document.addEventListener("webkitfullscreenchange", updateFullscreenButtonLabel);
+
+      // Fullscreen toggle button
+      document.getElementById("btnFullscreen").addEventListener("click", () => {
+        playSound("click");
+        toggleFullscreen();
+      });
+
+      // Candy Point Badge click celebration
+      document.getElementById("btnCandyPointPop").addEventListener("click", () => {
+        playSound("stamp");
+        burstCandyConfetti(14);
+        showToast(`현재 사탕 점수: ${state.candyPoints}점 (${getLevelTitle(state.candyPoints)})`, "🍭");
+      });
+
+      // Fun Story Emoji tap reaction
+      document.getElementById("btnTapStoryEmoji").addEventListener("click", () => {
+        playSound("correct");
+        burstCandyConfetti(8);
+      });
+
+      // Jack-o'-Lantern Workshop Listeners
+      document.querySelectorAll(".lantern-eye-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.lantern.eye = btn.getAttribute("data-eye");
+          playSound("click");
+          renderLanternWorkshop();
+        });
+      });
+      document.querySelectorAll(".lantern-mouth-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.lantern.mouth = btn.getAttribute("data-mouth");
+          playSound("click");
+          renderLanternWorkshop();
+        });
+      });
+      document.querySelectorAll(".lantern-hat-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.lantern.hat = btn.getAttribute("data-hat");
+          playSound("click");
+          renderLanternWorkshop();
+        });
+      });
+      document.getElementById("btnToggleLanternLight").addEventListener("click", () => {
+        state.lantern.lit = !state.lantern.lit;
+        if (state.lantern.lit) {
+          playSound("stamp");
+          burstCandyConfetti(18);
+          if (!state.lantern.rewarded) {
+            state.lantern.rewarded = true;
+            awardOnce('lantern:lit', 'on', 30, "나만의 잭오랜턴 등불 켜기");
+          } else {
+            showToast("잭오랜턴 등불이 반짝반짝 켜졌어요!", "🕯️");
+          }
+        } else {
+          playSound("click");
+        }
+        renderLanternWorkshop();
+      });
+
+      // Exit button & modal handlers
+      const exitModal = document.getElementById("exitModal");
+      const exitScreen = document.getElementById("exitScreen");
+      document.getElementById("btnExitApp").addEventListener("click", () => {
+        playSound("click");
+        const count = Object.values(state.stamps).filter(Boolean).length;
+        document.getElementById("exitStampSummaryText").textContent = `오늘 모은 안전 스탬프: ${count}/4개 · 사탕 ${state.candyPoints}점`;
+        openModal(exitModal);
+      });
+      document.getElementById("btnCancelExit").addEventListener("click", () => {
+        closeModal(exitModal);
+      });
+      document.getElementById("btnConfirmExit").addEventListener("click", () => {
+        stopSpeaking();
+        stopSafetyGameLoop();
+        exitAppFullscreen();
+        closeModal(exitModal);
+        exitScreen.classList.remove("hidden");
+        try {
+          window.close();
+        } catch (e) {
+          // Fallback to exitScreen already visible
+        }
+      });
+      document.getElementById("btnRelaunchApp").addEventListener("click", () => {
+        playSound("stamp");
+        exitScreen.classList.add("hidden");
+        if (state.activeTab === "tab-safety") {
+          setTimeout(resizeSafetyCanvas, 50);
+        }
+      });
+
+      document.querySelectorAll(".grade-btn").forEach(btn => {
+        if (btn.getAttribute("data-grade") === state.grade) {
+          btn.classList.add("grade-active");
+        } else {
+          btn.classList.remove("grade-active");
+        }
+        btn.addEventListener("click", () => {
+          playSound("click");
+          switchGrade(btn.getAttribute("data-grade"));
+        });
+      });
+
+      document.querySelectorAll(".nav-tab").forEach(btn => {
+        btn.addEventListener("click", () => {
+          playSound("click");
+          switchTab(btn.getAttribute("data-tab"));
+        });
+      });
+
+      document.getElementById("btnBoardMode").addEventListener("click", () => {
+        state.boardMode = !state.boardMode;
+        document.documentElement.classList.toggle("board-mode", state.boardMode);
+        document.getElementById("boardModeLabel").textContent = state.boardMode ? "글씨 ON" : "글씨";
+        playSound("click");
+        showToast(state.boardMode ? "글씨가 큼직해졌어요!" : "기본 글씨 크기로 돌아왔어요.", "🔍");
+      });
+
+      document.getElementById("btnSoundToggle").addEventListener("click", () => {
+        state.soundOn = !state.soundOn;
+        if (!state.soundOn) stopSpeaking();
+        document.getElementById("soundIcon").textContent = state.soundOn ? "🔊" : "🔇";
+        document.getElementById("soundLabel").textContent = state.soundOn ? "소리 ON" : "꺼짐";
+        if (state.soundOn) playSound("correct");
+      });
+
+      const teacherModal = document.getElementById("teacherModal");
+      document.getElementById("btnTeacherGuide").addEventListener("click", () => {
+        playSound("click");
+        renderTeacherSettings();openModal(teacherModal);
+      });
+      document.getElementById("btnCloseTeacherModal").addEventListener("click", () => {
+        closeModal(teacherModal);
+      });
+      document.getElementById('btnApplyTeacher').addEventListener('click', () => {applyTeacherSettings();closeModal(teacherModal);});
+      document.getElementById('btnNextStudent').addEventListener('click', () => {closeModal(teacherModal);startNewSession('student');});
+      document.getElementById('teacherMinutes').addEventListener('change',e=>{document.getElementById('teacherPlan').textContent=LESSON_PLANS[e.target.value];});
+      document.getElementById("btnCopyShareUrl").addEventListener("click", () => {
+        const input = document.getElementById("shareUrlInput");
+        const urlText = input.value || window.location.href;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(urlText).then(() => {
+            showToast("주소가 복사되었어요!", "📋");
+          }).catch(() => {
+            input.select();
+            try {
+              document.execCommand("copy");
+              showToast("주소가 복사되었어요!", "📋");
+            } catch (e) {
+              showToast("주소창의 URL을 직접 복사해 주세요.", "ℹ️");
+            }
+          });
+        } else {
+          input.select();
+          try {
+            document.execCommand("copy");
+            showToast("주소가 복사되었어요!", "📋");
+          } catch (e) {
+            showToast("주소창의 URL을 직접 복사해 주세요.", "ℹ️");
+          }
+        }
+      });
+
+      const resetModal = document.getElementById("resetModal");
+      document.getElementById("btnResetProgress").addEventListener("click", () => {
+        openModal(resetModal);
+      });
+      document.getElementById("btnCancelReset").addEventListener("click", () => {
+        closeModal(resetModal);
+      });
+      document.getElementById("btnConfirmReset").addEventListener("click", () => {
+        closeModal(resetModal);startNewSession('lesson');
+      });
+
+      document.getElementById("btnSpeakStory").addEventListener("click", toggleSpeakCurrentStory);
+      document.getElementById('btnSpeakScenario').addEventListener('click', () => {
+        const goal=SAFETY_GOALS[state.scenarioIndex];
+        const check=goal.checks[state.grade];
+        const title=document.getElementById('scenarioTitle').textContent;
+        const desc=document.getElementById('scenarioDesc').textContent;
+        const options=[...document.querySelectorAll('#scenarioChoices button')].map(button=>button.textContent.trim()).join('. ');
+        speakText(`${title}. ${desc}. ${options}. 다시 확인하기. ${check[0]}. ${check[1].map((option,i)=>`${i+1}번. ${option}`).join('. ')}`);
+      });
+      document.getElementById('btnSpeakSafetyFeedback').addEventListener('click',()=>{
+        speakText(document.getElementById('scenarioFeedbackBox').textContent);
+      });
+      document.getElementById("btnPrevStory").addEventListener("click", () => {
+        if (state.storyIndex > 0) {
+          state.storyIndex--;
+          state.readStories[state.storyIndex] = true;
+          playSound("click");
+          renderStorySlide();
+        }
+      });
+      document.getElementById("btnNextStory").addEventListener("click", () => {
+        const stories = EDUCATION_DATA[state.grade].stories;
+        if (state.storyIndex < stories.length - 1) {
+          const nextIdx = state.storyIndex + 1;
+          const isNew = !state.readStories[nextIdx];
+          state.storyIndex = nextIdx;
+          state.readStories[nextIdx] = true;
+          if (isNew) awardOnce(`story:${nextIdx}`, 'read', 10, "이야기 카드 읽기");
+          playSound("click");
+          renderStorySlide();
+        } else {
+          switchTab("tab-safety");
+        }
+      });
+
+      document.querySelectorAll(".festival-card").forEach(card => {
+        card.addEventListener("click", () => {
+          playSound("click");
+          document.querySelectorAll(".festival-card").forEach(c => c.classList.remove("ring-2", "ring-amber-400"));
+          card.classList.add("ring-2", "ring-amber-400");
+          const key = card.getAttribute("data-festival");
+          if (FESTIVAL_DETAILS[key]) {
+            document.getElementById("festivalCompareTitle").textContent = FESTIVAL_DETAILS[key].title;
+            document.getElementById("festivalCompareDesc").textContent = FESTIVAL_DETAILS[key].desc;
+          }
+        });
+      });
+
+      document.getElementById("btnPrevScenario").addEventListener("click", () => {
+        if (state.scenarioIndex > 0) {
+          state.scenarioIndex--;
+          playSound("click");
+          renderScenario();
+        }
+      });
+      document.getElementById("btnNextScenario").addEventListener("click", () => {
+        if (state.scenarioIndex < SAFETY_SCENARIOS.length - 1) {
+          state.scenarioIndex++;
+        } else {
+          state.scenarioIndex = 0;
+        }
+        playSound("click");
+        renderScenario();
+      });
+
+      // Mini-game Stage Selector, Touch-to-Move & Chest Guard Booster
+      document.querySelectorAll(".game-stage-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.gameStage = parseInt(btn.getAttribute("data-stage"), 10) || 1;
+          syncStageButtons();
+          playSound("click");
+          initSafetyGame();
+          saveProgress();
+        });
+      });
+
+      document.getElementById("btnStartCanvasGame").addEventListener("click", () => {
+        playSound("click");
+        if (safetyGame.paused) resumeSafetyGame();
+        else if (safetyGame.running) pauseSafetyGame();
+        else { if (safetyGame.won && state.gameStage < 3) state.gameStage++; initSafetyGame(); }
+      });
+      document.getElementById("btnChestGuardBoost").addEventListener("click", activateChestGuardBoost);
+
+      const gameCanvas = document.getElementById("safetyGameCanvas");
+      gameCanvas.addEventListener("pointerdown", e => {
+        gameCanvas.focus();
+        if (!safetyGame.running || safetyGame.paused || safetyGame.route !== 'wide') return;
+        const rect = gameCanvas.getBoundingClientRect();
+        const scaleX = gameCanvas.width / rect.width;
+        const scaleY = gameCanvas.height / rect.height;
+        safetyGame.player.targetX = Math.max(20, Math.min(gameCanvas.width - 20, (e.clientX - rect.left) * scaleX));
+        safetyGame.player.targetY = Math.max(20, Math.min(gameCanvas.height - 20, (e.clientY - rect.top) * scaleY));
+        playSound("click");
+      });
+
+      document.querySelectorAll(".game-dpad-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          movePlayer(btn.getAttribute("data-dir"));
+        });
+      });
+      window.addEventListener("keydown", e => {
+        if (state.activeTab !== 'tab-safety' || document.activeElement !== gameCanvas || document.querySelector('[role="dialog"]:not(.hidden)')) return;
+        if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) { e.preventDefault(); safetyGame.keys.add(e.key); }
+      });
+      window.addEventListener('keyup', e => safetyGame.keys.delete(e.key));
+      document.addEventListener('visibilitychange', () => {if(document.hidden) pauseSafetyGame();});
+      window.addEventListener("resize", () => {
+        if (state.activeTab === "tab-safety") resizeSafetyCanvas();
+      });
+
+      // Avatar Dress-Up Studio Listeners
+      document.querySelectorAll(".avatar-char-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.avatar.char = btn.getAttribute("data-char");
+          playSound("click");
+          renderAvatarDressup();
+        });
+      });
+      document.querySelectorAll(".avatar-costume-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.avatar.costume = btn.getAttribute("data-costume");
+          state.certSticker = state.avatar.costume;
+          playSound("click");
+          renderAvatarDressup();
+          renderCertificateCanvas();
+        });
+      });
+      document.querySelectorAll(".avatar-prop-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.avatar.prop = btn.getAttribute("data-prop");
+          playSound("click");
+          renderAvatarDressup();
+        });
+      });
+      document.getElementById("btnRunwayShow").addEventListener("click", () => {
+        if (!state.avatarReason) { showToast('시야·움직임·소품·친구 배려 중 안전한 이유를 먼저 골라요.','🔎'); return; }
+        const group = document.getElementById("avatarVisualGroup");
+        group.classList.remove("runway-anim");
+        void group.offsetWidth;
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) group.classList.add("runway-anim");
+        playSound("stamp");
+        document.getElementById("avatarJudgeText").textContent = `내 선택: ${state.avatarReasonText || REASON_LABELS[state.avatarReason]}. 실제 이동할 때도 시야와 움직임을 확인해요.`;
+        state.avatar.runwayRewarded=true;
+        awardOnce('avatar:runway','reason',20,'꾸미기 이유 설명');
+        saveProgress();
+      });
+      document.getElementById('avatarSafetyReason').addEventListener('change',e=>{state.avatarReason=e.target.value;saveProgress();});
+      document.getElementById('avatarReasonText').addEventListener('input',e=>{state.avatarReasonText=e.target.value.slice(0,120);saveProgress();});
+
+      document.getElementById("btnResetCostume").addEventListener("click", () => {
+        state.costumeChoices = {};
+        playSound("click");
+        saveProgress();
+        renderCostumeCards();
+      });
+
+      // Quiz Lifelines & Next Button
+      document.getElementById('btnSpeakQuiz').addEventListener('click', () => {
+        const index=currentQuizIndex();
+        if(index===undefined)return;
+        const q=EDUCATION_DATA[state.grade].quizzes[index];
+        const order=quizOrder(index);
+        speakText(`${q.q}. ${order.map((original,i)=>`${i+1}번. ${q.options[original]}`).join('. ')}`);
+      });
+      document.getElementById('btnSpeakQuizFeedback').addEventListener('click',()=>{
+        speakText(document.getElementById('quizExplanationBox').textContent);
+      });
+      document.getElementById("btnQuizHint").addEventListener("click", () => {
+        state.quizHints[quizQuestionId(currentQuizIndex())] = true;
+        saveProgress();
+        renderQuiz();
+        playSound("click");
+      });
+      document.getElementById("btnQuizFifty").addEventListener("click", () => {
+        const id = quizQuestionId(currentQuizIndex());
+        if (state.quizFiftyUsed || EDUCATION_DATA[state.grade].quizzes[currentQuizIndex()].options.length <= 2) return;
+        state.quizFiftyUsed = true;
+        state.quizFifties[id] = true;
+        playSound("correct");
+        saveProgress();
+        renderQuiz();
+        showToast("50:50 찬스! 헷갈리는 오답 2개를 지웠어요!", "🔀");
+      });
+
+      document.getElementById("btnNextQuizQuestion").addEventListener("click", () => {
+        state.quizIndex++;
+        saveProgress();
+        playSound("click");
+        renderQuiz();
+      });
+      document.getElementById("btnRestartQuiz").addEventListener("click", () => {
+        playSound("click");
+        startQuizReview(false);
+      });
+      document.getElementById('btnReviewQuiz').addEventListener('click', () => startQuizReview(true));
+      document.getElementById("btnGoToCertFromQuiz").addEventListener("click", () => {
+        playSound("click");
+        switchTab("tab-cert");
+      });
+
+      // Certificate Customizers
+      document.querySelectorAll(".cert-theme-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.certTheme = btn.getAttribute("data-theme");
+          playSound("click");
+          renderCertificateCanvas();
+        });
+      });
+      document.querySelectorAll(".cert-sticker-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.certSticker = btn.getAttribute("data-sticker");
+          playSound("click");
+          renderCertificateCanvas();
+        });
+      });
+
+      [['certSchoolInput','school'],['certClassInput','className'],['certNameInput','name'],['certPledgeInput','pledge']].forEach(([id,key]) => {
+        document.getElementById(id).addEventListener('input',event=>{
+          state.profile[key]=event.target.value.slice(0,{school:40,className:30,name:40,pledge:160}[key]);
+          saveProgress();renderCertificateCanvas();renderLearningSummary();
+        });
+      });
+      document.querySelectorAll(".preset-pledge-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.getElementById("certPledgeInput").value = btn.getAttribute("data-pledge");
+          state.profile.pledge=document.getElementById("certPledgeInput").value;
+          saveProgress();
+          playSound("click");
+          renderCertificateCanvas();
+        });
+      });
+      document.getElementById("btnRenderCert").addEventListener("click", () => {
+        playSound("click");
+        renderCertificateCanvas();
+        showToast("임명장에 내 이름과 약속이 들어갔어요!", "🎨");
+      });
+      document.getElementById("btnDownloadCert").addEventListener("click", downloadCertificatePNG);
+
+      document.getElementById('btnDownloadParticipation').addEventListener('click',()=>{
+        if(!canDownloadParticipation()){showToast('설정한 필수 활동을 먼저 완료해 주세요.','🔎');return;}
+        downloadCanvas(drawParticipationCanvas(),`참여확인서_${safeLabel(state.profile.name,'학습자',40)}.png`);
+      });
+      document.getElementById('btnDownloadResult').addEventListener('click',()=>downloadCanvas(drawResultCanvas(),`학습결과지_${safeLabel(state.profile.name,'학습자',40)}.png`));
+      document.getElementById('btnPrintResult').addEventListener('click',()=>{
+        const image=document.getElementById('printResultImage');
+        image.src=drawResultCanvas().toDataURL('image/png');
+        window.print();
+      });
+      document.getElementById('btnExportProgress').addEventListener('click',exportProgressJSON);
+      document.getElementById('importProgressFile').addEventListener('change',event=>importProgressFiles([...event.target.files]));
+
+      renderAllLearning();
+    });
