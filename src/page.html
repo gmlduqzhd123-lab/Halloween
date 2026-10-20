@@ -9,7 +9,7 @@
   <link rel="icon" type="image/svg+xml" href="./icon.svg" />
   <link rel="apple-touch-icon" href="./icon.svg" />
   <link rel="manifest" href="./manifest.json" />
-  <title>호박마을 안전 탐험 | 초등 할로윈 수업</title>
+  <title>할로윈 안전 놀이터 | 초등 할로윈 수업</title>
   <!-- APP_STYLE -->
 </head>
 <body class="storybook lesson-not-started antialiased selection:bg-orange-200 selection:text-slate-900">
@@ -28,12 +28,12 @@
 
         <!-- Row 1: Full Unclipped Title on Left + Fullscreen & Exit Buttons on Right -->
         <div class="flex items-center justify-between gap-2">
-          <div class="flex items-center gap-1.5 min-w-0">
+          <button type="button" id="btnHomeLogo" class="flex items-center gap-1.5 min-w-0 rounded-lg text-left cursor-pointer hover:opacity-80 transition" title="메인 화면으로 이동" aria-label="할로윈 안전 놀이터 메인 화면으로 이동">
             <div class="brand-mark w-7 h-7 sm:w-8 sm:h-8 rounded-lg shrink-0" aria-hidden="true">
               <svg viewBox="0 0 40 40" focusable="false"><path d="M20 9V5m-3 5c-9-5-16 1-16 11s7 16 16 13c2 2 4 2 6 0 9 3 16-3 16-13S32 5 23 10" fill="#f49a45" stroke="#7d411f" stroke-width="2" stroke-linejoin="round"/><path d="m11 19 4 2-4 2m18-4-4 2 4 2M15 27q5 5 10 0" fill="none" stroke="#63351c" stroke-width="2" stroke-linecap="round"/></svg>
             </div>
-            <h1 class="font-title text-base sm:text-xl text-white nowrap">호박마을 안전 탐험</h1>
-          </div>
+            <h1 class="font-title text-base sm:text-xl text-white nowrap">할로윈 안전 놀이터</h1>
+          </button>
 
           <div class="header-extra flex items-center gap-1 shrink-0">
             <button type="button" id="btnFullscreen" class="nowrap px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-800 hover:bg-indigo-700 text-amber-300 border border-indigo-600 transition flex items-center gap-1 min-h-[30px]" title="전체화면 전환">
@@ -183,7 +183,7 @@
                 </span>
               </div>
             </div>
-            <h2 id="cultureSectionTitle" class="font-title text-base sm:text-xl text-white nowrap">호박마을 이야기</h2>
+            <h2 id="cultureSectionTitle" class="font-title text-base sm:text-xl text-white nowrap">할로윈 이야기</h2>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-stretch">

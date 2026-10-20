@@ -52,6 +52,10 @@ test('main browser flows and standalone file load without script errors', async 
   assert.equal(await welcome.locator('#costumePageLabel').innerText(),'2 / 3');
   await welcome.locator('#btnToQuiz').click();
   assert.equal(await welcome.locator('#lessonStageTitle').innerText(),'생각 정리');
+  assert.equal(await welcome.locator('#btnHomeLogo h1').innerText(),'할로윈 안전 놀이터');
+  await welcome.locator('#btnHomeLogo').click();
+  assert.equal(await welcome.locator('#welcomeScreen').isVisible(),true);
+  assert.equal(await welcome.locator('#tab-quiz').isVisible(),false);
   await welcome.close();
   const newPreparedPage=async options=>{
     const candidate=await browser.newPage(options);

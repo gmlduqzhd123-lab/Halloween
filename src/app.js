@@ -1742,10 +1742,28 @@
       'tab-quiz':['4 / 4','생각 정리','배운 내용을 질문으로 확인해요.'],
       'tab-cert':['마무리','나의 배움 기록','오늘의 결과를 보고 안전 약속을 남겨요.']
     };
+    function updateStartLessonButtonLabel() {
+      const hasProgress = state.activeTab !== 'tab-culture' || state.storyIndex > 0 || Object.values(state.stamps).some(Boolean);
+      document.getElementById('btnStartLesson').textContent = hasProgress ? '이어서 시작하기 →' : '수업 시작하기 →';
+    }
     function enterLesson() {
       document.body.classList.remove('lesson-not-started');
       try { sessionStorage.setItem('halloween-lesson-started', '1'); } catch (_) {}
       document.getElementById('lessonStageTitle').focus();
+    }
+    function returnToMainScreen() {
+      stopSpeaking();
+      pauseSafetyGame();
+      document.body.classList.add('lesson-not-started');
+      document.body.classList.remove('tools-open');
+      document.getElementById('btnMoreTools').setAttribute('aria-expanded', 'false');
+      try {
+        sessionStorage.removeItem('halloween-lesson-started');
+        sessionStorage.setItem('halloween-tools-open', 'false');
+      } catch (_) {}
+      syncWelcomeGrade();
+      updateStartLessonButtonLabel();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     function renderAllLearning() {
       document.querySelectorAll('.grade-btn').forEach(btn=>{
@@ -1754,6 +1772,7 @@
         btn.setAttribute('aria-pressed',String(active));
       });
       syncWelcomeGrade();
+      updateStartLessonButtonLabel();
       renderStamps();renderCandyHeader();renderStorySlide();renderLanternWorkshop();
       renderScenario();renderThemeSituations();renderAvatarDressup();renderCostumeCards();
       renderEtiquetteChecklist();renderQuiz();renderTeacherSettings();
@@ -2030,6 +2049,10 @@
         });
       });
       document.querySelectorAll('[data-welcome-grade]').forEach(button => button.addEventListener('click', () => switchGrade(button.dataset.welcomeGrade)));
+      document.getElementById('btnHomeLogo').addEventListener('click', () => {
+        playSound('click');
+        returnToMainScreen();
+      });
       document.getElementById('btnStartLesson').addEventListener('click', () => {
         enterLesson();
         switchTab(state.activeTab || 'tab-culture');
