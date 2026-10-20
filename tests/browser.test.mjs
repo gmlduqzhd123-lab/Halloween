@@ -76,10 +76,20 @@ test('main browser flows and standalone file load without script errors', async 
   assert.match(await welcome.locator('.welcome-copyright').innerText(),/엽쌤/);
   await welcome.locator('#btnWelcomeGuide').click();
   assert.equal(await welcome.locator('#teacherModal').isVisible(),true);
+  await welcome.locator('#btnCopyNoticeText').click();
+  await welcome.locator('#btnCopyNeisText').click();
   await welcome.keyboard.press('Escape');
   assert.equal(await welcome.locator('#teacherModal').isVisible(),false);
   await welcome.locator('#btnStartFresh').click();
   assert.equal(await welcome.locator('#lessonStageTitle').innerText(),'문화 이야기');
+  await welcome.keyboard.press('ArrowRight');
+  assert.match(await welcome.locator('#storySlideTag').innerText(),/카드 2/);
+  await welcome.locator('#lessonStageInfo').click();
+  assert.equal(await welcome.locator('.header-nav').isVisible(),true);
+  await welcome.locator('[data-tab="tab-cert"]').click();
+  await welcome.locator('#btnFillWholeClass').click();
+  assert.match(await welcome.locator('#certNameInput').inputValue(),/어린이 일동/);
+  await welcome.locator('[data-tab="tab-culture"]').click();
   assert.equal(await welcome.locator('#tab-culture').isVisible(),true);
   await welcome.close();
   const newPreparedPage=async options=>{

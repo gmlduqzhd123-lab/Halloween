@@ -5302,6 +5302,10 @@ const THEMES = {
           startFromBeginning();
         });
       }
+      const lessonStageInfo = document.getElementById('lessonStageInfo');
+      if (lessonStageInfo) {
+        lessonStageInfo.addEventListener('click', () => document.getElementById('btnMoreTools').click());
+      }
       document.getElementById('btnMoreTools').addEventListener('click', () => {
         const open = document.body.classList.toggle('tools-open');
         document.getElementById('btnMoreTools').setAttribute('aria-expanded', String(open));
@@ -5368,6 +5372,33 @@ const THEMES = {
       document.getElementById('btnApplyTeacher').addEventListener('click', () => {applyTeacherSettings();closeModal(teacherModal);});
       document.getElementById('btnNextStudent').addEventListener('click', () => {closeModal(teacherModal);startNewSession('student');});
       document.getElementById('teacherMinutes').addEventListener('change',e=>{document.getElementById('teacherPlan').textContent=LESSON_PLANS[e.target.value];});
+      function copyTextWithToast(text, successMsg) {
+        const input = document.getElementById("shareUrlInput");
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => showToast(successMsg, "📋")).catch(() => {
+            const prev = input.value; input.value = text; input.select();
+            try { document.execCommand("copy"); showToast(successMsg, "📋"); } catch (e) { showToast("직접 복사해 주세요.", "ℹ️"); }
+            input.value = prev;
+          });
+        } else {
+          const prev = input.value; input.value = text; input.select();
+          try { document.execCommand("copy"); showToast(successMsg, "📋"); } catch (e) { showToast("직접 복사해 주세요.", "ℹ️"); }
+          input.value = prev;
+        }
+      }
+      const btnCopyNotice = document.getElementById("btnCopyNoticeText");
+      if (btnCopyNotice) {
+        btnCopyNotice.addEventListener("click", () => {
+          const urlText = document.getElementById("shareUrlInput").value || window.location.href;
+          copyTextWithToast(`[할로윈 안전 놀이터] 이야기를 읽고 안전한 선택을 배우는 활동이에요. 아래 링크를 눌러 시작해 보세요! 👉 ${urlText}`, "알림장 안내 문구가 복사되었어요!");
+        });
+      }
+      const btnCopyNeis = document.getElementById("btnCopyNeisText");
+      if (btnCopyNeis) {
+        btnCopyNeis.addEventListener("click", () => {
+          copyTextWithToast("다중밀집 환경 보행 안전(우측통행, 비상구 확인, 압사 예방 자세) 및 타 문화 이해·배려하는 복장 안전 계기교육 실시", "수업일지(NEIS) 문구가 복사되었어요!");
+        });
+      }
       document.getElementById("btnCopyShareUrl").addEventListener("click", () => {
         const input = document.getElementById("shareUrlInput");
         const urlText = input.value || window.location.href;
@@ -5542,6 +5573,22 @@ const THEMES = {
         if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) { e.preventDefault(); safetyGame.keys.add(e.key); }
       });
       window.addEventListener('keyup', e => safetyGame.keys.delete(e.key));
+      window.addEventListener("keydown", e => {
+        if (document.body.classList.contains("lesson-not-started")) return;
+        if (document.querySelector('[role="dialog"]:not(.hidden), .ysi-back, .yq-back')) return;
+        const active = document.activeElement;
+        if (active && (active === gameCanvas || ["INPUT", "SELECT", "TEXTAREA"].includes(active.tagName))) return;
+        if (e.key === "ArrowRight" || e.key === "PageDown") {
+          if (state.activeTab === "tab-culture" && cultureStage === "story") { e.preventDefault(); document.getElementById("btnNextStory").click(); }
+          else if (state.activeTab === "tab-safety") { e.preventDefault(); document.getElementById("btnNextScenario").click(); }
+          else if (state.activeTab === "tab-costume" && !document.getElementById("btnNextCostumePage").disabled) { e.preventDefault(); document.getElementById("btnNextCostumePage").click(); }
+          else if (state.activeTab === "tab-quiz" && !document.getElementById("btnNextQuizQuestion").classList.contains("hidden")) { e.preventDefault(); document.getElementById("btnNextQuizQuestion").click(); }
+        } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+          if (state.activeTab === "tab-culture" && cultureStage === "story" && !document.getElementById("btnPrevStory").disabled) { e.preventDefault(); document.getElementById("btnPrevStory").click(); }
+          else if (state.activeTab === "tab-safety" && !document.getElementById("btnPrevScenario").disabled) { e.preventDefault(); document.getElementById("btnPrevScenario").click(); }
+          else if (state.activeTab === "tab-costume" && !document.getElementById("btnPrevCostumePage").disabled) { e.preventDefault(); document.getElementById("btnPrevCostumePage").click(); }
+        }
+      });
       document.addEventListener('visibilitychange', () => {if(document.hidden) pauseSafetyGame();});
       window.addEventListener("resize", () => {
         if (state.activeTab === "tab-safety") resizeSafetyCanvas();
@@ -5671,6 +5718,24 @@ const THEMES = {
           saveProgress();renderCertificateCanvas();renderLearningSummary();
         });
       });
+      const btnFillWholeClass = document.getElementById("btnFillWholeClass");
+      if (btnFillWholeClass) {
+        btnFillWholeClass.addEventListener("click", () => {
+          const cls = document.getElementById("certClassInput").value.trim() || EDUCATION_DATA[state.grade].classDefault;
+          const wholeClassName = `${cls} 어린이 일동`.slice(0, 40);
+          document.getElementById("certNameInput").value = wholeClassName;
+          state.profile.name = wholeClassName;
+          if (!document.getElementById("certPledgeInput").value.trim()) {
+            const defaultPledge = "우리 반 모두 오른쪽으로 안전하게 걷고 서로를 배려하며 즐거운 축제를 만들겠습니다!";
+            document.getElementById("certPledgeInput").value = defaultPledge;
+            state.profile.pledge = defaultPledge;
+          }
+          playSound("click");
+          saveProgress();
+          renderCertificateCanvas();
+          renderLearningSummary();
+        });
+      }
       document.querySelectorAll(".preset-pledge-btn").forEach(btn => {
         btn.addEventListener("click", () => {
           document.getElementById("certPledgeInput").value = btn.getAttribute("data-pledge");

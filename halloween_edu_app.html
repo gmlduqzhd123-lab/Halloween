@@ -539,7 +539,7 @@
       </section>
 
       <div id="lessonStage" class="lesson-stage" aria-live="polite">
-        <div><span id="lessonStageNumber">1 / 4</span><strong id="lessonStageTitle" tabindex="-1">문화 이야기</strong><p id="lessonStageHint">그림 이야기를 읽고 문화를 살펴봐요.</p></div>
+        <div id="lessonStageInfo" class="cursor-pointer" title="누르면 활동 이동 메뉴가 열려요"><span id="lessonStageNumber">1 / 4</span><strong id="lessonStageTitle" tabindex="-1">문화 이야기</strong><p id="lessonStageHint">그림 이야기를 읽고 문화를 살펴봐요.</p></div>
         <button type="button" id="btnMoreTools" aria-expanded="false" aria-controls="headerTools">설정·활동 이동</button>
       </div>
 
@@ -1073,7 +1073,7 @@
                   <input id="certClassInput" type="text" value="3학년 1반" maxlength="15" placeholder="예: 3학년 1반" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
                 </div>
                 <div>
-                  <label for="certNameInput" class="block text-xs font-bold text-indigo-200 mb-1">내 이름</label>
+                  <div class="flex items-center justify-between gap-2 mb-1"><label for="certNameInput" class="block text-xs font-bold text-indigo-200">내 이름</label><button type="button" id="btnFillWholeClass" class="mini-chip text-[11px] px-2 py-0.5">+ 우리 반 전체</button></div>
                   <input id="certNameInput" type="text" value="" maxlength="40" placeholder="별칭 또는 번호 (선택)" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
                 </div>
               </div>
@@ -1219,6 +1219,7 @@
               주소 복사
             </button>
           </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5"><button type="button" id="btnCopyNoticeText" class="nowrap px-3 py-1.5 rounded-lg bg-indigo-900 hover:bg-indigo-800 border border-indigo-700 text-xs font-bold text-indigo-100">📢 알림장 안내 문구 복사</button><button type="button" id="btnCopyNeisText" class="nowrap px-3 py-1.5 rounded-lg bg-indigo-900 hover:bg-indigo-800 border border-indigo-700 text-xs font-bold text-indigo-100">📝 수업일지(NEIS) 문구 복사</button></div>
           <div id="shareQr" class="bg-white p-2 w-fit" aria-label="수업 공유 QR 코드"></div>
           <p>공유 주소에는 학년·주제·활동 설정만 담습니다. 개인정보나 학습 기록은 포함하지 않습니다.</p>
         </div>
@@ -6578,6 +6579,10 @@ const THEMES = {
           startFromBeginning();
         });
       }
+      const lessonStageInfo = document.getElementById('lessonStageInfo');
+      if (lessonStageInfo) {
+        lessonStageInfo.addEventListener('click', () => document.getElementById('btnMoreTools').click());
+      }
       document.getElementById('btnMoreTools').addEventListener('click', () => {
         const open = document.body.classList.toggle('tools-open');
         document.getElementById('btnMoreTools').setAttribute('aria-expanded', String(open));
@@ -6644,6 +6649,33 @@ const THEMES = {
       document.getElementById('btnApplyTeacher').addEventListener('click', () => {applyTeacherSettings();closeModal(teacherModal);});
       document.getElementById('btnNextStudent').addEventListener('click', () => {closeModal(teacherModal);startNewSession('student');});
       document.getElementById('teacherMinutes').addEventListener('change',e=>{document.getElementById('teacherPlan').textContent=LESSON_PLANS[e.target.value];});
+      function copyTextWithToast(text, successMsg) {
+        const input = document.getElementById("shareUrlInput");
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => showToast(successMsg, "📋")).catch(() => {
+            const prev = input.value; input.value = text; input.select();
+            try { document.execCommand("copy"); showToast(successMsg, "📋"); } catch (e) { showToast("직접 복사해 주세요.", "ℹ️"); }
+            input.value = prev;
+          });
+        } else {
+          const prev = input.value; input.value = text; input.select();
+          try { document.execCommand("copy"); showToast(successMsg, "📋"); } catch (e) { showToast("직접 복사해 주세요.", "ℹ️"); }
+          input.value = prev;
+        }
+      }
+      const btnCopyNotice = document.getElementById("btnCopyNoticeText");
+      if (btnCopyNotice) {
+        btnCopyNotice.addEventListener("click", () => {
+          const urlText = document.getElementById("shareUrlInput").value || window.location.href;
+          copyTextWithToast(`[할로윈 안전 놀이터] 이야기를 읽고 안전한 선택을 배우는 활동이에요. 아래 링크를 눌러 시작해 보세요! 👉 ${urlText}`, "알림장 안내 문구가 복사되었어요!");
+        });
+      }
+      const btnCopyNeis = document.getElementById("btnCopyNeisText");
+      if (btnCopyNeis) {
+        btnCopyNeis.addEventListener("click", () => {
+          copyTextWithToast("다중밀집 환경 보행 안전(우측통행, 비상구 확인, 압사 예방 자세) 및 타 문화 이해·배려하는 복장 안전 계기교육 실시", "수업일지(NEIS) 문구가 복사되었어요!");
+        });
+      }
       document.getElementById("btnCopyShareUrl").addEventListener("click", () => {
         const input = document.getElementById("shareUrlInput");
         const urlText = input.value || window.location.href;
@@ -6818,6 +6850,22 @@ const THEMES = {
         if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) { e.preventDefault(); safetyGame.keys.add(e.key); }
       });
       window.addEventListener('keyup', e => safetyGame.keys.delete(e.key));
+      window.addEventListener("keydown", e => {
+        if (document.body.classList.contains("lesson-not-started")) return;
+        if (document.querySelector('[role="dialog"]:not(.hidden), .ysi-back, .yq-back')) return;
+        const active = document.activeElement;
+        if (active && (active === gameCanvas || ["INPUT", "SELECT", "TEXTAREA"].includes(active.tagName))) return;
+        if (e.key === "ArrowRight" || e.key === "PageDown") {
+          if (state.activeTab === "tab-culture" && cultureStage === "story") { e.preventDefault(); document.getElementById("btnNextStory").click(); }
+          else if (state.activeTab === "tab-safety") { e.preventDefault(); document.getElementById("btnNextScenario").click(); }
+          else if (state.activeTab === "tab-costume" && !document.getElementById("btnNextCostumePage").disabled) { e.preventDefault(); document.getElementById("btnNextCostumePage").click(); }
+          else if (state.activeTab === "tab-quiz" && !document.getElementById("btnNextQuizQuestion").classList.contains("hidden")) { e.preventDefault(); document.getElementById("btnNextQuizQuestion").click(); }
+        } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+          if (state.activeTab === "tab-culture" && cultureStage === "story" && !document.getElementById("btnPrevStory").disabled) { e.preventDefault(); document.getElementById("btnPrevStory").click(); }
+          else if (state.activeTab === "tab-safety" && !document.getElementById("btnPrevScenario").disabled) { e.preventDefault(); document.getElementById("btnPrevScenario").click(); }
+          else if (state.activeTab === "tab-costume" && !document.getElementById("btnPrevCostumePage").disabled) { e.preventDefault(); document.getElementById("btnPrevCostumePage").click(); }
+        }
+      });
       document.addEventListener('visibilitychange', () => {if(document.hidden) pauseSafetyGame();});
       window.addEventListener("resize", () => {
         if (state.activeTab === "tab-safety") resizeSafetyCanvas();
@@ -6947,6 +6995,24 @@ const THEMES = {
           saveProgress();renderCertificateCanvas();renderLearningSummary();
         });
       });
+      const btnFillWholeClass = document.getElementById("btnFillWholeClass");
+      if (btnFillWholeClass) {
+        btnFillWholeClass.addEventListener("click", () => {
+          const cls = document.getElementById("certClassInput").value.trim() || EDUCATION_DATA[state.grade].classDefault;
+          const wholeClassName = `${cls} 어린이 일동`.slice(0, 40);
+          document.getElementById("certNameInput").value = wholeClassName;
+          state.profile.name = wholeClassName;
+          if (!document.getElementById("certPledgeInput").value.trim()) {
+            const defaultPledge = "우리 반 모두 오른쪽으로 안전하게 걷고 서로를 배려하며 즐거운 축제를 만들겠습니다!";
+            document.getElementById("certPledgeInput").value = defaultPledge;
+            state.profile.pledge = defaultPledge;
+          }
+          playSound("click");
+          saveProgress();
+          renderCertificateCanvas();
+          renderLearningSummary();
+        });
+      }
       document.querySelectorAll(".preset-pledge-btn").forEach(btn => {
         btn.addEventListener("click", () => {
           document.getElementById("certPledgeInput").value = btn.getAttribute("data-pledge");

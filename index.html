@@ -172,7 +172,7 @@
       </section>
 
       <div id="lessonStage" class="lesson-stage" aria-live="polite">
-        <div><span id="lessonStageNumber">1 / 4</span><strong id="lessonStageTitle" tabindex="-1">문화 이야기</strong><p id="lessonStageHint">그림 이야기를 읽고 문화를 살펴봐요.</p></div>
+        <div id="lessonStageInfo" class="cursor-pointer" title="누르면 활동 이동 메뉴가 열려요"><span id="lessonStageNumber">1 / 4</span><strong id="lessonStageTitle" tabindex="-1">문화 이야기</strong><p id="lessonStageHint">그림 이야기를 읽고 문화를 살펴봐요.</p></div>
         <button type="button" id="btnMoreTools" aria-expanded="false" aria-controls="headerTools">설정·활동 이동</button>
       </div>
 
@@ -706,7 +706,7 @@
                   <input id="certClassInput" type="text" value="3학년 1반" maxlength="15" placeholder="예: 3학년 1반" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
                 </div>
                 <div>
-                  <label for="certNameInput" class="block text-xs font-bold text-indigo-200 mb-1">내 이름</label>
+                  <div class="flex items-center justify-between gap-2 mb-1"><label for="certNameInput" class="block text-xs font-bold text-indigo-200">내 이름</label><button type="button" id="btnFillWholeClass" class="mini-chip text-[11px] px-2 py-0.5">+ 우리 반 전체</button></div>
                   <input id="certNameInput" type="text" value="" maxlength="40" placeholder="별칭 또는 번호 (선택)" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
                 </div>
               </div>
@@ -852,6 +852,7 @@
               주소 복사
             </button>
           </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5"><button type="button" id="btnCopyNoticeText" class="nowrap px-3 py-1.5 rounded-lg bg-indigo-900 hover:bg-indigo-800 border border-indigo-700 text-xs font-bold text-indigo-100">📢 알림장 안내 문구 복사</button><button type="button" id="btnCopyNeisText" class="nowrap px-3 py-1.5 rounded-lg bg-indigo-900 hover:bg-indigo-800 border border-indigo-700 text-xs font-bold text-indigo-100">📝 수업일지(NEIS) 문구 복사</button></div>
           <div id="shareQr" class="bg-white p-2 w-fit" aria-label="수업 공유 QR 코드"></div>
           <p>공유 주소에는 학년·주제·활동 설정만 담습니다. 개인정보나 학습 기록은 포함하지 않습니다.</p>
         </div>
