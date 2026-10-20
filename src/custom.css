@@ -345,3 +345,11 @@
       .storybook .lesson-stage strong { font-size: 1.2rem; }
       .storybook #btnMoreTools { max-width: 112px; line-height: 1.25; }
     }
+
+    /* 📲 앱 설치 · 📱 QR (엽쌤 앱 공통 상단 버튼) — 메뉴를 열지 않아도 맨 윗줄 오른쪽에 늘 보임 */
+    .ys-row { flex-wrap: wrap; }
+    .ys-key { display: flex; gap: 6px; margin-left: auto; flex-shrink: 0; }
+    .ys-chip { display: inline-block; font: inherit; font-size: 13px; font-weight: 800; line-height: 1.3; padding: 5px 11px; border-radius: 999px; border: 1px solid #e8b98a; background: #fffaf3; color: #9a4a17; white-space: nowrap; cursor: pointer; }
+    .ys-chip:hover { background: #ffefd9; }
+    .ys-credit a { text-decoration: underline; text-underline-offset: 2px; }
+    @media (max-width: 520px) { .ys-wide { display: none; } .ys-chip { font-size: 12.5px; padding: 5px 9px; } }
