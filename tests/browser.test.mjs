@@ -56,6 +56,11 @@ test('main browser flows and standalone file load without script errors', async 
   await welcome.locator('#btnHomeLogo').click();
   assert.equal(await welcome.locator('#welcomeScreen').isVisible(),true);
   assert.equal(await welcome.locator('#tab-quiz').isVisible(),false);
+  assert.match(await welcome.locator('.welcome-copyright').innerText(),/엽쌤/);
+  await welcome.locator('#btnWelcomeGuide').click();
+  assert.equal(await welcome.locator('#teacherModal').isVisible(),true);
+  await welcome.keyboard.press('Escape');
+  assert.equal(await welcome.locator('#teacherModal').isVisible(),false);
   await welcome.close();
   const newPreparedPage=async options=>{
     const candidate=await browser.newPage(options);

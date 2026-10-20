@@ -302,7 +302,11 @@
     .storybook .welcome-grade-btn { min-height: 50px; border: 1px solid #d8c9b9; border-radius: 13px; background: #fff8ef; font-size: 1rem; }
     .storybook .welcome-grade-btn[aria-pressed="true"] { border-color: #624f75; background: #624f75; color: #fff; }
     .storybook .welcome-start { display: block; width: 100%; min-height: 55px; border-radius: 14px; background: #b65d36; color: #fff; font-size: 1.14rem; font-weight: 700; }
-    .storybook .welcome-footnote { margin-top: 14px; font-size: .84rem; }
+    .storybook .welcome-meta-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; margin-top: 14px; }
+    .storybook .welcome-footnote { margin-top: 0; font-size: .84rem; color: #526074; }
+    .storybook .welcome-guide-btn { min-height: 32px; padding: 4px 12px; border: 1px solid #d5c3b1; border-radius: 999px; background: #fff8ef; color: #493b59; font-size: .8rem; font-weight: 700; cursor: pointer; transition: background-color .15s ease, border-color .15s ease; }
+    .storybook .welcome-guide-btn:hover { background: #f3e5d3; border-color: #bfa890; }
+    .storybook .welcome-copyright { margin-top: 10px; font-size: .78rem; color: #78695a !important; }
     .storybook .lesson-stage { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 17px 21px; border: 1px solid #ead0af; border-radius: 20px; background: #fff4e4; }
     .storybook .lesson-stage span { display: block; color: #9b502d; font-weight: 700; font-size: .84rem; }
     .storybook .lesson-stage strong { display: block; color: #493b59; font-size: 1.4rem; line-height: 1.45; }

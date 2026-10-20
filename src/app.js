@@ -2107,9 +2107,15 @@
       });
 
       const teacherModal = document.getElementById("teacherModal");
-      document.getElementById("btnTeacherGuide").addEventListener("click", () => {
-        playSound("click");
-        renderTeacherSettings();openModal(teacherModal);
+      ["btnTeacherGuide", "btnWelcomeGuide"].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.addEventListener("click", () => {
+            playSound("click");
+            renderTeacherSettings();
+            openModal(teacherModal);
+          });
+        }
       });
       document.getElementById("btnCloseTeacherModal").addEventListener("click", () => {
         closeModal(teacherModal);

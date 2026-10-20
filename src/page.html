@@ -146,7 +146,11 @@
           <button type="button" class="welcome-grade-btn" data-welcome-grade="5-6" aria-pressed="false">5~6학년</button>
         </fieldset>
         <button type="button" id="btnStartLesson" class="welcome-start">수업 시작하기 →</button>
-        <p class="welcome-footnote">4단계로 진행해요 · 지난 활동 기록은 이 브라우저에 남아요</p>
+        <div class="welcome-meta-row">
+          <p class="welcome-footnote">4단계로 진행해요 · 지난 활동 기록은 이 브라우저에 남아요</p>
+          <button type="button" id="btnWelcomeGuide" class="welcome-guide-btn" title="사용 설명서 및 수업 설정 열기">📖 설명서</button>
+        </div>
+        <p class="welcome-copyright">© 엽쌤 · 교육용 콘텐츠 (무단 수정·상업적 이용 금지)</p>
       </section>
 
       <div id="lessonStage" class="lesson-stage" aria-live="polite">
@@ -749,7 +753,10 @@
           <a href="https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&amp;lsJoLnkSeq=1028626005" target="_blank" rel="noopener noreferrer" class="underline hover:text-amber-300 nowrap">군복·군용장구 규정 제9조</a>
           </div>
         </details>
-        <span id="offlineStatus" class="nowrap px-2 py-0.5 rounded bg-indigo-950 border border-indigo-800 text-[11px] text-indigo-300">오프라인 자료 준비 전</span>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="nowrap text-[11px] font-bold">© 엽쌤 (Yeop-ssaem) · All rights reserved.</span>
+          <span id="offlineStatus" class="nowrap px-2 py-0.5 rounded bg-indigo-950 border border-indigo-800 text-[11px] text-indigo-300">오프라인 자료 준비 전</span>
+        </div>
       </div>
     </footer>
   </div>
@@ -758,13 +765,23 @@
   <div id="teacherModal" role="dialog" aria-modal="true" aria-labelledby="teacherModalTitle" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="glass-card rounded-2xl max-w-lg w-full p-5 space-y-4 border border-amber-400/40 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-indigo-800 pb-3">
-        <h3 id="teacherModalTitle" class="font-title text-lg text-amber-300 nowrap">👩‍🏫 선생님 수업 설정</h3>
+        <h3 id="teacherModalTitle" class="font-title text-lg text-amber-300 nowrap">📖 사용 설명서 및 수업 설정</h3>
         <button type="button" id="btnCloseTeacherModal" class="nowrap px-3 py-1 rounded-lg bg-indigo-900 hover:bg-indigo-800 text-xs font-bold text-white">✕ 닫기</button>
       </div>
 
       <div class="space-y-3 text-xs sm:text-sm text-indigo-100 leading-relaxed">
+        <div class="rounded-xl bg-indigo-950/90 p-3.5 border border-indigo-800 space-y-1.5">
+          <div class="font-extrabold text-amber-300">📌 할로윈 안전 놀이터 사용 설명서</div>
+          <p class="text-xs text-indigo-200">메인 화면에서 학년군을 고르고 <strong>수업 시작하기</strong>를 누르면 4단계 활동이 이어집니다. 상단 <strong>할로윈 안전 놀이터</strong> 로고를 누르면 언제든 메인 화면으로 돌아갈 수 있어요.</p>
+          <ul class="list-disc pl-4 space-y-1">
+            <li><strong>1. 이야기:</strong> 학년별 그림 이야기 6장과 생각 질문 → 호박등 만들기 → 서로 다른 축제 문화 살펴보기</li>
+            <li><strong>2. 길안전:</strong> 6가지 공식 행동요령 판단 + 경로 선택 미니게임</li>
+            <li><strong>3. 옷장:</strong> 안전한 옷차림과 선택 이유 설명, 12종 옷차림 판단, 배려 약속</li>
+            <li><strong>4. 생각 확인과 5. 배움 기록:</strong> 학년별 질문 8개와 해설, 학습 결과지·참여 확인서·안전 목표 임명장</li>
+          </ul>
+        </div>
         <div class="rounded-xl bg-indigo-950/90 p-3.5 border border-indigo-800 space-y-2">
-          <div class="font-extrabold text-amber-300">수업 설정</div>
+          <div class="font-extrabold text-amber-300">👩‍🏫 선생님 수업 설정</div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <label>학년군 <select id="teacherGrade" class="w-full rounded-lg bg-slate-900 p-2"><option value="1-2">1~2학년</option><option value="3-4">3~4학년</option><option value="5-6">5~6학년</option></select></label>
             <label>시간 <select id="teacherMinutes" class="w-full rounded-lg bg-slate-900 p-2"><option value="10">10분</option><option value="20">20분</option><option value="40">40분</option></select></label>
@@ -785,15 +802,6 @@
           <button type="button" id="btnNextStudent" class="rounded-xl bg-emerald-600 px-4 py-2 font-black">다음 학생 시작</button>
           <p class="text-indigo-300">전체 함께 보기는 교실에서 함께 보는 방식입니다. 학생 기기를 원격으로 조작하지 않습니다.</p>
         </div>
-        <div class="rounded-xl bg-indigo-950/90 p-3.5 border border-indigo-800 space-y-1.5">
-          <div class="font-extrabold text-amber-300">📌 참여형 계기교육 활동 구성</div>
-          <ul class="list-disc pl-4 space-y-1">
-            <li><strong>1. 이야기:</strong> 학년별 그림 이야기 6장과 생각 질문 → 호박등 만들기 → 서로 다른 축제 문화 살펴보기</li>
-            <li><strong>2. 길안전:</strong> 6가지 공식 행동요령 판단 + 경로 선택 미니게임</li>
-            <li><strong>3. 옷장:</strong> 안전한 옷차림과 선택 이유 설명, 12종 옷차림 판단, 배려 약속</li>
-            <li><strong>4. 생각 확인과 5. 배움 기록:</strong> 학년별 질문 8개와 해설, 학습 결과지·참여 확인서·안전 목표 임명장</li>
-          </ul>
-        </div>
 
         <div class="rounded-xl bg-indigo-950/90 p-3.5 border border-indigo-800 space-y-2">
           <div class="font-extrabold text-emerald-300">🔗 학급 공유 링크 복사</div>
@@ -806,6 +814,7 @@
           <div id="shareQr" class="bg-white p-2 w-fit" aria-label="수업 공유 QR 코드"></div>
           <p>공유 주소에는 학년·주제·활동 설정만 담습니다. 개인정보나 학습 기록은 포함하지 않습니다.</p>
         </div>
+        <p class="text-center text-[11px] text-indigo-300 pt-1">© 엽쌤 (Yeop-ssaem) · 본 웹앱은 교육 목적으로 제작되었으며 무단 수정 및 상업적 이용을 금합니다.</p>
       </div>
     </div>
   </div>
