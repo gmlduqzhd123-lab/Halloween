@@ -2097,7 +2097,6 @@
       renderThemeSituations();
       renderQuiz();
       renderCertificateCanvas();
-      showToast(`${EDUCATION_DATA[gradeKey].label} 눈높이로 바뀌었어요!`, "🎈");
     }
 
     // ==================== INITIALIZATION & EVENT LISTENERS ====================

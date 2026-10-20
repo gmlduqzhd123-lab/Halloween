@@ -32,6 +32,7 @@ test('main browser flows and standalone file load without script errors', async 
   assert.equal(await welcome.locator('#tab-culture').isVisible(),false);
   await welcome.locator('[data-welcome-grade="1-2"]').click();
   assert.equal(await welcome.locator('[data-welcome-grade="1-2"]').getAttribute('aria-pressed'),'true');
+  assert.equal(await welcome.locator('#toastContainer > *').count(),0);
   await welcome.locator('#btnStartLesson').click();
   assert.equal(await welcome.locator('#lessonStageTitle').innerText(),'문화 이야기');
   assert.equal(await welcome.locator('#tab-culture').isVisible(),true);
