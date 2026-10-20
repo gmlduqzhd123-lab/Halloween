@@ -198,6 +198,9 @@
               <div id="storyVisualCaption" class="nowrap text-xs font-bold text-amber-300 bg-indigo-950/90 px-3 py-1 rounded-full border border-amber-400/30">
                 매년 10월 31일
               </div>
+              <div id="storyClueBox" class="mt-2 px-2.5 py-1.5 rounded-xl bg-indigo-950/90 border border-amber-400/40 text-[11px] font-bold text-amber-200 leading-snug">
+                👆 그림을 눌러 숨은 이야기 단서를 찾아보세요!
+              </div>
               <div id="storyStepPills" class="flex items-center gap-1.5 mt-3"></div>
             </div>
 
@@ -213,7 +216,12 @@
                   <div class="text-[11px] font-extrabold text-amber-400 mb-0.5">한 문장으로 기억해요</div>
                   <p id="storySlideKeyPoint" class="text-xs sm:text-sm text-indigo-100 font-bold"></p>
                 </div>
-                <div class="thinking-prompt"><span>함께 이야기해요</span><p id="storyThinkingQuestion"></p></div>
+                <div class="thinking-prompt">
+                  <span>함께 이야기해요</span>
+                  <p id="storyThinkingQuestion"></p>
+                  <div id="storyPollBox" class="mt-2 flex flex-wrap gap-1.5"></div>
+                  <p id="storyPollFeedback" class="hidden text-xs mt-1.5 font-bold"></p>
+                </div>
               </div>
 
               <div class="flex items-center justify-between pt-2 border-t border-indigo-800/80 gap-2">
@@ -250,6 +258,7 @@
                 <div id="pumpkinMouthDisplay" class="text-sm font-black text-amber-100 bg-amber-950/80 px-2.5 py-0.5 rounded-full select-none">😄 활짝</div>
               </div>
               <p id="pumpkinStatusCaption" class="text-xs text-amber-300 font-bold mt-2.5 nowrap">눈·입·모자를 고르고 등불을 켜 보세요!</p>
+              <div id="pumpkinRecipeBox" class="mt-2 px-2.5 py-1 rounded-xl bg-indigo-950/90 border border-amber-400/40 text-[11px] font-bold text-amber-200"></div>
             </div>
 
             <!-- Customization Buttons -->
@@ -335,6 +344,8 @@
               옛 켈트 지역의 계절 풍습과 만성절 전야 등 여러 역사적 요소가 전해져요. 오늘날에는 지역과 가족에 따라 다른 방식으로 즐깁니다.
             </p>
             <p id="festivalCompareQuestion" class="festival-question">모든 지역의 할로윈 모습이 같을까요?</p>
+            <div id="festivalQuizBox" class="pt-1 flex flex-wrap gap-1.5"></div>
+            <p id="festivalQuizFeedback" class="hidden text-xs font-bold"></p>
             <a id="festivalSourceLink" href="https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/" target="_blank" rel="noopener noreferrer">자료: 미국 의회도서관 ↗</a>
           </div>
           <div class="chapter-actions"><button type="button" id="btnOptionalCraft" class="secondary-action">더 해보기 · 호박등 꾸미기</button><button type="button" id="btnToSafety" class="chapter-next">다음: 안전한 선택 연습하기 →</button></div>
@@ -380,6 +391,9 @@
 
           <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-center">
             <div class="md:col-span-5 glass-panel rounded-2xl p-4 text-center space-y-2 border border-rose-400/30">
+              <div id="scenarioSignalBar" class="rounded-xl px-2.5 py-1 text-xs font-extrabold border border-amber-400/50 bg-indigo-950/90 text-amber-200">
+                🟡 상황 살피기 · 안전한 행동을 골라요
+              </div>
               <div id="scenarioEmoji" class="text-5xl select-none">🗺️</div>
               <div id="scenarioStageTag" class="nowrap inline-block px-3 py-0.5 rounded-full bg-rose-500 text-white text-xs font-black">약속 1</div>
               <h3 id="scenarioTitle" class="font-title text-base text-amber-200"></h3>
@@ -391,6 +405,7 @@
               <div id="scenarioFeedbackBox" class="hidden rounded-xl p-3 border text-xs sm:text-sm space-y-1"></div>
               <button type="button" id="btnSpeakSafetyFeedback" class="hidden rounded-xl bg-indigo-800 px-3 py-2 text-sm font-bold">🔈 해설 읽기</button>
               <div id="safetyFollowup" class="rounded-xl bg-slate-900 border border-sky-500/50 p-3 space-y-2" aria-live="polite"></div>
+              <div id="safetyActionDrill" class="rounded-xl bg-indigo-950/90 border border-amber-400/40 p-3 space-y-1.5 text-xs"></div>
               <button type="button" id="btnSpeakScenario" class="rounded-xl bg-indigo-800 px-3 py-2 text-sm font-bold">🔈 질문과 보기 읽기</button>
               <div class="flex justify-between pt-1">
                 <button type="button" id="btnPrevScenario" class="nowrap px-3.5 py-1.5 rounded-xl bg-indigo-900 hover:bg-indigo-800 disabled:opacity-40 text-xs font-bold border border-indigo-700 min-h-[38px]">
@@ -488,6 +503,9 @@
               <div id="avatarJudgeText" class="text-xs font-bold text-amber-300 mt-1 nowrap">
                 시야 확보 OK! 밤길 안전 반사 OK!
               </div>
+              <button type="button" id="btnNightLightTest" class="mt-2 px-3 py-1 rounded-full border border-amber-400/50 bg-indigo-950/90 text-xs font-bold text-amber-200">
+                🌙 밤길 야광 반사 테스트
+              </button>
             </div>
 
             <!-- Dress-Up Selector Controls -->
@@ -610,6 +628,11 @@
                   🔀 50:50 찬스
                 </button>
               </div>
+            </div>
+
+            <div id="quizCheerBanner" class="rounded-xl px-3 py-1.5 bg-indigo-950/90 border border-amber-400/40 text-xs font-bold flex flex-wrap items-center justify-between gap-2">
+              <span id="quizCheerText">🎃 차근차근 이유를 생각하며 골라 봐요!</span>
+              <span id="quizTypeTag" class="px-2 py-0.5 rounded-full bg-orange-500 text-white text-[11px] font-extrabold">⚡ 생각 판단</span>
             </div>
 
             <h3 id="quizQuestionText" class="font-title text-base sm:text-lg text-white leading-snug"></h3>

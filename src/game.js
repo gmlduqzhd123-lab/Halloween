@@ -1,9 +1,14 @@
     // Canvas coordinates stay at 600×250. CSS scales only the display.
     let gameAnimId = null;
+    const STAGE_MISSIONS = {
+      1: '1단계 미션: 🟩 비상구 표지판을 확인하며 넓은 출구로 이동해요!',
+      2: '2단계 미션: ➡️ 우측통행 화살표를 따라가고 🍬 떨어진 사탕은 줍지 말아요!',
+      3: '3단계 미션: 👧 길가의 친구와 함께 대각선 넓은 출구로 빠져나와요!'
+    };
     const safetyGame = {
       running:false, won:false, paused:false, route:null, lastFrame:0,
       player:{x:42,y:210,r:13,targetX:null,targetY:null},
-      hazards:[], exitZone:{x:520,y:22,w:65,h:48}, keys:new Set(), decisionRecorded:false
+      hazards:[], items:[], bonusCollected:false, exitZone:{x:520,y:22,w:65,h:48}, keys:new Set(), decisionRecorded:false
     };
     function stopSafetyGameLoop() {
       if (gameAnimId !== null) cancelAnimationFrame(gameAnimId);
@@ -21,7 +26,7 @@
       if (!safetyGame.running || !safetyGame.paused) return;
       safetyGame.paused = false;
       document.getElementById('btnStartCanvasGame').textContent = '⏸ 일시정지';
-      updateGameStatusText('이동 중');
+      updateGameStatusText(STAGE_MISSIONS[state.gameStage] || '이동 중');
       gameLoop();
     }
     function initSafetyGame() {
@@ -31,12 +36,26 @@
       safetyGame.paused = false;
       safetyGame.route = null;
       safetyGame.decisionRecorded = false;
+      safetyGame.bonusCollected = false;
       safetyGame.player = {x:42,y:210,r:13,targetX:null,targetY:null};
       const speed = 28 + (state.gameStage-1)*8; // logical pixels per second
       safetyGame.hazards = [
-        {x:220,y:113,r:30,dx:speed,dy:0},
-        {x:355,y:165,r:27,dx:-speed*0.7,dy:0}
+        {x:220,y:113,r:28,dx:speed,dy:0},
+        {x:355,y:165,r:26,dx:-speed*0.7,dy:0}
       ];
+      if (state.gameStage === 3) {
+        safetyGame.hazards.push({x:290,y:140,r:22,dx:speed*0.5,dy:0});
+      }
+      if (state.gameStage === 1) {
+        safetyGame.items = [{x:240,y:76,r:16,kind:'sign',icon:'🟩',label:'비상구 확인',done:false}];
+      } else if (state.gameStage === 2) {
+        safetyGame.items = [
+          {x:280,y:72,r:16,kind:'lane',icon:'➡️',label:'우측통행 유지',done:false},
+          {x:270,y:165,r:18,kind:'candyTrap',icon:'🍬',label:'떨어진 사탕 주의',done:false}
+        ];
+      } else {
+        safetyGame.items = [{x:175,y:86,r:16,kind:'friend',icon:'👧',label:'친구와 동행',done:false}];
+      }
       safetyGame.keys.clear();
       document.getElementById('btnStartCanvasGame').textContent = '⏸ 일시정지';
       syncStageButtons();
@@ -147,10 +166,24 @@
         p.x=42;p.y=210;p.targetX=null;p.targetY=null;
         updateGameStatusText('혼잡한 구역을 피해서 다시 이동해요');
       }
+      if(Array.isArray(safetyGame.items)) {
+        safetyGame.items.forEach(item=>{
+          if(Math.hypot(p.x-item.x,p.y-item.y)<p.r+item.r) {
+            if(item.kind==='candyTrap') {
+              p.x=42;p.y=210;p.targetX=null;p.targetY=null;
+              updateGameStatusText('떨어진 물건은 줍지 않고 넓은 길로 이동해요!');
+            } else if(!item.done) {
+              item.done=true;
+              safetyGame.bonusCollected=true;
+              updateGameStatusText(`✅ ${item.label} 성공! 이제 출구로 이동해요`);
+            }
+          }
+        });
+      }
       const e=safetyGame.exitZone;
       if(safetyGame.route==='wide' && p.x>e.x && p.x<e.x+e.w && p.y>e.y && p.y<e.y+e.h) {
         safetyGame.won=true;safetyGame.running=false;
-        updateGameStatusText('이동 가능한 출구에 도착했어요 · 이유도 확인해요');
+        updateGameStatusText(safetyGame.bonusCollected ? '🌟 미션 달성! 안전하게 출구에 도착했어요' : '이동 가능한 출구에 도착했어요 · 이유도 확인해요');
         document.getElementById('btnStartCanvasGame').textContent=state.gameStage<3?'▶ 다음 단계':'▶ 다시 시작';
         renderGameChoices();
         stopSafetyGameLoop();
@@ -161,19 +194,39 @@
       if(!canvas)return;
       const ctx=canvas.getContext('2d');
       const {x,y}=safetyGame.player;
+      const stageNum=(typeof state!=='undefined' && state.gameStage) ? state.gameStage : 1;
       ctx.fillStyle='#0f172a';ctx.fillRect(0,0,600,250);
       ctx.strokeStyle='#064e3b';ctx.lineWidth=38;ctx.lineCap='round';
       ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(120,100);ctx.lineTo(460,58);ctx.lineTo(545,46);ctx.stroke();
+      ctx.strokeStyle='#10b98155';ctx.lineWidth=2;ctx.setLineDash([6,6]);
+      ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(120,100);ctx.lineTo(460,58);ctx.lineTo(545,46);ctx.stroke();
+      ctx.setLineDash([]);
       ctx.strokeStyle='#7f1d1d';ctx.lineWidth=32;
       ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(230,165);ctx.lineTo(400,170);ctx.stroke();
-      ctx.fillStyle='#fecaca';ctx.font='bold 12px "Gowun Dodum", sans-serif';ctx.fillText('🔴 혼잡한 길',220,205);
+      ctx.fillStyle='#a7f3d0';ctx.font='bold 12px "Gowun Dodum", sans-serif';
+      ctx.fillText(STAGE_MISSIONS[stageNum] || '🟢 덜 붐비는 넓은 길',18,22);
+      ctx.fillStyle='#fecaca';ctx.font='bold 12px "Gowun Dodum", sans-serif';ctx.fillText('🔴 혼잡한 좁은 길',220,208);
       const e=safetyGame.exitZone;
       ctx.fillStyle='#047857';ctx.fillRect(e.x,e.y,e.w,e.h);
-      ctx.fillStyle='white';ctx.font='bold 13px "Gowun Dodum", sans-serif';ctx.fillText('출구',e.x+18,e.y+29);
-      safetyGame.hazards.forEach(h=>{ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.fillStyle='#be123c88';ctx.fill();ctx.strokeStyle='#fb7185';ctx.stroke();});
+      ctx.strokeStyle='#6ee7b7';ctx.lineWidth=2;ctx.strokeRect(e.x,e.y,e.w,e.h);
+      ctx.fillStyle='white';ctx.font='bold 13px "Gowun Dodum", sans-serif';ctx.fillText('🟩 출구',e.x+10,e.y+29);
+      if(Array.isArray(safetyGame.items)){
+        safetyGame.items.forEach(item=>{
+          if(item.done)return;
+          ctx.beginPath();ctx.arc(item.x,item.y,item.r,0,Math.PI*2);
+          ctx.fillStyle=item.kind==='candyTrap'?'#f59e0b44':'#38bdf844';ctx.fill();
+          ctx.strokeStyle=item.kind==='candyTrap'?'#fbbf24':'#7dd3fc';ctx.lineWidth=2;ctx.stroke();
+          ctx.fillStyle='#fff';ctx.font='15px "Gowun Dodum", sans-serif';ctx.fillText(item.icon,item.x-8,item.y+5);
+          ctx.fillStyle='#e0f2fe';ctx.font='bold 11px "Gowun Dodum", sans-serif';ctx.fillText(item.label,item.x-28,item.y-20);
+        });
+      }
+      safetyGame.hazards.forEach(h=>{ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.fillStyle='#be123c88';ctx.fill();ctx.strokeStyle='#fb7185';ctx.stroke();ctx.fillStyle='#ffe4e6';ctx.font='11px "Gowun Dodum", sans-serif';ctx.fillText('밀집',h.x-11,h.y+4);});
       ctx.beginPath();ctx.arc(x,y,13,0,Math.PI*2);ctx.fillStyle='#f97316';ctx.fill();
-      ctx.fillStyle='white';ctx.font='16px "Gowun Dodum", sans-serif';ctx.fillText(state.avatar.char || '🧒',x-9,y+5);
-      if(safetyGame.won){ctx.fillStyle='#0f172adc';ctx.fillRect(0,0,600,250);ctx.fillStyle='#fde68a';ctx.font='bold 20px "Gowun Dodum", sans-serif';ctx.fillText('이동 가능한 출구를 찾았어요!',132,120);}
+      ctx.fillStyle='white';ctx.font='16px "Gowun Dodum", sans-serif';ctx.fillText((typeof state!=='undefined' && state.avatar?.char) || '🧒',x-9,y+5);
+      if(safetyGame.bonusCollected && !safetyGame.won){
+        ctx.fillStyle='#fde68a';ctx.font='12px "Gowun Dodum", sans-serif';ctx.fillText('✨',x+10,y-8);
+      }
+      if(safetyGame.won){ctx.fillStyle='#0f172adc';ctx.fillRect(0,0,600,250);ctx.fillStyle='#fde68a';ctx.font='bold 20px "Gowun Dodum", sans-serif';ctx.fillText(safetyGame.bonusCollected?'🌟 미션 성공! 안전한 출구를 찾았어요!':'이동 가능한 출구를 찾았어요!',118,120);}
     }
     function gameLoop(now=performance.now()) {
       if(gameAnimId!==null || safetyGame.paused || !safetyGame.running || state.activeTab!=='tab-safety' || document.hidden) return;

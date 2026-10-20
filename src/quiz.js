@@ -39,6 +39,22 @@
       saveProgress();
       renderQuiz();
     }
+    const QUIZ_TYPE_TAGS = [
+      '🏛️ 문화 탐정',
+      '🤝 안전한 약속',
+      '🗺️ 동선 살피기',
+      '🔍 위험 신호 찾기',
+      '🛡️ 내 몸 지키기',
+      '🏃 위기 대처',
+      '🧙 배려하는 복장',
+      '🌏 다문화 존중'
+    ];
+    function quizCheerMessage(combo) {
+      if (combo >= 6) return `👑 ${combo}연속 정답! 우리 반 최고 안전 박사님이에요!`;
+      if (combo >= 3) return `✨ ${combo}연속 정답! 안전 감각이 반짝반짝 빛나요!`;
+      if (combo >= 1) return `🌱 ${combo}연속 정답! 좋은 출발이에요, 계속 이어 가요!`;
+      return '🎃 차근차근 이유를 생각하며 알맞은 답을 골라 봐요!';
+    }
     function renderQuiz() {
       const quizzes=EDUCATION_DATA[state.grade].quizzes;
       const limit=state.quizReview ? state.quizReviewItems.length : quizzes.length;
@@ -49,10 +65,11 @@
         active.classList.add('hidden');result.classList.remove('hidden');
         const first=firstQuizScore();
         const reviewed=reviewedQuizScore();
-        document.getElementById('quizFinalScoreTitle').textContent=`처음 이해한 질문 ${first}/${quizzes.length}`;
+        const rank = first === quizzes.length ? '👑 안전 박사' : first >= 6 ? '🛡️ 안전 수호자' : first >= 3 ? '🕯️ 등불 탐험가' : '🌱 새싹 탐험가';
+        document.getElementById('quizFinalScoreTitle').textContent=`처음 이해한 질문 ${first}/${quizzes.length} · ${rank}`;
         document.getElementById('quizFinalScoreDesc').textContent=first===quizzes.length
           ? '처음 확인한 문항을 모두 맞혔어요. 안전 목표 확인은 길안전의 새 질문에서 따로 진행해요.'
-          : `처음 틀리거나 확인하지 못한 문항 ${quizzes.length-first}개가 있어요. 다시 판단해 보세요. 해설을 읽는 것만으로 이해 완료로 기록하지 않습니다.`;
+          : `처음 틀리거나 확인하지 못한 문항 ${quizzes.length-first}개가 있어요(복습 확인 ${reviewed}개). 다시 판단해 보세요. 해설을 읽는 것만으로 이해 완료로 기록하지 않습니다.`;
         document.getElementById('btnReviewQuiz').disabled=first===quizzes.length;
         if(!state.quizReview && Object.keys(state.quizFirst).length>=quizzes.length) unlockStamp('s4','퀴즈 참여');
         renderLearningSummary();
@@ -69,6 +86,10 @@
       document.getElementById('quizProgressBadge').textContent=`질문 ${state.quizIndex+1} / ${limit}`;
       document.getElementById('quizQuestionNumber').textContent=`Q${qi+1}${state.quizReview?' 복습':''}`;
       document.getElementById('quizCategoryBadge').textContent=q.category;
+      const typeTagEl=document.getElementById('quizTypeTag');
+      if(typeTagEl)typeTagEl.textContent=QUIZ_TYPE_TAGS[qi % QUIZ_TYPE_TAGS.length];
+      const cheerEl=document.getElementById('quizCheerText');
+      if(cheerEl)cheerEl.textContent=quizCheerMessage(state.quizCombo);
       document.getElementById('quizQuestionText').textContent=q.q;
       const hint=document.getElementById('quizHintBox');
       hint.textContent=q.hint || '먼저 안전과 배려를 생각해 보세요.';

@@ -248,7 +248,20 @@
     .storybook .festival-card.ring-2 { outline:2px solid #bf7e49; outline-offset:1px; }
     .storybook .festival-card p { font-size:.84rem; line-height:1.55; }
     .storybook .festival-question { font-weight:800; color:#356555; }
-    .storybook #avatarRunwayStage { background-image:none !important; background-color:#f9edda !important; border-color:#e4c7a2 !important; }
+    .storybook #avatarRunwayStage { background-image:none !important; background-color:#f9edda !important; border-color:#e4c7a2 !important; transition: all .25s ease; }
+    .storybook #avatarRunwayStage.night-stage-active { background-color:#1e1b38 !important; border-color:#fbbf24 !important; box-shadow: inset 0 0 28px rgba(251, 191, 36, 0.25); }
+    .storybook #avatarRunwayStage.night-stage-active #avatarJudgeText { color:#fef08a !important; }
+    .storybook #avatarRunwayStage.night-stage-active #avatarVisualGroup { filter: drop-shadow(0 0 14px rgba(250, 204, 21, 0.95)); }
+    .storybook .mini-chip { min-height: 32px; padding: 4px 10px; border-radius: 999px; border: 1px solid #cbbba8; background: #fffaf2; color: #493b59; font-size: .78rem; font-weight: 700; transition: all .15s ease; }
+    .storybook .mini-chip:hover { background: #f3e5d3; }
+    .storybook .mini-chip.is-picked { background: #5f4d70 !important; color: #fff !important; border-color: #5f4d70 !important; }
+    .storybook #btnNightLightTest { min-height: 32px; padding: 4px 11px; }
+    @keyframes storyArtBounce {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      40% { transform: scale(1.06) rotate(-2deg); }
+      75% { transform: scale(1.03) rotate(2deg); }
+    }
+    .story-art-pop { animation: storyArtBounce 0.45s ease; }
     .storybook #avatarRunwayStage > div:first-child { background:#fffaf2 !important; color:#765574 !important; border-color:#e4c7a2 !important; }
     .storybook #tab-costume [class*="bg-rose-950"] { background:#fff0ea !important; border-color:#e8bec0 !important; }
     .storybook .tab-panel p { line-height:1.65; }

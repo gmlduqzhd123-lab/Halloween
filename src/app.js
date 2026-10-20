@@ -650,84 +650,96 @@
         emoji: "👮‍♂️",
         name: "경찰관 제복과 수갑",
         safe: false,
-        reason: "실제 경찰관과 혼동될 수 있는 제복·장비는 피하고, 법률의 조건과 예외는 선생님과 확인해요."
+        reason: "실제 경찰관과 혼동될 수 있는 제복·장비는 피하고, 법률의 조건과 예외는 선생님과 확인해요.",
+        reform: "✂️ 안전 리폼: 실제 제복 대신 동화 속 명탐정 망토나 별빛 보안관 모자로 바꿔 입어요!"
       },
       {
         id: "c2",
         emoji: "🎃",
         name: "주황색 호박 망토",
         safe: true,
-        reason: "걷기도 편하고 친구들과 기분 좋게 즐길 수 있는 안전한 할로윈 옷이에요!"
+        reason: "걷기도 편하고 친구들과 기분 좋게 즐길 수 있는 안전한 할로윈 옷이에요!",
+        reform: "✨ 코디 팁: 망토 길이가 무릎 위로 올라오면 계단을 걸을 때도 걸리지 않아요!"
       },
       {
         id: "c3",
         emoji: "🧑‍🚒",
         name: "소방관 출동복과 헬멧",
         safe: false,
-        reason: "실제 소방관과 혼동될 수 있는 출동복은 행사 분장으로 피하는 것이 좋아요. 경찰제복장비법이나 군복단속법이 똑같이 적용되는 것은 아니에요."
+        reason: "실제 소방관과 혼동될 수 있는 출동복은 행사 분장으로 피하는 것이 좋아요. 경찰제복장비법이나 군복단속법이 똑같이 적용되는 것은 아니에요.",
+        reform: "✂️ 안전 리폼: 출동복 대신 주황색 호박 영웅 조끼로 꾸미면 오해 없이 멋져요!"
       },
       {
         id: "c4",
         emoji: "🧙‍♀️",
         name: "별 무늬 마법사 옷",
         safe: true,
-        reason: "동화 속 주인공처럼 재미있고 안전하게 즐길 수 있는 멋진 분장이에요!"
+        reason: "동화 속 주인공처럼 재미있고 안전하게 즐길 수 있는 멋진 분장이에요!",
+        reform: "✨ 코디 팁: 모자 챙이 눈을 가리지 않게 살짝 올려 쓰면 시야가 활짝 트여요!"
       },
       {
         id: "c5",
         emoji: "🗡️",
         name: "뾰족한 장난감 칼·총",
         safe: false,
-        reason: "사람이 많은 곳에서 뾰족하고 딱딱한 소품을 들면 옆 친구가 다칠 수 있어요!"
+        reason: "사람이 많은 곳에서 뾰족하고 딱딱한 소품을 들면 옆 친구가 다칠 수 있어요!",
+        reform: "✂️ 안전 리폼: 딱딱한 무기 대신 폭신한 솜방울 요술봉이나 야광 팔찌를 들어요!"
       },
       {
         id: "c6",
         emoji: "🪖",
         name: "실제 군인 전투복",
         safe: false,
-        reason: "실제 군복·군용장구는 별도 규정이 있어요. 단순한 무늬 옷까지 똑같이 판단하지 말고 선생님과 확인해요."
+        reason: "실제 군복·군용장구는 별도 규정이 있어요. 단순한 무늬 옷까지 똑같이 판단하지 말고 선생님과 확인해요.",
+        reform: "✂️ 안전 리폼: 군복 대신 우주 탐험가 복장이나 숲속 요정 망토를 골라 봐요!"
       },
       {
         id: "c7",
         emoji: "🩸",
         name: "피 묻은 무서운 분장",
         safe: false,
-        reason: "친구가 놀라고, 실제 다친 응급 환자가 생겼을 때 분장으로 오해받을 수 있어요!"
+        reason: "친구가 놀라고, 실제 다친 응급 환자가 생겼을 때 분장으로 오해받을 수 있어요!",
+        reform: "✂️ 안전 리폼: 무서운 상처 분장 대신 반짝이는 별·호박 페이스 스티커를 붙여요!"
       },
       {
         id: "c8",
         emoji: "🧚",
         name: "야광 스티커 붙인 옷",
         safe: true,
-        reason: "눈에 잘 띄는 꾸미기는 좋지만, 밤길에서는 어른의 안내와 주변 이동로를 계속 살펴요."
+        reason: "눈에 잘 띄는 꾸미기는 좋지만, 밤길에서는 어른의 안내와 주변 이동로를 계속 살펴요.",
+        reform: "✨ 코디 팁: 가방과 소매에 야광 반사띠를 붙이면 어두운 곳에서도 잘 보여요!"
       },
       {
         id: "c9",
         emoji: "🎭",
         name: "앞이 안 보이는 가면",
         safe: false,
-        reason: "눈구멍이 좁아 앞이 잘 안 보이는 가면을 쓰면 계단이나 길에서 넘어지기 쉬워요!"
+        reason: "눈구멍이 좁아 앞이 잘 안 보이는 가면을 쓰면 계단이나 길에서 넘어지기 쉬워요!",
+        reform: "✂️ 안전 리폼: 얼굴을 가리는 가면 대신 귀여운 캐릭터 머리띠나 모자를 써요!"
       },
       {
         id: "c10",
         emoji: "🧣",
         name: "바닥에 끌리는 긴 망토",
         safe: false,
-        reason: "옷자락이 너무 길어 발에 걸리면 다른 사람과 엉켜 넘어질 위험이 커요!"
+        reason: "옷자락이 너무 길어 발에 걸리면 다른 사람과 엉켜 넘어질 위험이 커요!",
+        reform: "✂️ 안전 리폼: 발목에 걸리지 않게 허리·무릎 길이의 짧은 망토로 수선해요!"
       },
       {
         id: "c11",
         emoji: "🚑",
         name: "119 구급대원 조끼",
         safe: false,
-        reason: "응급 현장에서 진짜 구급대원과 혼동을 주어 구조 활동을 방해할 수 있어요!"
+        reason: "응급 현장에서 진짜 구급대원과 혼동을 주어 구조 활동을 방해할 수 있어요!",
+        reform: "✂️ 안전 리폼: 실제 구급 조끼는 진짜 대원에게 양보하고 동화 속 치유 마법사로 꾸며요!"
       },
       {
         id: "c12",
         emoji: "🦸",
         name: "활동하기 편한 동화 옷",
         safe: true,
-        reason: "시야가 트여 있고 움직이기 편해서 안전하고 즐겁게 축제를 즐길 수 있어요!"
+        reason: "시야가 트여 있고 움직이기 편해서 안전하고 즐겁게 축제를 즐길 수 있어요!",
+        reform: "✨ 코디 팁: 발에 잘 맞는 운동화까지 신으면 걸을 때 훨씬 안전해요!"
       }
     ];
 
@@ -1292,6 +1304,50 @@
       const scene = STORY_SCENES[kind] || STORY_SCENES.pumpkin;
       return `<svg viewBox="0 0 220 170" focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect width="220" height="170" rx="25" fill="#fff1da"/><circle cx="35" cy="37" r="6" fill="#ffe0a0"/><circle cx="181" cy="35" r="4" fill="#ffe0a0"/><path d="M0 146q110-28 220 0v24H0z" fill="#e3e9d6"/>${scene}</svg>`;
     }
+    const STORY_CLUES = [
+      "🔎 숨은 단서: 옛날 켈트족의 계절 명절 ‘서우인’과 만성절 전야 이야기가 만나 오늘날 다양한 문화가 되었어요!",
+      "🔎 숨은 단서: 아일랜드에서는 처음에 커다란 순무와 감자에 얼굴을 새겨 등불을 만들었대요!",
+      "🔎 숨은 단서: 미국에서는 어린이들이 간식 대신 유니세프 모금 상자를 들고 이웃을 돕기도 해요!",
+      "🔎 숨은 단서: 축제장 입구의 초록색 달리는 사람 표지판(비상구)을 찾으면 위급할 때 안전해요!",
+      "🔎 숨은 단서: 멕시코의 ‘죽은 자들의 날’에 쓰이는 주황색 금잔화(마리골드) 향기는 가족을 안내하는 뜻이 있어요!",
+      "🔎 숨은 단서: 진정한 축제의 주인공은 친구의 마음을 배려하고 머문 자리를 깨끗이 정리하는 사람이에요!"
+    ];
+    const STORY_POLLS = [
+      { options: ["🎃 호박 장식 꾸미기", "🎭 재미있는 분장 놀이"], feedback: "멋진 선택이에요! 어떤 방법이든 안전하고 즐거운 마음이 가장 중요해요." },
+      { options: ["😄 활짝 웃는 호박등", "😮 깜짝 놀란 호박등"], feedback: "나만의 개성이 담긴 호박등이네요! 잠시 뒤 공방에서 직접 만들어 봐요." },
+      { options: ["👨‍👩‍👧 동행할 어른 정하기", "🗺️ 갈 장소·시간 약속하기"], feedback: "정확해요! 외출 전 어른과 장소·시간·동행을 먼저 약속하면 안심할 수 있어요." },
+      { options: ["✨ 반짝이는 야광 스티커", "👟 걷기 편한 운동화"], feedback: "좋은 생각이에요! 잘 보이고 잘 걸을 수 있는 옷차림이 안전을 지켜 줘요." },
+      { options: ["🌼 고유한 이름과 뜻 알기", "🤝 서로 다른 전통 존중하기"], feedback: "맞아요! 날짜가 비슷해도 각 문화가 가진 고유한 역사와 마음을 존중해요." },
+      { options: ["🛑 싫다는 장난 바로 멈추기", "🧹 쓰레기 함께 정리하기"], feedback: "최고예요! 우리 반 모두가 편안하고 기분 좋은 축제를 함께 만들어요." }
+    ];
+    const PUMPKIN_RECIPES = [
+      { name: "별빛 마법사 호박", eye: "⭐ ⭐", mouth: "😄 활짝", hat: "🎩" },
+      { name: "황금 왕관 야옹 호박", eye: "😊 😊", mouth: "🐱 야옹", hat: "👑" },
+      { name: "하트 리본 요정 호박", eye: "❤️ ❤️", mouth: "😮 깜짝", hat: "🎀" },
+      { name: "멋쟁이 초록 대장 호박", eye: "🕶️ 🕶️", mouth: "🦷 이빨", hat: "🌱" }
+    ];
+    const FESTIVAL_QUIZZES = {
+      halloween: {
+        options: ["지역과 가정마다 다르게 즐겨요", "전 세계가 똑같은 한 가지 놀이만 해요"],
+        correct: 0,
+        feedback: "💮 [할로윈 도장 완료!] 맞아요, 지역·학교·가정마다 즐기는 방법이 서로 달라요."
+      },
+      muertos: {
+        options: ["세상을 떠난 가족을 기억하는 고유한 전통", "할로윈과 이름만 다른 똑같은 축제"],
+        correct: 0,
+        feedback: "💮 [죽은 자들의 날 도장 완료!] 가족을 기리는 멕시코의 소중한 고유 문화를 이해했어요."
+      },
+      korea: {
+        options: ["수확을 돌아보며 가족이 모이는 고유 명절", "서양의 가을 축제에서 유래한 날"],
+        correct: 0,
+        feedback: "💮 [추석 도장 완료!] 기원과 날짜, 의미가 서로 다른 명절임을 정확히 비교했어요."
+      }
+    };
+    const storyPollPicked = {};
+    const storyClueOpened = {};
+    const festivalStamps = {};
+    let currentFestivalKey = 'halloween';
+
     let cultureStage = 'story';
     function setCultureStage(stage, focus = false) {
       if (!['story','craft','compare'].includes(stage)) return;
@@ -1305,9 +1361,42 @@
         if (selected) button.setAttribute('aria-current', 'step');
         else button.removeAttribute('aria-current');
       });
+      if (stage === 'compare') renderFestivalQuiz(currentFestivalKey);
       if (focus) {
         const heading = document.querySelector(`[data-culture-stage="${stage}"] h2, [data-culture-stage="${stage}"] h3`);
         if (heading) { heading.tabIndex = -1; heading.focus(); }
+      }
+    }
+    function renderFestivalQuiz(key) {
+      currentFestivalKey = key;
+      const qBox = document.getElementById('festivalQuizBox');
+      const fBox = document.getElementById('festivalQuizFeedback');
+      if (!qBox || !fBox) return;
+      qBox.replaceChildren();
+      const quiz = FESTIVAL_QUIZZES[key];
+      if (!quiz) return;
+      quiz.options.forEach((optText, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `mini-chip ${festivalStamps[key] === idx ? 'is-picked' : ''}`;
+        btn.textContent = `${idx === 0 ? '🅰️' : '🅱️'} ${optText}`;
+        btn.addEventListener('click', () => {
+          festivalStamps[key] = idx;
+          playSound(idx === quiz.correct ? 'correct' : 'wrong');
+          renderFestivalQuiz(key);
+        });
+        qBox.appendChild(btn);
+      });
+      if (festivalStamps[key] !== undefined) {
+        const isRight = festivalStamps[key] === quiz.correct;
+        fBox.className = `text-xs font-bold mt-1 ${isRight ? 'text-emerald-300' : 'text-rose-300'}`;
+        const stampTotal = Object.keys(FESTIVAL_QUIZZES).filter(k => festivalStamps[k] === FESTIVAL_QUIZZES[k].correct).length;
+        fBox.textContent = isRight
+          ? `${quiz.feedback} (문화 스탬프 ${stampTotal}/3)`
+          : '❌ 설명을 다시 읽고 그 문화의 고유한 뜻을 골라 보세요!';
+      } else {
+        fBox.className = 'hidden text-xs font-bold';
+        fBox.textContent = '';
       }
     }
     function renderStorySlide() {
@@ -1321,12 +1410,44 @@
       picture.innerHTML = storyArtwork(current.art);
       picture.setAttribute('aria-label', current.caption);
       document.getElementById("storyVisualCaption").textContent = current.caption;
+      const clueBox = document.getElementById("storyClueBox");
+      if (clueBox) {
+        clueBox.textContent = storyClueOpened[state.storyIndex]
+          ? STORY_CLUES[state.storyIndex]
+          : "👆 그림을 눌러 숨은 이야기 단서를 찾아보세요!";
+      }
       document.getElementById("storySlideTag").textContent = `카드 ${state.storyIndex + 1} / ${stories.length}`;
       document.getElementById("storySlideTitle").textContent = current.title;
       document.getElementById("storySlideBody").textContent = current.body;
       document.getElementById("storySlideKeyPoint").textContent = current.keyPoint;
       document.getElementById("storyThinkingQuestion").textContent = current.question;
       document.getElementById("storySourceLink").innerHTML = `<a href="${current.sourceUrl}" target="_blank" rel="noopener noreferrer" class="underline hover:text-amber-300">${current.sourceText} ↗</a>`;
+
+      const pollBox = document.getElementById("storyPollBox");
+      const pollFeedback = document.getElementById("storyPollFeedback");
+      const poll = STORY_POLLS[state.storyIndex];
+      if (pollBox && pollFeedback && poll) {
+        pollBox.replaceChildren();
+        poll.options.forEach((opt, idx) => {
+          const chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = `mini-chip ${storyPollPicked[state.storyIndex] === idx ? "is-picked" : ""}`;
+          chip.textContent = opt;
+          chip.addEventListener("click", () => {
+            storyPollPicked[state.storyIndex] = idx;
+            playSound("click");
+            renderStorySlide();
+          });
+          pollBox.appendChild(chip);
+        });
+        if (storyPollPicked[state.storyIndex] !== undefined) {
+          pollFeedback.className = "text-xs mt-1.5 font-bold text-emerald-300";
+          pollFeedback.textContent = `💬 ${poll.feedback}`;
+        } else {
+          pollFeedback.className = "hidden text-xs mt-1.5 font-bold";
+          pollFeedback.textContent = "";
+        }
+      }
 
       const pillsEl = document.getElementById("storyStepPills");
       pillsEl.innerHTML = "";
@@ -1362,6 +1483,7 @@
       }
     }
 
+    let currentRecipeIdx = 0;
     function renderLanternWorkshop() {
       document.getElementById("pumpkinEyesDisplay").textContent = state.lantern.eye;
       document.getElementById("pumpkinMouthDisplay").textContent = state.lantern.mouth;
@@ -1375,6 +1497,7 @@
       const boxEl = document.getElementById("pumpkinPreviewBox");
       const btnEl = document.getElementById("btnToggleLanternLight");
       const capEl = document.getElementById("pumpkinStatusCaption");
+      const recipeEl = document.getElementById("pumpkinRecipeBox");
 
       if (state.lantern.lit) {
         bodyEl.classList.add("lantern-lit");
@@ -1387,6 +1510,27 @@
         btnEl.textContent = "등불 켜기";
         capEl.textContent = "눈·입·모자를 고르고 등불을 켜 보세요!";
       }
+      if (recipeEl) {
+        const recipe = PUMPKIN_RECIPES[currentRecipeIdx % PUMPKIN_RECIPES.length];
+        const matched = state.lantern.eye === recipe.eye && state.lantern.mouth === recipe.mouth && state.lantern.hat === recipe.hat;
+        recipeEl.replaceChildren();
+        const span = document.createElement("span");
+        span.textContent = matched
+          ? `🎉 [${recipe.name}] 레시피 완성! 다른 조합도 만들어 볼까요? `
+          : `🎯 오늘의 호박 미션: [${recipe.name}] (${recipe.eye} + ${recipe.mouth} + ${recipe.hat}) `;
+        const nextBtn = document.createElement("button");
+        nextBtn.type = "button";
+        nextBtn.className = "mini-chip ml-1";
+        nextBtn.textContent = "🎲 미션 변경";
+        nextBtn.addEventListener("click", () => {
+          currentRecipeIdx = (currentRecipeIdx + 1) % PUMPKIN_RECIPES.length;
+          playSound("click");
+          renderLanternWorkshop();
+        });
+        recipeEl.appendChild(span);
+        recipeEl.appendChild(nextBtn);
+      }
+      renderCertificateCanvas();
     }
 
     function toggleSpeakCurrentStory() {
@@ -1413,6 +1557,51 @@
     }
 
     // ==================== TAB 2: CROWD SAFETY SCENARIOS ====================
+    const SAFETY_ACTION_DRILLS = [
+      { title: "🔦 미니 실습 · 비상구 표지판 스캔", desc: "행사장에 도착했어요! 진짜 비상 대피소 표지판을 눌러 확인해 보세요.", btnText: "🟩 초록색 비상구(EXIT) 확인", doneText: "✅ 비상구와 넓은 통로 위치를 눈으로 먼저 기억했어요!" },
+      { title: "👣 미니 실습 · 양방향 우측통행 발맞추기", desc: "마주 오는 사람과 부딪히지 않게 오른쪽 차선으로 걸어 볼까요?", btnText: "➡️ 오른쪽 길로 차근차근 걷기", doneText: "✅ 앞뒤 간격을 살피며 오른쪽으로 안전하게 걸었어요!" },
+      { title: "↗️ 미니 실습 · 혼잡 신호 탈출 시뮬레이션", desc: "어깨가 자꾸 부딪히기 시작했어요! 어느 쪽으로 빠져나갈까요?", btnText: "↗️ 흐름을 따라 대각선 가장자리로 이동", doneText: "✅ 무리하게 역행하지 않고 대각선 넓은 곳으로 벗어났어요!" },
+      { title: "👐 미니 실습 · 가슴 앞 숨 쉴 공간 3번 지키기", desc: "버튼을 3번 눌러 권투 선수처럼 가슴 앞 공간(흉강)을 지켜 보세요!", btnText: "🛡️ 가슴 앞 팔짱 방어 자세", targetClicks: 3, doneText: "✅ 가슴 앞 숨 쉴 공간을 든든하게 확보했어요!" },
+      { title: "🍬 미니 실습 · 떨어진 물건 유혹 패스하기", desc: "복잡한 길에 아끼는 사탕이 떨어졌어요! 어떻게 행동할까요?", btnText: "🚶 허리 숙이지 않고 내 몸 먼저 이동", doneText: "✅ 인파 속에서는 물건보다 내 몸을 먼저 지켰어요!" },
+      { title: "🚑 미니 실습 · 넘어졌을 때 몸 보호 & 119", desc: "일어나기 힘들 때 머리와 가슴을 보호하는 자세를 취해 보세요!", btnText: "🙆 머리 감싸고 공처럼 둥글게 말기", doneText: "✅ 머리와 장기를 보호하는 방어 자세와 112·119 신고 요령을 익혔어요!" }
+    ];
+    const safetyDrillCounts = {};
+    function renderSafetyActionDrill() {
+      const box = document.getElementById("safetyActionDrill");
+      if (!box) return;
+      box.replaceChildren();
+      const idx = state.scenarioIndex;
+      const drill = SAFETY_ACTION_DRILLS[idx];
+      if (!drill) return;
+      const needed = drill.targetClicks || 1;
+      const current = safetyDrillCounts[idx] || 0;
+      const isDone = current >= needed;
+
+      const titleEl = document.createElement("div");
+      titleEl.className = "font-extrabold text-amber-300";
+      titleEl.textContent = drill.title;
+      box.appendChild(titleEl);
+
+      const descEl = document.createElement("p");
+      descEl.textContent = isDone ? drill.doneText : drill.desc;
+      box.appendChild(descEl);
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `mini-chip ${isDone ? "is-picked" : ""}`;
+      btn.textContent = isDone
+        ? "🌟 실습 완료!"
+        : needed > 1
+        ? `${drill.btnText} (${current}/${needed})`
+        : drill.btnText;
+      btn.addEventListener("click", () => {
+        safetyDrillCounts[idx] = Math.min(needed, (safetyDrillCounts[idx] || 0) + 1);
+        playSound(safetyDrillCounts[idx] >= needed ? "correct" : "click");
+        renderSafetyActionDrill();
+      });
+      box.appendChild(btn);
+    }
+
     function renderScenario() {
       const item = SAFETY_SCENARIOS[state.scenarioIndex];
       const goal = SAFETY_GOALS[state.scenarioIndex];
@@ -1422,6 +1611,12 @@
       document.getElementById("scenarioStageTag").textContent = item.stage;
       document.getElementById("scenarioTitle").textContent = low?.title || item.title;
       document.getElementById("scenarioDesc").textContent = low?.desc || (state.grade === '5-6' ? `${item.desc} 두 행동의 위험과 근거를 비교해 보세요.` : item.desc);
+      const signalBar = document.getElementById("scenarioSignalBar");
+      if (signalBar) {
+        signalBar.textContent = state.completedScenarios[state.scenarioIndex]
+          ? "🟢 안전 신호등 · 올바른 행동을 찾았어요!"
+          : "🟡 상황 살피기 · 어떤 행동이 안전할까요?";
+      }
 
       const choicesEl = document.getElementById("scenarioChoices");
       const feedbackBox = document.getElementById("scenarioFeedbackBox");
@@ -1446,10 +1641,12 @@
               state.completedScenarios[state.scenarioIndex] = true;
               awardOnce(`scenario:${goal.id}`, 'first-correct', 15, "안전 상황 판단");
             }
+            if (signalBar) signalBar.textContent = "🟢 안전 확보 · 올바른 판단이에요!";
             feedbackBox.className = "rounded-xl p-3 border bg-emerald-950/80 border-emerald-400/60 text-emerald-100 text-xs sm:text-sm space-y-1";
             feedbackBox.innerHTML = `<div class="font-black text-emerald-300">⭕ 적절한 선택이에요. 이유를 한 번 더 확인해요.</div><p>${choice.feedback}</p>`;
           } else {
             playSound("wrong");
+            if (signalBar) signalBar.textContent = "🔴 위험 주의 · 다시 안전한 길을 골라 봐요!";
             feedbackBox.className = "rounded-xl p-3 border bg-rose-950/80 border-rose-400/60 text-rose-100 text-xs sm:text-sm space-y-1";
             feedbackBox.innerHTML = `<div class="font-black text-rose-300">❌ 다시 골라 볼까요?</div><p>${choice.feedback}</p>`;
           }
@@ -1465,6 +1662,7 @@
       const nextBtn = document.getElementById("btnNextScenario");
       nextBtn.textContent = state.scenarioIndex === SAFETY_SCENARIOS.length - 1 ? "다음: 옷차림 생각하기 →" : "다음 약속 →";
       renderSafetyFollowup();
+      renderSafetyActionDrill();
     }
 
     function renderSafetyFollowup() {
@@ -1643,11 +1841,12 @@
             </div>
             ${
               hasAnswered
-                ? `<div class="rounded-lg p-2 text-[11px] leading-snug ${
+                ? `<div class="rounded-lg p-2 text-[11px] leading-snug space-y-1 ${
                     isCorrect ? "bg-emerald-950/90 text-emerald-200" : "bg-rose-950/90 text-rose-200"
                   }">
                     <div class="font-black mb-0.5 nowrap">${isCorrect ? "딩동댕! 👏" : "다시 확인!"}</div>
                     <div>${item.reason}</div>
+                    ${item.reform ? `<div class="pt-1 border-t border-indigo-700/40 font-bold">${item.reform}</div>` : ""}
                   </div><button type="button" class="speak-costume-feedback w-full rounded-lg bg-indigo-800 p-2 text-xs" data-id="${item.id}">🔈 이 옷의 이유 읽기</button>`
                 : ""
             }
@@ -1960,10 +2159,19 @@
         showToast(`현재 사탕 점수: ${state.candyPoints}점 (${getLevelTitle(state.candyPoints)})`, "🍭");
       });
 
-      // Fun Story Emoji tap reaction
+      // Fun Story Emoji tap reaction + Hidden Clue discovery
       document.getElementById("btnTapStoryEmoji").addEventListener("click", () => {
         playSound("correct");
         burstCandyConfetti(8);
+        storyClueOpened[state.storyIndex] = true;
+        const artEl = document.getElementById("storyEmojiGraphic");
+        if (artEl) {
+          artEl.classList.remove("story-art-pop");
+          void artEl.offsetWidth;
+          artEl.classList.add("story-art-pop");
+        }
+        const clueBox = document.getElementById("storyClueBox");
+        if (clueBox) clueBox.textContent = STORY_CLUES[state.storyIndex];
       });
 
       // Jack-o'-Lantern Workshop Listeners
@@ -2214,6 +2422,7 @@
             const link = document.getElementById('festivalSourceLink');
             link.href = FESTIVAL_DETAILS[key].sourceUrl;
             link.textContent = `자료: ${FESTIVAL_DETAILS[key].sourceText} ↗`;
+            renderFestivalQuiz(key);
           }
         });
       });
@@ -2306,6 +2515,18 @@
           renderAvatarDressup();
         });
       });
+      const nightBtn = document.getElementById("btnNightLightTest");
+      if (nightBtn) {
+        nightBtn.addEventListener("click", () => {
+          const stageEl = document.getElementById("avatarRunwayStage");
+          const isNight = stageEl.classList.toggle("night-stage-active");
+          playSound("click");
+          nightBtn.textContent = isNight ? "☀️ 밝은 조명으로 돌아가기" : "🌙 밤길 야광 반사 테스트";
+          document.getElementById("avatarJudgeText").textContent = isNight
+            ? "✨ 어두운 밤길에서도 야광 소품과 밝은 의상이 반짝반짝 잘 보여요!"
+            : "시야 확보 OK! 밤길 안전 반사 OK!";
+        });
+      }
       document.getElementById("btnRunwayShow").addEventListener("click", () => {
         if (!state.avatarReason) { showToast('시야·움직임·소품·친구 배려 중 안전한 이유를 먼저 골라요.','🔎'); return; }
         const group = document.getElementById("avatarVisualGroup");

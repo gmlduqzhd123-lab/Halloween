@@ -57,26 +57,52 @@
     function renderCertificateCanvas() {
       const canvas=document.getElementById('certificateCanvas');
       if(!canvas)return;
-      const ctx=drawSheetBase(canvas,canDownloadSafetyCertificate()?'안전 대장 임명장':'안전 목표 확인 현황 · 미완료',`${THEMES[state.teacher.theme].label} · ${EDUCATION_DATA[state.grade].label} · 안전 자료 ${CONTENT_VERSION}`);
+      const ctx=drawSheetBase(canvas,canDownloadSafetyCertificate()?'안전 대장 임명장':'안전 목표 확인 현황 · 미완료',`${THEMES[state.teacher.theme].label} · ${EDUCATION_DATA[state.grade].label} · ${getLevelTitle(state.candyPoints)}`);
       syncButtonGroup('.cert-theme-btn','data-theme',state.certTheme);
       syncButtonGroup('.cert-sticker-btn','data-sticker',state.certSticker);
       ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font=`bold 17px ${RESULT_FONT}`;
       const identity=[safeLabel(state.profile.school,'학교명 미입력',40),safeLabel(state.profile.className,'학급 미입력',30),safeLabel(state.profile.name,'별칭 없는 학습자',40)].join(' · ');
-      printLines(ctx,identity,canvas.width/2,190,680,26,3);
-      ctx.fillStyle='#fef3c7';ctx.font=`19px ${RESULT_FONT}`;
+      printLines(ctx,identity,canvas.width/2,188,680,24,2);
+
+      // Left showcase card: Custom Jack-o'-Lantern
+      ctx.fillStyle='rgba(15, 23, 42, 0.72)';ctx.fillRect(65,212,185,126);
+      ctx.strokeStyle=state.lantern.lit?'#fbbf24':'#6366f1';ctx.lineWidth=2;ctx.strokeRect(65,212,185,126);
+      ctx.fillStyle='#fde68a';ctx.font=`bold 13px ${RESULT_FONT}`;ctx.fillText('나만의 호박등',157,232);
+      ctx.font=`22px ${RESULT_FONT}`;ctx.fillText(state.lantern.hat||'🎩',157,258);
+      ctx.beginPath();ctx.ellipse(157,290,36,26,0,0,Math.PI*2);
+      ctx.fillStyle=state.lantern.lit?'#f97316':'#ea580c';ctx.fill();
+      ctx.strokeStyle='#fde047';ctx.lineWidth=state.lantern.lit?3:1.5;ctx.stroke();
+      ctx.fillStyle='#fff';ctx.font=`13px ${RESULT_FONT}`;ctx.fillText(state.lantern.eye||'⭐ ⭐',157,286);
+      ctx.font=`11px ${RESULT_FONT}`;ctx.fillText(state.lantern.mouth||'😄 활짝',157,304);
+
+      // Right showcase card: Custom Safety Avatar
+      ctx.fillStyle='rgba(15, 23, 42, 0.72)';ctx.fillRect(550,212,185,126);
+      ctx.strokeStyle='#f472b6';ctx.lineWidth=2;ctx.strokeRect(550,212,185,126);
+      ctx.fillStyle='#fbcfe8';ctx.font=`bold 13px ${RESULT_FONT}`;ctx.fillText('나의 안전 아바타',642,232);
+      ctx.font=`30px ${RESULT_FONT}`;ctx.fillText(`${state.avatar.costume}${state.avatar.char}${state.avatar.prop}`,642,282);
+      ctx.fillStyle='#e0e7ff';ctx.font=`12px ${RESULT_FONT}`;
+      ctx.fillText(REASON_LABELS[state.avatarReason]||'안전하고 편한 복장',642,318,165);
+
+      // Center achievement & 4 stamps bar
+      ctx.fillStyle='#fef3c7';ctx.font=`17px ${RESULT_FONT}`;
       if(canDownloadSafetyCertificate()) {
-        ctx.fillText('안전 상황을 살피고 공통 안전 목표 6가지를',canvas.width/2,290,700);
-        ctx.fillText('새 질문으로 다시 판단해 확인했습니다.',canvas.width/2,324,700);
+        ctx.fillText('안전 상황을 살피고 공통 안전 목표 6가지를',canvas.width/2,256,280);
+        ctx.fillText('새 질문으로 다시 판단해 확인했습니다.',canvas.width/2,282,280);
       } else {
-        ctx.fillText(`현재 ${confirmedGoalCount()}/6개 목표를 확인했습니다.`,canvas.width/2,290,700);
-        ctx.fillText('남은 목표를 확인하면 임명장을 저장할 수 있습니다.',canvas.width/2,324,700);
+        ctx.fillText(`현재 ${confirmedGoalCount()}/6개 목표 확인 완료`,canvas.width/2,256,280);
+        ctx.fillText('남은 목표 확인 시 임명장 저장 가능',canvas.width/2,282,280);
       }
-      ctx.fillStyle='#111827';ctx.fillRect(65,370,670,230);
-      ctx.fillStyle='#fde68a';ctx.font=`bold 16px ${RESULT_FONT}`;ctx.fillText('나의 안전 약속',canvas.width/2,405);
+      const stampLabels=[['s1','🎃이야기'],['s2','🚶길안전'],['s3','🧙옷장'],['s4','⭕퀴즈']];
+      ctx.font=`bold 13px ${RESULT_FONT}`;
+      ctx.fillStyle='#fde68a';
+      ctx.fillText(stampLabels.map(([k,l])=>`${state.stamps[k]?'🏅':'⬜'}${l}`).join('  '),canvas.width/2,322,280);
+
+      ctx.fillStyle='#111827';ctx.fillRect(65,356,670,244);
+      ctx.fillStyle='#fde68a';ctx.font=`bold 16px ${RESULT_FONT}`;ctx.fillText('나의 안전 약속',canvas.width/2,392);
       ctx.fillStyle='#fff';ctx.font=`16px ${RESULT_FONT}`;
-      printLines(ctx,safeLabel(state.profile.pledge,'안전 약속을 적어 보세요.'),canvas.width/2,440,620,28,5);
+      printLines(ctx,safeLabel(state.profile.pledge,'안전 약속을 적어 보세요.'),canvas.width/2,428,620,28,5);
       ctx.fillStyle='#e0e7ff';ctx.font=`15px ${RESULT_FONT}`;
-      ctx.fillText(`${state.certSticker} 확인 날짜 ${new Date().toLocaleDateString('ko-KR')}`,canvas.width/2,649);
+      ctx.fillText(`${state.certSticker} 확인 날짜 ${new Date().toLocaleDateString('ko-KR')} · © 엽쌤`,canvas.width/2,649);
       ctx.fillText('학습 확인 기록 · 실제 안전을 보장하는 증명은 아닙니다.',canvas.width/2,683);
       ctx.textAlign='left';
       renderLearningSummary();
