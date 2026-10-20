@@ -6211,7 +6211,8 @@ const THEMES = {
       'tab-cert':['마무리','나의 배움 기록','오늘의 결과를 보고 안전 약속을 남겨요.']
     };
     function hasLessonProgress() {
-      return state.activeTab !== 'tab-culture' ||
+      const initialTab = (state.teacher && state.teacher.start) || 'tab-culture';
+      return state.activeTab !== initialTab ||
         state.storyIndex > 0 ||
         Object.keys(state.readStories || {}).length > 1 ||
         Object.values(state.stamps || {}).some(Boolean) ||
@@ -6232,6 +6233,7 @@ const THEMES = {
       stopSpeaking();
       stopSafetyGameLoop();
       const selectedGrade = state.grade;
+      const startTab = (state.teacher && state.teacher.start) || 'tab-culture';
       state.sessionId = (globalThis.crypto && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
       state.gradeRecords = {};
       state.rewardLedger = {};
@@ -6239,7 +6241,7 @@ const THEMES = {
       state.grade = selectedGrade;
       state.teacher.grade = selectedGrade;
       restoreGrade(selectedGrade);
-      state.activeTab = 'tab-culture';
+      state.activeTab = startTab;
       safetyGame.running = false;
       safetyGame.won = false;
       safetyGame.paused = false;
@@ -6249,7 +6251,7 @@ const THEMES = {
       saveProgress();
       renderAllLearning();
       enterLesson();
-      switchTab('tab-culture');
+      switchTab(startTab);
     }
     function enterLesson() {
       document.body.classList.remove('lesson-not-started');
