@@ -1003,6 +1003,8 @@
             el.webkitRequestFullscreen();
           } else if (el.msRequestFullscreen) {
             el.msRequestFullscreen();
+          } else {
+            showToast("이 브라우저는 전체화면을 지원하지 않아요. 상단 📲 설치 버튼으로 홈 화면에 추가해 보세요!", "📱");
           }
         }
       } catch (e) {
@@ -2507,21 +2509,40 @@
       document.getElementById("btnChestGuardBoost").addEventListener("click", activateChestGuardBoost);
 
       const gameCanvas = document.getElementById("safetyGameCanvas");
-      gameCanvas.addEventListener("pointerdown", e => {
-        gameCanvas.focus();
+      let canvasPointerDown = false;
+      function updateCanvasTargetFromPointer(e) {
         if (!safetyGame.running || safetyGame.paused || safetyGame.route !== 'wide') return;
         const rect = gameCanvas.getBoundingClientRect();
         const scaleX = gameCanvas.width / rect.width;
         const scaleY = gameCanvas.height / rect.height;
         safetyGame.player.targetX = Math.max(20, Math.min(gameCanvas.width - 20, (e.clientX - rect.left) * scaleX));
         safetyGame.player.targetY = Math.max(20, Math.min(gameCanvas.height - 20, (e.clientY - rect.top) * scaleY));
+      }
+      gameCanvas.addEventListener("pointerdown", e => {
+        canvasPointerDown = true;
+        gameCanvas.focus();
+        updateCanvasTargetFromPointer(e);
         playSound("click");
       });
+      gameCanvas.addEventListener("pointermove", e => {
+        if (!canvasPointerDown) return;
+        updateCanvasTargetFromPointer(e);
+      });
+      window.addEventListener("pointerup", () => { canvasPointerDown = false; });
+      window.addEventListener("pointercancel", () => { canvasPointerDown = false; });
 
+      const dpadKeyMap = { up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight" };
       document.querySelectorAll(".game-dpad-btn").forEach(btn => {
+        const key = dpadKeyMap[btn.getAttribute("data-dir")];
         btn.addEventListener("click", () => {
           movePlayer(btn.getAttribute("data-dir"));
         });
+        if (key) {
+          btn.addEventListener("pointerdown", () => safetyGame.keys.add(key));
+          ["pointerup", "pointerleave", "pointercancel"].forEach(evt => {
+            btn.addEventListener(evt, () => safetyGame.keys.delete(key));
+          });
+        }
       });
       window.addEventListener("keydown", e => {
         if (state.activeTab !== 'tab-safety' || document.activeElement !== gameCanvas || document.querySelector('[role="dialog"]:not(.hidden)')) return;
