@@ -4932,9 +4932,46 @@ const THEMES = {
       'tab-quiz':['4 / 4','생각 정리','배운 내용을 질문으로 확인해요.'],
       'tab-cert':['마무리','나의 배움 기록','오늘의 결과를 보고 안전 약속을 남겨요.']
     };
+    function hasLessonProgress() {
+      return state.activeTab !== 'tab-culture' ||
+        state.storyIndex > 0 ||
+        Object.keys(state.readStories || {}).length > 1 ||
+        Object.values(state.stamps || {}).some(Boolean) ||
+        Object.keys(state.completedScenarios || {}).length > 0 ||
+        Object.keys(state.costumeChoices || {}).length > 0 ||
+        state.quizIndex > 0 ||
+        Object.keys(state.quizFirst || {}).length > 0 ||
+        state.candyPoints > 0;
+    }
     function updateStartLessonButtonLabel() {
-      const hasProgress = state.activeTab !== 'tab-culture' || state.storyIndex > 0 || Object.values(state.stamps).some(Boolean);
-      document.getElementById('btnStartLesson').textContent = hasProgress ? '이어서 시작하기 →' : '수업 시작하기 →';
+      const hasProgress = hasLessonProgress();
+      const startBtn = document.getElementById('btnStartLesson');
+      const freshBtn = document.getElementById('btnStartFresh');
+      if (startBtn) startBtn.textContent = hasProgress ? '이어서 시작하기 →' : '처음부터 시작하기 →';
+      if (freshBtn) freshBtn.classList.toggle('hidden', !hasProgress);
+    }
+    function startFromBeginning() {
+      stopSpeaking();
+      stopSafetyGameLoop();
+      const selectedGrade = state.grade;
+      state.sessionId = (globalThis.crypto && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+      state.gradeRecords = {};
+      state.rewardLedger = {};
+      state.candyPoints = 0;
+      state.grade = selectedGrade;
+      state.teacher.grade = selectedGrade;
+      restoreGrade(selectedGrade);
+      state.activeTab = 'tab-culture';
+      safetyGame.running = false;
+      safetyGame.won = false;
+      safetyGame.paused = false;
+      safetyGame.route = null;
+      safetyGame.player = {x:42, y:210, r:13, targetX:null, targetY:null};
+      safetyGame.hazards = [];
+      saveProgress();
+      renderAllLearning();
+      enterLesson();
+      switchTab('tab-culture');
     }
     function enterLesson() {
       document.body.classList.remove('lesson-not-started');
@@ -5088,6 +5125,7 @@ const THEMES = {
       renderThemeSituations();
       renderQuiz();
       renderCertificateCanvas();
+      updateStartLessonButtonLabel();
     }
 
     // ==================== INITIALIZATION & EVENT LISTENERS ====================
@@ -5113,9 +5151,7 @@ const THEMES = {
         offlineStatus.textContent='단독 파일 · 인터넷 없이 핵심 학습 가능';
       }
       loadSavedProgress();
-      if (state.activeTab !== 'tab-culture' || Object.values(state.stamps).some(Boolean)) {
-        document.getElementById('btnStartLesson').textContent = '이어서 시작하기 →';
-      }
+      updateStartLessonButtonLabel();
       try { if (sessionStorage.getItem('halloween-lesson-started') === '1') document.body.classList.remove('lesson-not-started'); } catch (_) {}
       const sharedTeacher = teacherFromUrl();
       if (sharedTeacher) {
@@ -5255,6 +5291,13 @@ const THEMES = {
         enterLesson();
         switchTab(state.activeTab || 'tab-culture');
       });
+      const btnStartFresh = document.getElementById('btnStartFresh');
+      if (btnStartFresh) {
+        btnStartFresh.addEventListener('click', () => {
+          playSound('click');
+          startFromBeginning();
+        });
+      }
       document.getElementById('btnMoreTools').addEventListener('click', () => {
         const open = document.body.classList.toggle('tools-open');
         document.getElementById('btnMoreTools').setAttribute('aria-expanded', String(open));

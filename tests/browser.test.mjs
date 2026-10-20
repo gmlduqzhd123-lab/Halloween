@@ -70,11 +70,17 @@ test('main browser flows and standalone file load without script errors', async 
   await welcome.locator('#btnHomeLogo').click();
   assert.equal(await welcome.locator('#welcomeScreen').isVisible(),true);
   assert.equal(await welcome.locator('#tab-quiz').isVisible(),false);
+  assert.equal(await welcome.locator('#btnStartFresh').isVisible(),true);
+  assert.match(await welcome.locator('#btnStartFresh').innerText(),/처음부터 시작하기/);
+  assert.match(await welcome.locator('#btnStartLesson').innerText(),/이어서 시작하기/);
   assert.match(await welcome.locator('.welcome-copyright').innerText(),/엽쌤/);
   await welcome.locator('#btnWelcomeGuide').click();
   assert.equal(await welcome.locator('#teacherModal').isVisible(),true);
   await welcome.keyboard.press('Escape');
   assert.equal(await welcome.locator('#teacherModal').isVisible(),false);
+  await welcome.locator('#btnStartFresh').click();
+  assert.equal(await welcome.locator('#lessonStageTitle').innerText(),'문화 이야기');
+  assert.equal(await welcome.locator('#tab-culture').isVisible(),true);
   await welcome.close();
   const newPreparedPage=async options=>{
     const candidate=await browser.newPage(options);

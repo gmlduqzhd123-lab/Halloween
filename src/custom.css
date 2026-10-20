@@ -314,7 +314,14 @@
     .storybook .welcome-grades legend { width: 100%; margin-bottom: 10px; text-align: left; font-weight: 700; }
     .storybook .welcome-grade-btn { min-height: 50px; border: 1px solid #d8c9b9; border-radius: 13px; background: #fff8ef; font-size: 1rem; }
     .storybook .welcome-grade-btn[aria-pressed="true"] { border-color: #624f75; background: #624f75; color: #fff; }
-    .storybook .welcome-start { display: block; width: 100%; min-height: 55px; border-radius: 14px; background: #b65d36; color: #fff; font-size: 1.14rem; font-weight: 700; }
+    .storybook .welcome-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .storybook .welcome-start,
+    .storybook .welcome-restart { flex: 1 1 210px; min-height: 55px; padding: 10px 16px; border-radius: 14px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: background-color .15s ease, border-color .15s ease, filter .15s ease; }
+    .storybook .welcome-start { display: block; width: 100%; background: #b65d36; color: #fff; border: 1px solid #b65d36; }
+    .storybook .welcome-start:hover { filter: brightness(0.95); }
+    .storybook .welcome-restart { background: #fff8ef; color: #493b59; border: 2px solid #624f75; }
+    .storybook .welcome-restart:hover { background: #f3e5d3; }
+    .storybook .welcome-restart.hidden { display: none !important; }
     .storybook .welcome-meta-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; margin-top: 14px; }
     .storybook .welcome-footnote { margin-top: 0; font-size: .84rem; color: #526074; }
     .storybook .welcome-guide-btn { min-height: 32px; padding: 4px 12px; border: 1px solid #d5c3b1; border-radius: 999px; background: #fff8ef; color: #493b59; font-size: .8rem; font-weight: 700; cursor: pointer; transition: background-color .15s ease, border-color .15s ease; }
