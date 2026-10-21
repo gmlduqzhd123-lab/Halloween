@@ -790,6 +790,7 @@
       candyPoints: 0,
       storyIndex: 0,
       readStories: { 0: true },
+      themeStoryProgress: {},
       lantern: {
         lit: false,
         rewarded: false,
@@ -893,6 +894,7 @@
         order:read('teacherOrder').split(','), start:read('teacherStart')});
       state.teacher = next;
       switchGrade(next.grade);
+      renderStorySlide();
       switchTab(next.start);
       saveProgress();
       renderTeacherSettings();
@@ -904,6 +906,7 @@
         const response=state.themeResponses[`${state.teacher.theme}:${i}`];
         return response?.correct && typeof response.apply==='string' && response.apply.trim().length>0;
       });
+      if (id === 'culture' && !isHalloweenTheme()) return Object.keys(storyProgress().readStories).length >= getStories().length;
       return !!state.stamps[{culture:'s1',safety:'s2',costume:'s3',quiz:'s4'}[id]];
     }
     function canDownloadParticipation() {
@@ -1051,7 +1054,7 @@
 
     // ==================== SAFE LOCALSTORAGE ====================
     const PROGRESS_KEY = 'halloween_edu_progress_v2';
-    const GRADE_FIELDS = ['storyIndex','readStories','lantern','scenarioIndex','completedScenarios','gameStage','avatar','avatarReason','avatarReasonText','costumeChoices','etiquetteChecked','quizIndex','quizScore','quizCombo','quizFiftyUsed','quizFirst','quizAttempts','quizOrders','quizHints','quizFifties','quizReview','quizReviewItems','quizAttemptRound','safetyFirst','safetyConfirmed','stamps','themeResponses'];
+    const GRADE_FIELDS = ['storyIndex','readStories','lantern','scenarioIndex','completedScenarios','gameStage','avatar','avatarReason','avatarReasonText','costumeChoices','etiquetteChecked','quizIndex','quizScore','quizCombo','quizFiftyUsed','quizFirst','quizAttempts','quizOrders','quizHints','quizFifties','quizReview','quizReviewItems','quizAttemptRound','safetyFirst','safetyConfirmed','stamps','themeResponses','themeStoryProgress'];
     const FRESH_GRADE = Object.fromEntries(GRADE_FIELDS.map(key => [key, JSON.parse(JSON.stringify(state[key]))]));
     function rememberGrade() {
       state.gradeRecords[state.grade] = Object.fromEntries(GRADE_FIELDS.map(key => [key, JSON.parse(JSON.stringify(state[key]))]));
@@ -1099,6 +1102,7 @@
       Object.values(parsed.gradeRecords).forEach(record => {
         record.storyIndex = 0;
         record.readStories = {0:true};
+        record.themeStoryProgress = {};
         record.quizIndex = 0;
         record.quizScore = 0;
         record.quizCombo = 0;
@@ -1312,7 +1316,16 @@
       neighbor: '<path d="M31 94 67 63l36 31v45H31zM118 94l36-31 36 31v45h-72z" fill="#f6b47c" stroke="#8b5a4a" stroke-width="3" stroke-linejoin="round"/><path d="M30 95h74m13 0h74" stroke="#8b5a4a" stroke-width="3"/><rect x="50" y="108" width="20" height="31" rx="3" fill="#fff4de"/><rect x="143" y="108" width="20" height="31" rx="3" fill="#fff4de"/><path d="M103 61q7-13 14 0-7 13-14 20-7-7-14-20 7-13 14 0" fill="#d98073"/>',
       path: '<path d="M67 145q48-52 20-75Q67 50 85 32" fill="none" stroke="#d8b98d" stroke-width="35" stroke-linecap="round"/><path d="M67 145q48-52 20-75Q67 50 85 32" fill="none" stroke="#fff5db" stroke-width="25" stroke-linecap="round"/><rect x="133" y="57" width="54" height="34" rx="8" fill="#6d8d81"/><path d="M145 74h27m-12-9 12 9-12 9" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M143 92v42" stroke="#6d8d81" stroke-width="6"/>',
       flower: '<path d="M110 76v60m-30-26q30-8 30 11m30-11q-30-8-30 11" fill="none" stroke="#69906a" stroke-width="5" stroke-linecap="round"/><g fill="#f5b96a"><ellipse cx="110" cy="50" rx="12" ry="23"/><ellipse cx="110" cy="91" rx="12" ry="23"/><ellipse cx="89" cy="70" rx="23" ry="12"/><ellipse cx="131" cy="70" rx="23" ry="12"/><ellipse cx="95" cy="55" rx="12" ry="21" transform="rotate(-45 95 55)"/><ellipse cx="125" cy="85" rx="12" ry="21" transform="rotate(-45 125 85)"/></g><circle cx="110" cy="70" r="14" fill="#8d6246"/>',
-      classroom: '<rect x="38" y="35" width="144" height="105" rx="12" fill="#f8cda2" stroke="#b77b60" stroke-width="3"/><path d="M48 49h124m-115 0 10 16 10-16 10 16 10-16 10 16 10-16 10 16 10-16 10 16 10-16" fill="none" stroke="#c77660" stroke-width="3"/><rect x="58" y="81" width="53" height="43" rx="5" fill="#fff7e7"/><path d="M71 95h28m-28 10h21" stroke="#8e9b89" stroke-width="3" stroke-linecap="round"/><ellipse cx="146" cy="106" rx="20" ry="18" fill="#ed9d58"/><path d="M140 107h12m-9 8q7 5 13-1" fill="none" stroke="#794735" stroke-width="3" stroke-linecap="round"/>'
+      classroom: '<rect x="38" y="35" width="144" height="105" rx="12" fill="#f8cda2" stroke="#b77b60" stroke-width="3"/><path d="M48 49h124m-115 0 10 16 10-16 10 16 10-16 10 16 10-16 10 16 10-16 10 16 10-16" fill="none" stroke="#c77660" stroke-width="3"/><rect x="58" y="81" width="53" height="43" rx="5" fill="#fff7e7"/><path d="M71 95h28m-28 10h21" stroke="#8e9b89" stroke-width="3" stroke-linecap="round"/><ellipse cx="146" cy="106" rx="20" ry="18" fill="#ed9d58"/><path d="M140 107h12m-9 8q7 5 13-1" fill="none" stroke="#794735" stroke-width="3" stroke-linecap="round"/>',
+      exit: '<rect x="56" y="28" width="108" height="38" rx="7" fill="#3f9a6b"/><circle cx="80" cy="38" r="4" fill="#fff"/><path d="M80 43l-4 9 6 3m-2-12 6 6 6-1m-10 4-6 8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M104 47h40m-9-8 9 8-9 8" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><rect x="82" y="76" width="56" height="66" rx="4" fill="#fff7e7" stroke="#8b5a4a" stroke-width="3"/><circle cx="127" cy="111" r="3" fill="#8b5a4a"/>',
+      booth: '<path d="M22 82 52 54l30 28z" fill="#e0796a"/><rect x="27" y="82" width="50" height="46" rx="3" fill="#fff4de" stroke="#b77b60" stroke-width="2"/><path d="M138 82l30-28 30 28z" fill="#6d8d81"/><rect x="143" y="82" width="50" height="46" rx="3" fill="#fff4de" stroke="#b77b60" stroke-width="2"/><g fill="#f2b78f"><circle cx="101" cy="78" r="7"/><circle cx="117" cy="92" r="7"/><circle cx="101" cy="108" r="7"/><circle cx="117" cy="124" r="7"/></g><g fill="#8fa7c9"><ellipse cx="101" cy="90" rx="8" ry="5"/><ellipse cx="117" cy="104" rx="8" ry="5"/><ellipse cx="101" cy="120" rx="8" ry="5"/><ellipse cx="117" cy="136" rx="8" ry="5"/></g>',
+      crowd: '<g fill="#f2b78f"><circle cx="58" cy="70" r="9"/><circle cx="80" cy="64" r="9"/><circle cx="102" cy="72" r="9"/><circle cx="69" cy="94" r="9"/><circle cx="91" cy="90" r="9"/><circle cx="113" cy="96" r="9"/><circle cx="60" cy="118" r="9"/><circle cx="82" cy="114" r="9"/><circle cx="104" cy="120" r="9"/></g><g fill="#a48dc0"><ellipse cx="58" cy="82" rx="11" ry="5"/><ellipse cx="80" cy="76" rx="11" ry="5"/><ellipse cx="102" cy="84" rx="11" ry="5"/><ellipse cx="69" cy="106" rx="11" ry="5"/><ellipse cx="91" cy="102" rx="11" ry="5"/><ellipse cx="113" cy="108" rx="11" ry="5"/><ellipse cx="60" cy="130" rx="11" ry="5"/><ellipse cx="82" cy="126" rx="11" ry="5"/><ellipse cx="104" cy="132" rx="11" ry="5"/></g><path d="M130 100q22-4 40-30" fill="none" stroke="#6d8d81" stroke-width="7" stroke-linecap="round"/><path d="m156 64 15 5-1 16" fill="none" stroke="#6d8d81" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>',
+      meet: '<path d="M110 32v100" stroke="#8b5a4a" stroke-width="5" stroke-linecap="round"/><path d="M112 34h44l-11 13 11 13h-44z" fill="#e0796a"/><circle cx="74" cy="90" r="11" fill="#f2b78f"/><path d="M60 132q0-28 14-28t14 28z" fill="#8fa7c9"/><circle cx="146" cy="90" r="11" fill="#f2b78f"/><path d="M132 132q0-28 14-28t14 28z" fill="#e8a25b"/>',
+      bus: '<rect x="32" y="56" width="156" height="66" rx="14" fill="#f2b84b" stroke="#b7813a" stroke-width="3"/><g fill="#dff1f5"><rect x="44" y="68" width="26" height="22" rx="4"/><rect x="78" y="68" width="26" height="22" rx="4"/><rect x="112" y="68" width="26" height="22" rx="4"/><rect x="148" y="68" width="28" height="40" rx="4"/></g><path d="M40 104h100" stroke="#b7813a" stroke-width="3"/><circle cx="68" cy="124" r="12" fill="#4e4458"/><circle cx="154" cy="124" r="12" fill="#4e4458"/><circle cx="68" cy="124" r="4" fill="#d8d0e4"/><circle cx="154" cy="124" r="4" fill="#d8d0e4"/>',
+      bag: '<rect x="76" y="56" width="68" height="80" rx="11" fill="#7f9bc4" stroke="#5c6f8f" stroke-width="3"/><path d="M95 56V42h30v14" fill="none" stroke="#5c6f8f" stroke-width="6" stroke-linejoin="round"/><path d="M76 82h68m-68 28h68" stroke="#5c6f8f" stroke-width="3"/><circle cx="90" cy="141" r="6" fill="#4e4458"/><circle cx="130" cy="141" r="6" fill="#4e4458"/><path d="M160 64l12-8m-10 26 16-2" stroke="#e0796a" stroke-width="5" stroke-linecap="round"/>',
+      track: '<ellipse cx="110" cy="100" rx="84" ry="40" fill="#e8956b"/><ellipse cx="110" cy="100" rx="60" ry="22" fill="#cfe2bd"/><ellipse cx="110" cy="100" rx="72" ry="31" fill="none" stroke="#fff5db" stroke-width="2" stroke-dasharray="7 6"/><path d="M28 34q82 22 164 0" fill="none" stroke="#8b5a4a" stroke-width="2"/><g fill="#e0796a"><path d="M46 38l6 13 6-11z"/><path d="M90 45l6 13 6-12z"/><path d="M134 45l6 12 6-13z"/></g><g fill="#6d8d81"><path d="M68 42l6 13 6-12z"/><path d="M112 46l6 13 6-13z"/><path d="M156 40l6 11 6-13z"/></g>',
+      stage: '<rect x="34" y="34" width="152" height="64" rx="8" fill="#7b6a96"/><path d="M34 34h152v14H34z" fill="#c4677a"/><path d="M34 48q12 30 0 50m152-50q-12 30 0 50" fill="#c4677a"/><rect x="66" y="78" width="88" height="20" rx="3" fill="#ffe3a8"/><circle cx="110" cy="64" r="8" fill="#f2b78f"/><g fill="#f2b78f"><circle cx="54" cy="124" r="9"/><circle cx="80" cy="120" r="9"/><circle cx="106" cy="124" r="9"/><circle cx="132" cy="120" r="9"/><circle cx="158" cy="124" r="9"/></g><g fill="#8fa7c9"><ellipse cx="54" cy="138" rx="12" ry="6"/><ellipse cx="80" cy="134" rx="12" ry="6"/><ellipse cx="106" cy="138" rx="12" ry="6"/><ellipse cx="132" cy="134" rx="12" ry="6"/><ellipse cx="158" cy="138" rx="12" ry="6"/></g>',
+      help: '<rect x="78" y="26" width="64" height="112" rx="13" fill="#5d5470"/><rect x="85" y="40" width="50" height="80" rx="6" fill="#fff4de"/><text x="110" y="72" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#3e66a8">112</text><text x="110" y="102" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#c4544b">119</text><circle cx="110" cy="129" r="4" fill="#d8d0e4"/>'
     };
     function storyArtwork(kind) {
       const scene = STORY_SCENES[kind] || STORY_SCENES.pumpkin;
@@ -1478,11 +1491,40 @@
         }
       ]
     };
+    // Halloween keeps its original story and progress fields; other themes read THEME_STORIES and keep progress per theme.
+    function isHalloweenTheme() {
+      return state.teacher.theme === 'halloween' || !THEME_STORIES[state.teacher.theme];
+    }
+    function themeStoryData() {
+      return isHalloweenTheme() ? null : THEME_STORIES[state.teacher.theme][state.grade];
+    }
+    function getStories() {
+      return themeStoryData()?.stories || EDUCATION_DATA[state.grade].stories;
+    }
     function getStoryClues() {
-      return STORY_CLUES_BY_GRADE[state.grade] || STORY_CLUES_BY_GRADE["3-4"];
+      return themeStoryData()?.clues || STORY_CLUES_BY_GRADE[state.grade] || STORY_CLUES_BY_GRADE["3-4"];
     }
     function getStoryPolls() {
-      return STORY_POLLS_BY_GRADE[state.grade] || STORY_POLLS_BY_GRADE["3-4"];
+      return themeStoryData()?.polls || STORY_POLLS_BY_GRADE[state.grade] || STORY_POLLS_BY_GRADE["3-4"];
+    }
+    function storyProgress() {
+      if (isHalloweenTheme()) return state;
+      const total = getStories().length;
+      const saved = state.themeStoryProgress[state.teacher.theme];
+      const valid = saved && Number.isInteger(saved.storyIndex) && saved.storyIndex >= 0 && saved.storyIndex < total &&
+        saved.readStories && typeof saved.readStories === 'object' && !Array.isArray(saved.readStories);
+      if (!valid) state.themeStoryProgress[state.teacher.theme] = {storyIndex: 0, readStories: {0: true}};
+      return state.themeStoryProgress[state.teacher.theme];
+    }
+    function storyKey(index) {
+      return isHalloweenTheme() ? `${state.grade}:${index}` : `${state.grade}:${state.teacher.theme}:${index}`;
+    }
+    function storyRewardId(index) {
+      return isHalloweenTheme() ? `story:${index}` : `story:${state.teacher.theme}:${index}`;
+    }
+    function storySpeechText() {
+      const current = getStories()[storyProgress().storyIndex];
+      return `${current.title}. ${current.body}. ${current.keyPoint}. ${current.question}`;
     }
     const PUMPKIN_RECIPES = [
       { name: "별빛 마법사 호박", eye: "⭐ ⭐", mouth: "😄 활짝", hat: "🎩" },
@@ -1625,32 +1667,37 @@
     function renderStorySlide() {
       stopSpeaking();
       const gradeData = EDUCATION_DATA[state.grade];
-      const stories = gradeData.stories;
-      const current = stories[state.storyIndex];
+      const stories = getStories();
+      const progress = storyProgress();
+      const current = stories[progress.storyIndex];
+      const halloween = isHalloweenTheme();
+      document.body.dataset.storyTheme = halloween ? 'halloween' : 'event';
+      document.getElementById("cultureSectionTitle").textContent = `${THEMES[state.teacher.theme].label} 이야기`;
+      if (!halloween && cultureStage !== 'story') setCultureStage('story');
 
       document.getElementById("currentGradeBadge").textContent = gradeData.label;
       const picture = document.getElementById("storyEmojiGraphic");
       picture.innerHTML = storyArtwork(current.art);
       picture.setAttribute('aria-label', current.caption);
       document.getElementById("storyVisualCaption").textContent = current.caption;
-      const clueKey = `${state.grade}:${state.storyIndex}`;
+      const clueKey = storyKey(progress.storyIndex);
       const clueBox = document.getElementById("storyClueBox");
       if (clueBox) {
         clueBox.textContent = storyClueOpened[clueKey]
-          ? getStoryClues()[state.storyIndex]
+          ? getStoryClues()[progress.storyIndex]
           : "👆 그림을 눌러 숨은 이야기 단서를 찾아보세요!";
       }
-      document.getElementById("storySlideTag").textContent = `카드 ${state.storyIndex + 1} / ${stories.length}`;
+      document.getElementById("storySlideTag").textContent = `카드 ${progress.storyIndex + 1} / ${stories.length}`;
       document.getElementById("storySlideTitle").textContent = current.title;
       document.getElementById("storySlideBody").textContent = current.body;
       document.getElementById("storySlideKeyPoint").textContent = current.keyPoint;
       document.getElementById("storyThinkingQuestion").textContent = current.question;
       document.getElementById("storySourceLink").innerHTML = `<a href="${current.sourceUrl}" target="_blank" rel="noopener noreferrer" class="underline hover:text-amber-300">${current.sourceText} ↗</a>`;
 
-      const pollKey = `${state.grade}:${state.storyIndex}`;
+      const pollKey = storyKey(progress.storyIndex);
       const pollBox = document.getElementById("storyPollBox");
       const pollFeedback = document.getElementById("storyPollFeedback");
-      const poll = getStoryPolls()[state.storyIndex];
+      const poll = getStoryPolls()[progress.storyIndex];
       if (pollBox && pollFeedback && poll) {
         pollBox.replaceChildren();
         poll.options.forEach((opt, idx) => {
@@ -1681,34 +1728,34 @@
       stories.forEach((_, idx) => {
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className = `w-5 h-2 rounded-full transition ${idx === state.storyIndex ? "bg-amber-400" : state.readStories[idx] ? "bg-orange-500/60" : "bg-indigo-700"}`;
+        btn.className = `w-5 h-2 rounded-full transition ${idx === progress.storyIndex ? "bg-amber-400" : progress.readStories[idx] ? "bg-orange-500/60" : "bg-indigo-700"}`;
         btn.setAttribute("aria-label", `${idx + 1}번 카드로 이동`);
         btn.addEventListener("click", () => {
-          const isNew = !state.readStories[idx];
-          state.storyIndex = idx;
-          state.readStories[idx] = true;
-          if (isNew) awardOnce(`story:${idx}`, 'read', 10, "이야기 카드 읽기");
+          const isNew = !progress.readStories[idx];
+          progress.storyIndex = idx;
+          progress.readStories[idx] = true;
+          if (isNew) awardOnce(storyRewardId(idx), 'read', 10, "이야기 카드 읽기");
           playSound("click");
           renderStorySlide();
         });
         pillsEl.appendChild(btn);
       });
 
-      const readCount = Object.keys(state.readStories).length;
+      const readCount = Object.keys(progress.readStories).length;
       document.getElementById("storyReadCountBadge").textContent = `${readCount} / ${stories.length}`;
 
-      document.getElementById("btnPrevStory").disabled = state.storyIndex === 0;
+      document.getElementById("btnPrevStory").disabled = progress.storyIndex === 0;
       const nextBtn = document.getElementById("btnNextStory");
-      if (state.storyIndex === stories.length - 1) {
-        nextBtn.textContent = "문화 살펴보기 →";
+      if (progress.storyIndex === stories.length - 1) {
+        nextBtn.textContent = halloween ? "문화 살펴보기 →" : "안전한 선택으로 →";
       } else {
         nextBtn.textContent = "다음 카드 →";
       }
 
       if (readCount >= stories.length) {
-        unlockStamp("s1", "놀이 1: 할로윈 이야기");
+        unlockStamp("s1", `놀이 1: ${THEMES[state.teacher.theme].label} 이야기`);
       }
-      renderGlossaryBox("storyGlossaryBox", ["풍습·전통", "인류무형문화유산", "비상구(출구)"]);
+      renderGlossaryBox("storyGlossaryBox", halloween ? ["풍습·전통", "인류무형문화유산", "비상구(출구)"] : ["다중밀집", "우측통행", "비상구(출구)"]);
       syncAutoReadButtons();
     }
 
@@ -1771,7 +1818,7 @@
         stopSpeaking();
         return;
       }
-      const current = EDUCATION_DATA[state.grade].stories[state.storyIndex];
+      const current = getStories()[storyProgress().storyIndex];
       const utter = new SpeechSynthesisUtterance(`${current.title}. ${current.body}. 핵심 쏙쏙! ${current.keyPoint}`);
       utter.lang = "ko-KR";
       utter.rate = state.grade === "1-2" ? 0.92 : 1.0;
@@ -2193,11 +2240,21 @@
       'tab-quiz':['4 / 4','생각 정리','배운 내용을 질문으로 확인해요.'],
       'tab-cert':['마무리','나의 배움 기록','오늘의 결과를 보고 안전 약속을 남겨요.']
     };
+    function lessonStep(tabId) {
+      if (tabId === 'tab-culture' && !isHalloweenTheme()) return ['1 / 4', `${THEMES[state.teacher.theme].label} 이야기`, '그림 이야기를 읽고 안전한 행동을 생각해요.'];
+      return lessonSteps[tabId] || lessonSteps['tab-culture'];
+    }
+    function syncLessonStage() {
+      const step = lessonStep(state.activeTab);
+      document.getElementById('lessonStageTitle').textContent = step[1];
+      document.getElementById('lessonStageHint').textContent = step[2];
+    }
     function hasLessonProgress() {
       const initialTab = (state.teacher && state.teacher.start) || 'tab-culture';
       return state.activeTab !== initialTab ||
         state.storyIndex > 0 ||
         Object.keys(state.readStories || {}).length > 1 ||
+        Object.values(state.themeStoryProgress || {}).some(progress => progress.storyIndex > 0 || Object.keys(progress.readStories || {}).length > 1) ||
         Object.values(state.stamps || {}).some(Boolean) ||
         Object.keys(state.completedScenarios || {}).length > 0 ||
         Object.keys(state.costumeChoices || {}).length > 0 ||
@@ -2330,7 +2387,7 @@
       stopSpeaking();
       if (state.activeTab === 'tab-safety' && tabId !== 'tab-safety') pauseSafetyGame();
       state.activeTab = tabId;
-      const step = lessonSteps[tabId] || lessonSteps['tab-culture'];
+      const step = lessonStep(tabId);
       document.getElementById('lessonStageNumber').textContent = step[0];
       document.getElementById('lessonStageTitle').textContent = step[1];
       document.getElementById('lessonStageHint').textContent = step[2];
@@ -2464,8 +2521,8 @@
       document.getElementById("btnTapStoryEmoji").addEventListener("click", () => {
         playSound("correct");
         burstCandyConfetti(8);
-        const clueKey = `${state.grade}:${state.storyIndex}`;
-        storyClueOpened[clueKey] = true;
+        const storyIndex = storyProgress().storyIndex;
+        storyClueOpened[storyKey(storyIndex)] = true;
         const artEl = document.getElementById("storyEmojiGraphic");
         if (artEl) {
           artEl.classList.remove("story-art-pop");
@@ -2473,7 +2530,7 @@
           artEl.classList.add("story-art-pop");
         }
         const clueBox = document.getElementById("storyClueBox");
-        if (clueBox) clueBox.textContent = getStoryClues()[state.storyIndex];
+        if (clueBox) clueBox.textContent = getStoryClues()[storyIndex];
       });
 
       // Jack-o'-Lantern Workshop Listeners
@@ -2567,6 +2624,8 @@
           const themeSelect = document.getElementById('teacherTheme');
           if (themeSelect) themeSelect.value = themeKey;
           syncWelcomeGrade();
+          renderStorySlide();
+          syncLessonStage();
           renderThemeSituations();
           renderLearningSummary();
           renderCertificateCanvas();
@@ -2742,10 +2801,7 @@
           state.autoRead = !state.autoRead;
           syncAutoReadButtons();
           playSound("click");
-          if (state.autoRead) {
-            const current = EDUCATION_DATA[state.grade].stories[state.storyIndex];
-            autoSpeakIfEnabled(`${current.title}. ${current.body}. ${current.keyPoint}. ${current.question}`);
-          } else {
+          if (state.autoRead) autoSpeakIfEnabled(storySpeechText()); else {
             stopSpeaking();
           }
         });
@@ -2800,29 +2856,30 @@
         speakText(document.getElementById('scenarioFeedbackBox').textContent);
       });
       document.getElementById("btnPrevStory").addEventListener("click", () => {
-        if (state.storyIndex > 0) {
-          state.storyIndex--;
-          state.readStories[state.storyIndex] = true;
+        const progress = storyProgress();
+        if (progress.storyIndex > 0) {
+          progress.storyIndex--;
+          progress.readStories[progress.storyIndex] = true;
           playSound("click");
           renderStorySlide();
-          const current = EDUCATION_DATA[state.grade].stories[state.storyIndex];
-          autoSpeakIfEnabled(`${current.title}. ${current.body}. ${current.keyPoint}. ${current.question}`);
+          autoSpeakIfEnabled(storySpeechText());
         }
       });
       document.getElementById("btnNextStory").addEventListener("click", () => {
-        const stories = EDUCATION_DATA[state.grade].stories;
-        if (state.storyIndex < stories.length - 1) {
-          const nextIdx = state.storyIndex + 1;
-          const isNew = !state.readStories[nextIdx];
-          state.storyIndex = nextIdx;
-          state.readStories[nextIdx] = true;
-          if (isNew) awardOnce(`story:${nextIdx}`, 'read', 10, "이야기 카드 읽기");
+        const progress = storyProgress();
+        if (progress.storyIndex < getStories().length - 1) {
+          const nextIdx = progress.storyIndex + 1;
+          const isNew = !progress.readStories[nextIdx];
+          progress.storyIndex = nextIdx;
+          progress.readStories[nextIdx] = true;
+          if (isNew) awardOnce(storyRewardId(nextIdx), 'read', 10, "이야기 카드 읽기");
           playSound("click");
           renderStorySlide();
-          const current = EDUCATION_DATA[state.grade].stories[state.storyIndex];
-          autoSpeakIfEnabled(`${current.title}. ${current.body}. ${current.keyPoint}. ${current.question}`);
-        } else {
+          autoSpeakIfEnabled(storySpeechText());
+        } else if (isHalloweenTheme()) {
           setCultureStage('compare', true);
+        } else {
+          switchTab('tab-safety');
         }
       });
 

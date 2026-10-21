@@ -394,6 +394,30 @@ test('main browser flows and standalone file load without script errors', async 
   assert.match(await empty.locator('#learningResultSummary').innerText(),/필수 활동이 선택되지 않았어요/);
   await empty.close();
 
+  const themed=await newPreparedPage();
+  await themed.goto(`http://127.0.0.1:${server.address().port}/`);
+  await themed.locator('#btnTeacherGuide').click();
+  await themed.locator('#teacherTheme').selectOption('sports');
+  await themed.locator('#teacherStart').selectOption('tab-culture');
+  await themed.locator('#btnApplyTeacher').click();
+  assert.equal(await themed.locator('#lessonStageTitle').innerText(),'체육대회 이야기');
+  assert.match(await themed.locator('#storySlideTitle').innerText(),/체육대회/);
+  assert.equal(await themed.locator('.culture-steps').isVisible(),false);
+  await themed.locator('#btnTapStoryEmoji').click();
+  assert.match(await themed.locator('#storyClueBox').innerText(),/숨은 단서/);
+  await themed.locator('#storyStepPills button').last().click();
+  assert.equal(await themed.locator('#btnNextStory').innerText(),'안전한 선택으로 →');
+  await themed.locator('#btnNextStory').click();
+  assert.equal(await themed.locator('#lessonStageTitle').innerText(),'안전한 선택');
+  await themed.locator('#btnTeacherGuide').click();
+  await themed.locator('#teacherTheme').selectOption('halloween');
+  await themed.locator('#btnApplyTeacher').click();
+  assert.equal(await themed.locator('#lessonStageTitle').innerText(),'문화 이야기');
+  assert.match(await themed.locator('#storySlideTitle').innerText(),/할로윈/);
+  assert.equal(await themed.locator('#storyReadCountBadge').innerText(),'1 / 6');
+  assert.equal(await themed.locator('.culture-steps').isVisible(),true);
+  await themed.close();
+
   const safety=await newPreparedPage();
   await safety.goto(`http://127.0.0.1:${server.address().port}/`);
   await safety.locator('[data-tab="tab-safety"]').first().click();

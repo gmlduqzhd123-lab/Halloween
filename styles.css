@@ -305,6 +305,7 @@
     .storybook.tools-open .site-header .header-extra { display: flex; }
     .storybook .culture-steps { display: none; }
     .storybook.tools-open .culture-steps { display: grid; }
+    body.storybook[data-story-theme="event"] .culture-steps { display: none; }
     .storybook.lesson-not-started .lesson-stage,
     .storybook.lesson-not-started .tab-panel { display: none !important; }
     .storybook:not(.lesson-not-started) .welcome-screen { display: none; }
