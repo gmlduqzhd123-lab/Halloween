@@ -420,6 +420,20 @@ test('main browser flows and standalone file load without script errors', async 
   assert.equal(await game.locator('#safetyGameCanvas').evaluate(canvas=>canvas.toDataURL()),modalImage);
   await game.keyboard.press('Escape');
   assert.match(await game.locator('#btnStartCanvasGame').innerText(),/이어하기/);
+  await game.locator('[data-grade="1-2"]').click();
+  await game.locator('[data-tab="tab-culture"]').first().click();
+  await game.locator('#btnTapStoryEmoji').click();
+  assert.match(await game.locator('#storyClueBox').innerText(),/1~2학년/);
+  await game.locator('[data-tab="tab-costume"]').first().click();
+  await game.locator('.costume-choice-btn').first().click();
+  assert.equal(await game.locator('.costume-reform-tip').count(),1);
+  await game.locator('[data-tab="tab-safety"]').first().click();
+  await game.locator('.game-stage-btn').first().click();
+  assert.equal(await game.evaluate(()=>safetyGame.easyMode&&safetyGame.exitZone.w===85),true);
+  await game.locator('[data-tab="tab-cert"]').first().click();
+  assert.equal(await game.locator('#remainingGoalLinks .remaining-goal-btn').count(),6);
+  await game.locator('#remainingGoalLinks .remaining-goal-btn').nth(2).click();
+  assert.equal(await game.evaluate(()=>state.activeTab==='tab-safety'&&state.scenarioIndex===2),true);
   await game.close();
 
   const scoped=await browser.newContext();

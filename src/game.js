@@ -38,12 +38,16 @@
       safetyGame.decisionRecorded = false;
       safetyGame.bonusCollected = false;
       safetyGame.player = {x:42,y:210,r:13,targetX:null,targetY:null};
-      const speed = 28 + (state.gameStage-1)*8; // logical pixels per second
+      const isEasyGrade = typeof state !== 'undefined' && state.grade === '1-2';
+      safetyGame.easyMode = isEasyGrade;
+      safetyGame.exitZone = isEasyGrade ? {x:500,y:18,w:85,h:56} : {x:520,y:22,w:65,h:48};
+      const baseSpeed = isEasyGrade ? 18 : 28;
+      const speed = baseSpeed + (state.gameStage-1)*(isEasyGrade ? 5 : 8); // logical pixels per second
       safetyGame.hazards = [
-        {x:220,y:113,r:28,dx:speed,dy:0},
-        {x:355,y:165,r:26,dx:-speed*0.7,dy:0}
+        {x:220,y:113,r:isEasyGrade?21:28,dx:speed,dy:0},
+        {x:355,y:165,r:isEasyGrade?20:26,dx:-speed*0.7,dy:0}
       ];
-      if (state.gameStage === 3) {
+      if (state.gameStage === 3 && !isEasyGrade) {
         safetyGame.hazards.push({x:290,y:140,r:22,dx:speed*0.5,dy:0});
       }
       if (state.gameStage === 1) {
@@ -77,7 +81,7 @@
     function movePlayer(dir) {
       if (!safetyGame.running || safetyGame.paused || safetyGame.won || safetyGame.route !== 'wide') return;
       const p = safetyGame.player;
-      const step = 18;
+      const step = (typeof state !== 'undefined' && state.grade === '1-2') ? 24 : 18;
       p.targetX = null; p.targetY = null;
       if (dir==='up') p.y-=step;
       if (dir==='down') p.y+=step;
@@ -206,6 +210,13 @@
       ctx.fillStyle='#a7f3d0';ctx.font='bold 12px "Gowun Dodum", sans-serif';
       ctx.fillText(STAGE_MISSIONS[stageNum] || '🟢 덜 붐비는 넓은 길',18,22);
       ctx.fillStyle='#fecaca';ctx.font='bold 12px "Gowun Dodum", sans-serif';ctx.fillText('🔴 혼잡한 좁은 길',220,208);
+      if(typeof state!=='undefined' && state.grade==='1-2'){
+        if(!safetyGame.running) safetyGame.exitZone={x:500,y:18,w:85,h:56};
+        ctx.fillStyle='#fde68a';ctx.font='bold 11px "Gowun Dodum", sans-serif';
+        ctx.fillText('🌱 1~2학년 이지 모드: 넓은 출구·천천히 이동해요',18,240);
+      } else if(typeof state!=='undefined' && !safetyGame.running){
+        safetyGame.exitZone={x:520,y:22,w:65,h:48};
+      }
       const e=safetyGame.exitZone;
       ctx.fillStyle='#047857';ctx.fillRect(e.x,e.y,e.w,e.h);
       ctx.strokeStyle='#6ee7b7';ctx.lineWidth=2;ctx.strokeRect(e.x,e.y,e.w,e.h);

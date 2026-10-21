@@ -48,7 +48,31 @@
       ];
       lines.forEach((line,index)=>{const p=document.createElement('p');p.textContent=line;if(index>=3)p.className='teacher-summary-detail';summary.appendChild(p);});
       const remaining=SAFETY_GOALS.filter(goal=>!state.safetyConfirmed[goal.id] || state.safetyConfirmed[goal.id].contentVersion!==SAFETY_CONTENT_VERSION);
-      if(remaining.length){const p=document.createElement('p');p.className='teacher-summary-detail';p.textContent=`다시 확인할 목표: ${remaining.map(g=>g.title).join(', ')}`;summary.appendChild(p);}
+      if(remaining.length){
+        const p=document.createElement('p');p.className='teacher-summary-detail';p.textContent=`다시 확인할 목표: ${remaining.map(g=>g.title).join(', ')}`;summary.appendChild(p);
+        const jumpBox=document.createElement('div');
+        jumpBox.id='remainingGoalLinks';
+        jumpBox.className='flex flex-wrap items-center gap-1.5 pt-1';
+        remaining.forEach(goal=>{
+          const goalIndex=SAFETY_GOALS.findIndex(g=>g.id===goal.id);
+          const btn=document.createElement('button');
+          btn.type='button';
+          btn.className='mini-chip remaining-goal-btn';
+          btn.dataset.goalIndex=String(goalIndex);
+          btn.textContent=`🚶 약속 ${goalIndex+1} 확인하러 가기 →`;
+          btn.title=`${goal.title} 활동으로 바로 이동`;
+          btn.addEventListener('click',()=>{
+            state.scenarioIndex=Math.max(0,goalIndex);
+            playSound('click');
+            renderScenario();
+            switchTab('tab-safety');
+            const titleEl=document.getElementById('scenarioTitle');
+            if(titleEl)titleEl.scrollIntoView({behavior:'smooth',block:'center'});
+          });
+          jumpBox.appendChild(btn);
+        });
+        summary.appendChild(jumpBox);
+      }
       const certButton=document.getElementById('btnDownloadCert');
       const participationButton=document.getElementById('btnDownloadParticipation');
       if(certButton)certButton.disabled=!canDownloadSafetyCertificate();

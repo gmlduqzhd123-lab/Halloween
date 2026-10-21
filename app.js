@@ -3056,97 +3056,109 @@ const THEMES = {
         id: "c1",
         emoji: "👮‍♂️",
         name: "경찰관 제복과 수갑",
+        checkPoint: "🚨 제복 오인 방지",
         safe: false,
         reason: "실제 경찰관과 혼동될 수 있는 제복·장비는 피하고, 법률의 조건과 예외는 선생님과 확인해요.",
-        reform: "✂️ 안전 리폼: 실제 제복 대신 동화 속 명탐정 망토나 별빛 보안관 모자로 바꿔 입어요!"
+        reform: "✂️ 이렇게 바꿔 입어요: 실제 경찰 제복 대신 동화 속 명탐정 망토나 별빛 보안관 모자로 꾸며요!"
       },
       {
         id: "c2",
         emoji: "🎃",
         name: "주황색 호박 망토",
+        checkPoint: "👟 보행·움직임 안전",
         safe: true,
         reason: "걷기도 편하고 친구들과 기분 좋게 즐길 수 있는 안전한 할로윈 옷이에요!",
-        reform: "✨ 코디 팁: 망토 길이가 무릎 위로 올라오면 계단을 걸을 때도 걸리지 않아요!"
+        reform: "✨ 이렇게 입으면 더 안전해요: 망토 길이를 무릎 위로 맞추고 똑딱단추로 고정하면 계단에서도 걸리지 않아요!"
       },
       {
         id: "c3",
         emoji: "🧑‍🚒",
         name: "소방관 출동복과 헬멧",
+        checkPoint: "🚨 구조대 혼동 방지",
         safe: false,
         reason: "실제 소방관과 혼동될 수 있는 출동복은 행사 분장으로 피하는 것이 좋아요. 경찰제복장비법이나 군복단속법이 똑같이 적용되는 것은 아니에요.",
-        reform: "✂️ 안전 리폼: 출동복 대신 주황색 호박 영웅 조끼로 꾸미면 오해 없이 멋져요!"
+        reform: "✂️ 이렇게 바꿔 입어요: 실제 출동복은 소방관님께 양보하고 주황색 호박 영웅 조끼로 바꿔 입어요!"
       },
       {
         id: "c4",
         emoji: "🧙‍♀️",
         name: "별 무늬 마법사 옷",
+        checkPoint: "👀 시야 확보",
         safe: true,
         reason: "동화 속 주인공처럼 재미있고 안전하게 즐길 수 있는 멋진 분장이에요!",
-        reform: "✨ 코디 팁: 모자 챙이 눈을 가리지 않게 살짝 올려 쓰면 시야가 활짝 트여요!"
+        reform: "✨ 이렇게 입으면 더 안전해요: 모자 챙이 눈을 가리지 않게 살짝 올려 쓰고 가벼운 천 소재를 골라요!"
       },
       {
         id: "c5",
         emoji: "🗡️",
         name: "뾰족한 장난감 칼·총",
+        checkPoint: "🛡️ 소품 부상 방지",
         safe: false,
         reason: "사람이 많은 곳에서 뾰족하고 딱딱한 소품을 들면 옆 친구가 다칠 수 있어요!",
-        reform: "✂️ 안전 리폼: 딱딱한 무기 대신 폭신한 솜방울 요술봉이나 야광 팔찌를 들어요!"
+        reform: "✂️ 이렇게 바꿔 입어요: 딱딱한 무기 소품 대신 폭신한 솜방울 요술봉이나 둥근 호박 바구니를 들어요!"
       },
       {
         id: "c6",
         emoji: "🪖",
         name: "실제 군인 전투복",
+        checkPoint: "🚨 제복 규정 확인",
         safe: false,
         reason: "실제 군복·군용장구는 별도 규정이 있어요. 단순한 무늬 옷까지 똑같이 판단하지 말고 선생님과 확인해요.",
-        reform: "✂️ 안전 리폼: 군복 대신 우주 탐험가 복장이나 숲속 요정 망토를 골라 봐요!"
+        reform: "✂️ 이렇게 바꿔 입어요: 실제 전투복 대신 우주 탐험가 복장이나 숲속 요정 망토로 멋지게 변신해요!"
       },
       {
         id: "c7",
         emoji: "🩸",
         name: "피 묻은 무서운 분장",
+        checkPoint: "🤝 친구 배려·응급 구분",
         safe: false,
         reason: "친구가 놀라고, 실제 다친 응급 환자가 생겼을 때 분장으로 오해받을 수 있어요!",
-        reform: "✂️ 안전 리폼: 무서운 상처 분장 대신 반짝이는 별·호박 페이스 스티커를 붙여요!"
+        reform: "✂️ 이렇게 바꿔 입어요: 무서운 상처 분장 대신 반짝이는 별·달·호박 페이스 스티커를 붙여요!"
       },
       {
         id: "c8",
         emoji: "🧚",
         name: "야광 스티커 붙인 옷",
+        checkPoint: "🌙 야간 시인성 확보",
         safe: true,
         reason: "눈에 잘 띄는 꾸미기는 좋지만, 밤길에서는 어른의 안내와 주변 이동로를 계속 살펴요.",
-        reform: "✨ 코디 팁: 가방과 소매에 야광 반사띠를 붙이면 어두운 곳에서도 잘 보여요!"
+        reform: "✨ 이렇게 입으면 더 안전해요: 가방·소매·운동화 뒤쪽에 야광 반사띠를 붙이면 어두운 곳에서도 잘 보여요!"
       },
       {
         id: "c9",
         emoji: "🎭",
         name: "앞이 안 보이는 가면",
+        checkPoint: "👀 시야 가림 주의",
         safe: false,
         reason: "눈구멍이 좁아 앞이 잘 안 보이는 가면을 쓰면 계단이나 길에서 넘어지기 쉬워요!",
-        reform: "✂️ 안전 리폼: 얼굴을 가리는 가면 대신 귀여운 캐릭터 머리띠나 모자를 써요!"
+        reform: "✂️ 이렇게 바꿔 입어요: 얼굴 전체를 덮는 가면 대신 시야가 활짝 트인 귀여운 머리띠나 모자를 써요!"
       },
       {
         id: "c10",
         emoji: "🧣",
         name: "바닥에 끌리는 긴 망토",
+        checkPoint: "👟 걸림·넘어짐 주의",
         safe: false,
         reason: "옷자락이 너무 길어 발에 걸리면 다른 사람과 엉켜 넘어질 위험이 커요!",
-        reform: "✂️ 안전 리폼: 발목에 걸리지 않게 허리·무릎 길이의 짧은 망토로 수선해요!"
+        reform: "✂️ 이렇게 바꿔 입어요: 발목에 걸리지 않게 허리·무릎 길이의 짧은 망토나 날개 장식으로 바꿔 입어요!"
       },
       {
         id: "c11",
         emoji: "🚑",
         name: "119 구급대원 조끼",
+        checkPoint: "🚨 응급 구조 보호",
         safe: false,
         reason: "응급 현장에서 진짜 구급대원과 혼동을 주어 구조 활동을 방해할 수 있어요!",
-        reform: "✂️ 안전 리폼: 실제 구급 조끼는 진짜 대원에게 양보하고 동화 속 치유 마법사로 꾸며요!"
+        reform: "✂️ 이렇게 바꿔 입어요: 실제 구급 조끼 대신 동화 속 마음 치유 요정이나 무지개 마법사로 꾸며요!"
       },
       {
         id: "c12",
         emoji: "🦸",
         name: "활동하기 편한 동화 옷",
+        checkPoint: "👟 활동성·안전 최고",
         safe: true,
         reason: "시야가 트여 있고 움직이기 편해서 안전하고 즐겁게 축제를 즐길 수 있어요!",
-        reform: "✨ 코디 팁: 발에 잘 맞는 운동화까지 신으면 걸을 때 훨씬 안전해요!"
+        reform: "✨ 이렇게 입으면 더 안전해요: 발에 꼭 맞는 운동화를 신고 양손을 자유롭게 비워 두면 더욱 안전해요!"
       }
     ];
 
@@ -3713,22 +3725,64 @@ const THEMES = {
       const scene = STORY_SCENES[kind] || STORY_SCENES.pumpkin;
       return `<svg viewBox="0 0 220 170" focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect width="220" height="170" rx="25" fill="#fff1da"/><circle cx="35" cy="37" r="6" fill="#ffe0a0"/><circle cx="181" cy="35" r="4" fill="#ffe0a0"/><path d="M0 146q110-28 220 0v24H0z" fill="#e3e9d6"/>${scene}</svg>`;
     }
-    const STORY_CLUES = [
-      "🔎 숨은 단서: 옛날 켈트족의 계절 명절 ‘서우인’과 만성절 전야 이야기가 만나 오늘날 다양한 문화가 되었어요!",
-      "🔎 숨은 단서: 아일랜드에서는 처음에 커다란 순무와 감자에 얼굴을 새겨 등불을 만들었대요!",
-      "🔎 숨은 단서: 미국에서는 어린이들이 간식 대신 유니세프 모금 상자를 들고 이웃을 돕기도 해요!",
-      "🔎 숨은 단서: 축제장 입구의 초록색 달리는 사람 표지판(비상구)을 찾으면 위급할 때 안전해요!",
-      "🔎 숨은 단서: 멕시코의 ‘죽은 자들의 날’에 쓰이는 주황색 금잔화(마리골드) 향기는 가족을 안내하는 뜻이 있어요!",
-      "🔎 숨은 단서: 진정한 축제의 주인공은 친구의 마음을 배려하고 머문 자리를 깨끗이 정리하는 사람이에요!"
-    ];
-    const STORY_POLLS = [
-      { options: ["🎃 호박 장식 꾸미기", "🎭 재미있는 분장 놀이"], feedback: "멋진 선택이에요! 어떤 방법이든 안전하고 즐거운 마음이 가장 중요해요." },
-      { options: ["😄 활짝 웃는 호박등", "😮 깜짝 놀란 호박등"], feedback: "나만의 개성이 담긴 호박등이네요! 잠시 뒤 공방에서 직접 만들어 봐요." },
-      { options: ["👨‍👩‍👧 동행할 어른 정하기", "🗺️ 갈 장소·시간 약속하기"], feedback: "정확해요! 외출 전 어른과 장소·시간·동행을 먼저 약속하면 안심할 수 있어요." },
-      { options: ["✨ 반짝이는 야광 스티커", "👟 걷기 편한 운동화"], feedback: "좋은 생각이에요! 잘 보이고 잘 걸을 수 있는 옷차림이 안전을 지켜 줘요." },
-      { options: ["🌼 고유한 이름과 뜻 알기", "🤝 서로 다른 전통 존중하기"], feedback: "맞아요! 날짜가 비슷해도 각 문화가 가진 고유한 역사와 마음을 존중해요." },
-      { options: ["🛑 싫다는 장난 바로 멈추기", "🧹 쓰레기 함께 정리하기"], feedback: "최고예요! 우리 반 모두가 편안하고 기분 좋은 축제를 함께 만들어요." }
-    ];
+    const STORY_CLUES_BY_GRADE = {
+      "1-2": [
+        "🔎 숨은 단서 (1~2학년): 10월의 마지막 날(31일), 호박을 꾸미거나 다정한 인사를 나누며 가을을 보내요!",
+        "🔎 숨은 단서 (1~2학년): 옛날 아일랜드에서는 호박 대신 동그란 ‘순무’에 얼굴을 그려 등불을 만들었대요!",
+        "🔎 숨은 단서 (1~2학년): 이웃집에 갈 때는 혼자 가지 않고 꼭 부모님이나 선생님과 손을 잡고 함께 가요!",
+        "🔎 숨은 단서 (1~2학년): 어두운 길에서는 반짝이는 야광 스티커를 붙이면 멀리서도 나를 잘 볼 수 있어요!",
+        "🔎 숨은 단서 (1~2학년): 멕시코에서는 주황색 꽃길과 맛있는 빵을 차려 놓고 사랑하는 가족을 떠올려요!",
+        "🔎 숨은 단서 (1~2학년): 친구가 ‘그만해!’라고 말하면 바로 멈추고 다정한 말을 건네는 것이 진짜 멋진 친구예요!"
+      ],
+      "3-4": [
+        "🔎 숨은 단서 (3~4학년): 옛날 켈트족의 계절 명절 ‘서우인’과 만성절 전야 이야기가 만나 오늘날 다양한 문화가 되었어요!",
+        "🔎 숨은 단서 (3~4학년): 아일랜드 사람들이 미국으로 이주하면서 조각하기 쉬운 호박으로 등불 재료가 바뀌었대요!",
+        "🔎 숨은 단서 (3~4학년): 미국에서는 어린이들이 간식 바구니 대신 유니세프 모금 상자를 들고 이웃을 돕기도 해요!",
+        "🔎 숨은 단서 (3~4학년): 축제장 입구의 초록색 달리는 사람 표지판(비상구)을 미리 찾으면 위급할 때 안전해요!",
+        "🔎 숨은 단서 (3~4학년): 멕시코의 ‘죽은 자들의 날’에 쓰이는 주황색 금잔화(마리골드) 향기는 가족을 안내하는 뜻이 있어요!",
+        "🔎 숨은 단서 (3~4학년): 진정한 축제의 주인공은 친구의 마음을 배려하고 머문 자리를 깨끗이 정리하는 사람이에요!"
+      ],
+      "5-6": [
+        "🔎 숨은 단서 (5~6학년): 문화의 기원은 하나의 사건이 아니라 여러 시대의 계절 풍습과 기록이 겹쳐 형성되었어요!",
+        "🔎 숨은 단서 (5~6학년): 사람들의 이주와 지역 작물 환경의 차이가 전통 장식의 재료까지 변화시킨 역사적 사례예요!",
+        "🔎 숨은 단서 (5~6학년): 축제에 참여하는 방식만큼이나 ‘참여하지 않을 자유’도 존중받는 성숙한 공동체 문화를 만들어요!",
+        "🔎 숨은 단서 (5~6학년): 보행 속도가 느려지고 어깨가 자꾸 닿는 밀집 신호가 보이면 즉시 넓은 이동로로 벗어나야 해요!",
+        "🔎 숨은 단서 (5~6학년): 유네스코 인류무형문화유산인 ‘죽은 자들의 날’은 공포가 아닌 가족과의 유대와 기억을 기리는 전통이에요!",
+        "🔎 숨은 단서 (5~6학년): 안전한 동선 설계, 참여 선택권 보장, 정리 규칙이 함께할 때 모두가 편안한 행사가 완성돼요!"
+      ]
+    };
+    const STORY_POLLS_BY_GRADE = {
+      "1-2": [
+        { options: ["🎃 귀여운 호박 그리기", "👋 친구와 반갑게 인사하기"], feedback: "참 좋아요! 우리 반 친구들과 웃으며 즐기는 다정한 놀이가 최고예요." },
+        { options: ["😄 방긋 웃는 호박", "🐱 야옹 고양이 호박"], feedback: "귀여운 표정이네요! 잠시 뒤 호박 공방에서 내 손으로 직접 꾸며 봐요." },
+        { options: ["👨‍👩‍👧 부모님·선생님과 상의하기", "🏠 약속한 곳만 다녀오기"], feedback: "딩동댕! 언제나 어른과 먼저 약속하고 함께 움직여요." },
+        { options: ["✂️ 무릎 위로 짧게 줄이기", "✨ 반짝이 스티커 붙이기"], feedback: "멋진 생각이에요! 발에 걸리지 않고 잘 보이는 옷이 나를 지켜 줘요." },
+        { options: ["🌼 가족을 사랑하는 날이라고 소개하기", "🤝 서로 다른 이름을 존중하기"], feedback: "맞아요! 날짜가 비슷해도 소중한 뜻이 서로 다르다는 걸 알려 줘요." },
+        { options: ["🛑 친구가 싫어하면 바로 멈추기", "🧹 내 자리 쓰레기 줍기"], feedback: "최고예요! 모두가 편안하고 기분 좋은 우리 반 축제를 만들어요." }
+      ],
+      "3-4": [
+        { options: ["🎃 호박 장식 꾸미기", "🎭 재미있는 분장 놀이"], feedback: "멋진 선택이에요! 어떤 방법이든 안전하고 즐거운 마음이 가장 중요해요." },
+        { options: ["😄 활짝 웃는 호박등", "😮 깜짝 놀란 호박등"], feedback: "나만의 개성이 담긴 호박등이네요! 잠시 뒤 공방에서 직접 만들어 봐요." },
+        { options: ["👨‍👩‍👧 동행할 어른 정하기", "🗺️ 갈 장소·시간 약속하기"], feedback: "정확해요! 외출 전 어른과 장소·시간·동행을 먼저 약속하면 안심할 수 있어요." },
+        { options: ["🚪 넓은 우회 통로 찾기", "🟩 비상 출구 위치 확인하기"], feedback: "좋은 판단이에요! 안쪽 길이 좁다면 무리해 들어가지 않고 주변 이동로를 살펴요." },
+        { options: ["🌼 고유한 이름과 뜻 알기", "🤝 서로 다른 전통 존중하기"], feedback: "맞아요! 날짜가 비슷해도 각 문화가 가진 고유한 역사와 마음을 존중해요." },
+        { options: ["🛑 싫다는 장난 바로 멈추기", "🧹 쓰레기 함께 정리하기"], feedback: "최고예요! 우리 반 모두가 편안하고 기분 좋은 축제를 함께 만들어요." }
+      ],
+      "5-6": [
+        { options: ["📚 여러 역사 자료 비교하기", "🌍 지역별 풍습 차이 살피기"], feedback: "훌륭해요! 한 가지 주장만 믿지 않고 다양한 근거 자료를 함께 살펴봐요." },
+        { options: ["🌱 환경에 맞춘 재료 변화 이해하기", "🕯️ 이어져 온 상징의 의미 찾기"], feedback: "맞아요! 겉모습과 재료는 환경에 따라 바뀌어도 문화의 맥락은 이어져요." },
+        { options: ["🤝 친구의 선택권 존중하기", "💬 부담 없는 교실 활동 제안하기"], feedback: "성숙한 배려예요! 참여 방식과 참여하지 않을 자유 모두 존중받아야 해요." },
+        { options: ["↗️ 대각선 가장자리로 벗어나기", "🗺️ 덜 붐비는 우회 출구 찾기"], feedback: "정확해요! 군중 흐름과 맞서지 않고 가장자리와 넓은 이동로로 침착하게 이동해요." },
+        { options: ["🏛️ 고유한 역사와 맥락 먼저 소개하기", "🚫 겉모습만 보고 단정하지 않기"], feedback: "좋은 시각이에요! 비교할 때는 각 문화가 지닌 고유한 의미를 지우지 않아요." },
+        { options: ["🚶 안전한 이동 통로 확보하기", "🤝 배려·정리 규칙 함께 정하기"], feedback: "멋진 기획자네요! 안전과 배려를 함께 설계하면 모두가 행복한 축제가 돼요." }
+      ]
+    };
+    function getStoryClues() {
+      return STORY_CLUES_BY_GRADE[state.grade] || STORY_CLUES_BY_GRADE["3-4"];
+    }
+    function getStoryPolls() {
+      return STORY_POLLS_BY_GRADE[state.grade] || STORY_POLLS_BY_GRADE["3-4"];
+    }
     const PUMPKIN_RECIPES = [
       { name: "별빛 마법사 호박", eye: "⭐ ⭐", mouth: "😄 활짝", hat: "🎩" },
       { name: "황금 왕관 야옹 호박", eye: "😊 😊", mouth: "🐱 야옹", hat: "👑" },
@@ -3819,10 +3873,11 @@ const THEMES = {
       picture.innerHTML = storyArtwork(current.art);
       picture.setAttribute('aria-label', current.caption);
       document.getElementById("storyVisualCaption").textContent = current.caption;
+      const clueKey = `${state.grade}:${state.storyIndex}`;
       const clueBox = document.getElementById("storyClueBox");
       if (clueBox) {
-        clueBox.textContent = storyClueOpened[state.storyIndex]
-          ? STORY_CLUES[state.storyIndex]
+        clueBox.textContent = storyClueOpened[clueKey]
+          ? getStoryClues()[state.storyIndex]
           : "👆 그림을 눌러 숨은 이야기 단서를 찾아보세요!";
       }
       document.getElementById("storySlideTag").textContent = `카드 ${state.storyIndex + 1} / ${stories.length}`;
@@ -3832,24 +3887,25 @@ const THEMES = {
       document.getElementById("storyThinkingQuestion").textContent = current.question;
       document.getElementById("storySourceLink").innerHTML = `<a href="${current.sourceUrl}" target="_blank" rel="noopener noreferrer" class="underline hover:text-amber-300">${current.sourceText} ↗</a>`;
 
+      const pollKey = `${state.grade}:${state.storyIndex}`;
       const pollBox = document.getElementById("storyPollBox");
       const pollFeedback = document.getElementById("storyPollFeedback");
-      const poll = STORY_POLLS[state.storyIndex];
+      const poll = getStoryPolls()[state.storyIndex];
       if (pollBox && pollFeedback && poll) {
         pollBox.replaceChildren();
         poll.options.forEach((opt, idx) => {
           const chip = document.createElement("button");
           chip.type = "button";
-          chip.className = `mini-chip ${storyPollPicked[state.storyIndex] === idx ? "is-picked" : ""}`;
+          chip.className = `mini-chip ${storyPollPicked[pollKey] === idx ? "is-picked" : ""}`;
           chip.textContent = opt;
           chip.addEventListener("click", () => {
-            storyPollPicked[state.storyIndex] = idx;
+            storyPollPicked[pollKey] = idx;
             playSound("click");
             renderStorySlide();
           });
           pollBox.appendChild(chip);
         });
-        if (storyPollPicked[state.storyIndex] !== undefined) {
+        if (storyPollPicked[pollKey] !== undefined) {
           pollFeedback.className = "text-xs mt-1.5 font-bold text-emerald-300";
           pollFeedback.textContent = `💬 ${poll.feedback}`;
         } else {
@@ -4229,12 +4285,16 @@ const THEMES = {
       safetyGame.decisionRecorded = false;
       safetyGame.bonusCollected = false;
       safetyGame.player = {x:42,y:210,r:13,targetX:null,targetY:null};
-      const speed = 28 + (state.gameStage-1)*8; // logical pixels per second
+      const isEasyGrade = typeof state !== 'undefined' && state.grade === '1-2';
+      safetyGame.easyMode = isEasyGrade;
+      safetyGame.exitZone = isEasyGrade ? {x:500,y:18,w:85,h:56} : {x:520,y:22,w:65,h:48};
+      const baseSpeed = isEasyGrade ? 18 : 28;
+      const speed = baseSpeed + (state.gameStage-1)*(isEasyGrade ? 5 : 8); // logical pixels per second
       safetyGame.hazards = [
-        {x:220,y:113,r:28,dx:speed,dy:0},
-        {x:355,y:165,r:26,dx:-speed*0.7,dy:0}
+        {x:220,y:113,r:isEasyGrade?21:28,dx:speed,dy:0},
+        {x:355,y:165,r:isEasyGrade?20:26,dx:-speed*0.7,dy:0}
       ];
-      if (state.gameStage === 3) {
+      if (state.gameStage === 3 && !isEasyGrade) {
         safetyGame.hazards.push({x:290,y:140,r:22,dx:speed*0.5,dy:0});
       }
       if (state.gameStage === 1) {
@@ -4268,7 +4328,7 @@ const THEMES = {
     function movePlayer(dir) {
       if (!safetyGame.running || safetyGame.paused || safetyGame.won || safetyGame.route !== 'wide') return;
       const p = safetyGame.player;
-      const step = 18;
+      const step = (typeof state !== 'undefined' && state.grade === '1-2') ? 24 : 18;
       p.targetX = null; p.targetY = null;
       if (dir==='up') p.y-=step;
       if (dir==='down') p.y+=step;
@@ -4397,6 +4457,13 @@ const THEMES = {
       ctx.fillStyle='#a7f3d0';ctx.font='bold 12px "Gowun Dodum", sans-serif';
       ctx.fillText(STAGE_MISSIONS[stageNum] || '🟢 덜 붐비는 넓은 길',18,22);
       ctx.fillStyle='#fecaca';ctx.font='bold 12px "Gowun Dodum", sans-serif';ctx.fillText('🔴 혼잡한 좁은 길',220,208);
+      if(typeof state!=='undefined' && state.grade==='1-2'){
+        if(!safetyGame.running) safetyGame.exitZone={x:500,y:18,w:85,h:56};
+        ctx.fillStyle='#fde68a';ctx.font='bold 11px "Gowun Dodum", sans-serif';
+        ctx.fillText('🌱 1~2학년 이지 모드: 넓은 출구·천천히 이동해요',18,240);
+      } else if(typeof state!=='undefined' && !safetyGame.running){
+        safetyGame.exitZone={x:520,y:22,w:65,h:48};
+      }
       const e=safetyGame.exitZone;
       ctx.fillStyle='#047857';ctx.fillRect(e.x,e.y,e.w,e.h);
       ctx.strokeStyle='#6ee7b7';ctx.lineWidth=2;ctx.strokeRect(e.x,e.y,e.w,e.h);
@@ -4473,6 +4540,7 @@ const THEMES = {
           <div class="text-center space-y-1">
             <div class="text-3xl sm:text-4xl select-none py-0.5">${item.emoji}</div>
             <h4 class="font-title text-xs sm:text-sm text-white nowrap">${item.name}</h4>
+            ${item.checkPoint ? `<span class="inline-block px-2 py-0.5 rounded-full bg-indigo-950/90 border border-indigo-700 text-[11px] font-bold text-amber-300">${item.checkPoint}</span>` : ""}
           </div>
 
           <div class="mt-2.5 space-y-1.5">
@@ -4499,8 +4567,8 @@ const THEMES = {
                   }">
                     <div class="font-black mb-0.5 nowrap">${isCorrect ? "딩동댕! 👏" : "다시 확인!"}</div>
                     <div>${item.reason}</div>
-                    ${item.reform ? `<div class="pt-1 border-t border-indigo-700/40 font-bold">${item.reform}</div>` : ""}
-                  </div><button type="button" class="speak-costume-feedback w-full rounded-lg bg-indigo-800 p-2 text-xs" data-id="${item.id}">🔈 이 옷의 이유 읽기</button>`
+                    ${item.reform ? `<div class="costume-reform-tip pt-1.5 mt-1 border-t border-amber-400/40 font-extrabold text-amber-200">${item.reform}</div>` : ""}
+                  </div><button type="button" class="speak-costume-feedback w-full rounded-lg bg-indigo-800 p-2 text-xs" data-id="${item.id}">🔈 이유와 대체 코디 읽기</button>`
                 : ""
             }
           </div>
@@ -4528,7 +4596,7 @@ const THEMES = {
       grid.querySelectorAll('.speak-costume-feedback').forEach(button=>{
         button.addEventListener('click',()=>{
           const item=COSTUME_ITEMS.find(row=>row.id===button.dataset.id);
-          if(item)speakText(`${item.name}. ${item.reason}`);
+          if(item)speakText(`${item.name}. ${item.reason} ${item.reform || ''}`);
         });
       });
 
@@ -4765,7 +4833,31 @@ const THEMES = {
       ];
       lines.forEach((line,index)=>{const p=document.createElement('p');p.textContent=line;if(index>=3)p.className='teacher-summary-detail';summary.appendChild(p);});
       const remaining=SAFETY_GOALS.filter(goal=>!state.safetyConfirmed[goal.id] || state.safetyConfirmed[goal.id].contentVersion!==SAFETY_CONTENT_VERSION);
-      if(remaining.length){const p=document.createElement('p');p.className='teacher-summary-detail';p.textContent=`다시 확인할 목표: ${remaining.map(g=>g.title).join(', ')}`;summary.appendChild(p);}
+      if(remaining.length){
+        const p=document.createElement('p');p.className='teacher-summary-detail';p.textContent=`다시 확인할 목표: ${remaining.map(g=>g.title).join(', ')}`;summary.appendChild(p);
+        const jumpBox=document.createElement('div');
+        jumpBox.id='remainingGoalLinks';
+        jumpBox.className='flex flex-wrap items-center gap-1.5 pt-1';
+        remaining.forEach(goal=>{
+          const goalIndex=SAFETY_GOALS.findIndex(g=>g.id===goal.id);
+          const btn=document.createElement('button');
+          btn.type='button';
+          btn.className='mini-chip remaining-goal-btn';
+          btn.dataset.goalIndex=String(goalIndex);
+          btn.textContent=`🚶 약속 ${goalIndex+1} 확인하러 가기 →`;
+          btn.title=`${goal.title} 활동으로 바로 이동`;
+          btn.addEventListener('click',()=>{
+            state.scenarioIndex=Math.max(0,goalIndex);
+            playSound('click');
+            renderScenario();
+            switchTab('tab-safety');
+            const titleEl=document.getElementById('scenarioTitle');
+            if(titleEl)titleEl.scrollIntoView({behavior:'smooth',block:'center'});
+          });
+          jumpBox.appendChild(btn);
+        });
+        summary.appendChild(jumpBox);
+      }
       const certButton=document.getElementById('btnDownloadCert');
       const participationButton=document.getElementById('btnDownloadParticipation');
       if(certButton)certButton.disabled=!canDownloadSafetyCertificate();
@@ -5129,6 +5221,7 @@ const THEMES = {
       renderThemeSituations();
       renderQuiz();
       renderCertificateCanvas();
+      drawSafetyGame();
       updateStartLessonButtonLabel();
     }
 
@@ -5193,7 +5286,8 @@ const THEMES = {
       document.getElementById("btnTapStoryEmoji").addEventListener("click", () => {
         playSound("correct");
         burstCandyConfetti(8);
-        storyClueOpened[state.storyIndex] = true;
+        const clueKey = `${state.grade}:${state.storyIndex}`;
+        storyClueOpened[clueKey] = true;
         const artEl = document.getElementById("storyEmojiGraphic");
         if (artEl) {
           artEl.classList.remove("story-art-pop");
@@ -5201,7 +5295,7 @@ const THEMES = {
           artEl.classList.add("story-art-pop");
         }
         const clueBox = document.getElementById("storyClueBox");
-        if (clueBox) clueBox.textContent = STORY_CLUES[state.storyIndex];
+        if (clueBox) clueBox.textContent = getStoryClues()[state.storyIndex];
       });
 
       // Jack-o'-Lantern Workshop Listeners
