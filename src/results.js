@@ -180,6 +180,48 @@
       ctx.fillText(`학습 내용 버전 ${CONTENT_VERSION} · 이 기기에서 생성`,75,1430);
       return canvas;
     }
+    function drawWorksheetCanvas() {
+      const canvas=document.createElement('canvas');canvas.width=1100;canvas.height=1500;
+      const ctx=canvas.getContext('2d');
+      ctx.fillStyle='#ffffff';ctx.fillRect(0,0,1100,1500);
+      ctx.strokeStyle='#0f172a';ctx.lineWidth=4;ctx.strokeRect(36,36,1028,1428);
+      ctx.fillStyle='#0f172a';ctx.textAlign='center';ctx.font=`bold 36px ${RESULT_FONT}`;
+      ctx.fillText(`${THEMES[state.teacher.theme].label} · 다중밀집 보행 안전 & 문화 존중 활동지`,550,96,960);
+      ctx.font=`20px ${RESULT_FONT}`;
+      ctx.fillText(`대상: ${EDUCATION_DATA[state.grade].label}  |  학교: _______________   학년/반: _________   이름: _______________`,550,142,960);
+      ctx.beginPath();ctx.moveTo(60,165);ctx.lineTo(1040,165);ctx.lineWidth=2;ctx.stroke();
+      ctx.textAlign='left';
+      let y=210;
+      ctx.font=`bold 24px ${RESULT_FONT}`;ctx.fillText('1. 꼭 기억할 다중밀집 보행 안전 약속 6가지 (실천할 약속에 ✓ 표시해요)',65,y);y+=38;
+      ctx.font=`19px ${RESULT_FONT}`;
+      SAFETY_GOALS.forEach((goal,idx)=>{
+        const check=goal.checks[state.grade];
+        ctx.fillText(`□ 약속 ${idx+1} [${goal.title}] ${check[0]} → 정답: ${check[1][check[2]]}`,75,y,955);
+        y+=34;
+      });
+      y+=18;
+      ctx.font=`bold 24px ${RESULT_FONT}`;ctx.fillText(`2. 스스로 풀어 보는 생각 확인 문제 (${EDUCATION_DATA[state.grade].label} 핵심 4문항)`,65,y);y+=38;
+      const quizzes=EDUCATION_DATA[state.grade].quizzes.slice(0,4);
+      quizzes.forEach((q,idx)=>{
+        ctx.font=`bold 19px ${RESULT_FONT}`;
+        y=printLines(ctx,`문항 ${idx+1}. ${q.q}`,75,y,950,28,2)+4;
+        ctx.font=`18px ${RESULT_FONT}`;
+        const opts=q.options.map((opt,oi)=>`${['①','②','③','④'][oi]||oi+1} ${opt}`).join('    ');
+        y=printLines(ctx,opts,95,y,930,27,2)+14;
+      });
+      y+=12;
+      ctx.font=`bold 24px ${RESULT_FONT}`;ctx.fillText('3. 배려하는 옷차림 점검 & 오늘 나의 안전 다짐 한 문장 쓰기',65,y);y+=38;
+      ctx.font=`18px ${RESULT_FONT}`;
+      ctx.fillText('□ 앞이 잘 보이는 가면·모자 쓰기   □ 바닥에 끌리지 않는 옷 입기   □ 실제 경찰·소방 제복과 혼동되는 옷 피하기   □ 뾰족한 소품 피하기',75,y,955);
+      y+=36;
+      ctx.strokeStyle='#334155';ctx.lineWidth=1.5;
+      ctx.strokeRect(75,y,950,150);
+      ctx.font=`bold 19px ${RESULT_FONT}`;ctx.fillText('✍ 나의 안전·배려 다짐:',95,y+38);
+      ctx.beginPath();ctx.moveTo(95,y+85);ctx.lineTo(1005,y+85);ctx.moveTo(95,y+128);ctx.lineTo(1005,y+128);ctx.stroke();
+      ctx.font=`15px ${RESULT_FONT}`;ctx.fillStyle='#475569';
+      ctx.fillText(`근거 자료: 국민재난안전포털 다중운집인파사고 국민행동요령 · 유네스코 · © 엽쌤 교육용 활동지`,65,1438);
+      return canvas;
+    }
     function exportProgressJSON() {
       rememberGrade();
       const data={schemaVersion:2,contentVersion:CONTENT_VERSION,sessionId:state.sessionId,grade:state.grade,

@@ -1563,6 +1563,65 @@
         fBox.textContent = '';
       }
     }
+    const EASY_GLOSSARY = {
+      "풍습·전통": "옛날부터 그 지역 사람들이 해마다 이어 온 생활 모습이나 기념 방식이에요.",
+      "인류무형문화유산": "오래전부터 전해 내려와 세계가 함께 소중히 지키기로 약속한 전통문화예요.",
+      "비상구(출구)": "위급할 때 안전하게 밖으로 대피할 수 있는 초록색 표지판 문이에요.",
+      "다중밀집": "좁은 공간에 아주 많은 사람이 빽빽하게 모인 상태예요.",
+      "우측통행": "서로 마주 보고 걸을 때 부딪히지 않도록 오른쪽 길로 걷는 약속이에요.",
+      "대각선 이동": "사람들 흐름을 거스르지 않고 비스듬히 가장자리 넓은 곳으로 빠져나가는 방법이에요.",
+      "가슴 앞 공간(흉강)": "양팔로 가슴 앞을 감싸 폐가 숨을 편하게 쉴 수 있게 지키는 공간이에요."
+    };
+    const openedGlossaryByBox = {};
+    function renderGlossaryBox(boxId, keys) {
+      const box = document.getElementById(boxId);
+      if (!box) return;
+      box.replaceChildren();
+      const row = document.createElement("div");
+      row.className = "flex flex-wrap items-center gap-1.5";
+      const label = document.createElement("span");
+      label.className = "font-extrabold text-amber-300 text-[11px]";
+      label.textContent = "📚 쉬운 말 사전:";
+      row.appendChild(label);
+      const activeTerm = openedGlossaryByBox[boxId];
+      keys.forEach(term => {
+        if (!EASY_GLOSSARY[term]) return;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `mini-chip glossary-chip ${activeTerm === term ? "is-picked" : ""}`;
+        btn.textContent = term;
+        btn.addEventListener("click", () => {
+          openedGlossaryByBox[boxId] = openedGlossaryByBox[boxId] === term ? null : term;
+          playSound("click");
+          renderGlossaryBox(boxId, keys);
+          if (openedGlossaryByBox[boxId] && state.autoRead) {
+            speakText(`${term}. ${EASY_GLOSSARY[term]}`);
+          }
+        });
+        row.appendChild(btn);
+      });
+      box.appendChild(row);
+      if (activeTerm && EASY_GLOSSARY[activeTerm]) {
+        const desc = document.createElement("p");
+        desc.className = "glossary-meaning text-amber-200 font-bold text-xs pt-0.5";
+        desc.textContent = `💡 ${activeTerm}: ${EASY_GLOSSARY[activeTerm]}`;
+        box.appendChild(desc);
+      }
+    }
+    function syncAutoReadButtons() {
+      document.querySelectorAll(".auto-read-btn").forEach(btn => {
+        btn.setAttribute("aria-pressed", String(!!state.autoRead));
+        btn.classList.toggle("border-amber-400", !!state.autoRead);
+        btn.classList.toggle("text-amber-300", !!state.autoRead);
+        const label = btn.querySelector(".auto-read-label");
+        if (label) label.textContent = state.autoRead ? "자동 읽기 ON" : "자동 읽기 OFF";
+      });
+    }
+    function autoSpeakIfEnabled(text) {
+      if (state.autoRead && state.soundOn && text) {
+        speakText(text);
+      }
+    }
     function renderStorySlide() {
       stopSpeaking();
       const gradeData = EDUCATION_DATA[state.grade];
@@ -1649,6 +1708,8 @@
       if (readCount >= stories.length) {
         unlockStamp("s1", "놀이 1: 할로윈 이야기");
       }
+      renderGlossaryBox("storyGlossaryBox", ["풍습·전통", "인류무형문화유산", "비상구(출구)"]);
+      syncAutoReadButtons();
     }
 
     let currentRecipeIdx = 0;
@@ -1831,6 +1892,7 @@
       nextBtn.textContent = state.scenarioIndex === SAFETY_SCENARIOS.length - 1 ? "다음: 옷차림 생각하기 →" : "다음 약속 →";
       renderSafetyFollowup();
       renderSafetyActionDrill();
+      renderGlossaryBox("safetyGlossaryBox", ["다중밀집", "우측통행", "대각선 이동", "가슴 앞 공간(흉강)"]);
     }
 
     function renderSafetyFollowup() {
@@ -2113,6 +2175,16 @@
     // ==================== NAVIGATION & GRADE SWITCHING ====================
     function syncWelcomeGrade() {
       document.querySelectorAll('[data-welcome-grade]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.welcomeGrade === state.grade)));
+      const currentTheme = (state.teacher && state.teacher.theme) || 'halloween';
+      document.querySelectorAll('[data-welcome-theme]').forEach(button => {
+        const picked = button.dataset.welcomeTheme === currentTheme;
+        button.setAttribute('aria-pressed', String(picked));
+        button.classList.toggle('is-picked', picked);
+      });
+      const kicker = document.querySelector('.hero-kicker');
+      if (kicker && THEMES[currentTheme]) {
+        kicker.textContent = `우리 반 계기교육 · ${THEMES[currentTheme].label}`;
+      }
     }
     const lessonSteps = {
       'tab-culture':['1 / 4','문화 이야기','그림 이야기를 읽고 문화를 살펴봐요.'],
@@ -2487,6 +2559,60 @@
         });
       });
       document.querySelectorAll('[data-welcome-grade]').forEach(button => button.addEventListener('click', () => switchGrade(button.dataset.welcomeGrade)));
+      document.querySelectorAll('[data-welcome-theme]').forEach(button => {
+        button.addEventListener('click', () => {
+          const themeKey = button.dataset.welcomeTheme;
+          if (!THEMES[themeKey]) return;
+          state.teacher.theme = themeKey;
+          const themeSelect = document.getElementById('teacherTheme');
+          if (themeSelect) themeSelect.value = themeKey;
+          syncWelcomeGrade();
+          renderThemeSituations();
+          renderLearningSummary();
+          renderCertificateCanvas();
+          saveProgress();
+        });
+      });
+      let classTimerInterval = null;
+      let classTimerHideTimeout = null;
+      const btnClassTimer = document.getElementById('btnClassTimer');
+      const classTimerBanner = document.getElementById('classTimerBanner');
+      if (btnClassTimer && classTimerBanner) {
+        btnClassTimer.addEventListener('click', () => {
+          if (classTimerInterval) {
+            clearInterval(classTimerInterval);
+            classTimerInterval = null;
+            if (classTimerHideTimeout) clearTimeout(classTimerHideTimeout);
+            classTimerBanner.classList.add('hidden');
+            btnClassTimer.textContent = '⏱️ 5초 투표';
+            playSound('click');
+            return;
+          }
+          if (classTimerHideTimeout) clearTimeout(classTimerHideTimeout);
+          let remaining = 5;
+          classTimerBanner.classList.remove('hidden');
+          classTimerBanner.textContent = `⏱️ 생각 시간 ${remaining}초 · 손가락(1번·2번)으로 정답 번호를 준비해요!`;
+          btnClassTimer.textContent = `⏱️ ${remaining}초`;
+          playSound('click');
+          classTimerInterval = setInterval(() => {
+            remaining--;
+            if (remaining > 0) {
+              playSound('click');
+              classTimerBanner.textContent = `⏱️ 생각 시간 ${remaining}초 · 마음속으로 번호를 골라 보세요!`;
+              btnClassTimer.textContent = `⏱️ ${remaining}초`;
+            } else {
+              clearInterval(classTimerInterval);
+              classTimerInterval = null;
+              playSound('correct');
+              classTimerBanner.textContent = '✋ 하나, 둘, 셋! 손가락으로 정답 번호를 들어 주세요!';
+              btnClassTimer.textContent = '⏱️ 5초 투표';
+              classTimerHideTimeout = setTimeout(() => {
+                classTimerBanner.classList.add('hidden');
+              }, 4000);
+            }
+          }, 1000);
+        });
+      }
       document.getElementById('btnHomeLogo').addEventListener('click', () => {
         playSound('click');
         returnToMainScreen();
@@ -2599,6 +2725,31 @@
           copyTextWithToast("다중밀집 환경 보행 안전(우측통행, 비상구 확인, 압사 예방 자세) 및 타 문화 이해·배려하는 복장 안전 계기교육 실시", "수업일지(NEIS) 문구가 복사되었어요!");
         });
       }
+      const btnPrintWorksheet = document.getElementById("btnPrintWorksheet");
+      if (btnPrintWorksheet) {
+        btnPrintWorksheet.addEventListener("click", () => {
+          playSound("click");
+          const image = document.getElementById("printResultImage");
+          if (image) {
+            image.src = drawWorksheetCanvas().toDataURL("image/png");
+            window.print();
+          }
+        });
+      }
+      const btnAutoRead = document.getElementById("btnAutoRead");
+      if (btnAutoRead) {
+        btnAutoRead.addEventListener("click", () => {
+          state.autoRead = !state.autoRead;
+          syncAutoReadButtons();
+          playSound("click");
+          if (state.autoRead) {
+            const current = EDUCATION_DATA[state.grade].stories[state.storyIndex];
+            autoSpeakIfEnabled(`${current.title}. ${current.body}. ${current.keyPoint}. ${current.question}`);
+          } else {
+            stopSpeaking();
+          }
+        });
+      }
       document.getElementById("btnCopyShareUrl").addEventListener("click", () => {
         const input = document.getElementById("shareUrlInput");
         const urlText = input.value || window.location.href;
@@ -2654,6 +2805,8 @@
           state.readStories[state.storyIndex] = true;
           playSound("click");
           renderStorySlide();
+          const current = EDUCATION_DATA[state.grade].stories[state.storyIndex];
+          autoSpeakIfEnabled(`${current.title}. ${current.body}. ${current.keyPoint}. ${current.question}`);
         }
       });
       document.getElementById("btnNextStory").addEventListener("click", () => {
@@ -2666,6 +2819,8 @@
           if (isNew) awardOnce(`story:${nextIdx}`, 'read', 10, "이야기 카드 읽기");
           playSound("click");
           renderStorySlide();
+          const current = EDUCATION_DATA[state.grade].stories[state.storyIndex];
+          autoSpeakIfEnabled(`${current.title}. ${current.body}. ${current.keyPoint}. ${current.question}`);
         } else {
           setCultureStage('compare', true);
         }
