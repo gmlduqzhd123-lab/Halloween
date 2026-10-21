@@ -424,6 +424,13 @@ test('main browser flows and standalone file load without script errors', async 
   await game.locator('[data-tab="tab-culture"]').first().click();
   await game.locator('#btnTapStoryEmoji').click();
   assert.match(await game.locator('#storyClueBox').innerText(),/1~2학년/);
+  await game.locator('[data-grade="3-4"]').click();
+  assert.match(await game.locator('#storyPollBox').innerText(),/순무 등불|계절 풍습/);
+  await game.locator('[data-grade="5-6"]').click();
+  assert.match(await game.locator('#storyPollBox').innerText(),/역사 자료|풍습의 근거/);
+  await game.locator('#storyPollBox button').nth(1).click();
+  assert.match(await game.locator('#storyPollFeedback').innerText(),/시대와 지역|구체적인 근거/);
+  await game.locator('[data-grade="1-2"]').click();
   await game.locator('[data-tab="tab-costume"]').first().click();
   await game.locator('.costume-choice-btn').first().click();
   assert.equal(await game.locator('.costume-reform-tip').count(),1);

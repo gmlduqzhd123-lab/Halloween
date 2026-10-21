@@ -17,8 +17,8 @@ writeFileSync(new URL('../styles.css', import.meta.url), css);
 writeFileSync(new URL('../app.js', import.meta.url), js);
 writeFileSync(new URL('../sw.js', import.meta.url), read('../src/sw.js').replace('__VERSION__',cacheVersion));
 writeFileSync(new URL('../index.html', import.meta.url), page
-  .replace('<!-- APP_STYLE -->', () => '<link rel="stylesheet" href="./styles.css">')
-  .replace('<!-- APP_SCRIPT -->', () => '<script src="./app.js" defer></script>'));
+  .replace('<!-- APP_STYLE -->', () => `<link rel="stylesheet" href="./styles.css?v=${cacheVersion}">`)
+  .replace('<!-- APP_SCRIPT -->', () => `<script src="./app.js?v=${cacheVersion}" defer></script>`));
 writeFileSync(new URL('../halloween_edu_app.html', import.meta.url), page
   .replace('<!-- APP_STYLE -->', () => `<style>${css}</style>`)
   .replace('<!-- APP_SCRIPT -->', () => `<script>${js}</script>`));

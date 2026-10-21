@@ -2503,7 +2503,7 @@ const THEMES = {
               "마리골드꽃"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "속을 파낸 호박에 눈·코·입을 그려 등불처럼 밝히는 장식이에요.",
             "explanation": "호박 등불을 잭오랜턴이라고 불러요."
           },
           {
@@ -2515,7 +2515,7 @@ const THEMES = {
               "친구를 밀며 먼저 가요"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "처음 보는 집에 혼자 가지 않고 나를 지켜 주는 어른과 먼저 상의해요.",
             "explanation": "장소와 시간을 어른과 함께 정해요."
           },
           {
@@ -2527,7 +2527,7 @@ const THEMES = {
               "사람이 몰린 좁은 길"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "사람이 많아질 때 안전하게 빠져나갈 수 있는 길을 먼저 찾아요.",
             "explanation": "들어가기 전에 이동로와 출구를 확인해요."
           },
           {
@@ -2539,7 +2539,7 @@ const THEMES = {
               "그 자리에 갑자기 멈춰요"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "옆 사람과 자꾸 몸이 부딪히는 것은 사람이 너무 많아졌다는 위험 신호예요.",
             "explanation": "몸이 자꾸 닿는 것은 혼잡 신호예요."
           },
           {
@@ -2551,7 +2551,7 @@ const THEMES = {
               "뒤로 뛰어가요"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "사람들이 걷는 길에서 허리를 숙이면 뒤따라오는 사람과 부딪혀 위험해요.",
             "explanation": "혼잡한 곳에서는 물건보다 몸을 먼저 보호해요."
           },
           {
@@ -2563,7 +2563,7 @@ const THEMES = {
               "바닥에 끌리는 망토"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "계단이나 길에서 넘어지지 않으려면 눈이 잘 보이고 발에 걸리지 않아야 해요.",
             "explanation": "잘 보고 잘 움직일 수 있는 옷을 골라요."
           },
           {
@@ -2575,7 +2575,7 @@ const THEMES = {
               "모든 멕시코 사람이 같은 놀이만 해요"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "주황색 꽃과 음식으로 세상을 떠난 가족을 사랑으로 기억하는 날이에요.",
             "explanation": "날짜가 가까워도 문화의 의미는 달라요."
           },
           {
@@ -2587,7 +2587,7 @@ const THEMES = {
               "더 큰 장난을 해요"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "진정한 축제는 모든 친구가 편안하고 기분 좋을 때 완성돼요.",
             "explanation": "모두가 편안할 때 즐거운 축제가 돼요."
           }
         ]
@@ -2668,7 +2668,7 @@ const THEMES = {
               "호박이 항상 같은 크기였기 때문"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "아일랜드에서 미국으로 이주한 사람들이 새 환경에서 쉽게 구할 수 있었던 작물을 떠올려 보세요.",
             "explanation": "이주와 환경 변화가 장식 재료를 바꾸었어요."
           },
           {
@@ -2681,7 +2681,7 @@ const THEMES = {
               "분장 점수"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "혼자 낯선 곳에 가지 않도록 보호자와 미리 약속해야 할 두 가지를 생각해 보세요.",
             "explanation": "보호자와 동행 계획을 세우고 이동로를 확인해요."
           },
           {
@@ -2694,7 +2694,7 @@ const THEMES = {
               "사람이 몰릴 때까지 기다린다"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "들어가기 전에 언제든 빠져나갈 수 있는 길과 출구를 먼저 확인해요.",
             "explanation": "출구와 주변 이동로를 미리 확인해요."
           },
           {
@@ -2707,7 +2707,7 @@ const THEMES = {
               "반대 방향으로 밀어붙인다"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "어깨가 자꾸 닿는 것은 밀집 위험 신호이므로 흐름을 거스르지 않고 대각선 가장자리로 이동해요.",
             "explanation": "몸이 닿고 보행이 느려지는 것은 혼잡 신호예요."
           },
           {
@@ -2720,7 +2720,7 @@ const THEMES = {
               "물건을 줍기 편하려고"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "두 손이나 가방을 가슴 앞에 모으면 폐가 숨을 쉴 수 있는 공간(흉강)이 생겨요.",
             "explanation": "군중의 힘에 무리하게 맞서지 않고 가슴을 보호해요."
           },
           {
@@ -2733,7 +2733,7 @@ const THEMES = {
               "반대 방향으로 달린다"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "인파 속에서 허리를 숙이면 뒤따라오는 사람들에게 부딪히거나 넘어질 수 있어요.",
             "explanation": "혼잡한 곳에서는 물건보다 몸을 먼저 지켜요."
           },
           {
@@ -2746,7 +2746,7 @@ const THEMES = {
               "긴 끈이 끌리는 옷"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "위급할 때 진짜 구조대원·경찰관과 혼동되지 않고 걷기 편한 옷이 안전해요.",
             "explanation": "다른 사람이 실제 대원으로 오해하지 않도록 해요."
           },
           {
@@ -2759,7 +2759,7 @@ const THEMES = {
               "무서운 그림만 보고 뜻을 추측한다"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "비슷한 시기에 열리더라도 각 문화의 고유한 이름과 의미를 먼저 살펴보아요.",
             "explanation": "겉모습보다 그 문화를 기리는 사람들의 의미를 살펴요."
           }
         ]
@@ -2840,7 +2840,7 @@ const THEMES = {
               "분장 풍습의 유래는 모두 확정됐다"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "켈트 지역의 계절 풍습과 만성절 전야 등 다양한 역사적 배경이 함께 전해져요.",
             "explanation": "자료마다 강조점이 달라 한 가지 기원으로 단정하지 않습니다."
           },
           {
@@ -2853,7 +2853,7 @@ const THEMES = {
               "모든 참여 방식이 같다고 말한다"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "유네스코 인류무형문화유산으로 등재된 가족 추모 전통의 고유한 맥락을 떠올려 보세요.",
             "explanation": "비슷한 시기라도 고유한 맥락을 존중합니다."
           },
           {
@@ -2866,7 +2866,7 @@ const THEMES = {
               "친구들의 의상 색"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "다중밀집 환경에 들어가기 전에는 위급 시 빠져나갈 수 있는 동선부터 확인해요.",
             "explanation": "장소에 가기 전 혼잡 상황과 이동로를 확인합니다."
           },
           {
@@ -2879,7 +2879,7 @@ const THEMES = {
               "더 좁은 길로 방향을 바꾼다"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "인파의 흐름과 정면으로 맞서지 않고 대각선 방향 가장자리나 넓은 곳으로 이동해요.",
             "explanation": "움직임을 살펴 대각선으로 벗어나는 것이 권장됩니다."
           },
           {
@@ -2892,7 +2892,7 @@ const THEMES = {
               "몸을 숙여 소지품을 찾는다"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "팔짱을 끼거나 가방을 가슴 앞에 안아 호흡할 수 있는 흉강 공간을 확보해야 해요.",
             "explanation": "가슴을 보호해 숨 쉴 공간을 확보합니다."
           },
           {
@@ -2905,7 +2905,7 @@ const THEMES = {
               "주변 사람을 붙잡아 세게 끌어당긴다"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "머리와 가슴(장기)이 압박받지 않도록 무릎을 당겨 공처럼 몸을 둥글게 말아요.",
             "explanation": "머리와 몸을 보호하는 자세를 취합니다."
           },
           {
@@ -2918,7 +2918,7 @@ const THEMES = {
               "모든 분장이 금지되어서"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "위급한 순간 시민들이 실제 경찰·소방 대원을 즉시 구별할 수 있어야 해요.",
             "explanation": "실제 제복과 혼동될 가능성을 줄이고 세부 법률은 교사와 확인합니다."
           },
           {
@@ -2931,7 +2931,7 @@ const THEMES = {
               "안내 없이 동시에 입장한다"
             ],
             "answer": 0,
-            "hint": "이야기와 안전 약속을 다시 떠올려 보세요.",
+            "hint": "모두가 안전하고 소외되지 않는 축제를 위해 기획 단계에서 정해야 할 규칙을 골라 보세요.",
             "explanation": "안전과 배려는 행사 기획 단계에서 함께 고려합니다."
           }
         ]
@@ -3753,28 +3753,136 @@ const THEMES = {
     };
     const STORY_POLLS_BY_GRADE = {
       "1-2": [
-        { options: ["🎃 귀여운 호박 그리기", "👋 친구와 반갑게 인사하기"], feedback: "참 좋아요! 우리 반 친구들과 웃으며 즐기는 다정한 놀이가 최고예요." },
-        { options: ["😄 방긋 웃는 호박", "🐱 야옹 고양이 호박"], feedback: "귀여운 표정이네요! 잠시 뒤 호박 공방에서 내 손으로 직접 꾸며 봐요." },
-        { options: ["👨‍👩‍👧 부모님·선생님과 상의하기", "🏠 약속한 곳만 다녀오기"], feedback: "딩동댕! 언제나 어른과 먼저 약속하고 함께 움직여요." },
-        { options: ["✂️ 무릎 위로 짧게 줄이기", "✨ 반짝이 스티커 붙이기"], feedback: "멋진 생각이에요! 발에 걸리지 않고 잘 보이는 옷이 나를 지켜 줘요." },
-        { options: ["🌼 가족을 사랑하는 날이라고 소개하기", "🤝 서로 다른 이름을 존중하기"], feedback: "맞아요! 날짜가 비슷해도 소중한 뜻이 서로 다르다는 걸 알려 줘요." },
-        { options: ["🛑 친구가 싫어하면 바로 멈추기", "🧹 내 자리 쓰레기 줍기"], feedback: "최고예요! 모두가 편안하고 기분 좋은 우리 반 축제를 만들어요." }
+        {
+          options: ["🎃 귀여운 호박 모형 꾸미기", "👋 친구와 다정하게 인사 나누기"],
+          feedbacks: [
+            "좋아요! 알록달록 귀여운 호박을 꾸미며 교실을 밝게 장식해 봐요.",
+            "멋져요! 친구들과 반갑게 인사를 나누면 우리 반 모두가 즐거워져요."
+          ]
+        },
+        {
+          options: ["😄 방긋 웃는 다정한 표정", "😮 동그랗게 깜짝 놀란 표정"],
+          feedbacks: [
+            "보기만 해도 기분 좋아지는 웃는 호박등이네요! 호박 꾸미기에서 직접 만들어 봐요.",
+            "재미있고 귀여운 깜짝 표정이네요! 호박 꾸미기에서 멋지게 완성해 봐요."
+          ]
+        },
+        {
+          options: ["👨‍👩‍👧 부모님(보호자)과 먼저 상의해요", "🏫 선생님·어른과 함께 약속해요"],
+          feedbacks: [
+            "딩동댕! 어디로 갈지, 누구와 갈지 꼭 부모님(보호자)과 먼저 상의해요.",
+            "맞아요! 혼자 결정하지 않고 나를 지켜 주는 어른과 먼저 약속하고 함께 움직여요."
+          ]
+        },
+        {
+          options: ["✂️ 무릎 위로 짧게 줄여서 입어요", "🧷 바닥에 끌리지 않게 접어 고정해요"],
+          feedbacks: [
+            "딩동댕! 망토 길이를 무릎 위로 짧게 줄이면 발에 밟히지 않아 넘어지지 않아요.",
+            "좋은 방법이에요! 옷자락이 바닥에 끌리지 않게 단단히 고정하면 안전하게 걸을 수 있어요."
+          ]
+        },
+        {
+          options: ["🌼 가족을 기억하고 사랑하는 날이라고 알려줘요", "📅 날짜만 가깝고 이름과 뜻이 다른 문화라고 말해요"],
+          feedbacks: [
+            "맞아요! 죽은 자들의 날은 무서운 날이 아니라 세상을 떠난 가족을 기억하는 따뜻한 날이에요.",
+            "정확해요! 시기가 비슷해도 나라마다 고유한 이름과 소중한 뜻이 다르다고 설명해 줘요."
+          ]
+        },
+        {
+          options: ["🛑 친구가 싫어하는 장난은 바로 멈추기", "🧹 놀이가 끝난 뒤 쓰레기 함께 치우기"],
+          feedbacks: [
+            "최고예요! 친구의 기분을 살피고 싫다는 장난을 바로 멈추면 모두가 편안해요.",
+            "멋진 약속이에요! 함께 놀고 난 자리를 깨끗이 정리하면 기분 좋게 마무리할 수 있어요."
+          ]
+        }
       ],
       "3-4": [
-        { options: ["🎃 호박 장식 꾸미기", "🎭 재미있는 분장 놀이"], feedback: "멋진 선택이에요! 어떤 방법이든 안전하고 즐거운 마음이 가장 중요해요." },
-        { options: ["😄 활짝 웃는 호박등", "😮 깜짝 놀란 호박등"], feedback: "나만의 개성이 담긴 호박등이네요! 잠시 뒤 공방에서 직접 만들어 봐요." },
-        { options: ["👨‍👩‍👧 동행할 어른 정하기", "🗺️ 갈 장소·시간 약속하기"], feedback: "정확해요! 외출 전 어른과 장소·시간·동행을 먼저 약속하면 안심할 수 있어요." },
-        { options: ["🚪 넓은 우회 통로 찾기", "🟩 비상 출구 위치 확인하기"], feedback: "좋은 판단이에요! 안쪽 길이 좁다면 무리해 들어가지 않고 주변 이동로를 살펴요." },
-        { options: ["🌼 고유한 이름과 뜻 알기", "🤝 서로 다른 전통 존중하기"], feedback: "맞아요! 날짜가 비슷해도 각 문화가 가진 고유한 역사와 마음을 존중해요." },
-        { options: ["🛑 싫다는 장난 바로 멈추기", "🧹 쓰레기 함께 정리하기"], feedback: "최고예요! 우리 반 모두가 편안하고 기분 좋은 축제를 함께 만들어요." }
+        {
+          options: ["🕯️ 순무 등불이 호박등(잭오랜턴) 만들기로 바뀐 것", "🍬 옛 계절 풍습이 이웃과 인사·간식 나누기로 바뀐 것"],
+          feedbacks: [
+            "맞아요! 옛날 순무에 불을 밝히던 풍습이 오늘날 호박등을 꾸미는 놀이로 이어졌어요.",
+            "정확해요! 계절의 변화를 기념하던 옛 풍습이 오늘날 이웃과 함께 즐기는 축제로 변화했어요."
+          ]
+        },
+        {
+          options: ["🕯️ 얼굴 모양을 새겨 등불을 밝히는 전통", "🎃 가을밤 이웃과 함께 명절을 기념하는 의미"],
+          feedbacks: [
+            "딩동댕! 순무에서 호박으로 재료는 바뀌었지만 얼굴을 새겨 등불을 밝히는 풍습은 그대로 이어졌어요.",
+            "맞아요! 사는 곳과 재료가 달라져도 함께 등불을 만들고 가을을 기념하는 마음은 이어졌어요."
+          ]
+        },
+        {
+          options: ["📍 어디로 갈지(방문할 장소와 안전한 이동 경로)", "⏰ 언제까지 다녀올지(약속 시간과 동행할 어른)"],
+          feedbacks: [
+            "맞아요! 낯선 곳에 혼자 가지 않도록 방문할 장소와 이동 경로를 어른과 먼저 정해요.",
+            "정확해요! 동행할 어른과 돌아올 시간을 미리 약속해야 안전하게 즐길 수 있어요."
+          ]
+        },
+        {
+          options: ["🚪 들어가기 전 주변 이동로와 비상 출구부터 확인하기", "🚶 사람이 몰린 좁은 길 대신 여유 있는 길로 이동하기"],
+          feedbacks: [
+            "좋은 판단이에요! 안쪽이 좁은 곳에서는 언제든 빠져나갈 수 있는 이동로와 출구를 먼저 확인해요.",
+            "맞아요! 안쪽 좁은 통로로 사람이 몰리면 무리하게 들어가지 않고 넓은 길로 이동해요."
+          ]
+        },
+        {
+          options: ["📖 각 문화의 고유한 이름과 역사적 유래", "🌼 그 날을 기리는 진짜 뜻과 전통 방식"],
+          feedbacks: [
+            "맞아요! 날짜가 가깝더라도 각 문화가 가진 고유한 이름과 유래를 먼저 확인해요.",
+            "정확해요! 겉모습만 보지 않고 가족을 기억하는 고유한 뜻과 방식을 따로 살펴보아요."
+          ]
+        },
+        {
+          options: ["🚶 이동하는 통로는 비워 두고 안전하게 걸어요", "🤝 싫어하는 장난은 멈추고 끝난 뒤 함께 정리해요"],
+          feedbacks: [
+            "멋진 규칙이에요! 교실 통로를 넓게 비워 두면 부딪히거나 넘어지지 않고 안전해요.",
+            "최고예요! 친구를 배려하고 함께 정리하는 약속이 우리 반 축제를 더 즐겁게 만들어요."
+          ]
+        }
       ],
       "5-6": [
-        { options: ["📚 여러 역사 자료 비교하기", "🌍 지역별 풍습 차이 살피기"], feedback: "훌륭해요! 한 가지 주장만 믿지 않고 다양한 근거 자료를 함께 살펴봐요." },
-        { options: ["🌱 환경에 맞춘 재료 변화 이해하기", "🕯️ 이어져 온 상징의 의미 찾기"], feedback: "맞아요! 겉모습과 재료는 환경에 따라 바뀌어도 문화의 맥락은 이어져요." },
-        { options: ["🤝 친구의 선택권 존중하기", "💬 부담 없는 교실 활동 제안하기"], feedback: "성숙한 배려예요! 참여 방식과 참여하지 않을 자유 모두 존중받아야 해요." },
-        { options: ["↗️ 대각선 가장자리로 벗어나기", "🗺️ 덜 붐비는 우회 출구 찾기"], feedback: "정확해요! 군중 흐름과 맞서지 않고 가장자리와 넓은 이동로로 침착하게 이동해요." },
-        { options: ["🏛️ 고유한 역사와 맥락 먼저 소개하기", "🚫 겉모습만 보고 단정하지 않기"], feedback: "좋은 시각이에요! 비교할 때는 각 문화가 지닌 고유한 의미를 지우지 않아요." },
-        { options: ["🚶 안전한 이동 통로 확보하기", "🤝 배려·정리 규칙 함께 정하기"], feedback: "멋진 기획자네요! 안전과 배려를 함께 설계하면 모두가 행복한 축제가 돼요." }
+        {
+          options: ["📚 출처가 분명한 여러 역사 자료 비교하기", "🔍 시대·지역별 풍습의 근거 살펴보기"],
+          feedbacks: [
+            "훌륭해요! 한 가지 주장만 믿지 않고 도서관·박물관 등 출처가 분명한 여러 역사 자료를 함께 비교해 봐요.",
+            "정확해요! 각 풍습이 어떤 시대와 지역에서 어떻게 전해졌는지 구체적인 근거를 확인해야 해요."
+          ]
+        },
+        {
+          options: ["🌍 이주와 자연환경 변화에 맞춰 전통이 적응함", "🕯️ 상징의 의미는 유지되면서 표현 방식이 넓어짐"],
+          feedbacks: [
+            "맞아요! 사람들이 새로운 지역으로 이동하면서 그곳의 환경과 작물에 맞춰 문화의 모습도 자연스럽게 변했어요.",
+            "정확해요! 등불을 밝히는 상징적 맥락은 이어지면서도 시대와 환경에 따라 표현 재료가 달라졌어요."
+          ]
+        },
+        {
+          options: ["🤝 참여하지 않을 자유와 선택권을 존중하기", "💬 강요하지 않고 누구나 편안한 분위기 만들기"],
+          feedbacks: [
+            "성숙한 태도예요! 축제를 즐기는 방식만큼이나 참여하지 않을 자유도 똑같이 존중받아야 해요.",
+            "맞아요! 억지로 권하지 않고 각자 원하는 방식으로 편안하게 지낼 수 있도록 배려해요."
+          ]
+        },
+        {
+          options: ["↗️ 인파 흐름을 따라 대각선 가장자리 넓은 곳으로 이동", "🗺️ 미리 확인해 둔 덜 붐비는 대체 출구·우회 통로 활용"],
+          feedbacks: [
+            "정확해요! 흐름을 정면으로 거스르지 않고 대각선 가장자리나 넓은 공간으로 먼저 벗어나요.",
+            "좋은 판단이에요! 한 출구로만 몰리지 않고 사전에 파악해 둔 여유 있는 우회 경로를 이용해 대피해요."
+          ]
+        },
+        {
+          options: ["🚫 날짜나 겉모습만 보고 ‘같은 축제’라고 단정하기", "🚫 고유한 맥락 없이 ‘한쪽이 따라 했다’고 단정하기"],
+          feedbacks: [
+            "정확히 짚었어요! 시기나 장식이 비슷해 보여도 고유한 역사와 의미가 다르므로 같은 축제라고 단정하면 안 돼요.",
+            "맞아요! 각 문화가 형성된 역사적 배경을 살피지 않고 단순 모방이라고 단정하는 태도는 피해야 해요."
+          ]
+        },
+        {
+          options: ["🚶 이동 통로 비워 두기 & 🛑 싫은 장난 즉시 멈추기", "🤝 참여 선택권 보장하기 & 🧹 끝난 뒤 함께 정리하기"],
+          feedbacks: [
+            "멋진 기획이에요! 보행 안전을 위한 통로 확보와 친구 배려 규칙은 안전한 행사의 기본이에요.",
+            "훌륭해요! 누구도 소외되지 않는 선택권 존중과 공동 정리 약속이 더해지면 완성도 높은 행사가 돼요."
+          ]
+        }
       ]
     };
     function getStoryClues() {
@@ -3791,17 +3899,17 @@ const THEMES = {
     ];
     const FESTIVAL_QUIZZES = {
       halloween: {
-        options: ["지역과 가정마다 다르게 즐겨요", "전 세계가 똑같은 한 가지 놀이만 해요"],
+        options: ["아니요, 지역과 가정마다 다르게 즐겨요", "네, 전 세계가 똑같은 한 가지 놀이만 해요"],
         correct: 0,
         feedback: "💮 [할로윈 도장 완료!] 맞아요, 지역·학교·가정마다 즐기는 방법이 서로 달라요."
       },
       muertos: {
-        options: ["세상을 떠난 가족을 기억하는 고유한 전통", "할로윈과 이름만 다른 똑같은 축제"],
+        options: ["세상을 떠난 가족을 기억하고 맞이하는 고유한 전통", "할로윈과 이름만 다른 똑같은 축제"],
         correct: 0,
         feedback: "💮 [죽은 자들의 날 도장 완료!] 가족을 기리는 멕시코의 소중한 고유 문화를 이해했어요."
       },
       korea: {
-        options: ["수확을 돌아보며 가족이 모이는 고유 명절", "서양의 가을 축제에서 유래한 날"],
+        options: ["기원과 날짜, 수확을 돌아보며 가족이 모이는 고유한 의미가 달라요", "가을에 열리므로 서양 축제와 기원·의미가 똑같아요"],
         correct: 0,
         feedback: "💮 [추석 도장 완료!] 기원과 날짜, 의미가 서로 다른 명절임을 정확히 비교했어요."
       }
@@ -3906,8 +4014,10 @@ const THEMES = {
           pollBox.appendChild(chip);
         });
         if (storyPollPicked[pollKey] !== undefined) {
+          const pickedIdx = storyPollPicked[pollKey];
+          const fbText = (poll.feedbacks && poll.feedbacks[pickedIdx]) || poll.feedback || "";
           pollFeedback.className = "text-xs mt-1.5 font-bold text-emerald-300";
-          pollFeedback.textContent = `💬 ${poll.feedback}`;
+          pollFeedback.textContent = `💬 ${fbText}`;
         } else {
           pollFeedback.className = "hidden text-xs mt-1.5 font-bold";
           pollFeedback.textContent = "";
@@ -4147,27 +4257,38 @@ const THEMES = {
       const question = document.createElement('p');
       question.textContent = check[0];
       box.appendChild(question);
+      const feedbackEl = document.createElement('p');
+      feedbackEl.className = state.safetyConfirmed[goal.id] ? 'text-xs font-bold text-emerald-300 mt-1' : 'hidden text-xs font-bold mt-1';
+      if (state.safetyConfirmed[goal.id]) {
+        feedbackEl.textContent = `⭕ ${goal.title} 목표를 새 질문으로 정확히 확인했어요!`;
+      }
       check[1].forEach((option, index) => {
         const button = document.createElement('button');
         button.type = 'button';
-        button.className = 'w-full text-left rounded-xl bg-indigo-900 border border-indigo-600 px-3 py-2';
+        const isConfirmedCorrect = !!state.safetyConfirmed[goal.id] && index === check[2];
+        button.className = `w-full text-left rounded-xl border px-3 py-2 ${isConfirmedCorrect ? 'bg-emerald-950/80 border-emerald-400 text-emerald-100 font-bold' : 'bg-indigo-900 border-indigo-600'}`;
         button.textContent = `${index + 1}. ${option}`;
         button.disabled = !!state.safetyConfirmed[goal.id];
         button.addEventListener('click', () => {
           if (index === check[2]) {
+            playSound('correct');
             state.safetyConfirmed[goal.id] = {contentVersion: SAFETY_CONTENT_VERSION, at: Date.now()};
             awardOnce(`goal:${goal.id}`, 'confirmed', 20, '안전 목표 다시 확인');
             if (SAFETY_GOALS.every(g => state.safetyConfirmed[g.id]?.contentVersion === SAFETY_CONTENT_VERSION)) unlockStamp('s2', '안전 목표 6개 확인');
             document.getElementById('importantStatus').textContent = `${goal.title} 목표를 새 질문으로 확인했어요.`;
+            saveProgress();
+            renderSafetyFollowup();
+            renderCertificateCanvas();
           } else {
+            playSound('wrong');
+            feedbackEl.className = 'text-xs font-bold text-rose-300 mt-1';
+            feedbackEl.textContent = '❌ 이 선택의 이유를 다시 살피고 안전한 행동을 골라 보세요.';
             document.getElementById('importantStatus').textContent = '이 선택의 이유를 다시 살피고 판단해 보세요.';
           }
-          saveProgress();
-          renderSafetyFollowup();
-          renderCertificateCanvas();
         });
         box.appendChild(button);
       });
+      box.appendChild(feedbackEl);
       const link = document.createElement('a');
       link.href = CONTENT_SOURCES[goal.source].url;
       link.target = '_blank';
@@ -5229,7 +5350,18 @@ const THEMES = {
     window.addEventListener("DOMContentLoaded", () => {
       const offlineStatus=document.getElementById('offlineStatus');
       if ('serviceWorker' in navigator && (location.protocol === 'https:' || ['localhost','127.0.0.1'].includes(location.hostname))) {
-        navigator.serviceWorker.register('./sw.js', {scope:'./'}).then(async()=>{
+        const hadSwController = Boolean(navigator.serviceWorker.controller);
+        let swReloading = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (hadSwController && !swReloading && navigator.onLine !== false) {
+            swReloading = true;
+            location.reload();
+          }
+        });
+        navigator.serviceWorker.register('./sw.js', {scope:'./'}).then(async reg=>{
+          if (navigator.onLine !== false && reg && typeof reg.update === 'function') {
+            reg.update().catch(()=>{});
+          }
           const registration=await navigator.serviceWorker.ready;
           const prefix=`halloween-edu:${new URL(registration.scope).pathname}:`;
           const files=['index.html','halloween_edu_app.html','app.js','styles.css','manifest.json','icon.svg','404.html'];
