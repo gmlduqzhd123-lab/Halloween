@@ -835,6 +835,10 @@
       20: '도입 3분: 주제 소개 · 안전 상황 8분 · 복장 판단 5분 · 확인과 정리 4분',
       40: '도입 5분: 축제 비교 · 안전 상황 10분 · 복장 선택 10분 · 퀴즈와 복습 10분 · 정리 5분'
     };
+    function defaultRequiredFor(theme, minutes) {
+      if (theme !== 'halloween') return ['culture','safety','quiz'];
+      return minutes === 10 ? ['safety','quiz'] : minutes === 20 ? ['safety','costume','quiz'] : ACTIVITY_IDS;
+    }
     function sanitizeTeacher(input) {
       const raw = input && typeof input === 'object' ? input : {};
       const enumValue = (value, allowed, fallback) => allowed.includes(String(value)) ? String(value) : fallback;
@@ -842,8 +846,7 @@
       const grade = enumValue(raw.grade, Object.keys(EDUCATION_DATA), '3-4');
       const theme = enumValue(raw.theme, Object.keys(THEMES), 'halloween');
       const direction = enumValue(raw.direction, ['culture','safety','all'], 'all');
-      const defaultRequired = theme !== 'halloween' ? ['safety','quiz'] : minutes === 10 ? ['safety','quiz'] : minutes === 20 ? ['safety','costume','quiz'] : ACTIVITY_IDS;
-      const required = Array.isArray(raw.required) ? [...new Set(raw.required.filter(id => ACTIVITY_IDS.includes(id)))] : defaultRequired;
+      const required = Array.isArray(raw.required) ? [...new Set(raw.required.filter(id => ACTIVITY_IDS.includes(id)))] : defaultRequiredFor(theme, minutes);
       const order = Array.isArray(raw.order) && raw.order.length === 4 && new Set(raw.order).size === 4 && raw.order.every(id => ACTIVITY_IDS.includes(id)) ? raw.order : ACTIVITY_IDS;
       const start = enumValue(raw.start, Object.values(ACTIVITY_TABS), ACTIVITY_TABS[order[0]]);
       return {grade, minutes:[10,20,40].includes(minutes) ? minutes : 40,
@@ -2757,6 +2760,10 @@
       document.getElementById('btnApplyTeacher').addEventListener('click', () => {applyTeacherSettings();closeModal(teacherModal);});
       document.getElementById('btnNextStudent').addEventListener('click', () => {closeModal(teacherModal);startNewSession('student');});
       document.getElementById('teacherMinutes').addEventListener('change',e=>{document.getElementById('teacherPlan').textContent=LESSON_PLANS[e.target.value];});
+      document.getElementById('teacherTheme').addEventListener('change',e=>{
+        const required=defaultRequiredFor(e.target.value, Number(document.getElementById('teacherMinutes').value));
+        document.querySelectorAll('.teacherRequired').forEach(input=>{input.checked=required.includes(input.value);});
+      });
       function copyTextWithToast(text, successMsg) {
         const input = document.getElementById("shareUrlInput");
         if (navigator.clipboard && navigator.clipboard.writeText) {

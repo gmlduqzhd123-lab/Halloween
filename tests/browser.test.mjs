@@ -398,6 +398,7 @@ test('main browser flows and standalone file load without script errors', async 
   await themed.goto(`http://127.0.0.1:${server.address().port}/`);
   await themed.locator('#btnTeacherGuide').click();
   await themed.locator('#teacherTheme').selectOption('sports');
+  assert.deepEqual(await themed.locator('.teacherRequired:checked').evaluateAll(inputs=>inputs.map(input=>input.value)),['culture','safety','quiz']);
   await themed.locator('#teacherStart').selectOption('tab-culture');
   await themed.locator('#btnApplyTeacher').click();
   assert.equal(await themed.locator('#lessonStageTitle').innerText(),'체육대회 이야기');
