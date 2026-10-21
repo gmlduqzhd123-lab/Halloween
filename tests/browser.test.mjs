@@ -24,7 +24,10 @@ test('main browser flows and standalone file load without script errors', async 
   t.after(()=>server.close());
   const windowsChrome='C:/Program Files/Google/Chrome/Application/chrome.exe';
   const executablePath=process.env.CHROME_PATH || (existsSync(windowsChrome) ? windowsChrome : undefined);
-  const browser=await chromium.launch({...(executablePath?{executablePath}:{}),headless:true});
+  // Linux Chromium replaces Korean download names with "download" unless the locale is UTF-8.
+  const utf8Locale=/utf-?8/i.test(process.env.LC_ALL || process.env.LC_CTYPE || process.env.LANG || '');
+  const env=utf8Locale ? process.env : {...process.env, LC_ALL:'C.UTF-8'};
+  const browser=await chromium.launch({...(executablePath?{executablePath}:{}),headless:true,env});
   t.after(()=>browser.close());
   const welcome=await browser.newPage({viewport:{width:390,height:844}});
   await welcome.goto(`http://127.0.0.1:${server.address().port}/`);
