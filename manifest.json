@@ -2,7 +2,7 @@
   "id": "/Halloween/",
   "name": "신나는 할로윈 안전 놀이터 | 초등 계기교육 웹앱",
   "short_name": "할로윈안전놀이터",
-  "description": "전국 초등학생 눈높이 맞춤형 할로윈데이 유래·다문화·인파안전·제복법규·골든벨·임명장 웹앱",
+  "description": "할로윈부터 체험학습까지, 사람이 많이 모이는 상황에서 안전하게 움직이는 법을 이야기와 상황 판단으로 배우는 초등 계기교육 웹앱",
   "start_url": "./index.html",
   "display": "fullscreen",
   "orientation": "any",
