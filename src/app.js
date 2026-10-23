@@ -890,6 +890,75 @@
         qrBox.innerHTML = code.createSvgTag({cellSize:3, margin:4, scalable:true});
       } catch (e) { qrBox.textContent = 'QR을 만들 수 없습니다. 주소를 복사해 사용하세요.'; }
     }
+    function pairTurnSuffix(index) {
+      if (!state.teacher || state.teacher.mode !== 'pairs') return '';
+      return index % 2 === 0 ? ' · 🐥짝꿍1' : ' · 🐣짝꿍2';
+    }
+    const THEME_CRAFT_CONFIG = {
+      halloween: {
+        badge: '체험 놀이터 · 나만의 호박 등불 만들기',
+        title: '나만의 호박등 만들기',
+        btnOn: '등불 켜기',
+        btnOff: '등불 끄기',
+        litCaption: '빛나는 호박등이 완성됐어요. 꾸민 모양을 설명해 보세요!',
+        unlitCaption: '눈·입·모자를 고르고 등불을 켜 보세요!',
+        certTitle: '나만의 호박등',
+        nextText: '다음: 다른 문화 살펴보기 →'
+      },
+      school: {
+        badge: '체험 놀이터 · 학교 축제 안전 응원봉 만들기',
+        title: '나만의 안전 응원봉 만들기',
+        btnOn: '응원불 켜기',
+        btnOff: '응원불 끄기',
+        litCaption: '반짝이는 안전 응원봉 완성! 무대 앞에서도 질서를 지켜요!',
+        unlitCaption: '눈·입·장식을 골라 나만의 안전 응원봉을 켜 보세요!',
+        certTitle: '나의 안전 응원봉',
+        nextText: '이야기로 돌아가기 →'
+      },
+      field: {
+        badge: '체험 놀이터 · 현장체험 안전 배낭 꾸미기',
+        title: '나만의 안전 배낭 꾸미기',
+        btnOn: '야광등 켜기',
+        btnOff: '야광등 끄기',
+        litCaption: '멀리서도 잘 보이는 야광 안전 배낭이 완성됐어요!',
+        unlitCaption: '표정과 모자 배지를 골라 안전 배낭 야광등을 켜 보세요!',
+        certTitle: '나의 안전 배낭',
+        nextText: '이야기로 돌아가기 →'
+      },
+      trip: {
+        badge: '체험 놀이터 · 수학여행 안전 가방 꾸미기',
+        title: '나만의 안전 여행가방 꾸미기',
+        btnOn: '네임택 켜기',
+        btnOff: '네임택 끄기',
+        litCaption: '내 가방 표시 완료! 붐비는 곳에선 가방보다 내 몸이 먼저예요!',
+        unlitCaption: '나만의 여행가방 표정과 장식을 골라 불을 켜 보세요!',
+        certTitle: '나의 안전 가방',
+        nextText: '이야기로 돌아가기 →'
+      },
+      sports: {
+        badge: '체험 놀이터 · 체육대회 안전 응원도구 만들기',
+        title: '나만의 안전 응원도구 만들기',
+        btnOn: '응원불 켜기',
+        btnOff: '응원불 끄기',
+        litCaption: '멋진 안전 응원도구 완성! 떨어뜨려도 인파 속에선 줍지 않아요!',
+        unlitCaption: '표정과 모자를 골라 우리 반 안전 응원도구를 완성해 보세요!',
+        certTitle: '나의 안전 응원도구',
+        nextText: '이야기로 돌아가기 →'
+      },
+      local: {
+        badge: '체험 놀이터 · 지역 행사 안전 등불 만들기',
+        title: '나만의 안전 나들이 등불 만들기',
+        btnOn: '안전등 켜기',
+        btnOff: '안전등 끄기',
+        litCaption: '밤길에도 잘 보이는 지역 행사 안전 등불이 완성됐어요!',
+        unlitCaption: '눈·입·모자를 골라 밤길 안전 등불을 밝혀 보세요!',
+        certTitle: '나의 안전 등불',
+        nextText: '이야기로 돌아가기 →'
+      }
+    };
+    function getThemeCraftConfig() {
+      return THEME_CRAFT_CONFIG[state.teacher?.theme] || THEME_CRAFT_CONFIG.halloween;
+    }
     function applyTeacherSettings() {
       const read = id => document.getElementById(id).value;
       const next = sanitizeTeacher({grade:read('teacherGrade'), minutes:read('teacherMinutes'), mode:read('teacherMode'),
@@ -897,7 +966,12 @@
         order:read('teacherOrder').split(','), start:read('teacherStart')});
       state.teacher = next;
       switchGrade(next.grade);
+      setCultureStage('story');
       renderStorySlide();
+      renderLanternWorkshop();
+      renderScenario();
+      renderCostumeCards();
+      renderQuiz();
       switchTab(next.start);
       saveProgress();
       renderTeacherSettings();
@@ -1667,8 +1741,12 @@
         speakText(text);
       }
     }
+    let echoReadTimer = null;
     function renderStorySlide() {
       stopSpeaking();
+      if (echoReadTimer) { clearInterval(echoReadTimer); echoReadTimer = null; }
+      const echoStatus = document.getElementById("storyEchoStatus");
+      if (echoStatus) { echoStatus.classList.add("hidden"); echoStatus.textContent = ""; }
       const gradeData = EDUCATION_DATA[state.grade];
       const stories = getStories();
       const progress = storyProgress();
@@ -1676,7 +1754,12 @@
       const halloween = isHalloweenTheme();
       document.body.dataset.storyTheme = halloween ? 'halloween' : 'event';
       document.getElementById("cultureSectionTitle").textContent = `${THEMES[state.teacher.theme].label} 이야기`;
-      if (!halloween && cultureStage !== 'story') setCultureStage('story');
+      if (!halloween && cultureStage === 'compare') setCultureStage('story');
+      const themeCraftBtn = document.getElementById("btnThemeCraft");
+      if (themeCraftBtn) {
+        themeCraftBtn.classList.toggle("hidden", halloween);
+        if (!halloween) themeCraftBtn.textContent = `🎒 ${getThemeCraftConfig().certTitle} 꾸미기`;
+      }
 
       document.getElementById("currentGradeBadge").textContent = gradeData.label;
       const picture = document.getElementById("storyEmojiGraphic");
@@ -1690,7 +1773,7 @@
           ? getStoryClues()[progress.storyIndex]
           : "👆 그림을 눌러 숨은 이야기 단서를 찾아보세요!";
       }
-      document.getElementById("storySlideTag").textContent = `카드 ${progress.storyIndex + 1} / ${stories.length}`;
+      document.getElementById("storySlideTag").textContent = `카드 ${progress.storyIndex + 1} / ${stories.length}${pairTurnSuffix(progress.storyIndex)}`;
       document.getElementById("storySlideTitle").textContent = current.title;
       document.getElementById("storySlideBody").textContent = current.body;
       document.getElementById("storySlideKeyPoint").textContent = current.keyPoint;
@@ -1764,6 +1847,14 @@
 
     let currentRecipeIdx = 0;
     function renderLanternWorkshop() {
+      const cfg = getThemeCraftConfig();
+      const badgeEl = document.getElementById("craftWorkshopBadge");
+      const titleEl = document.getElementById("craftWorkshopTitle");
+      const toCompareBtn = document.getElementById("btnToCompare");
+      if (badgeEl) badgeEl.textContent = cfg.badge;
+      if (titleEl) titleEl.textContent = cfg.title;
+      if (toCompareBtn) toCompareBtn.textContent = cfg.nextText;
+
       document.getElementById("pumpkinEyesDisplay").textContent = state.lantern.eye;
       document.getElementById("pumpkinMouthDisplay").textContent = state.lantern.mouth;
       document.getElementById("pumpkinHatDisplay").textContent = state.lantern.hat;
@@ -1781,13 +1872,13 @@
       if (state.lantern.lit) {
         bodyEl.classList.add("lantern-lit");
         boxEl.classList.add("border-amber-400");
-        btnEl.textContent = "등불 끄기";
-        capEl.textContent = "빛나는 호박등이 완성됐어요. 꾸민 모양을 설명해 보세요!";
+        btnEl.textContent = cfg.btnOff;
+        capEl.textContent = cfg.litCaption;
       } else {
         bodyEl.classList.remove("lantern-lit");
         boxEl.classList.remove("border-amber-400");
-        btnEl.textContent = "등불 켜기";
-        capEl.textContent = "눈·입·모자를 고르고 등불을 켜 보세요!";
+        btnEl.textContent = cfg.btnOn;
+        capEl.textContent = cfg.unlitCaption;
       }
       if (recipeEl) {
         const recipe = PUMPKIN_RECIPES[currentRecipeIdx % PUMPKIN_RECIPES.length];
@@ -1845,6 +1936,26 @@
       { title: "🚑 미니 실습 · 넘어졌을 때 몸 보호 & 119", desc: "일어나기 힘들 때 머리와 가슴을 보호하는 자세를 취해 보세요!", btnText: "🙆 머리 감싸고 공처럼 둥글게 말기", doneText: "✅ 머리와 장기를 보호하는 방어 자세와 112·119 신고 요령을 익혔어요!" }
     ];
     const safetyDrillCounts = {};
+    const safetyDrillRemaining = {};
+    let safetyDrillInterval = null;
+    function startSafetyDrillCountdown(idx) {
+      if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
+      safetyDrillRemaining[idx] = 3;
+      renderSafetyActionDrill();
+      safetyDrillInterval = setInterval(() => {
+        if ((safetyDrillRemaining[idx] || 0) > 1) {
+          safetyDrillRemaining[idx]--;
+          playSound("click");
+          renderSafetyActionDrill();
+        } else {
+          clearInterval(safetyDrillInterval);
+          safetyDrillInterval = null;
+          safetyDrillRemaining[idx] = 0;
+          playSound("stamp");
+          renderSafetyActionDrill();
+        }
+      }, 1000);
+    }
     function renderSafetyActionDrill() {
       const box = document.getElementById("safetyActionDrill");
       if (!box) return;
@@ -1855,6 +1966,7 @@
       const needed = drill.targetClicks || 1;
       const current = safetyDrillCounts[idx] || 0;
       const isDone = current >= needed;
+      const countdown = safetyDrillRemaining[idx];
 
       const titleEl = document.createElement("div");
       titleEl.className = "font-extrabold text-amber-300";
@@ -1862,30 +1974,42 @@
       box.appendChild(titleEl);
 
       const descEl = document.createElement("p");
-      descEl.textContent = isDone ? drill.doneText : drill.desc;
+      descEl.textContent = isDone
+        ? (countdown > 0
+            ? `${drill.doneText} · 🙌 지금 자리에서 3초 동안 몸동작을 따라 해 봐요! (${countdown}초)`
+            : countdown === 0
+            ? `${drill.doneText} · 👏 3초 몸동작 따라 하기 성공!`
+            : drill.doneText)
+        : drill.desc;
       box.appendChild(descEl);
 
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = `mini-chip ${isDone ? "is-picked" : ""}`;
       btn.textContent = isDone
-        ? "🌟 실습 완료!"
+        ? (countdown > 0 ? `🌟 실습 완료! (⏱️ 몸동작 ${countdown}초)` : "🌟 실습 완료! (🙌 3초 몸동작 따라 하기)")
         : needed > 1
         ? `${drill.btnText} (${current}/${needed})`
         : drill.btnText;
       btn.addEventListener("click", () => {
         safetyDrillCounts[idx] = Math.min(needed, (safetyDrillCounts[idx] || 0) + 1);
-        playSound(safetyDrillCounts[idx] >= needed ? "correct" : "click");
-        renderSafetyActionDrill();
+        const nowDone = safetyDrillCounts[idx] >= needed;
+        playSound(nowDone ? "correct" : "click");
+        if (nowDone) {
+          startSafetyDrillCountdown(idx);
+        } else {
+          renderSafetyActionDrill();
+        }
       });
       box.appendChild(btn);
     }
 
     function renderScenario() {
+      if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
       const item = SAFETY_SCENARIOS[state.scenarioIndex];
       const goal = SAFETY_GOALS[state.scenarioIndex];
       const low = state.grade === '1-2' ? SAFETY_SCENARIO_LOW[state.scenarioIndex] : null;
-      document.getElementById("scenarioStepBadge").textContent = `약속 ${state.scenarioIndex + 1} / ${SAFETY_SCENARIOS.length}`;
+      document.getElementById("scenarioStepBadge").textContent = `약속 ${state.scenarioIndex + 1} / ${SAFETY_SCENARIOS.length}${pairTurnSuffix(state.scenarioIndex)}`;
       document.getElementById("scenarioEmoji").textContent = item.emoji;
       document.getElementById("scenarioStageTag").textContent = item.stage;
       document.getElementById("scenarioTitle").textContent = low?.title || item.title;
@@ -2086,9 +2210,25 @@
     }
 
     let costumePage = 0;
+    let costumeFocusMode = false;
     function renderCostumeCards() {
       const grid = document.getElementById("costumeCardsGrid");
       grid.innerHTML = "";
+      const perPage = costumeFocusMode ? 1 : 4;
+      const totalPages = Math.ceil(COSTUME_ITEMS.length / perPage);
+      costumePage = Math.max(0, Math.min(costumePage, totalPages - 1));
+      grid.className = costumeFocusMode
+        ? "grid grid-cols-1 max-w-md mx-auto gap-2.5"
+        : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5";
+      const focusBtn = document.getElementById("btnCostumeFocusMode");
+      if (focusBtn) {
+        focusBtn.setAttribute("aria-pressed", String(costumeFocusMode));
+        focusBtn.textContent = costumeFocusMode ? "📋 4장씩 보기" : "🔍 1장씩 보기";
+      }
+      const togetherBanner = document.getElementById("costumeTogetherBanner");
+      if (togetherBanner) {
+        togetherBanner.classList.toggle("hidden", state.teacher?.mode !== "together");
+      }
       let correctCount = 0;
 
       COSTUME_ITEMS.forEach((item, itemIndex) => {
@@ -2097,7 +2237,7 @@
         const isCorrect = hasAnswered && chosen === item.safe;
         if (isCorrect) correctCount++;
 
-        if (Math.floor(itemIndex / 4) !== costumePage) return;
+        if (Math.floor(itemIndex / perPage) !== costumePage) return;
         const card = document.createElement("div");
         card.className = `glass-panel rounded-2xl p-3 flex flex-col justify-between border transition ${
           !hasAnswered
@@ -2171,10 +2311,10 @@
         });
       });
 
-      document.getElementById("costumeScoreBadge").textContent = `${correctCount} / ${COSTUME_ITEMS.length}`;
-      document.getElementById('costumePageLabel').textContent = `${costumePage + 1} / ${Math.ceil(COSTUME_ITEMS.length / 4)}`;
+      document.getElementById("costumeScoreBadge").textContent = `${correctCount} / ${COSTUME_ITEMS.length}${pairTurnSuffix(costumePage)}`;
+      document.getElementById('costumePageLabel').textContent = `${costumePage + 1} / ${totalPages}`;
       document.getElementById('btnPrevCostumePage').disabled = costumePage === 0;
-      document.getElementById('btnNextCostumePage').disabled = costumePage === Math.ceil(COSTUME_ITEMS.length / 4) - 1;
+      document.getElementById('btnNextCostumePage').disabled = costumePage === totalPages - 1;
       if (correctCount === COSTUME_ITEMS.length) {
         unlockStamp("s3", "놀이 3: 옷 고르기 놀이");
       }
@@ -2626,8 +2766,10 @@
           state.teacher.theme = themeKey;
           const themeSelect = document.getElementById('teacherTheme');
           if (themeSelect) themeSelect.value = themeKey;
+          setCultureStage('story');
           syncWelcomeGrade();
           renderStorySlide();
+          renderLanternWorkshop();
           syncLessonStage();
           renderThemeSituations();
           renderLearningSummary();
@@ -2637,8 +2779,48 @@
       });
       let classTimerInterval = null;
       let classTimerHideTimeout = null;
+      let pickedPresenterNumbers = [];
       const btnClassTimer = document.getElementById('btnClassTimer');
       const classTimerBanner = document.getElementById('classTimerBanner');
+      function renderClassTimerBannerContent(messageText, buttonText = '🎲 발표 번호 뽑기') {
+        if (!classTimerBanner) return;
+        classTimerBanner.replaceChildren();
+        const wrap = document.createElement('div');
+        wrap.className = 'flex flex-wrap items-center justify-center gap-2';
+        const span = document.createElement('span');
+        span.id = 'classTimerMessage';
+        span.textContent = messageText;
+        const pickBtn = document.createElement('button');
+        pickBtn.type = 'button';
+        pickBtn.id = 'btnPickPresenter';
+        pickBtn.className = 'mini-chip text-xs';
+        pickBtn.textContent = buttonText;
+        pickBtn.addEventListener('click', () => {
+          if (classTimerInterval) {
+            clearInterval(classTimerInterval);
+            classTimerInterval = null;
+            if (btnClassTimer) btnClassTimer.textContent = '⏱️ 5초 투표';
+          }
+          if (classTimerHideTimeout) clearTimeout(classTimerHideTimeout);
+          const totalStudents = 25;
+          if (pickedPresenterNumbers.length >= totalStudents) pickedPresenterNumbers = [];
+          const available = [];
+          for (let n = 1; n <= totalStudents; n++) {
+            if (!pickedPresenterNumbers.includes(n)) available.push(n);
+          }
+          const chosen = available[Math.floor(Math.random() * available.length)] || 1;
+          pickedPresenterNumbers.push(chosen);
+          playSound('stamp');
+          burstCandyConfetti(10);
+          renderClassTimerBannerContent(`🎉 발표 당첨: ${chosen}번 친구! 선택한 번호와 이유를 들려주세요!`, '🎲 다른 번호 뽑기');
+          classTimerHideTimeout = setTimeout(() => {
+            classTimerBanner.classList.add('hidden');
+          }, 8000);
+        });
+        wrap.appendChild(span);
+        wrap.appendChild(pickBtn);
+        classTimerBanner.appendChild(wrap);
+      }
       if (btnClassTimer && classTimerBanner) {
         btnClassTimer.addEventListener('click', () => {
           if (classTimerInterval) {
@@ -2653,24 +2835,24 @@
           if (classTimerHideTimeout) clearTimeout(classTimerHideTimeout);
           let remaining = 5;
           classTimerBanner.classList.remove('hidden');
-          classTimerBanner.textContent = `⏱️ 생각 시간 ${remaining}초 · 손가락(1번·2번)으로 정답 번호를 준비해요!`;
+          renderClassTimerBannerContent(`⏱️ 생각 시간 ${remaining}초 · 손가락(1번·2번)으로 정답 번호를 준비해요!`);
           btnClassTimer.textContent = `⏱️ ${remaining}초`;
           playSound('click');
           classTimerInterval = setInterval(() => {
             remaining--;
             if (remaining > 0) {
               playSound('click');
-              classTimerBanner.textContent = `⏱️ 생각 시간 ${remaining}초 · 마음속으로 번호를 골라 보세요!`;
+              renderClassTimerBannerContent(`⏱️ 생각 시간 ${remaining}초 · 마음속으로 번호를 골라 보세요!`);
               btnClassTimer.textContent = `⏱️ ${remaining}초`;
             } else {
               clearInterval(classTimerInterval);
               classTimerInterval = null;
               playSound('correct');
-              classTimerBanner.textContent = '✋ 하나, 둘, 셋! 손가락으로 정답 번호를 들어 주세요!';
+              renderClassTimerBannerContent('✋ 하나, 둘, 셋! 손가락으로 정답 번호를 들어 주세요!');
               btnClassTimer.textContent = '⏱️ 5초 투표';
               classTimerHideTimeout = setTimeout(() => {
                 classTimerBanner.classList.add('hidden');
-              }, 4000);
+              }, 6000);
             }
           }, 1000);
         });
@@ -2714,9 +2896,58 @@
         });
       });
       document.getElementById('btnOptionalCraft').addEventListener('click', () => setCultureStage('craft', true));
+      const btnThemeCraft = document.getElementById('btnThemeCraft');
+      if (btnThemeCraft) {
+        btnThemeCraft.addEventListener('click', () => {
+          playSound('click');
+          renderLanternWorkshop();
+          setCultureStage('craft', true);
+        });
+      }
+      const btnEchoRead = document.getElementById('btnEchoRead');
+      if (btnEchoRead) {
+        btnEchoRead.addEventListener('click', () => {
+          const progress = storyProgress();
+          const current = getStories()[progress.storyIndex];
+          const echoStatus = document.getElementById('storyEchoStatus');
+          if (!current || !echoStatus) return;
+          if (echoReadTimer) { clearInterval(echoReadTimer); echoReadTimer = null; }
+          playSound('click');
+          speakText(current.keyPoint);
+          let beat = 3;
+          echoStatus.classList.remove('hidden');
+          echoStatus.textContent = `🗣️ 다 함께 큰 소리로 따라 읽어요: "${current.keyPoint}" (👏 ${beat})`;
+          echoReadTimer = setInterval(() => {
+            beat--;
+            if (beat > 0) {
+              playSound('click');
+              echoStatus.textContent = `🗣️ 다 함께 큰 소리로 따라 읽어요: "${current.keyPoint}" (👏 ${beat})`;
+            } else {
+              clearInterval(echoReadTimer);
+              echoReadTimer = null;
+              playSound('correct');
+              echoStatus.textContent = `🌟 우리 반 한목소리 따라 읽기 성공! "${current.keyPoint}"`;
+              awardOnce(storyRewardId(progress.storyIndex), 'echo', 10, '핵심 문장 따라 읽기');
+            }
+          }, 900);
+        });
+      }
       document.getElementById('btnToQuiz').addEventListener('click', () => switchTab('tab-quiz'));
+      const btnCostumeFocusMode = document.getElementById('btnCostumeFocusMode');
+      if (btnCostumeFocusMode) {
+        btnCostumeFocusMode.addEventListener('click', () => {
+          costumeFocusMode = !costumeFocusMode;
+          costumePage = 0;
+          playSound('click');
+          renderCostumeCards();
+        });
+      }
       document.getElementById('btnPrevCostumePage').addEventListener('click', () => { costumePage=Math.max(0,costumePage-1);renderCostumeCards(); });
-      document.getElementById('btnNextCostumePage').addEventListener('click', () => { costumePage=Math.min(Math.ceil(COSTUME_ITEMS.length/4)-1,costumePage+1);renderCostumeCards(); });
+      document.getElementById('btnNextCostumePage').addEventListener('click', () => {
+        const perPage = costumeFocusMode ? 1 : 4;
+        costumePage=Math.min(Math.ceil(COSTUME_ITEMS.length/perPage)-1,costumePage+1);
+        renderCostumeCards();
+      });
 
       document.querySelectorAll(".nav-tab").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -2763,6 +2994,47 @@
       document.getElementById('teacherTheme').addEventListener('change',e=>{
         const required=defaultRequiredFor(e.target.value, Number(document.getElementById('teacherMinutes').value));
         document.querySelectorAll('.teacherRequired').forEach(input=>{input.checked=required.includes(input.value);});
+      });
+      document.querySelectorAll('.teacher-preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const preset = btn.dataset.teacherPreset;
+          document.querySelectorAll('.teacher-preset-btn').forEach(b => b.classList.toggle('is-picked', b === btn));
+          if (preset === 'morning10') {
+            document.getElementById('teacherMinutes').value = '10';
+            document.getElementById('teacherMode').value = 'together';
+            document.getElementById('teacherDirection').value = 'safety';
+            document.getElementById('teacherStart').value = 'tab-safety';
+            document.getElementById('teacherOrder').value = 'safety,quiz,costume,culture';
+            document.querySelectorAll('.teacherRequired').forEach(input => {
+              input.checked = ['safety', 'quiz'].includes(input.value);
+            });
+          } else if (preset === 'field20') {
+            document.getElementById('teacherMinutes').value = '20';
+            document.getElementById('teacherMode').value = 'together';
+            document.getElementById('teacherDirection').value = 'safety';
+            if (document.getElementById('teacherTheme').value === 'halloween') {
+              document.getElementById('teacherTheme').value = 'field';
+            }
+            document.getElementById('teacherStart').value = 'tab-culture';
+            document.getElementById('teacherOrder').value = 'culture,safety,costume,quiz';
+            document.querySelectorAll('.teacherRequired').forEach(input => {
+              input.checked = ['culture', 'safety', 'quiz'].includes(input.value);
+            });
+          } else if (preset === 'full40') {
+            document.getElementById('teacherMinutes').value = '40';
+            document.getElementById('teacherMode').value = 'together';
+            document.getElementById('teacherDirection').value = 'all';
+            document.getElementById('teacherTheme').value = 'halloween';
+            document.getElementById('teacherStart').value = 'tab-culture';
+            document.getElementById('teacherOrder').value = 'culture,safety,costume,quiz';
+            document.querySelectorAll('.teacherRequired').forEach(input => {
+              input.checked = true;
+            });
+          }
+          document.getElementById('teacherPlan').textContent = LESSON_PLANS[document.getElementById('teacherMinutes').value];
+          playSound('click');
+          showToast('수업 프리셋이 채워졌어요! [수업 설정 적용]을 누르면 시작됩니다.', '⚡');
+        });
       });
       function copyTextWithToast(text, successMsg) {
         const input = document.getElementById("shareUrlInput");
@@ -2893,7 +3165,7 @@
       document.querySelectorAll('[data-culture-step]').forEach(button => {
         button.addEventListener('click', () => setCultureStage(button.dataset.cultureStep, true));
       });
-      document.getElementById('btnToCompare').addEventListener('click', () => setCultureStage('compare', true));
+      document.getElementById('btnToCompare').addEventListener('click', () => setCultureStage(isHalloweenTheme() ? 'compare' : 'story', true));
       document.getElementById('btnToSafety').addEventListener('click', () => switchTab('tab-safety'));
 
       document.querySelectorAll(".festival-card").forEach(card => {
@@ -2997,6 +3269,7 @@
         if (document.querySelector('[role="dialog"]:not(.hidden), .ysi-back, .yq-back')) return;
         const active = document.activeElement;
         if (active && (active === gameCanvas || ["INPUT", "SELECT", "TEXTAREA"].includes(active.tagName))) return;
+        if (e.ctrlKey || e.altKey || e.metaKey) return;
         if (e.key === "ArrowRight" || e.key === "PageDown") {
           if (state.activeTab === "tab-culture" && cultureStage === "story") { e.preventDefault(); document.getElementById("btnNextStory").click(); }
           else if (state.activeTab === "tab-safety") { e.preventDefault(); document.getElementById("btnNextScenario").click(); }
@@ -3006,6 +3279,39 @@
           if (state.activeTab === "tab-culture" && cultureStage === "story" && !document.getElementById("btnPrevStory").disabled) { e.preventDefault(); document.getElementById("btnPrevStory").click(); }
           else if (state.activeTab === "tab-safety" && !document.getElementById("btnPrevScenario").disabled) { e.preventDefault(); document.getElementById("btnPrevScenario").click(); }
           else if (state.activeTab === "tab-costume" && !document.getElementById("btnPrevCostumePage").disabled) { e.preventDefault(); document.getElementById("btnPrevCostumePage").click(); }
+        } else if (["1", "2", "3", "4"].includes(e.key)) {
+          const idx = Number(e.key) - 1;
+          if (state.activeTab === "tab-culture") {
+            const btns = cultureStage === "compare"
+              ? document.querySelectorAll("#festivalQuizBox button")
+              : document.querySelectorAll("#storyPollBox button");
+            if (btns[idx]) { e.preventDefault(); btns[idx].click(); }
+          } else if (state.activeTab === "tab-safety") {
+            const goal = SAFETY_GOALS[state.scenarioIndex];
+            const followupBtns = document.querySelectorAll("#safetyFollowup button:not([disabled])");
+            const scenarioBtns = document.querySelectorAll("#scenarioChoices button");
+            if (state.completedScenarios[state.scenarioIndex] && !state.safetyConfirmed[goal.id] && followupBtns[idx]) {
+              e.preventDefault();
+              followupBtns[idx].click();
+            } else if (scenarioBtns[idx]) {
+              e.preventDefault();
+              scenarioBtns[idx].click();
+            }
+          } else if (state.activeTab === "tab-quiz") {
+            const quizBtns = document.querySelectorAll("#quizOptionsContainer .quiz-opt-btn:not([disabled])");
+            const targetBtn = [...document.querySelectorAll("#quizOptionsContainer .quiz-opt-btn")][idx];
+            if (targetBtn && !targetBtn.disabled && quizBtns.length) {
+              e.preventDefault();
+              targetBtn.click();
+            }
+          }
+        } else if (e.key === "s" || e.key === "S") {
+          if (state.activeTab === "tab-culture") { e.preventDefault(); document.getElementById("btnSpeakStory")?.click(); }
+          else if (state.activeTab === "tab-safety") { e.preventDefault(); document.getElementById("btnSpeakScenario")?.click(); }
+          else if (state.activeTab === "tab-quiz") { e.preventDefault(); document.getElementById("btnSpeakQuiz")?.click(); }
+        } else if (e.key === "t" || e.key === "T") {
+          e.preventDefault();
+          document.getElementById("btnClassTimer")?.click();
         }
       });
       document.addEventListener('visibilitychange', () => {if(document.hidden) pauseSafetyGame();});
@@ -3181,6 +3487,13 @@
         image.src=drawResultCanvas().toDataURL('image/png');
         window.print();
       });
+      const btnAddClassPoster = document.getElementById('btnAddClassPoster');
+      if (btnAddClassPoster) {
+        btnAddClassPoster.addEventListener('click', () => {
+          playSound('stamp');
+          addCurrentStudentToClassPoster();
+        });
+      }
       document.getElementById('btnExportProgress').addEventListener('click',exportProgressJSON);
       document.getElementById('importProgressFile').addEventListener('change',event=>importProgressFiles([...event.target.files]));
 

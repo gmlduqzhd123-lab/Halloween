@@ -53,6 +53,9 @@
       if (combo >= 6) return `👑 ${combo}연속 정답! 우리 반 최고 안전 박사님이에요!`;
       if (combo >= 3) return `✨ ${combo}연속 정답! 안전 감각이 반짝반짝 빛나요!`;
       if (combo >= 1) return `🌱 ${combo}연속 정답! 좋은 출발이에요, 계속 이어 가요!`;
+      if (typeof state !== 'undefined' && state.teacher?.mode === 'together') {
+        return '🙆‍♂️ 다 함께 손가락으로 정답 번호를 표시한 뒤 확인해 봐요!';
+      }
       return '🎃 차근차근 이유를 생각하며 알맞은 답을 골라 봐요!';
     }
     function renderQuiz() {
@@ -83,7 +86,7 @@
       const round=state.quizReview ? state.quizAttemptRound : 0;
       const existing=(state.quizAttempts[id]||[]).find(a=>a.round===round);
       document.getElementById('quizComboBadge').textContent=`🔥 ${state.quizCombo}연속`;
-      document.getElementById('quizProgressBadge').textContent=`질문 ${state.quizIndex+1} / ${limit}`;
+      document.getElementById('quizProgressBadge').textContent=`질문 ${state.quizIndex+1} / ${limit}${typeof pairTurnSuffix === 'function' ? pairTurnSuffix(state.quizIndex) : ''}`;
       document.getElementById('quizQuestionNumber').textContent=`Q${qi+1}${state.quizReview?' 복습':''}`;
       document.getElementById('quizCategoryBadge').textContent=q.category;
       const typeTagEl=document.getElementById('quizTypeTag');

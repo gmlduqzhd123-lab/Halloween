@@ -75,10 +75,103 @@
       }
       const certButton=document.getElementById('btnDownloadCert');
       const participationButton=document.getElementById('btnDownloadParticipation');
-      if(certButton)certButton.disabled=!canDownloadSafetyCertificate();
+      if(certButton)certButton.disabled=!(canDownloadSafetyCertificate() || (classPosterActive && classPosterRecords.length>0));
       if(participationButton)participationButton.disabled=!canDownloadParticipation();
     }
+    let classPosterActive = false;
+    let classPosterRecords = [];
+    function drawCanvasQr(ctx, url, x, y, size) {
+      try {
+        if (typeof qrcode !== 'function') return;
+        const code = qrcode(0, 'M');
+        code.addData(url);
+        code.make();
+        const count = code.getModuleCount();
+        const pad = 6;
+        const cell = (size - pad * 2) / count;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(x, y, size, size);
+        ctx.fillStyle = '#0f172a';
+        for (let r = 0; r < count; r++) {
+          for (let c = 0; c < count; c++) {
+            if (code.isDark(r, c)) {
+              ctx.fillRect(x + pad + c * cell, y + pad + r * cell, Math.ceil(cell), Math.ceil(cell));
+            }
+          }
+        }
+      } catch (_) {}
+    }
+    function renderClassPosterCanvas(records) {
+      const canvas = document.getElementById('certificateCanvas');
+      if (!canvas || !Array.isArray(records) || !records.length) return;
+      classPosterActive = true;
+      classPosterRecords = records;
+      const clsLabel = safeLabel(records[0]?.profile?.className || state.profile.className, EDUCATION_DATA[state.grade].classDefault, 30);
+      const ctx = drawSheetBase(canvas, '🏆 우리 반 안전 대장 협동 포스터', `${THEMES[state.teacher.theme].label} · ${clsLabel} (${records.length}명 참여)`);
+      const items = records.slice(0, 12);
+      const cols = items.length <= 4 ? 2 : 3;
+      const rows = Math.ceil(items.length / cols);
+      const startX = 52, startY = 182, gridW = canvas.width - 104, gridH = 445;
+      const gap = 10;
+      const cellW = (gridW - gap * (cols - 1)) / cols;
+      const cellH = Math.min(138, (gridH - gap * Math.max(0, rows - 1)) / Math.max(1, rows));
+      items.forEach((rec, idx) => {
+        const col = idx % cols;
+        const row = Math.floor(idx / cols);
+        const cx = startX + col * (cellW + gap);
+        const cy = startY + row * (cellH + gap);
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.78)';
+        ctx.fillRect(cx, cy, cellW, cellH);
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx, cy, cellW, cellH);
+        const g = rec.grade || state.grade;
+        const gRec = (rec.gradeRecords && rec.gradeRecords[g]) || {};
+        const av = gRec.avatar || state.avatar || {costume:'🎃', char:'🧒', prop:'🕯️'};
+        const name = safeLabel(rec.profile?.name, `안전대장 ${idx + 1}`, 16);
+        const pledge = safeLabel(rec.profile?.pledge, '안전 약속을 실천해요!', 38);
+        ctx.textAlign = 'left';
+        ctx.font = `22px ${RESULT_FONT}`;
+        ctx.fillStyle = '#fff';
+        ctx.fillText(`${av.costume || '🎃'}${av.char || '🧒'}${av.prop || '🕯️'}`, cx + 10, cy + 30);
+        ctx.font = `bold 14px ${RESULT_FONT}`;
+        ctx.fillStyle = '#fde68a';
+        ctx.fillText(`${name} (${rec.candyPoints ?? 0}🍬)`, cx + 82, cy + 28, cellW - 90);
+        ctx.font = `12px ${RESULT_FONT}`;
+        ctx.fillStyle = '#e0e7ff';
+        printLines(ctx, pledge, cx + 10, cy + 56, cellW - 20, 18, 3);
+      });
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#fde68a';
+      ctx.font = `bold 15px ${RESULT_FONT}`;
+      ctx.fillText(`우리 반 모두가 서로를 배려하고 안전한 길을 선택하기로 약속했습니다! · ${new Date().toLocaleDateString('ko-KR')}`, canvas.width / 2, 658, 700);
+      ctx.textAlign = 'left';
+      renderLearningSummary();
+    }
+    function addCurrentStudentToClassPoster() {
+      rememberGrade();
+      const snapshot = {
+        sessionId: state.sessionId,
+        grade: state.grade,
+        candyPoints: state.candyPoints,
+        profile: {
+          school: state.profile.school || '',
+          className: state.profile.className || EDUCATION_DATA[state.grade].classDefault,
+          name: state.profile.name || `안전대장 ${classPosterRecords.length + 1}호`,
+          pledge: state.profile.pledge || '오른쪽으로 안전하게 걷고 친구를 배려하겠습니다!'
+        },
+        gradeRecords: JSON.parse(JSON.stringify(state.gradeRecords))
+      };
+      classPosterRecords.push(snapshot);
+      renderClassPosterCanvas(classPosterRecords);
+      const status = document.getElementById('importResults');
+      if (status) {
+        status.textContent = `🏆 협동 포스터에 ${classPosterRecords.length}명 등록됨: ${classPosterRecords.map(r => r.profile.name).join(', ')}`;
+      }
+      showToast(`우리 반 협동 포스터에 [${snapshot.profile.name}] 학생이 추가되었어요! (총 ${classPosterRecords.length}명)`, '🏆');
+    }
     function renderCertificateCanvas() {
+      classPosterActive = false;
       const canvas=document.getElementById('certificateCanvas');
       if(!canvas)return;
       const ctx=drawSheetBase(canvas,canDownloadSafetyCertificate()?'안전 대장 임명장':'안전 목표 확인 현황 · 미완료',`${THEMES[state.teacher.theme].label} · ${EDUCATION_DATA[state.grade].label} · ${getLevelTitle(state.candyPoints)}`);
@@ -88,10 +181,11 @@
       const identity=[safeLabel(state.profile.school,'학교명 미입력',40),safeLabel(state.profile.className,'학급 미입력',30),safeLabel(state.profile.name,'별칭 없는 학습자',40)].join(' · ');
       printLines(ctx,identity,canvas.width/2,188,680,24,2);
 
-      // Left showcase card: Custom Jack-o'-Lantern
+      // Left showcase card: Custom Jack-o'-Lantern or Theme Craft Item
+      const craftTitle = (typeof getThemeCraftConfig === 'function' ? getThemeCraftConfig().certTitle : null) || '나만의 호박등';
       ctx.fillStyle='rgba(15, 23, 42, 0.72)';ctx.fillRect(65,212,185,126);
       ctx.strokeStyle=state.lantern.lit?'#fbbf24':'#6366f1';ctx.lineWidth=2;ctx.strokeRect(65,212,185,126);
-      ctx.fillStyle='#fde68a';ctx.font=`bold 13px ${RESULT_FONT}`;ctx.fillText('나만의 호박등',157,232);
+      ctx.fillStyle='#fde68a';ctx.font=`bold 13px ${RESULT_FONT}`;ctx.fillText(craftTitle,157,232);
       ctx.font=`22px ${RESULT_FONT}`;ctx.fillText(state.lantern.hat||'🎩',157,258);
       ctx.beginPath();ctx.ellipse(157,290,36,26,0,0,Math.PI*2);
       ctx.fillStyle=state.lantern.lit?'#f97316':'#ea580c';ctx.fill();
@@ -138,6 +232,12 @@
       document.body.appendChild(link);link.click();link.remove();
     }
     function downloadCertificatePNG() {
+      if (classPosterActive && classPosterRecords.length > 0) {
+        renderClassPosterCanvas(classPosterRecords);
+        downloadCanvas(document.getElementById('certificateCanvas'), `우리반_안전대장_협동포스터_${safeLabel(state.profile.className, '우리반', 30)}.png`);
+        showToast('우리 반 안전 대장 협동 포스터를 저장했어요.', '🏆');
+        return;
+      }
       if(!canDownloadSafetyCertificate()){renderLearningSummary();showToast('안전 목표 6개를 새 질문으로 확인한 뒤 저장할 수 있어요.','🔎');return;}
       renderCertificateCanvas();
       downloadCanvas(document.getElementById('certificateCanvas'),`안전대장_임명장_${safeLabel(state.profile.name,'학습자',40)}.png`);
@@ -175,7 +275,18 @@
       y=printLines(ctx,`다시 확인한 목표: ${reviewed.length?reviewed.join(', '):'아직 없음'}`,75,y,950,34,5)+28;
       ctx.fillStyle='#fde68a';ctx.font=`bold 26px ${RESULT_FONT}`;ctx.fillText('내가 실천할 안전 약속',75,y);y+=44;
       ctx.fillStyle='#fff';ctx.font=`22px ${RESULT_FONT}`;
-      printLines(ctx,safeLabel(state.profile.pledge,'아직 적지 않았어요.'),75,y,950,35,8);
+      printLines(ctx,safeLabel(state.profile.pledge,'아직 적지 않았어요.'),75,y,950,35,5);
+      // Family 1-Minute Safety Quiz & QR Box (Idea 9)
+      const familyCheck = SAFETY_GOALS[0].checks[state.grade];
+      ctx.fillStyle='rgba(15, 23, 42, 0.82)';ctx.fillRect(75,1235,950,150);
+      ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.strokeRect(75,1235,950,150);
+      ctx.fillStyle='#fde68a';ctx.font=`bold 20px ${RESULT_FONT}`;
+      ctx.fillText('🏡 가족과 함께하는 1분 안전 대화 미션',95,1272);
+      ctx.fillStyle='#fff';ctx.font=`18px ${RESULT_FONT}`;
+      ctx.fillText(`Q. ${familyCheck[0]}`,95,1308,760);
+      ctx.fillStyle='#a7f3d0';ctx.font=`bold 18px ${RESULT_FONT}`;
+      ctx.fillText(`💡 가족과 나눌 정답: ${familyCheck[1][familyCheck[2]]}`,95,1344,760);
+      drawCanvasQr(ctx, typeof shareLessonUrl === 'function' ? shareLessonUrl() : 'https://gmlduqzhd123-lab.github.io/Halloween/', 890, 1250, 118);
       ctx.fillStyle='#cbd5e1';ctx.font=`16px ${RESULT_FONT}`;
       ctx.fillText(`학습 내용 버전 ${CONTENT_VERSION} · 이 기기에서 생성`,75,1430);
       return canvas;
@@ -215,9 +326,15 @@
       ctx.fillText('□ 앞이 잘 보이는 가면·모자 쓰기   □ 바닥에 끌리지 않는 옷 입기   □ 실제 경찰·소방 제복과 혼동되는 옷 피하기   □ 뾰족한 소품 피하기',75,y,955);
       y+=36;
       ctx.strokeStyle='#334155';ctx.lineWidth=1.5;
-      ctx.strokeRect(75,y,950,150);
-      ctx.font=`bold 19px ${RESULT_FONT}`;ctx.fillText('✍ 나의 안전·배려 다짐:',95,y+38);
-      ctx.beginPath();ctx.moveTo(95,y+85);ctx.lineTo(1005,y+85);ctx.moveTo(95,y+128);ctx.lineTo(1005,y+128);ctx.stroke();
+      ctx.strokeRect(75,y,950,130);
+      ctx.font=`bold 19px ${RESULT_FONT}`;ctx.fillText('✍ 나의 안전·배려 다짐:',95,y+36);
+      ctx.beginPath();ctx.moveTo(95,y+78);ctx.lineTo(1005,y+78);ctx.moveTo(95,y+114);ctx.lineTo(1005,y+114);ctx.stroke();
+      const famY = y + 148;
+      const famCheck = SAFETY_GOALS[1].checks[state.grade];
+      ctx.strokeRect(75,famY,950,104);
+      ctx.font=`bold 18px ${RESULT_FONT}`;ctx.fillText(`🏡 가정 연계 1분 안전 퀴즈: "${famCheck[0]}" (정답: ${famCheck[1][famCheck[2]]})`,95,famY+40,800);
+      ctx.font=`16px ${RESULT_FONT}`;ctx.fillText('가족에게 오늘 배운 안전 약속 한 가지를 소개하고 확인 서명을 받아 보세요: ________________ (인)',95,famY+78,800);
+      drawCanvasQr(ctx, typeof shareLessonUrl === 'function' ? shareLessonUrl() : 'https://gmlduqzhd123-lab.github.io/Halloween/', 915, famY+7, 90);
       ctx.font=`15px ${RESULT_FONT}`;ctx.fillStyle='#475569';
       ctx.fillText(`근거 자료: 국민재난안전포털 다중운집인파사고 국민행동요령 · 유네스코 · © 엽쌤 교육용 활동지`,65,1438);
       return canvas;
@@ -254,7 +371,8 @@
           records.push(data);
         }
         if(records.length>1){
-          status.textContent=`이 기기에서 ${records.length}개 결과를 확인했어요: ${records.map(r=>`${r.profile?.name||'별칭 없음'} (${r.grade}, ${r.candyPoints}점)`).join(' · ')}`;
+          renderClassPosterCanvas(records);
+          status.textContent=`이 기기에서 ${records.length}개 결과를 확인해 협동 포스터로 합쳤어요: ${records.map(r=>`${r.profile?.name||'별칭 없음'} (${r.grade}, ${r.candyPoints}점)`).join(' · ')}`;
           return;
         }
         if(records.length===1){

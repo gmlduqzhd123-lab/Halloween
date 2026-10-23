@@ -24,7 +24,7 @@
   <script src="./ys-qr.js" defer></script>
   <link rel="manifest" href="./manifest.json" />
   <title>할로윈 안전 놀이터 | 초등 할로윈 수업</title>
-  <link rel="stylesheet" href="./styles.css?v=78a80919c027c94a">
+  <link rel="stylesheet" href="./styles.css?v=07d97b7e906ec914">
 </head>
 <body class="storybook lesson-not-started antialiased selection:bg-orange-200 selection:text-slate-900">
 
@@ -234,9 +234,13 @@
                 </div>
                 <h3 id="storySlideTitle" class="font-title text-base sm:text-lg text-amber-200 nowrap"></h3>
                 <p id="storySlideBody" class="text-xs sm:text-sm text-gray-100 leading-relaxed"></p>
-                <div class="rounded-xl bg-indigo-950/90 border border-amber-400/40 p-2.5">
-                  <div class="text-[11px] font-extrabold text-amber-400 mb-0.5">한 문장으로 기억해요</div>
+                <div id="storyKeyPointBox" class="rounded-xl bg-indigo-950/90 border border-amber-400/40 p-2.5">
+                  <div class="flex flex-wrap items-center justify-between gap-1.5 mb-0.5">
+                    <div class="text-[11px] font-extrabold text-amber-400">한 문장으로 기억해요</div>
+                    <button type="button" id="btnEchoRead" class="mini-chip text-[11px] px-2 py-0.5" title="핵심 문장을 듣고 다 함께 따라 읽어요">🗣️ 따라 읽기</button>
+                  </div>
                   <p id="storySlideKeyPoint" class="text-xs sm:text-sm text-indigo-100 font-bold"></p>
+                  <p id="storyEchoStatus" class="hidden text-xs font-extrabold text-amber-300 mt-1"></p>
                 </div>
                 <div class="thinking-prompt">
                   <span>함께 이야기해요</span>
@@ -247,10 +251,11 @@
                 </div>
               </div>
 
-              <div class="flex items-center justify-between pt-2 border-t border-indigo-800/80 gap-2">
+              <div class="flex flex-wrap items-center justify-between pt-2 border-t border-indigo-800/80 gap-2">
                 <button type="button" id="btnPrevStory" class="nowrap px-3.5 py-2 rounded-xl bg-indigo-900 hover:bg-indigo-800 disabled:opacity-40 text-xs font-bold text-white border border-indigo-700 transition min-h-[38px]">
                   ← 이전 카드
                 </button>
+                <button type="button" id="btnThemeCraft" class="mini-chip hidden text-xs">🎒 안전 준비물 꾸미기</button>
                 <button type="button" id="btnNextStory" class="nowrap px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-xs font-black text-indigo-950 shadow-lg transition min-h-[38px]">
                   다음 카드 →
                 </button>
@@ -263,8 +268,8 @@
         <div id="pumpkinWorkshopCard" data-culture-stage="craft" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5 hidden">
           <div class="flex items-center justify-between gap-2 border-b border-indigo-800 pb-2">
             <div>
-              <span class="nowrap text-xs font-bold text-amber-400">체험 놀이터 · 나만의 호박 등불 만들기</span>
-              <h3 class="font-title text-base sm:text-lg text-white nowrap">나만의 호박등 만들기</h3>
+              <span id="craftWorkshopBadge" class="nowrap text-xs font-bold text-amber-400">체험 놀이터 · 나만의 호박 등불 만들기</span>
+              <h3 id="craftWorkshopTitle" class="font-title text-base sm:text-lg text-white nowrap">나만의 호박등 만들기</h3>
             </div>
             <button type="button" id="btnToggleLanternLight" class="nowrap px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-indigo-950 font-black text-xs shadow-lg transition min-h-[34px]">
               등불 켜기
@@ -574,18 +579,25 @@
         </div>
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
           <div class="border-b border-indigo-800 pb-2.5 space-y-1">
-            <div class="flex items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="nowrap text-xs font-bold text-amber-400">놀이 3 · 할로윈 옷장 고르기 (12종)</span>
-              <div class="flex items-center gap-1.5 shrink-0">
+              <div class="flex flex-wrap items-center gap-1.5 shrink-0">
                 <span id="costumeScoreBadge" class="nowrap px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-200 text-xs font-bold">
                   0 / 12
                 </span>
+                <button type="button" id="btnCostumeFocusMode" aria-pressed="false" class="nowrap px-2.5 py-1 rounded-lg bg-indigo-900 hover:bg-indigo-800 text-xs font-bold border border-indigo-700 min-h-[32px]" title="교실 전체가 한 장씩 크게 보며 O·X 퀴즈를 해요">
+                  🔍 1장씩 보기
+                </button>
                 <button type="button" id="btnResetCostume" class="nowrap px-2.5 py-1 rounded-lg bg-indigo-900 hover:bg-indigo-800 text-xs font-bold border border-indigo-700 min-h-[32px]">
                   다시 고르기
                 </button>
               </div>
             </div>
             <h2 class="font-title text-base sm:text-xl text-white nowrap">입어도 좋은 옷 vs 안 되는 옷!</h2>
+          </div>
+
+          <div id="costumeTogetherBanner" class="rounded-xl bg-indigo-950/90 border border-amber-400/40 px-3 py-2 text-xs font-bold text-amber-200">
+            🙆‍♂️ 우리 반 몸짓 O·X 퀴즈: 옷 카드를 보고 머리 위로 크게 ⭕(안전) 또는 ❌(피하기)를 만든 뒤 눌러 보세요!
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -758,6 +770,7 @@
                 <button type="button" id="btnDownloadParticipation" class="rounded-xl bg-emerald-600 px-3 py-2 font-bold">참여 확인서 PNG</button>
                 <button type="button" id="btnDownloadResult" class="rounded-xl bg-indigo-600 px-3 py-2 font-bold">학습 결과지 PNG</button>
                 <button type="button" id="btnPrintResult" class="rounded-xl bg-indigo-700 px-3 py-2 font-bold">결과지 인쇄</button>
+                <button type="button" id="btnAddClassPoster" class="rounded-xl bg-amber-600 px-3 py-2 font-bold">🏆 협동 포스터에 추가</button>
                 <button type="button" id="btnExportProgress" class="rounded-xl bg-indigo-700 px-3 py-2 font-bold">기록 JSON 내보내기</button>
                 <label class="rounded-xl bg-indigo-700 px-3 py-2 font-bold">기록 JSON 가져오기 <input id="importProgressFile" type="file" accept="application/json,.json" multiple class="w-full text-xs"></label>
                 <p id="importResults" class="sm:col-span-2 text-sm text-indigo-100"></p>
@@ -829,6 +842,12 @@
         </div>
         <div class="rounded-xl bg-indigo-950/90 p-3.5 border border-indigo-800 space-y-2">
           <div class="font-extrabold text-amber-300">👩‍🏫 선생님 수업 설정</div>
+          <div class="flex flex-wrap items-center gap-1.5 pb-1">
+            <span class="text-[11px] font-bold text-amber-200">⚡ 원클릭 프리셋:</span>
+            <button type="button" data-teacher-preset="morning10" class="mini-chip teacher-preset-btn text-[11px]">⚡ 아침·종례 10분 핵심</button>
+            <button type="button" data-teacher-preset="field20" class="mini-chip teacher-preset-btn text-[11px]">🚌 체험학습 전 안전점검</button>
+            <button type="button" data-teacher-preset="full40" class="mini-chip teacher-preset-btn text-[11px]">🎃 창체 40분 풀코스</button>
+          </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <label>학년군 <select id="teacherGrade" class="w-full rounded-lg bg-slate-900 p-2"><option value="1-2">1~2학년</option><option value="3-4">3~4학년</option><option value="5-6">5~6학년</option></select></label>
             <label>시간 <select id="teacherMinutes" class="w-full rounded-lg bg-slate-900 p-2"><option value="10">10분</option><option value="20">20분</option><option value="40">40분</option></select></label>
@@ -915,6 +934,6 @@
   </div>
   <img id="printResultImage" alt="학습 결과지 인쇄 이미지" />
 
-  <script src="./app.js?v=78a80919c027c94a" defer></script>
+  <script src="./app.js?v=07d97b7e906ec914" defer></script>
 </body>
 </html>
