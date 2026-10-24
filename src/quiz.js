@@ -49,6 +49,52 @@
       '🧙 배려하는 복장',
       '🌏 다문화 존중'
     ];
+    const QUIZ_GOAL_BRIDGE = [
+      { label: '문화의 기원과 다양성', tab: 'tab-culture', scenarioIdx: null },
+      { label: '보호자 동행·사전 약속', tab: 'tab-culture', scenarioIdx: null },
+      { label: '이동로와 출구 확인', tab: 'tab-safety', scenarioIdx: 0 },
+      { label: '혼잡 신호에 대응', tab: 'tab-safety', scenarioIdx: 2 },
+      { label: '물건보다 몸 먼저', tab: 'tab-safety', scenarioIdx: 4 },
+      { label: '떠밀림·넘어짐 몸 보호', tab: 'tab-safety', scenarioIdx: 3 },
+      { label: '다문화 고유 의미 존중', tab: 'tab-culture', scenarioIdx: null },
+      { label: '배려하는 복장과 축제 약속', tab: 'tab-costume', scenarioIdx: null }
+    ];
+    function renderQuizWeaknessBridge() {
+      const box = document.getElementById('quizWeaknessBridge');
+      if (!box) return;
+      box.replaceChildren();
+      const quizzes = EDUCATION_DATA[state.grade].quizzes;
+      const missedIndices = quizzes
+        .map((_, idx) => idx)
+        .filter(idx => !state.quizFirst[quizQuestionId(idx)]?.correct);
+      const header = document.createElement('div');
+      header.className = 'font-extrabold text-amber-300';
+      header.textContent = missedIndices.length
+        ? `🔍 오답 원인 진단 · 다시 살펴볼 핵심 원칙 (${missedIndices.length}개)`
+        : '🌟 모든 핵심 안전·문화 원칙을 첫 시도에 정확히 판단했어요!';
+      box.appendChild(header);
+      const wrap = document.createElement('div');
+      wrap.className = 'flex flex-wrap gap-1.5 pt-1';
+      const targetList = missedIndices.length ? missedIndices : [2, 3, 4];
+      targetList.forEach(qi => {
+        const info = QUIZ_GOAL_BRIDGE[qi % QUIZ_GOAL_BRIDGE.length];
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'mini-chip quiz-bridge-btn';
+        btn.dataset.qi = String(qi);
+        btn.textContent = `🎯 Q${qi + 1} · ${info.label} 복습 이동 →`;
+        btn.addEventListener('click', () => {
+          playSound('click');
+          if (info.scenarioIdx !== null) {
+            state.scenarioIndex = info.scenarioIdx;
+            renderScenario();
+          }
+          switchTab(info.tab);
+        });
+        wrap.appendChild(btn);
+      });
+      box.appendChild(wrap);
+    }
     function quizCheerMessage(combo) {
       if (combo >= 6) return `👑 ${combo}연속 정답! 우리 반 최고 안전 박사님이에요!`;
       if (combo >= 3) return `✨ ${combo}연속 정답! 안전 감각이 반짝반짝 빛나요!`;
@@ -75,6 +121,7 @@
           : `처음 틀리거나 확인하지 못한 문항 ${quizzes.length-first}개가 있어요(복습 확인 ${reviewed}개). 다시 판단해 보세요. 해설을 읽는 것만으로 이해 완료로 기록하지 않습니다.`;
         document.getElementById('btnReviewQuiz').disabled=first===quizzes.length;
         if(!state.quizReview && Object.keys(state.quizFirst).length>=quizzes.length) unlockStamp('s4','퀴즈 참여');
+        renderQuizWeaknessBridge();
         renderLearningSummary();
         return;
       }
@@ -131,7 +178,32 @@
         options.appendChild(btn);
       });
       if(existing){
-        explanation.className=`rounded-xl p-3 border ${existing.correct?'bg-emerald-950 border-emerald-400':'bg-rose-950 border-rose-400'} text-sm`;
-        explanation.textContent=`${existing.correct?'⭕ 이번 판단은 맞았어요.':'❌ 이번 판단은 다시 살펴봐요.'} ${q.explanation}`;
+        const bridge = QUIZ_GOAL_BRIDGE[qi % QUIZ_GOAL_BRIDGE.length];
+        explanation.className=`rounded-xl p-3 border ${existing.correct?'bg-emerald-950 border-emerald-400':'bg-rose-950 border-rose-400'} text-sm space-y-1.5`;
+        const mainText = document.createElement('p');
+        mainText.textContent = `${existing.correct?'⭕ 이번 판단은 맞았어요.':'❌ 이번 판단은 다시 살펴봐요.'} ${q.explanation}`;
+        explanation.appendChild(mainText);
+        if (bridge) {
+          const diagRow = document.createElement('div');
+          diagRow.className = 'flex flex-wrap items-center justify-between gap-1.5 pt-1 border-t border-indigo-700/60 text-xs';
+          const tagSpan = document.createElement('span');
+          tagSpan.className = 'font-extrabold text-amber-300';
+          tagSpan.textContent = `🎯 핵심 원칙: ${bridge.label}`;
+          diagRow.appendChild(tagSpan);
+          const jumpBtn = document.createElement('button');
+          jumpBtn.type = 'button';
+          jumpBtn.className = 'mini-chip quiz-inline-bridge-btn text-[11px]';
+          jumpBtn.textContent = `🎯 ${bridge.label} 바로 보기 →`;
+          jumpBtn.addEventListener('click', () => {
+            if (bridge.scenarioIdx !== null) {
+              state.scenarioIndex = bridge.scenarioIdx;
+              renderScenario();
+            }
+            playSound('click');
+            switchTab(bridge.tab);
+          });
+          diagRow.appendChild(jumpBtn);
+          explanation.appendChild(diagRow);
+        }
       }
     }

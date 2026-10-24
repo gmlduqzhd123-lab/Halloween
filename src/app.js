@@ -1374,6 +1374,18 @@
       const lbl = document.getElementById("speakBtnLabel");
       if (lbl) lbl.textContent = "소리 듣기";
     }
+    function currentSpeechRate() {
+      if (state.speechSlow) return 0.78;
+      return state.grade === '1-2' ? 0.88 : 0.98;
+    }
+    function syncSpeechRateButton() {
+      const btn = document.getElementById('btnSpeechRate');
+      const label = document.getElementById('speechRateLabel');
+      if (!btn) return;
+      btn.setAttribute('aria-pressed', String(!!state.speechSlow));
+      btn.classList.toggle('is-picked', !!state.speechSlow);
+      if (label) label.textContent = state.speechSlow ? '천천히 0.8x' : '보통 속도';
+    }
     function speakText(text) {
       stopSpeaking();
       if (!state.soundOn || !('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
@@ -1382,7 +1394,7 @@
       }
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang='ko-KR';
-      utterance.rate=state.grade==='1-2' ? 0.85 : 0.95;
+      utterance.rate=currentSpeechRate();
       try { window.speechSynthesis.speak(utterance); } catch (e) { showToast('음성을 사용할 수 없어 화면의 글로 진행해요.', '🔈'); }
     }
 
@@ -1683,13 +1695,15 @@
       }
     }
     const EASY_GLOSSARY = {
-      "풍습·전통": "옛날부터 그 지역 사람들이 해마다 이어 온 생활 모습이나 기념 방식이에요.",
-      "인류무형문화유산": "오래전부터 전해 내려와 세계가 함께 소중히 지키기로 약속한 전통문화예요.",
-      "비상구(출구)": "위급할 때 안전하게 밖으로 대피할 수 있는 초록색 표지판 문이에요.",
-      "다중밀집": "좁은 공간에 아주 많은 사람이 빽빽하게 모인 상태예요.",
-      "우측통행": "서로 마주 보고 걸을 때 부딪히지 않도록 오른쪽 길로 걷는 약속이에요.",
-      "대각선 이동": "사람들 흐름을 거스르지 않고 비스듬히 가장자리 넓은 곳으로 빠져나가는 방법이에요.",
-      "가슴 앞 공간(흉강)": "양팔로 가슴 앞을 감싸 폐가 숨을 편하게 쉴 수 있게 지키는 공간이에요."
+      "풍습·전통": "🏺 옛날부터 그 지역 사람들이 해마다 이어 온 생활 모습이나 기념 방식이에요.",
+      "인류무형문화유산": "🌍 오래전부터 전해 내려와 세계가 함께 소중히 지키기로 약속한 전통문화예요.",
+      "비상구(출구)": "🟩 위급할 때 안전하게 밖으로 대피할 수 있는 초록색 표지판 문이에요.",
+      "다중밀집": "👥 좁은 공간에 아주 많은 사람이 빽빽하게 모인 상태예요.",
+      "우측통행": "➡️ 서로 마주 보고 걸을 때 부딪히지 않도록 오른쪽 길로 걷는 약속이에요.",
+      "대각선 이동": "↗️ 사람들 흐름을 거스르지 않고 비스듬히 가장자리 넓은 곳으로 빠져나가는 방법이에요.",
+      "가슴 앞 공간(흉강)": "👐 양팔로 가슴 앞을 감싸 폐가 숨을 편하게 쉴 수 있게 지키는 공간이에요.",
+      "병목 현상": "🚧 넓은 길에서 갑자기 좁은 문이나 계단으로 사람이 몰려 길이 막히는 현상이에요.",
+      "집결 장소": "🚩 모둠 친구나 선생님을 놓쳤을 때 다시 만나기로 미리 약속한 넓은 장소예요."
     };
     const openedGlossaryByBox = {};
     function renderGlossaryBox(boxId, keys) {
@@ -1783,6 +1797,7 @@
       const pollKey = storyKey(progress.storyIndex);
       const pollBox = document.getElementById("storyPollBox");
       const pollFeedback = document.getElementById("storyPollFeedback");
+      const pairTalkBox = document.getElementById("storyPairTalkBox");
       const poll = getStoryPolls()[progress.storyIndex];
       if (pollBox && pollFeedback && poll) {
         pollBox.replaceChildren();
@@ -1803,9 +1818,36 @@
           const fbText = (poll.feedbacks && poll.feedbacks[pickedIdx]) || poll.feedback || "";
           pollFeedback.className = "text-xs mt-1.5 font-bold text-emerald-300";
           pollFeedback.textContent = `💬 ${fbText}`;
+          if (pairTalkBox) {
+            pairTalkBox.classList.remove("hidden");
+            pairTalkBox.replaceChildren();
+            const otherIdx = pickedIdx === 0 ? 1 : 0;
+            const otherOpt = poll.options[otherIdx] || poll.options[0];
+            const promptEl = document.createElement("div");
+            promptEl.className = "font-bold text-amber-200 leading-snug";
+            promptEl.textContent = `🤝 짝꿍 생각 나누기(20초): 내가 고른 이유를 말하고, [${otherOpt}] 보기를 고른 친구는 어떤 마음일지 함께 이야기해 볼까요?`;
+            const doneBtn = document.createElement("button");
+            doneBtn.type = "button";
+            doneBtn.id = "btnPairTalkDone";
+            const isTalkDone = !!storyPollPicked[`${pollKey}:talk`];
+            doneBtn.className = `mini-chip text-[11px] ${isTalkDone ? "is-picked" : ""}`;
+            doneBtn.textContent = isTalkDone ? "🌟 짝꿍과 생각 나눔 완료!" : "🗣️ 짝꿍과 이야기 나눴어요!";
+            doneBtn.addEventListener("click", () => {
+              storyPollPicked[`${pollKey}:talk`] = true;
+              playSound("correct");
+              awardOnce(storyRewardId(progress.storyIndex), 'pairtalk', 10, "짝꿍 생각 나누기");
+              renderStorySlide();
+            });
+            pairTalkBox.appendChild(promptEl);
+            pairTalkBox.appendChild(doneBtn);
+          }
         } else {
           pollFeedback.className = "hidden text-xs mt-1.5 font-bold";
           pollFeedback.textContent = "";
+          if (pairTalkBox) {
+            pairTalkBox.classList.add("hidden");
+            pairTalkBox.replaceChildren();
+          }
         }
       }
 
@@ -1841,8 +1883,9 @@
       if (readCount >= stories.length) {
         unlockStamp("s1", `놀이 1: ${THEMES[state.teacher.theme].label} 이야기`);
       }
-      renderGlossaryBox("storyGlossaryBox", halloween ? ["풍습·전통", "인류무형문화유산", "비상구(출구)"] : ["다중밀집", "우측통행", "비상구(출구)"]);
+      renderGlossaryBox("storyGlossaryBox", halloween ? ["풍습·전통", "인류무형문화유산", "비상구(출구)"] : ["다중밀집", "병목 현상", "집결 장소", "비상구(출구)"]);
       syncAutoReadButtons();
+      syncSpeechRateButton();
     }
 
     let currentRecipeIdx = 0;
@@ -1915,7 +1958,7 @@
       const current = getStories()[storyProgress().storyIndex];
       const utter = new SpeechSynthesisUtterance(`${current.title}. ${current.body}. 핵심 쏙쏙! ${current.keyPoint}`);
       utter.lang = "ko-KR";
-      utter.rate = state.grade === "1-2" ? 0.92 : 1.0;
+      utter.rate = currentSpeechRate();
       utter.onend = () => {
         document.getElementById("speakBtnLabel").textContent = "소리 듣기";
       };
@@ -2004,6 +2047,51 @@
       box.appendChild(btn);
     }
 
+    const SAFETY_PLANNER_ZONES = [
+      { id: 'exit', label: '🚪 비상구 유도등 설치', desc: '들어올 때 가장 먼저 비상구 위치를 표시해요.' },
+      { id: 'right', label: '➡️ 우측통행 화살표 바닥 스티커', desc: '복도에서 마주 오는 친구와 부딪히지 않게 길을 나눠요.' },
+      { id: 'line', label: '🚧 계단 줄서기·멈춤 제한선', desc: '좁은 계단 입구에서 한꺼번에 몰리지 않도록 간격을 띄워요.' },
+      { id: 'flag', label: '🚩 넓은 공터 안전 집결지 깃발', desc: '위험할 때 대각선으로 빠져나와 모일 장소를 알려 줘요.' }
+    ];
+    let safetyPlannerPlaced = {};
+    function renderSafetyPlanner() {
+      const box = document.getElementById('safetyPlannerBox');
+      if (!box) return;
+      box.replaceChildren();
+      const themeLabel = THEMES[state.teacher?.theme]?.label || '학교 행사';
+      const placedCount = SAFETY_PLANNER_ZONES.filter(z => safetyPlannerPlaced[z.id]).length;
+      const header = document.createElement('div');
+      header.className = 'flex flex-wrap items-center justify-between gap-1';
+      header.innerHTML = `<strong class="text-sky-200">🗺️ 내가 안전 기획자라면? (${themeLabel} 안전 표지판 배치)</strong><span id="safetyPlannerCount" class="text-[11px] font-black text-amber-300">설치 ${placedCount} / ${SAFETY_PLANNER_ZONES.length}</span>`;
+      box.appendChild(header);
+      const grid = document.createElement('div');
+      grid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-1.5';
+      SAFETY_PLANNER_ZONES.forEach(zone => {
+        const placed = !!safetyPlannerPlaced[zone.id];
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.dataset.zone = zone.id;
+        btn.setAttribute('aria-pressed', String(placed));
+        btn.className = `planner-zone-btn text-left rounded-xl px-2.5 py-2 border transition text-xs ${
+          placed
+            ? 'bg-emerald-950/80 border-emerald-400 text-emerald-100 font-bold'
+            : 'bg-slate-900/80 border-indigo-700 hover:border-amber-400 text-indigo-100'
+        }`;
+        btn.innerHTML = `<div class="font-extrabold">${placed ? '✅ 설치 완료 · ' : '➕ 클릭해 설치 · '}${zone.label}</div><div class="text-[11px] text-indigo-200 mt-0.5">${zone.desc}</div>`;
+        btn.addEventListener('click', () => {
+          safetyPlannerPlaced[zone.id] = !safetyPlannerPlaced[zone.id];
+          playSound(safetyPlannerPlaced[zone.id] ? 'correct' : 'click');
+          const doneAll = SAFETY_PLANNER_ZONES.every(z => safetyPlannerPlaced[z.id]);
+          if (doneAll) {
+            awardOnce('safety:planner', 'all', 15, '행사장 안전 표지판 4곳 설치 완료');
+          }
+          renderSafetyPlanner();
+        });
+        grid.appendChild(btn);
+      });
+      box.appendChild(grid);
+    }
+
     function renderScenario() {
       if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
       const item = SAFETY_SCENARIOS[state.scenarioIndex];
@@ -2066,7 +2154,8 @@
       nextBtn.textContent = state.scenarioIndex === SAFETY_SCENARIOS.length - 1 ? "다음: 옷차림 생각하기 →" : "다음 약속 →";
       renderSafetyFollowup();
       renderSafetyActionDrill();
-      renderGlossaryBox("safetyGlossaryBox", ["다중밀집", "우측통행", "대각선 이동", "가슴 앞 공간(흉강)"]);
+      renderSafetyPlanner();
+      renderGlossaryBox("safetyGlossaryBox", ["다중밀집", "우측통행", "대각선 이동", "가슴 앞 공간(흉강)", "병목 현상", "집결 장소"]);
     }
 
     function renderSafetyFollowup() {
@@ -2198,6 +2287,13 @@
     // GAME_MODULE
 
     // ==================== TAB 3: AVATAR DRESS-UP & COSTUME SORTING ====================
+    const AVATAR_MISSIONS = [
+      { id: 'night', title: '🌙 저녁 축제에서도 눈에 잘 띄고 두 손이 자유로운 코디', tip: '밝은 의상이나 야광 소품을 고르고 밤길 반사 테스트를 켜 보세요!' },
+      { id: 'stairs', title: '🪜 계단과 복도를 걸을 때 발에 걸리지 않는 활동 코디', tip: '끌리지 않는 단정한 옷과 앞이 잘 보이는 모자·머리띠를 골라 보세요!' },
+      { id: 'respect', title: '🤝 친구를 놀라게 하지 않고 경찰·소방관과 헷갈리지 않는 코디', tip: '실제 제복이나 날카로운 장난감 대신 친근한 축제 소품을 골라 보세요!' }
+    ];
+    let avatarMissionIndex = 0;
+
     function renderAvatarDressup() {
       document.getElementById("avatarCharIcon").textContent = state.avatar.char;
       document.getElementById("avatarCostumeIcon").textContent = state.avatar.costume;
@@ -2207,6 +2303,42 @@
       syncButtonGroup(".avatar-costume-btn", "data-costume", state.avatar.costume);
       syncButtonGroup(".avatar-prop-btn", "data-prop", state.avatar.prop);
       syncButtonGroup(".cert-sticker-btn", "data-sticker", state.certSticker);
+
+      const missionBox = document.getElementById("avatarMissionBox");
+      if (missionBox) {
+        const mission = AVATAR_MISSIONS[avatarMissionIndex % AVATAR_MISSIONS.length];
+        missionBox.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-1.5">
+            <span id="avatarMissionTitle" class="font-extrabold text-amber-200">🎯 오늘의 코디 미션 (${(avatarMissionIndex % AVATAR_MISSIONS.length) + 1}/${AVATAR_MISSIONS.length}): ${mission.title}</span>
+            <button id="btnNextAvatarMission" type="button" class="mini-chip text-[11px]">🔄 다음 미션</button>
+          </div>
+          <p class="text-[11px] text-indigo-200">${mission.tip}</p>
+        `;
+        const nextMissionBtn = document.getElementById("btnNextAvatarMission");
+        if (nextMissionBtn) {
+          nextMissionBtn.addEventListener("click", () => {
+            avatarMissionIndex = (avatarMissionIndex + 1) % AVATAR_MISSIONS.length;
+            playSound("click");
+            renderAvatarDressup();
+          });
+        }
+      }
+
+      const checklistBox = document.getElementById("avatarSafetyChecklist");
+      if (checklistBox) {
+        const isNightTested = document.getElementById("avatarRunwayStage")?.classList.contains("night-stage-active");
+        const checks = [
+          { label: "👀 시야 확보 (눈 가리지 않음)", ok: true },
+          { label: "👟 보행 편리 (끌리지 않는 길이)", ok: true },
+          { label: "✨ 야간 식별 (밝은 소품·야광 확인)", ok: Boolean(isNightTested || ["🎃", "🕯️", "⭐"].includes(state.avatar.prop) || ["🧙", "🧚"].includes(state.avatar.costume)) },
+          { label: "🚫 유사 제복·위험 소품 제외", ok: true }
+        ];
+        checklistBox.innerHTML = checks.map(c => `
+          <div class="rounded-lg px-2 py-1.5 border ${c.ok ? "bg-emerald-950/70 border-emerald-500/60 text-emerald-200" : "bg-amber-950/60 border-amber-400/60 text-amber-200"} font-bold flex items-center gap-1">
+            <span>${c.ok ? "✅" : "💡"}</span><span>${c.label}</span>
+          </div>
+        `).join("");
+      }
     }
 
     let costumePage = 0;
@@ -2383,6 +2515,18 @@
       'tab-quiz':['4 / 4','생각 정리','배운 내용을 질문으로 확인해요.'],
       'tab-cert':['마무리','나의 배움 기록','오늘의 결과를 보고 안전 약속을 남겨요.']
     };
+    const LESSON_PACEMAKER = {
+      10: { 'tab-culture': '⏱️ 10분 코스 · 핵심 2분', 'tab-safety': '⏱️ 10분 코스 · 핵심 4분', 'tab-costume': '⏱️ 10분 코스 · 핵심 2분', 'tab-quiz': '⏱️ 10분 코스 · 핵심 2분', 'tab-cert': '⏱️ 10분 코스 · 마무리' },
+      20: { 'tab-culture': '⏱️ 20분 코스 · 권장 5분', 'tab-safety': '⏱️ 20분 코스 · 권장 6분', 'tab-costume': '⏱️ 20분 코스 · 권장 4분', 'tab-quiz': '⏱️ 20분 코스 · 권장 3분', 'tab-cert': '⏱️ 20분 코스 · 권장 2분' },
+      40: { 'tab-culture': '⏱️ 40분 코스 · 권장 10분', 'tab-safety': '⏱️ 40분 코스 · 권장 12분', 'tab-costume': '⏱️ 40분 코스 · 권장 8분', 'tab-quiz': '⏱️ 40분 코스 · 권장 5분', 'tab-cert': '⏱️ 40분 코스 · 권장 5분' }
+    };
+    function updateLessonPacemaker(tabId = state.activeTab) {
+      const badge = document.getElementById('lessonPacemakerBadge');
+      if (!badge) return;
+      const mins = Number(state.teacher?.minutes) || 20;
+      const map = LESSON_PACEMAKER[mins] || LESSON_PACEMAKER[20];
+      badge.textContent = map[tabId] || `⏱️ ${mins}분 수업`;
+    }
     function lessonStep(tabId) {
       if (tabId === 'tab-culture' && !isHalloweenTheme()) return ['1 / 4', `${THEMES[state.teacher.theme].label} 이야기`, '그림 이야기를 읽고 안전한 행동을 생각해요.'];
       return lessonSteps[tabId] || lessonSteps['tab-culture'];
@@ -2391,6 +2535,7 @@
       const step = lessonStep(state.activeTab);
       document.getElementById('lessonStageTitle').textContent = step[1];
       document.getElementById('lessonStageHint').textContent = step[2];
+      updateLessonPacemaker(state.activeTab);
     }
     function hasLessonProgress() {
       const initialTab = (state.teacher && state.teacher.start) || 'tab-culture';
@@ -2463,6 +2608,7 @@
       });
       syncWelcomeGrade();
       updateStartLessonButtonLabel();
+      syncSpeechRateButton();
       renderStamps();renderCandyHeader();renderStorySlide();renderLanternWorkshop();
       renderScenario();renderThemeSituations();renderAvatarDressup();renderCostumeCards();
       renderEtiquetteChecklist();renderQuiz();renderTeacherSettings();
@@ -2534,6 +2680,7 @@
       document.getElementById('lessonStageNumber').textContent = step[0];
       document.getElementById('lessonStageTitle').textContent = step[1];
       document.getElementById('lessonStageHint').textContent = step[2];
+      updateLessonPacemaker(tabId);
       document.querySelectorAll(".tab-panel").forEach(panel => {
         if (panel.id === tabId) {
           panel.classList.remove("hidden");
@@ -2771,7 +2918,9 @@
           renderStorySlide();
           renderLanternWorkshop();
           syncLessonStage();
+          renderScenario();
           renderThemeSituations();
+          drawSafetyGame();
           renderLearningSummary();
           renderCertificateCanvas();
           saveProgress();
@@ -2875,6 +3024,25 @@
       const lessonStageInfo = document.getElementById('lessonStageInfo');
       if (lessonStageInfo) {
         lessonStageInfo.addEventListener('click', () => document.getElementById('btnMoreTools').click());
+      }
+      const btnSpotlightMode = document.getElementById('btnSpotlightMode');
+      if (btnSpotlightMode) {
+        btnSpotlightMode.addEventListener('click', () => {
+          const active = document.body.classList.toggle('spotlight-mode');
+          btnSpotlightMode.setAttribute('aria-pressed', String(active));
+          btnSpotlightMode.textContent = active ? '🎯 기본 화면' : '🎯 집중 확대';
+          playSound('click');
+          showToast(active ? '전자칠판 집중 확대 모드가 켜졌어요!' : '기본 수업 화면으로 돌아왔어요.', '🎯');
+        });
+      }
+      const btnSpeechRate = document.getElementById('btnSpeechRate');
+      if (btnSpeechRate) {
+        btnSpeechRate.addEventListener('click', () => {
+          state.speechSlow = !state.speechSlow;
+          syncSpeechRateButton();
+          playSound('click');
+          showToast(state.speechSlow ? '음성 읽기 속도를 천천히(0.8x)로 맞췄어요.' : '음성 읽기 속도를 보통 속도로 맞췄어요.', '🐢');
+        });
       }
       document.getElementById('btnMoreTools').addEventListener('click', () => {
         const open = document.body.classList.toggle('tools-open');
@@ -3353,6 +3521,7 @@
           document.getElementById("avatarJudgeText").textContent = isNight
             ? "✨ 어두운 밤길에서도 야광 소품과 밝은 의상이 반짝반짝 잘 보여요!"
             : "시야 확보 OK! 밤길 안전 반사 OK!";
+          renderAvatarDressup();
         });
       }
       document.getElementById("btnRunwayShow").addEventListener("click", () => {
@@ -3367,7 +3536,7 @@
         awardOnce('avatar:runway','reason',20,'꾸미기 이유 설명');
         saveProgress();
       });
-      document.getElementById('avatarSafetyReason').addEventListener('change',e=>{state.avatarReason=e.target.value;saveProgress();});
+      document.getElementById('avatarSafetyReason').addEventListener('change',e=>{state.avatarReason=e.target.value;saveProgress();renderAvatarDressup();});
       document.getElementById('avatarReasonText').addEventListener('input',e=>{state.avatarReasonText=e.target.value.slice(0,120);saveProgress();});
 
       document.getElementById("btnResetCostume").addEventListener("click", () => {
@@ -3492,6 +3661,37 @@
         btnAddClassPoster.addEventListener('click', () => {
           playSound('stamp');
           addCurrentStudentToClassPoster();
+        });
+      }
+      const btnDownloadWallPoster = document.getElementById('btnDownloadWallPoster');
+      if (btnDownloadWallPoster) {
+        btnDownloadWallPoster.addEventListener('click', () => {
+          playSound('stamp');
+          downloadCanvas(drawWallPosterCanvas(), `교실게시용_6대안전수칙포스터_${safeLabel(state.profile.className, EDUCATION_DATA[state.grade].classDefault, 20)}.png`);
+        });
+      }
+      const btnDownloadParentCard = document.getElementById('btnDownloadParentCard');
+      if (btnDownloadParentCard) {
+        btnDownloadParentCard.addEventListener('click', () => {
+          playSound('stamp');
+          downloadCanvas(drawParentCardCanvas(), `가정연계_안전대화카드_${safeLabel(state.profile.name, '어린이', 20)}.png`);
+        });
+      }
+      const btnCopyStudentCode = document.getElementById('btnCopyStudentCode');
+      if (btnCopyStudentCode) {
+        btnCopyStudentCode.addEventListener('click', () => {
+          const code = document.getElementById('studentShareCodeInput')?.value || generateStudentShareCode();
+          copyTextWithToast(code, '내 결과 단축 코드가 복사되었어요! 선생님께 전달해 보세요.');
+        });
+      }
+      const btnImportStudentCode = document.getElementById('btnImportStudentCode');
+      if (btnImportStudentCode) {
+        btnImportStudentCode.addEventListener('click', () => {
+          const input = document.getElementById('importStudentCodeInput');
+          if (!input) return;
+          if (importStudentShareCode(input.value)) {
+            input.value = '';
+          }
         });
       }
       document.getElementById('btnExportProgress').addEventListener('click',exportProgressJSON);

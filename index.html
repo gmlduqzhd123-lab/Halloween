@@ -24,7 +24,7 @@
   <script src="./ys-qr.js" defer></script>
   <link rel="manifest" href="./manifest.json" />
   <title>할로윈 안전 놀이터 | 초등 할로윈 수업</title>
-  <link rel="stylesheet" href="./styles.css?v=07d97b7e906ec914">
+  <link rel="stylesheet" href="./styles.css?v=3d0d625bd4335c17">
 </head>
 <body class="storybook lesson-not-started antialiased selection:bg-orange-200 selection:text-slate-900">
 
@@ -173,8 +173,8 @@
       </section>
 
       <div id="lessonStage" class="lesson-stage" aria-live="polite">
-        <div id="lessonStageInfo" class="cursor-pointer" title="누르면 활동 이동 메뉴가 열려요"><span id="lessonStageNumber">1 / 4</span><strong id="lessonStageTitle" tabindex="-1">문화 이야기</strong><p id="lessonStageHint">그림 이야기를 읽고 문화를 살펴봐요.</p></div>
-        <div class="flex flex-wrap items-center gap-1.5"><button type="button" id="btnClassTimer" class="nowrap px-2.5 py-1.5 rounded-xl bg-indigo-900 hover:bg-indigo-800 border border-amber-400/50 text-xs font-extrabold text-amber-200 transition" title="학급 전체 손가락(1·2번) 투표 5초 카운트다운">⏱️ 5초 투표</button><button type="button" id="btnMoreTools" aria-expanded="false" aria-controls="headerTools">설정·활동 이동</button></div>
+        <div id="lessonStageInfo" class="cursor-pointer" title="누르면 활동 이동 메뉴가 열려요"><span id="lessonStageNumber">1 / 4</span><strong id="lessonStageTitle" tabindex="-1">문화 이야기</strong><p id="lessonStageHint">그림 이야기를 읽고 문화를 살펴봐요.</p><div id="lessonPacemakerBadge" class="text-[11px] font-bold text-amber-200 mt-0.5">⏳ 40분 수업 · 권장 10분</div></div>
+        <div class="flex flex-wrap items-center gap-1.5"><button type="button" id="btnSpotlightMode" aria-pressed="false" class="nowrap px-2.5 py-1.5 rounded-xl bg-indigo-900 hover:bg-indigo-800 border border-indigo-700 text-xs font-extrabold text-indigo-100 transition" title="전자칠판 본문·질문 집중 확대 모드">🔭 칠판 집중</button><button type="button" id="btnClassTimer" class="nowrap px-2.5 py-1.5 rounded-xl bg-indigo-900 hover:bg-indigo-800 border border-amber-400/50 text-xs font-extrabold text-amber-200 transition" title="학급 전체 손가락(1·2번) 투표 5초 카운트다운">⏱️ 5초 투표</button><button type="button" id="btnMoreTools" aria-expanded="false" aria-controls="headerTools">설정·활동 이동</button></div>
       </div>
       <div id="classTimerBanner" class="hidden rounded-2xl bg-amber-500/20 border-2 border-amber-400 px-4 py-3 text-center font-extrabold text-amber-200 text-sm sm:text-base shadow-lg" aria-live="assertive">
       </div>
@@ -203,6 +203,7 @@
                 <button type="button" id="btnSpeakStory" class="nowrap px-2.5 py-1 rounded-lg bg-indigo-800 hover:bg-indigo-700 text-amber-300 text-xs font-bold border border-indigo-600 transition flex items-center gap-1 min-h-[32px]">
                   <span aria-hidden="true">🔈</span> <span id="speakBtnLabel">소리 듣기</span>
                 </button>
+                <button type="button" id="btnSpeechRate" aria-pressed="false" class="speech-rate-btn nowrap px-2.5 py-1 rounded-lg bg-indigo-900 hover:bg-indigo-800 text-indigo-200 text-xs font-bold border border-indigo-700 transition flex items-center gap-1 min-h-[32px]" title="읽어주기 속도를 천천히(0.8배속) 또는 보통(1.0배속)으로 바꿔요"><span aria-hidden="true">🐢</span> <span id="speechRateLabel">보통 속도</span></button>
                 <button type="button" id="btnAutoRead" aria-pressed="false" class="auto-read-btn nowrap px-2.5 py-1 rounded-lg bg-indigo-900 hover:bg-indigo-800 text-indigo-200 text-xs font-bold border border-indigo-700 transition flex items-center gap-1 min-h-[32px]" title="카드를 넘길 때마다 자동으로 읽어 줘요"><span aria-hidden="true">📖</span> <span class="auto-read-label">자동 읽기 OFF</span></button>
                 <span id="storyReadCountBadge" class="nowrap px-2.5 py-1 rounded-lg bg-orange-500/20 border border-orange-400/40 text-orange-200 text-xs font-bold">
                   1 / 6
@@ -247,6 +248,7 @@
                   <p id="storyThinkingQuestion"></p>
                   <div id="storyPollBox" class="mt-2 flex flex-wrap gap-1.5"></div>
                   <p id="storyPollFeedback" class="hidden text-xs mt-1.5 font-bold"></p>
+                  <div id="storyPairTalkBox" class="hidden mt-2 p-2.5 rounded-xl bg-indigo-950/90 border border-amber-400/40 text-xs space-y-1.5"></div>
                   <div id="storyGlossaryBox" class="mt-2 pt-2 border-t border-indigo-800/70 space-y-1 text-xs"></div>
                 </div>
               </div>
@@ -448,6 +450,8 @@
           </div>
         </div>
 
+        <div id="safetyPlannerBox" class="glass-card rounded-2xl p-4 space-y-2.5 text-xs"></div>
+
         <div id="optionalSafetyGame" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3 optional-card">
           <button type="button" id="btnToggleSafetyGame" class="optional-toggle" aria-expanded="false" aria-controls="safetyGameContents">더 해보기 · 안전한 길 찾기 게임 <span aria-hidden="true">＋</span></button>
           <div id="safetyGameContents">
@@ -466,6 +470,11 @@
               </button>
             </div>
             <h3 class="font-title text-base sm:text-xl text-amber-300">🎮 안전한 길을 찾아 이동해요</h3>
+          </div>
+
+          <div id="gameCrowdMeter" class="rounded-xl px-3 py-1.5 bg-indigo-950/90 border border-emerald-400/50 text-xs font-extrabold text-emerald-300 flex flex-wrap items-center justify-between gap-1 my-2">
+            <span id="gameCrowdMeterText">🟢 실시간 혼잡도: 여유 (안전 거리 유지)</span>
+            <span id="gameThemePlaceBadge" class="text-[11px] font-bold text-amber-200">🎃 할로윈 축제 거리</span>
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-center">
@@ -517,6 +526,8 @@
               내 선택 설명하기
             </button>
           </div>
+          <div id="avatarMissionBox" class="rounded-xl bg-indigo-950/90 border border-amber-400/40 px-3 py-2 text-xs flex flex-wrap items-center justify-between gap-2"></div>
+          <div id="avatarSafetyChecklist" class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[11px] font-bold"></div>
 
           <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-center">
             <!-- Avatar Stage -->
@@ -692,6 +703,7 @@
             <div class="text-5xl">🎉</div>
             <h3 id="quizFinalScoreTitle" class="font-title text-xl sm:text-2xl text-amber-300"></h3>
             <p id="quizFinalScoreDesc" class="text-xs sm:text-sm text-indigo-100 max-w-md mx-auto"></p>
+            <div id="quizWeaknessBridge" class="rounded-xl bg-indigo-950/90 border border-indigo-700 p-3 text-left text-xs space-y-2 max-w-lg mx-auto"></div>
             <button type="button" id="btnReviewQuiz" class="rounded-xl bg-indigo-700 px-4 py-2 font-bold">틀린 문제 다시 확인</button>
             <div class="pt-1">
               <button type="button" id="btnGoToCertFromQuiz" class="nowrap px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-indigo-950 font-black text-xs sm:text-sm shadow-lg min-h-[44px]">
@@ -771,8 +783,21 @@
                 <button type="button" id="btnDownloadResult" class="rounded-xl bg-indigo-600 px-3 py-2 font-bold">학습 결과지 PNG</button>
                 <button type="button" id="btnPrintResult" class="rounded-xl bg-indigo-700 px-3 py-2 font-bold">결과지 인쇄</button>
                 <button type="button" id="btnAddClassPoster" class="rounded-xl bg-amber-600 px-3 py-2 font-bold">🏆 협동 포스터에 추가</button>
+                <button type="button" id="btnDownloadWallPoster" class="rounded-xl bg-orange-600 px-3 py-2 font-bold text-xs">🪧 교실 게시용 안전수칙 포스터 PNG</button>
+                <button type="button" id="btnDownloadParentCard" class="rounded-xl bg-sky-600 px-3 py-2 font-bold text-xs">💌 가정통신문 요약 카드뉴스 PNG</button>
                 <button type="button" id="btnExportProgress" class="rounded-xl bg-indigo-700 px-3 py-2 font-bold">기록 JSON 내보내기</button>
                 <label class="rounded-xl bg-indigo-700 px-3 py-2 font-bold">기록 JSON 가져오기 <input id="importProgressFile" type="file" accept="application/json,.json" multiple class="w-full text-xs"></label>
+                <div class="sm:col-span-2 rounded-xl bg-indigo-950/90 border border-indigo-700 p-2.5 space-y-2 text-xs">
+                  <div class="font-extrabold text-amber-300">⚡ 무서버 배움 코드 · 학급 포스터 즉시 합산</div>
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <input id="studentShareCodeInput" type="text" readonly class="flex-1 min-w-0 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-indigo-700 text-xs text-indigo-100" value="" aria-label="내 배움 코드" />
+                    <button type="button" id="btnCopyStudentCode" class="mini-chip text-xs">📋 내 코드 복사</button>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <input id="importStudentCodeInput" type="text" placeholder="학생 배움 코드를 붙여넣으세요" class="flex-1 min-w-0 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-indigo-700 text-xs text-white" aria-label="학생 배움 코드 입력" />
+                    <button type="button" id="btnImportStudentCode" class="mini-chip text-xs">➕ 코드로 포스터 추가</button>
+                  </div>
+                </div>
                 <p id="importResults" class="sm:col-span-2 text-sm text-indigo-100"></p>
               </div>
 
@@ -934,6 +959,6 @@
   </div>
   <img id="printResultImage" alt="학습 결과지 인쇄 이미지" />
 
-  <script src="./app.js?v=07d97b7e906ec914" defer></script>
+  <script src="./app.js?v=3d0d625bd4335c17" defer></script>
 </body>
 </html>

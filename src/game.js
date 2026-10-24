@@ -2,9 +2,48 @@
     let gameAnimId = null;
     const STAGE_MISSIONS = {
       1: '1단계 미션: 🟩 비상구 표지판을 확인하며 넓은 출구로 이동해요!',
-      2: '2단계 미션: ➡️ 우측통행 화살표를 따라가고 🍬 떨어진 사탕은 줍지 말아요!',
+      2: '2단계 미션: ➡️ 우측통행 화살표를 따라가고 🍬 떨어진 물건은 줍지 말아요!',
       3: '3단계 미션: 👧 길가의 친구와 함께 대각선 넓은 출구로 빠져나와요!'
     };
+    const THEME_GAME_MAP = {
+      halloween: { place: '🎃 할로윈 축제 거리', trapIcon: '🍬', trapLabel: '떨어진 사탕 주의' },
+      school: { place: '🏫 학교 축제 강당 복도', trapIcon: '📄', trapLabel: '떨어진 안내지 주의' },
+      field: { place: '🚌 박물관 전시실 통로', trapIcon: '🎁', trapLabel: '떨어진 기념품 주의' },
+      trip: { place: '🧳 수학여행 숙소·골목', trapIcon: '🧳', trapLabel: '넘어진 가방 주의' },
+      sports: { place: '🏅 체육대회 응원석 출입구', trapIcon: '📣', trapLabel: '떨어진 응원도구 주의' },
+      local: { place: '🎪 야외 무대 푸드트럭 거리', trapIcon: '🥤', trapLabel: '떨어진 소지품 주의' }
+    };
+    function getActiveGameTheme() {
+      const key = (typeof state !== 'undefined' && state.teacher?.theme) || 'halloween';
+      return THEME_GAME_MAP[key] || THEME_GAME_MAP.halloween;
+    }
+    function updateGameCrowdMeter() {
+      if (typeof document === 'undefined') return;
+      const meterText = document.getElementById('gameCrowdMeterText');
+      const placeBadge = document.getElementById('gameThemePlaceBadge');
+      const themeCfg = getActiveGameTheme();
+      if (placeBadge) placeBadge.textContent = themeCfg.place;
+      if (!meterText) return;
+      if (safetyGame.won) {
+        meterText.textContent = '🟢 실시간 혼잡도: 안전 출구 도착 완료!';
+        return;
+      }
+      if (safetyGame.route === 'crowded') {
+        meterText.textContent = '🔴 실시간 혼잡도: 위험 (좁은 병목 구간! 넓은 길로 바꾸세요)';
+        return;
+      }
+      const p = safetyGame.player;
+      const minDist = safetyGame.hazards.length
+        ? Math.min(...safetyGame.hazards.map(h => Math.hypot(p.x - h.x, p.y - h.y) - h.r))
+        : 999;
+      if (minDist < 48) {
+        meterText.textContent = '🔴 실시간 혼잡도: 밀집 경고 (어깨가 닿아요! 가장자리로 이동)';
+      } else if (minDist < 95) {
+        meterText.textContent = '🟡 실시간 혼잡도: 주의 (보행 속도와 앞뒤 간격 살피기)';
+      } else {
+        meterText.textContent = '🟢 실시간 혼잡도: 여유 (안전 거리 유지 중)';
+      }
+    }
     const safetyGame = {
       running:false, won:false, paused:false, route:null, lastFrame:0,
       player:{x:42,y:210,r:13,targetX:null,targetY:null},
@@ -50,12 +89,13 @@
       if (state.gameStage === 3 && !isEasyGrade) {
         safetyGame.hazards.push({x:290,y:140,r:22,dx:speed*0.5,dy:0});
       }
+      const themeCfg = getActiveGameTheme();
       if (state.gameStage === 1) {
         safetyGame.items = [{x:240,y:76,r:16,kind:'sign',icon:'🟩',label:'비상구 확인',done:false}];
       } else if (state.gameStage === 2) {
         safetyGame.items = [
           {x:280,y:72,r:16,kind:'lane',icon:'➡️',label:'우측통행 유지',done:false},
-          {x:270,y:165,r:18,kind:'candyTrap',icon:'🍬',label:'떨어진 사탕 주의',done:false}
+          {x:270,y:165,r:18,kind:'candyTrap',icon:themeCfg.trapIcon,label:themeCfg.trapLabel,done:false}
         ];
       } else {
         safetyGame.items = [{x:175,y:86,r:16,kind:'friend',icon:'👧',label:'친구와 동행',done:false}];
@@ -64,6 +104,7 @@
       document.getElementById('btnStartCanvasGame').textContent = '⏸ 일시정지';
       syncStageButtons();
       updateGameStatusText('먼저 경로를 고르세요');
+      updateGameCrowdMeter();
       renderGameChoices();
       gameLoop();
     }
@@ -100,6 +141,7 @@
       safetyGame.decisionRecorded=true;
       if (choice==='wide') updateGameStatusText('혼잡한 길을 피해 출구로 이동해요');
       else updateGameStatusText('혼잡한 길을 골랐어요. 경로를 다시 살펴보세요');
+      updateGameCrowdMeter();
       renderGameChoices();
       drawSafetyGame();
     }
@@ -188,12 +230,17 @@
       if(safetyGame.route==='wide' && p.x>e.x && p.x<e.x+e.w && p.y>e.y && p.y<e.y+e.h) {
         safetyGame.won=true;safetyGame.running=false;
         updateGameStatusText(safetyGame.bonusCollected ? '🌟 미션 달성! 안전하게 출구에 도착했어요' : '이동 가능한 출구에 도착했어요 · 이유도 확인해요');
-        document.getElementById('btnStartCanvasGame').textContent=state.gameStage<3?'▶ 다음 단계':'▶ 다시 시작';
+        if (typeof document !== 'undefined') {
+          const startBtn = document.getElementById('btnStartCanvasGame');
+          if (startBtn) startBtn.textContent=(typeof state !== 'undefined' && state.gameStage<3)?'▶ 다음 단계':'▶ 다시 시작';
+        }
         renderGameChoices();
         stopSafetyGameLoop();
       }
+      updateGameCrowdMeter();
     }
     function drawSafetyGame() {
+      updateGameCrowdMeter();
       const canvas=document.getElementById('safetyGameCanvas');
       if(!canvas)return;
       const ctx=canvas.getContext('2d');
@@ -209,6 +256,8 @@
       ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(230,165);ctx.lineTo(400,170);ctx.stroke();
       ctx.fillStyle='#a7f3d0';ctx.font='bold 12px "Gowun Dodum", sans-serif';
       ctx.fillText(STAGE_MISSIONS[stageNum] || '🟢 덜 붐비는 넓은 길',18,22);
+      ctx.fillStyle='#fde68a';ctx.font='bold 11px "Gowun Dodum", sans-serif';
+      ctx.fillText(getActiveGameTheme().place,435,20);
       ctx.fillStyle='#fecaca';ctx.font='bold 12px "Gowun Dodum", sans-serif';ctx.fillText('🔴 혼잡한 좁은 길',220,208);
       if(typeof state!=='undefined' && state.grade==='1-2'){
         if(!safetyGame.running) safetyGame.exitZone={x:500,y:18,w:85,h:56};

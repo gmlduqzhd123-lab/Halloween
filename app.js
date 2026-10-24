@@ -4106,6 +4106,18 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const lbl = document.getElementById("speakBtnLabel");
       if (lbl) lbl.textContent = "소리 듣기";
     }
+    function currentSpeechRate() {
+      if (state.speechSlow) return 0.78;
+      return state.grade === '1-2' ? 0.88 : 0.98;
+    }
+    function syncSpeechRateButton() {
+      const btn = document.getElementById('btnSpeechRate');
+      const label = document.getElementById('speechRateLabel');
+      if (!btn) return;
+      btn.setAttribute('aria-pressed', String(!!state.speechSlow));
+      btn.classList.toggle('is-picked', !!state.speechSlow);
+      if (label) label.textContent = state.speechSlow ? '천천히 0.8x' : '보통 속도';
+    }
     function speakText(text) {
       stopSpeaking();
       if (!state.soundOn || !('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
@@ -4114,7 +4126,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       }
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang='ko-KR';
-      utterance.rate=state.grade==='1-2' ? 0.85 : 0.95;
+      utterance.rate=currentSpeechRate();
       try { window.speechSynthesis.speak(utterance); } catch (e) { showToast('음성을 사용할 수 없어 화면의 글로 진행해요.', '🔈'); }
     }
 
@@ -4415,13 +4427,15 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       }
     }
     const EASY_GLOSSARY = {
-      "풍습·전통": "옛날부터 그 지역 사람들이 해마다 이어 온 생활 모습이나 기념 방식이에요.",
-      "인류무형문화유산": "오래전부터 전해 내려와 세계가 함께 소중히 지키기로 약속한 전통문화예요.",
-      "비상구(출구)": "위급할 때 안전하게 밖으로 대피할 수 있는 초록색 표지판 문이에요.",
-      "다중밀집": "좁은 공간에 아주 많은 사람이 빽빽하게 모인 상태예요.",
-      "우측통행": "서로 마주 보고 걸을 때 부딪히지 않도록 오른쪽 길로 걷는 약속이에요.",
-      "대각선 이동": "사람들 흐름을 거스르지 않고 비스듬히 가장자리 넓은 곳으로 빠져나가는 방법이에요.",
-      "가슴 앞 공간(흉강)": "양팔로 가슴 앞을 감싸 폐가 숨을 편하게 쉴 수 있게 지키는 공간이에요."
+      "풍습·전통": "🏺 옛날부터 그 지역 사람들이 해마다 이어 온 생활 모습이나 기념 방식이에요.",
+      "인류무형문화유산": "🌍 오래전부터 전해 내려와 세계가 함께 소중히 지키기로 약속한 전통문화예요.",
+      "비상구(출구)": "🟩 위급할 때 안전하게 밖으로 대피할 수 있는 초록색 표지판 문이에요.",
+      "다중밀집": "👥 좁은 공간에 아주 많은 사람이 빽빽하게 모인 상태예요.",
+      "우측통행": "➡️ 서로 마주 보고 걸을 때 부딪히지 않도록 오른쪽 길로 걷는 약속이에요.",
+      "대각선 이동": "↗️ 사람들 흐름을 거스르지 않고 비스듬히 가장자리 넓은 곳으로 빠져나가는 방법이에요.",
+      "가슴 앞 공간(흉강)": "👐 양팔로 가슴 앞을 감싸 폐가 숨을 편하게 쉴 수 있게 지키는 공간이에요.",
+      "병목 현상": "🚧 넓은 길에서 갑자기 좁은 문이나 계단으로 사람이 몰려 길이 막히는 현상이에요.",
+      "집결 장소": "🚩 모둠 친구나 선생님을 놓쳤을 때 다시 만나기로 미리 약속한 넓은 장소예요."
     };
     const openedGlossaryByBox = {};
     function renderGlossaryBox(boxId, keys) {
@@ -4515,6 +4529,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const pollKey = storyKey(progress.storyIndex);
       const pollBox = document.getElementById("storyPollBox");
       const pollFeedback = document.getElementById("storyPollFeedback");
+      const pairTalkBox = document.getElementById("storyPairTalkBox");
       const poll = getStoryPolls()[progress.storyIndex];
       if (pollBox && pollFeedback && poll) {
         pollBox.replaceChildren();
@@ -4535,9 +4550,36 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           const fbText = (poll.feedbacks && poll.feedbacks[pickedIdx]) || poll.feedback || "";
           pollFeedback.className = "text-xs mt-1.5 font-bold text-emerald-300";
           pollFeedback.textContent = `💬 ${fbText}`;
+          if (pairTalkBox) {
+            pairTalkBox.classList.remove("hidden");
+            pairTalkBox.replaceChildren();
+            const otherIdx = pickedIdx === 0 ? 1 : 0;
+            const otherOpt = poll.options[otherIdx] || poll.options[0];
+            const promptEl = document.createElement("div");
+            promptEl.className = "font-bold text-amber-200 leading-snug";
+            promptEl.textContent = `🤝 짝꿍 생각 나누기(20초): 내가 고른 이유를 말하고, [${otherOpt}] 보기를 고른 친구는 어떤 마음일지 함께 이야기해 볼까요?`;
+            const doneBtn = document.createElement("button");
+            doneBtn.type = "button";
+            doneBtn.id = "btnPairTalkDone";
+            const isTalkDone = !!storyPollPicked[`${pollKey}:talk`];
+            doneBtn.className = `mini-chip text-[11px] ${isTalkDone ? "is-picked" : ""}`;
+            doneBtn.textContent = isTalkDone ? "🌟 짝꿍과 생각 나눔 완료!" : "🗣️ 짝꿍과 이야기 나눴어요!";
+            doneBtn.addEventListener("click", () => {
+              storyPollPicked[`${pollKey}:talk`] = true;
+              playSound("correct");
+              awardOnce(storyRewardId(progress.storyIndex), 'pairtalk', 10, "짝꿍 생각 나누기");
+              renderStorySlide();
+            });
+            pairTalkBox.appendChild(promptEl);
+            pairTalkBox.appendChild(doneBtn);
+          }
         } else {
           pollFeedback.className = "hidden text-xs mt-1.5 font-bold";
           pollFeedback.textContent = "";
+          if (pairTalkBox) {
+            pairTalkBox.classList.add("hidden");
+            pairTalkBox.replaceChildren();
+          }
         }
       }
 
@@ -4573,8 +4615,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       if (readCount >= stories.length) {
         unlockStamp("s1", `놀이 1: ${THEMES[state.teacher.theme].label} 이야기`);
       }
-      renderGlossaryBox("storyGlossaryBox", halloween ? ["풍습·전통", "인류무형문화유산", "비상구(출구)"] : ["다중밀집", "우측통행", "비상구(출구)"]);
+      renderGlossaryBox("storyGlossaryBox", halloween ? ["풍습·전통", "인류무형문화유산", "비상구(출구)"] : ["다중밀집", "병목 현상", "집결 장소", "비상구(출구)"]);
       syncAutoReadButtons();
+      syncSpeechRateButton();
     }
 
     let currentRecipeIdx = 0;
@@ -4647,7 +4690,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const current = getStories()[storyProgress().storyIndex];
       const utter = new SpeechSynthesisUtterance(`${current.title}. ${current.body}. 핵심 쏙쏙! ${current.keyPoint}`);
       utter.lang = "ko-KR";
-      utter.rate = state.grade === "1-2" ? 0.92 : 1.0;
+      utter.rate = currentSpeechRate();
       utter.onend = () => {
         document.getElementById("speakBtnLabel").textContent = "소리 듣기";
       };
@@ -4736,6 +4779,51 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       box.appendChild(btn);
     }
 
+    const SAFETY_PLANNER_ZONES = [
+      { id: 'exit', label: '🚪 비상구 유도등 설치', desc: '들어올 때 가장 먼저 비상구 위치를 표시해요.' },
+      { id: 'right', label: '➡️ 우측통행 화살표 바닥 스티커', desc: '복도에서 마주 오는 친구와 부딪히지 않게 길을 나눠요.' },
+      { id: 'line', label: '🚧 계단 줄서기·멈춤 제한선', desc: '좁은 계단 입구에서 한꺼번에 몰리지 않도록 간격을 띄워요.' },
+      { id: 'flag', label: '🚩 넓은 공터 안전 집결지 깃발', desc: '위험할 때 대각선으로 빠져나와 모일 장소를 알려 줘요.' }
+    ];
+    let safetyPlannerPlaced = {};
+    function renderSafetyPlanner() {
+      const box = document.getElementById('safetyPlannerBox');
+      if (!box) return;
+      box.replaceChildren();
+      const themeLabel = THEMES[state.teacher?.theme]?.label || '학교 행사';
+      const placedCount = SAFETY_PLANNER_ZONES.filter(z => safetyPlannerPlaced[z.id]).length;
+      const header = document.createElement('div');
+      header.className = 'flex flex-wrap items-center justify-between gap-1';
+      header.innerHTML = `<strong class="text-sky-200">🗺️ 내가 안전 기획자라면? (${themeLabel} 안전 표지판 배치)</strong><span id="safetyPlannerCount" class="text-[11px] font-black text-amber-300">설치 ${placedCount} / ${SAFETY_PLANNER_ZONES.length}</span>`;
+      box.appendChild(header);
+      const grid = document.createElement('div');
+      grid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-1.5';
+      SAFETY_PLANNER_ZONES.forEach(zone => {
+        const placed = !!safetyPlannerPlaced[zone.id];
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.dataset.zone = zone.id;
+        btn.setAttribute('aria-pressed', String(placed));
+        btn.className = `planner-zone-btn text-left rounded-xl px-2.5 py-2 border transition text-xs ${
+          placed
+            ? 'bg-emerald-950/80 border-emerald-400 text-emerald-100 font-bold'
+            : 'bg-slate-900/80 border-indigo-700 hover:border-amber-400 text-indigo-100'
+        }`;
+        btn.innerHTML = `<div class="font-extrabold">${placed ? '✅ 설치 완료 · ' : '➕ 클릭해 설치 · '}${zone.label}</div><div class="text-[11px] text-indigo-200 mt-0.5">${zone.desc}</div>`;
+        btn.addEventListener('click', () => {
+          safetyPlannerPlaced[zone.id] = !safetyPlannerPlaced[zone.id];
+          playSound(safetyPlannerPlaced[zone.id] ? 'correct' : 'click');
+          const doneAll = SAFETY_PLANNER_ZONES.every(z => safetyPlannerPlaced[z.id]);
+          if (doneAll) {
+            awardOnce('safety:planner', 'all', 15, '행사장 안전 표지판 4곳 설치 완료');
+          }
+          renderSafetyPlanner();
+        });
+        grid.appendChild(btn);
+      });
+      box.appendChild(grid);
+    }
+
     function renderScenario() {
       if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
       const item = SAFETY_SCENARIOS[state.scenarioIndex];
@@ -4798,7 +4886,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       nextBtn.textContent = state.scenarioIndex === SAFETY_SCENARIOS.length - 1 ? "다음: 옷차림 생각하기 →" : "다음 약속 →";
       renderSafetyFollowup();
       renderSafetyActionDrill();
-      renderGlossaryBox("safetyGlossaryBox", ["다중밀집", "우측통행", "대각선 이동", "가슴 앞 공간(흉강)"]);
+      renderSafetyPlanner();
+      renderGlossaryBox("safetyGlossaryBox", ["다중밀집", "우측통행", "대각선 이동", "가슴 앞 공간(흉강)", "병목 현상", "집결 장소"]);
     }
 
     function renderSafetyFollowup() {
@@ -4931,9 +5020,48 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     let gameAnimId = null;
     const STAGE_MISSIONS = {
       1: '1단계 미션: 🟩 비상구 표지판을 확인하며 넓은 출구로 이동해요!',
-      2: '2단계 미션: ➡️ 우측통행 화살표를 따라가고 🍬 떨어진 사탕은 줍지 말아요!',
+      2: '2단계 미션: ➡️ 우측통행 화살표를 따라가고 🍬 떨어진 물건은 줍지 말아요!',
       3: '3단계 미션: 👧 길가의 친구와 함께 대각선 넓은 출구로 빠져나와요!'
     };
+    const THEME_GAME_MAP = {
+      halloween: { place: '🎃 할로윈 축제 거리', trapIcon: '🍬', trapLabel: '떨어진 사탕 주의' },
+      school: { place: '🏫 학교 축제 강당 복도', trapIcon: '📄', trapLabel: '떨어진 안내지 주의' },
+      field: { place: '🚌 박물관 전시실 통로', trapIcon: '🎁', trapLabel: '떨어진 기념품 주의' },
+      trip: { place: '🧳 수학여행 숙소·골목', trapIcon: '🧳', trapLabel: '넘어진 가방 주의' },
+      sports: { place: '🏅 체육대회 응원석 출입구', trapIcon: '📣', trapLabel: '떨어진 응원도구 주의' },
+      local: { place: '🎪 야외 무대 푸드트럭 거리', trapIcon: '🥤', trapLabel: '떨어진 소지품 주의' }
+    };
+    function getActiveGameTheme() {
+      const key = (typeof state !== 'undefined' && state.teacher?.theme) || 'halloween';
+      return THEME_GAME_MAP[key] || THEME_GAME_MAP.halloween;
+    }
+    function updateGameCrowdMeter() {
+      if (typeof document === 'undefined') return;
+      const meterText = document.getElementById('gameCrowdMeterText');
+      const placeBadge = document.getElementById('gameThemePlaceBadge');
+      const themeCfg = getActiveGameTheme();
+      if (placeBadge) placeBadge.textContent = themeCfg.place;
+      if (!meterText) return;
+      if (safetyGame.won) {
+        meterText.textContent = '🟢 실시간 혼잡도: 안전 출구 도착 완료!';
+        return;
+      }
+      if (safetyGame.route === 'crowded') {
+        meterText.textContent = '🔴 실시간 혼잡도: 위험 (좁은 병목 구간! 넓은 길로 바꾸세요)';
+        return;
+      }
+      const p = safetyGame.player;
+      const minDist = safetyGame.hazards.length
+        ? Math.min(...safetyGame.hazards.map(h => Math.hypot(p.x - h.x, p.y - h.y) - h.r))
+        : 999;
+      if (minDist < 48) {
+        meterText.textContent = '🔴 실시간 혼잡도: 밀집 경고 (어깨가 닿아요! 가장자리로 이동)';
+      } else if (minDist < 95) {
+        meterText.textContent = '🟡 실시간 혼잡도: 주의 (보행 속도와 앞뒤 간격 살피기)';
+      } else {
+        meterText.textContent = '🟢 실시간 혼잡도: 여유 (안전 거리 유지 중)';
+      }
+    }
     const safetyGame = {
       running:false, won:false, paused:false, route:null, lastFrame:0,
       player:{x:42,y:210,r:13,targetX:null,targetY:null},
@@ -4979,12 +5107,13 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       if (state.gameStage === 3 && !isEasyGrade) {
         safetyGame.hazards.push({x:290,y:140,r:22,dx:speed*0.5,dy:0});
       }
+      const themeCfg = getActiveGameTheme();
       if (state.gameStage === 1) {
         safetyGame.items = [{x:240,y:76,r:16,kind:'sign',icon:'🟩',label:'비상구 확인',done:false}];
       } else if (state.gameStage === 2) {
         safetyGame.items = [
           {x:280,y:72,r:16,kind:'lane',icon:'➡️',label:'우측통행 유지',done:false},
-          {x:270,y:165,r:18,kind:'candyTrap',icon:'🍬',label:'떨어진 사탕 주의',done:false}
+          {x:270,y:165,r:18,kind:'candyTrap',icon:themeCfg.trapIcon,label:themeCfg.trapLabel,done:false}
         ];
       } else {
         safetyGame.items = [{x:175,y:86,r:16,kind:'friend',icon:'👧',label:'친구와 동행',done:false}];
@@ -4993,6 +5122,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       document.getElementById('btnStartCanvasGame').textContent = '⏸ 일시정지';
       syncStageButtons();
       updateGameStatusText('먼저 경로를 고르세요');
+      updateGameCrowdMeter();
       renderGameChoices();
       gameLoop();
     }
@@ -5029,6 +5159,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       safetyGame.decisionRecorded=true;
       if (choice==='wide') updateGameStatusText('혼잡한 길을 피해 출구로 이동해요');
       else updateGameStatusText('혼잡한 길을 골랐어요. 경로를 다시 살펴보세요');
+      updateGameCrowdMeter();
       renderGameChoices();
       drawSafetyGame();
     }
@@ -5117,12 +5248,17 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       if(safetyGame.route==='wide' && p.x>e.x && p.x<e.x+e.w && p.y>e.y && p.y<e.y+e.h) {
         safetyGame.won=true;safetyGame.running=false;
         updateGameStatusText(safetyGame.bonusCollected ? '🌟 미션 달성! 안전하게 출구에 도착했어요' : '이동 가능한 출구에 도착했어요 · 이유도 확인해요');
-        document.getElementById('btnStartCanvasGame').textContent=state.gameStage<3?'▶ 다음 단계':'▶ 다시 시작';
+        if (typeof document !== 'undefined') {
+          const startBtn = document.getElementById('btnStartCanvasGame');
+          if (startBtn) startBtn.textContent=(typeof state !== 'undefined' && state.gameStage<3)?'▶ 다음 단계':'▶ 다시 시작';
+        }
         renderGameChoices();
         stopSafetyGameLoop();
       }
+      updateGameCrowdMeter();
     }
     function drawSafetyGame() {
+      updateGameCrowdMeter();
       const canvas=document.getElementById('safetyGameCanvas');
       if(!canvas)return;
       const ctx=canvas.getContext('2d');
@@ -5138,6 +5274,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(230,165);ctx.lineTo(400,170);ctx.stroke();
       ctx.fillStyle='#a7f3d0';ctx.font='bold 12px "Gowun Dodum", sans-serif';
       ctx.fillText(STAGE_MISSIONS[stageNum] || '🟢 덜 붐비는 넓은 길',18,22);
+      ctx.fillStyle='#fde68a';ctx.font='bold 11px "Gowun Dodum", sans-serif';
+      ctx.fillText(getActiveGameTheme().place,435,20);
       ctx.fillStyle='#fecaca';ctx.font='bold 12px "Gowun Dodum", sans-serif';ctx.fillText('🔴 혼잡한 좁은 길',220,208);
       if(typeof state!=='undefined' && state.grade==='1-2'){
         if(!safetyGame.running) safetyGame.exitZone={x:500,y:18,w:85,h:56};
@@ -5185,6 +5323,13 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
 
 
     // ==================== TAB 3: AVATAR DRESS-UP & COSTUME SORTING ====================
+    const AVATAR_MISSIONS = [
+      { id: 'night', title: '🌙 저녁 축제에서도 눈에 잘 띄고 두 손이 자유로운 코디', tip: '밝은 의상이나 야광 소품을 고르고 밤길 반사 테스트를 켜 보세요!' },
+      { id: 'stairs', title: '🪜 계단과 복도를 걸을 때 발에 걸리지 않는 활동 코디', tip: '끌리지 않는 단정한 옷과 앞이 잘 보이는 모자·머리띠를 골라 보세요!' },
+      { id: 'respect', title: '🤝 친구를 놀라게 하지 않고 경찰·소방관과 헷갈리지 않는 코디', tip: '실제 제복이나 날카로운 장난감 대신 친근한 축제 소품을 골라 보세요!' }
+    ];
+    let avatarMissionIndex = 0;
+
     function renderAvatarDressup() {
       document.getElementById("avatarCharIcon").textContent = state.avatar.char;
       document.getElementById("avatarCostumeIcon").textContent = state.avatar.costume;
@@ -5194,6 +5339,42 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       syncButtonGroup(".avatar-costume-btn", "data-costume", state.avatar.costume);
       syncButtonGroup(".avatar-prop-btn", "data-prop", state.avatar.prop);
       syncButtonGroup(".cert-sticker-btn", "data-sticker", state.certSticker);
+
+      const missionBox = document.getElementById("avatarMissionBox");
+      if (missionBox) {
+        const mission = AVATAR_MISSIONS[avatarMissionIndex % AVATAR_MISSIONS.length];
+        missionBox.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-1.5">
+            <span id="avatarMissionTitle" class="font-extrabold text-amber-200">🎯 오늘의 코디 미션 (${(avatarMissionIndex % AVATAR_MISSIONS.length) + 1}/${AVATAR_MISSIONS.length}): ${mission.title}</span>
+            <button id="btnNextAvatarMission" type="button" class="mini-chip text-[11px]">🔄 다음 미션</button>
+          </div>
+          <p class="text-[11px] text-indigo-200">${mission.tip}</p>
+        `;
+        const nextMissionBtn = document.getElementById("btnNextAvatarMission");
+        if (nextMissionBtn) {
+          nextMissionBtn.addEventListener("click", () => {
+            avatarMissionIndex = (avatarMissionIndex + 1) % AVATAR_MISSIONS.length;
+            playSound("click");
+            renderAvatarDressup();
+          });
+        }
+      }
+
+      const checklistBox = document.getElementById("avatarSafetyChecklist");
+      if (checklistBox) {
+        const isNightTested = document.getElementById("avatarRunwayStage")?.classList.contains("night-stage-active");
+        const checks = [
+          { label: "👀 시야 확보 (눈 가리지 않음)", ok: true },
+          { label: "👟 보행 편리 (끌리지 않는 길이)", ok: true },
+          { label: "✨ 야간 식별 (밝은 소품·야광 확인)", ok: Boolean(isNightTested || ["🎃", "🕯️", "⭐"].includes(state.avatar.prop) || ["🧙", "🧚"].includes(state.avatar.costume)) },
+          { label: "🚫 유사 제복·위험 소품 제외", ok: true }
+        ];
+        checklistBox.innerHTML = checks.map(c => `
+          <div class="rounded-lg px-2 py-1.5 border ${c.ok ? "bg-emerald-950/70 border-emerald-500/60 text-emerald-200" : "bg-amber-950/60 border-amber-400/60 text-amber-200"} font-bold flex items-center gap-1">
+            <span>${c.ok ? "✅" : "💡"}</span><span>${c.label}</span>
+          </div>
+        `).join("");
+      }
     }
 
     let costumePage = 0;
@@ -5396,6 +5577,52 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       '🧙 배려하는 복장',
       '🌏 다문화 존중'
     ];
+    const QUIZ_GOAL_BRIDGE = [
+      { label: '문화의 기원과 다양성', tab: 'tab-culture', scenarioIdx: null },
+      { label: '보호자 동행·사전 약속', tab: 'tab-culture', scenarioIdx: null },
+      { label: '이동로와 출구 확인', tab: 'tab-safety', scenarioIdx: 0 },
+      { label: '혼잡 신호에 대응', tab: 'tab-safety', scenarioIdx: 2 },
+      { label: '물건보다 몸 먼저', tab: 'tab-safety', scenarioIdx: 4 },
+      { label: '떠밀림·넘어짐 몸 보호', tab: 'tab-safety', scenarioIdx: 3 },
+      { label: '다문화 고유 의미 존중', tab: 'tab-culture', scenarioIdx: null },
+      { label: '배려하는 복장과 축제 약속', tab: 'tab-costume', scenarioIdx: null }
+    ];
+    function renderQuizWeaknessBridge() {
+      const box = document.getElementById('quizWeaknessBridge');
+      if (!box) return;
+      box.replaceChildren();
+      const quizzes = EDUCATION_DATA[state.grade].quizzes;
+      const missedIndices = quizzes
+        .map((_, idx) => idx)
+        .filter(idx => !state.quizFirst[quizQuestionId(idx)]?.correct);
+      const header = document.createElement('div');
+      header.className = 'font-extrabold text-amber-300';
+      header.textContent = missedIndices.length
+        ? `🔍 오답 원인 진단 · 다시 살펴볼 핵심 원칙 (${missedIndices.length}개)`
+        : '🌟 모든 핵심 안전·문화 원칙을 첫 시도에 정확히 판단했어요!';
+      box.appendChild(header);
+      const wrap = document.createElement('div');
+      wrap.className = 'flex flex-wrap gap-1.5 pt-1';
+      const targetList = missedIndices.length ? missedIndices : [2, 3, 4];
+      targetList.forEach(qi => {
+        const info = QUIZ_GOAL_BRIDGE[qi % QUIZ_GOAL_BRIDGE.length];
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'mini-chip quiz-bridge-btn';
+        btn.dataset.qi = String(qi);
+        btn.textContent = `🎯 Q${qi + 1} · ${info.label} 복습 이동 →`;
+        btn.addEventListener('click', () => {
+          playSound('click');
+          if (info.scenarioIdx !== null) {
+            state.scenarioIndex = info.scenarioIdx;
+            renderScenario();
+          }
+          switchTab(info.tab);
+        });
+        wrap.appendChild(btn);
+      });
+      box.appendChild(wrap);
+    }
     function quizCheerMessage(combo) {
       if (combo >= 6) return `👑 ${combo}연속 정답! 우리 반 최고 안전 박사님이에요!`;
       if (combo >= 3) return `✨ ${combo}연속 정답! 안전 감각이 반짝반짝 빛나요!`;
@@ -5422,6 +5649,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           : `처음 틀리거나 확인하지 못한 문항 ${quizzes.length-first}개가 있어요(복습 확인 ${reviewed}개). 다시 판단해 보세요. 해설을 읽는 것만으로 이해 완료로 기록하지 않습니다.`;
         document.getElementById('btnReviewQuiz').disabled=first===quizzes.length;
         if(!state.quizReview && Object.keys(state.quizFirst).length>=quizzes.length) unlockStamp('s4','퀴즈 참여');
+        renderQuizWeaknessBridge();
         renderLearningSummary();
         return;
       }
@@ -5478,8 +5706,33 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         options.appendChild(btn);
       });
       if(existing){
-        explanation.className=`rounded-xl p-3 border ${existing.correct?'bg-emerald-950 border-emerald-400':'bg-rose-950 border-rose-400'} text-sm`;
-        explanation.textContent=`${existing.correct?'⭕ 이번 판단은 맞았어요.':'❌ 이번 판단은 다시 살펴봐요.'} ${q.explanation}`;
+        const bridge = QUIZ_GOAL_BRIDGE[qi % QUIZ_GOAL_BRIDGE.length];
+        explanation.className=`rounded-xl p-3 border ${existing.correct?'bg-emerald-950 border-emerald-400':'bg-rose-950 border-rose-400'} text-sm space-y-1.5`;
+        const mainText = document.createElement('p');
+        mainText.textContent = `${existing.correct?'⭕ 이번 판단은 맞았어요.':'❌ 이번 판단은 다시 살펴봐요.'} ${q.explanation}`;
+        explanation.appendChild(mainText);
+        if (bridge) {
+          const diagRow = document.createElement('div');
+          diagRow.className = 'flex flex-wrap items-center justify-between gap-1.5 pt-1 border-t border-indigo-700/60 text-xs';
+          const tagSpan = document.createElement('span');
+          tagSpan.className = 'font-extrabold text-amber-300';
+          tagSpan.textContent = `🎯 핵심 원칙: ${bridge.label}`;
+          diagRow.appendChild(tagSpan);
+          const jumpBtn = document.createElement('button');
+          jumpBtn.type = 'button';
+          jumpBtn.className = 'mini-chip quiz-inline-bridge-btn text-[11px]';
+          jumpBtn.textContent = `🎯 ${bridge.label} 바로 보기 →`;
+          jumpBtn.addEventListener('click', () => {
+            if (bridge.scenarioIdx !== null) {
+              state.scenarioIndex = bridge.scenarioIdx;
+              renderScenario();
+            }
+            playSound('click');
+            switchTab(bridge.tab);
+          });
+          diagRow.appendChild(jumpBtn);
+          explanation.appendChild(diagRow);
+        }
       }
     }
 
@@ -5558,6 +5811,64 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           jumpBox.appendChild(btn);
         });
         summary.appendChild(jumpBox);
+      }
+      // 6대 안전 목표 달성률 히트맵 & 원클릭 취약 목표 재수업 (Idea 7)
+      const heatmapWrap=document.createElement('div');
+      heatmapWrap.id='safetyGoalHeatmap';
+      heatmapWrap.className='pt-2 mt-2 border-t border-indigo-800/80 space-y-1.5';
+      const hmTitle=document.createElement('div');
+      hmTitle.className='text-xs font-extrabold text-amber-300';
+      const totalParticipants=classPosterRecords.length>0 ? classPosterRecords.length : 1;
+      hmTitle.textContent=`📊 6대 안전 목표 달성률 히트맵 (${classPosterRecords.length>0?`우리 반 ${totalParticipants}명 합산`:'나의 달성 현황'} · 누르면 바로 복습)`;
+      heatmapWrap.appendChild(hmTitle);
+      const hmGrid=document.createElement('div');
+      hmGrid.className='grid grid-cols-2 sm:grid-cols-3 gap-1.5';
+      SAFETY_GOALS.forEach((goal,goalIndex)=>{
+        let achieved=0;
+        if(classPosterRecords.length>0){
+          classPosterRecords.forEach(rec=>{
+            const g=rec.grade||state.grade;
+            const confirmed=rec.gradeRecords?.[g]?.safetyConfirmed?.[goal.id];
+            if(confirmed?.contentVersion===SAFETY_CONTENT_VERSION)achieved++;
+          });
+        } else if(state.safetyConfirmed[goal.id]?.contentVersion===SAFETY_CONTENT_VERSION){
+          achieved=1;
+        }
+        const pct=Math.round((achieved/totalParticipants)*100);
+        const cell=document.createElement('button');
+        cell.type='button';
+        cell.className='heatmap-goal-btn text-left rounded-xl p-2 bg-indigo-950/90 border border-indigo-700 hover:border-amber-400 transition space-y-1';
+        cell.dataset.goalIndex=String(goalIndex);
+        const rowTop=document.createElement('div');
+        rowTop.className='flex items-center justify-between gap-1 text-[11px] font-bold';
+        const nameSpan=document.createElement('span');
+        nameSpan.textContent=`${pct===100?'🟢':pct>=50?'🟡':'🔴'} ${goal.title}`;
+        const pctSpan=document.createElement('span');
+        pctSpan.className='text-amber-300';
+        pctSpan.textContent=`${pct}%`;
+        rowTop.appendChild(nameSpan);
+        rowTop.appendChild(pctSpan);
+        const track=document.createElement('div');
+        track.className='heatmap-track';
+        const fill=document.createElement('div');
+        fill.className='heatmap-fill';
+        fill.style.width=`${pct}%`;
+        track.appendChild(fill);
+        cell.appendChild(rowTop);
+        cell.appendChild(track);
+        cell.addEventListener('click',()=>{
+          state.scenarioIndex=goalIndex;
+          playSound('click');
+          renderScenario();
+          switchTab('tab-safety');
+        });
+        hmGrid.appendChild(cell);
+      });
+      heatmapWrap.appendChild(hmGrid);
+      summary.appendChild(heatmapWrap);
+      const codeInput=document.getElementById('studentShareCodeInput');
+      if(codeInput && typeof generateStudentShareCode==='function'){
+        codeInput.value=generateStudentShareCode();
       }
       const certButton=document.getElementById('btnDownloadCert');
       const participationButton=document.getElementById('btnDownloadParticipation');
@@ -5825,6 +6136,173 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       ctx.fillText(`근거 자료: 국민재난안전포털 다중운집인파사고 국민행동요령 · 유네스코 · © 엽쌤 교육용 활동지`,65,1438);
       return canvas;
     }
+    function generateStudentShareCode() {
+      const payload = {
+        g: state.grade,
+        c: safeLabel(state.profile.className, EDUCATION_DATA[state.grade].classDefault, 20),
+        n: safeLabel(state.profile.name, '안전대장', 16),
+        p: safeLabel(state.profile.pledge, '안전 약속을 실천해요!', 42),
+        pts: state.candyPoints,
+        av: [state.avatar.costume || '🎃', state.avatar.char || '🧒', state.avatar.prop || '🕯️'],
+        goals: SAFETY_GOALS.filter(g => state.safetyConfirmed[g.id]?.contentVersion === SAFETY_CONTENT_VERSION).map(g => g.id)
+      };
+      try {
+        const json = JSON.stringify(payload);
+        const bytes = new TextEncoder().encode(json);
+        let binary = '';
+        bytes.forEach(b => { binary += String.fromCharCode(b); });
+        return `HW1:${btoa(binary)}`;
+      } catch (_) {
+        return '';
+      }
+    }
+    function importStudentShareCode(rawText) {
+      const status = document.getElementById('importResults');
+      const tokens = String(rawText || '').trim().split(/\s+/).filter(Boolean);
+      if (!tokens.length) {
+        if (status) status.textContent = '배움 코드를 입력해 주세요.';
+        return false;
+      }
+      let added = 0;
+      tokens.forEach(token => {
+        if (!token.startsWith('HW1:')) return;
+        try {
+          const binary = atob(token.slice(4));
+          const bytes = Uint8Array.from(binary, ch => ch.charCodeAt(0));
+          const parsed = JSON.parse(new TextDecoder().decode(bytes));
+          if (!parsed || typeof parsed !== 'object') return;
+          const grade = EDUCATION_DATA[parsed.g] ? parsed.g : state.grade;
+          const confirmedMap = {};
+          if (Array.isArray(parsed.goals)) {
+            parsed.goals.forEach(gid => {
+              if (SAFETY_GOALS.some(g => g.id === gid)) {
+                confirmedMap[gid] = { contentVersion: SAFETY_CONTENT_VERSION, at: Date.now() };
+              }
+            });
+          }
+          const avArr = Array.isArray(parsed.av) ? parsed.av : ['🎃', '🧒', '🕯️'];
+          classPosterRecords.push({
+            sessionId: `code-${Date.now()}-${Math.random()}`,
+            grade,
+            candyPoints: Number.isInteger(parsed.pts) ? Math.max(0, Math.min(999999, parsed.pts)) : 0,
+            profile: {
+              school: state.profile.school || '',
+              className: safeLabel(parsed.c, EDUCATION_DATA[grade].classDefault, 30),
+              name: safeLabel(parsed.n, `안전대장 ${classPosterRecords.length + 1}호`, 16),
+              pledge: safeLabel(parsed.p, '안전 약속을 실천해요!', 60)
+            },
+            gradeRecords: {
+              [grade]: {
+                avatar: { costume: safeLabel(avArr[0], '🎃', 4), char: safeLabel(avArr[1], '🧒', 4), prop: safeLabel(avArr[2], '🕯️', 4) },
+                safetyConfirmed: confirmedMap
+              }
+            }
+          });
+          added++;
+        } catch (_) {}
+      });
+      if (!added) {
+        if (status) status.textContent = '유효한 배움 코드(HW1:...)를 찾지 못했어요.';
+        return false;
+      }
+      renderClassPosterCanvas(classPosterRecords);
+      if (status) {
+        status.textContent = `⚡ 배움 코드로 ${added}명 추가 완료! (총 ${classPosterRecords.length}명: ${classPosterRecords.map(r => r.profile.name).join(', ')})`;
+      }
+      showToast(`배움 코드로 학생 ${added}명을 협동 포스터에 추가했어요!`, '⚡');
+      return true;
+    }
+    function drawWallPosterCanvas() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1100;
+      canvas.height = 1500;
+      const cls = safeLabel(state.profile.className, EDUCATION_DATA[state.grade].classDefault, 30);
+      const ctx = drawSheetBase(canvas, '🪧 우리 반 6대 다중밀집 보행 안전 수칙', `${THEMES[state.teacher.theme].label} · ${cls} 교실 상시 게시용 안전 포스터`);
+      const icons = ['🚪', '➡️', '↗️', '👐', '🙅', '🙆'];
+      const summaries = [
+        '행사장에 들어가기 전 비상구(초록색 표지판)와 넓은 이동로를 먼저 확인해요.',
+        '평상시 양방향 통로에서는 서로 부딪히지 않도록 오른쪽으로 차근차근 걸어요.',
+        '걸음이 느려지고 어깨가 자꾸 닿는 혼잡 신호가 오면 넓은 가장자리로 벗어나요.',
+        '인파에 떠밀릴 때는 무리하게 맞서지 말고 두 팔로 가슴 앞 숨 쉴 공간을 지켜요.',
+        '붐비는 길에서 물건이나 신발이 떨어져도 허리를 숙이지 않고 내 몸을 먼저 보호해요.',
+        '넘어져서 바로 일어나기 어려울 때는 머리를 감싸고 몸을 공처럼 둥글게 말아요.'
+      ];
+      let y = 210;
+      SAFETY_GOALS.forEach((goal, idx) => {
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
+        ctx.fillRect(68, y, 964, 168);
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(68, y, 964, 168);
+        ctx.fillStyle = '#fde68a';
+        ctx.font = `bold 28px ${RESULT_FONT}`;
+        ctx.fillText(`${icons[idx]} 수칙 ${idx + 1}. ${goal.title}`, 96, y + 48, 900);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `21px ${RESULT_FONT}`;
+        printLines(ctx, summaries[idx], 96, y + 92, 900, 32, 2);
+        y += 186;
+      });
+      ctx.fillStyle = '#fde68a';
+      ctx.textAlign = 'center';
+      ctx.font = `bold 22px ${RESULT_FONT}`;
+      ctx.fillText(`🚨 위급 상황 신고: 경찰 112 · 소방/구급 119 · 출처: 국민재난안전포털 다중운집인파사고 행동요령`, 550, 1385, 960);
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = `17px ${RESULT_FONT}`;
+      ctx.fillText(`생성일: ${new Date().toLocaleDateString('ko-KR')} · © 엽쌤 교육용 안전 포스터`, 550, 1430, 960);
+      ctx.textAlign = 'left';
+      return canvas;
+    }
+    function drawParentCardCanvas() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 900;
+      canvas.height = 900;
+      const cls = safeLabel(state.profile.className, EDUCATION_DATA[state.grade].classDefault, 30);
+      const name = safeLabel(state.profile.name, '우리 아이', 25);
+      const ctx = drawSheetBase(canvas, '💌 가정 연계 안전 교육 안내 카드', `${THEMES[state.teacher.theme].label} · ${cls} · ${name}`);
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
+      ctx.fillRect(60, 185, 780, 440);
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(60, 185, 780, 440);
+      ctx.fillStyle = '#fde68a';
+      ctx.font = `bold 24px ${RESULT_FONT}`;
+      ctx.fillText('🏫 오늘 학교에서 함께 배운 안전 핵심 약속', 88, 232);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `20px ${RESULT_FONT}`;
+      const points = [
+        '1. 행사장·박물관에 들어가기 전 비상구와 넓은 이동로를 먼저 확인해요.',
+        '2. 복도와 통로에서는 오른쪽으로 걷고, 어깨가 닿는 혼잡 신호가 오면 벗어나요.',
+        '3. 떠밀릴 때는 가슴 앞 숨 쉴 공간을 보호하고, 떨어진 물건은 숙여 줍지 않아요.',
+        '4. 서로 다른 문화의 고유한 의미를 존중하고 시야가 트인 안전한 복장을 골라요.'
+      ];
+      let py = 278;
+      points.forEach(line => {
+        py = printLines(ctx, line, 88, py, 720, 30, 2) + 12;
+      });
+      ctx.fillStyle = '#fde68a';
+      ctx.font = `bold 22px ${RESULT_FONT}`;
+      ctx.fillText(`✍ ${name}의 안전 다짐`, 88, py + 18);
+      ctx.fillStyle = '#a7f3d0';
+      ctx.font = `20px ${RESULT_FONT}`;
+      printLines(ctx, safeLabel(state.profile.pledge, '오른쪽으로 안전하게 걷고 비상 출구를 먼저 확인하겠습니다!', 100), 88, py + 54, 720, 28, 2);
+
+      const familyCheck = SAFETY_GOALS[0].checks[state.grade];
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.fillRect(60, 650, 780, 165);
+      ctx.strokeStyle = '#6ee7b7';
+      ctx.strokeRect(60, 650, 780, 165);
+      ctx.fillStyle = '#fde68a';
+      ctx.font = `bold 21px ${RESULT_FONT}`;
+      ctx.fillText('🏡 가정에서 자녀와 함께 나누는 1분 질문', 85, 692);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `19px ${RESULT_FONT}`;
+      ctx.fillText(`질문: ${familyCheck[0]}`, 85, 732, 580);
+      ctx.fillStyle = '#a7f3d0';
+      ctx.font = `bold 19px ${RESULT_FONT}`;
+      ctx.fillText(`정답: ${familyCheck[1][familyCheck[2]]}`, 85, 770, 580);
+      drawCanvasQr(ctx, typeof shareLessonUrl === 'function' ? shareLessonUrl() : 'https://gmlduqzhd123-lab.github.io/Halloween/', 695, 668, 125);
+      return canvas;
+    }
     function exportProgressJSON() {
       rememberGrade();
       const data={schemaVersion:2,contentVersion:CONTENT_VERSION,sessionId:state.sessionId,grade:state.grade,
@@ -5897,6 +6375,18 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       'tab-quiz':['4 / 4','생각 정리','배운 내용을 질문으로 확인해요.'],
       'tab-cert':['마무리','나의 배움 기록','오늘의 결과를 보고 안전 약속을 남겨요.']
     };
+    const LESSON_PACEMAKER = {
+      10: { 'tab-culture': '⏱️ 10분 코스 · 핵심 2분', 'tab-safety': '⏱️ 10분 코스 · 핵심 4분', 'tab-costume': '⏱️ 10분 코스 · 핵심 2분', 'tab-quiz': '⏱️ 10분 코스 · 핵심 2분', 'tab-cert': '⏱️ 10분 코스 · 마무리' },
+      20: { 'tab-culture': '⏱️ 20분 코스 · 권장 5분', 'tab-safety': '⏱️ 20분 코스 · 권장 6분', 'tab-costume': '⏱️ 20분 코스 · 권장 4분', 'tab-quiz': '⏱️ 20분 코스 · 권장 3분', 'tab-cert': '⏱️ 20분 코스 · 권장 2분' },
+      40: { 'tab-culture': '⏱️ 40분 코스 · 권장 10분', 'tab-safety': '⏱️ 40분 코스 · 권장 12분', 'tab-costume': '⏱️ 40분 코스 · 권장 8분', 'tab-quiz': '⏱️ 40분 코스 · 권장 5분', 'tab-cert': '⏱️ 40분 코스 · 권장 5분' }
+    };
+    function updateLessonPacemaker(tabId = state.activeTab) {
+      const badge = document.getElementById('lessonPacemakerBadge');
+      if (!badge) return;
+      const mins = Number(state.teacher?.minutes) || 20;
+      const map = LESSON_PACEMAKER[mins] || LESSON_PACEMAKER[20];
+      badge.textContent = map[tabId] || `⏱️ ${mins}분 수업`;
+    }
     function lessonStep(tabId) {
       if (tabId === 'tab-culture' && !isHalloweenTheme()) return ['1 / 4', `${THEMES[state.teacher.theme].label} 이야기`, '그림 이야기를 읽고 안전한 행동을 생각해요.'];
       return lessonSteps[tabId] || lessonSteps['tab-culture'];
@@ -5905,6 +6395,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const step = lessonStep(state.activeTab);
       document.getElementById('lessonStageTitle').textContent = step[1];
       document.getElementById('lessonStageHint').textContent = step[2];
+      updateLessonPacemaker(state.activeTab);
     }
     function hasLessonProgress() {
       const initialTab = (state.teacher && state.teacher.start) || 'tab-culture';
@@ -5977,6 +6468,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       });
       syncWelcomeGrade();
       updateStartLessonButtonLabel();
+      syncSpeechRateButton();
       renderStamps();renderCandyHeader();renderStorySlide();renderLanternWorkshop();
       renderScenario();renderThemeSituations();renderAvatarDressup();renderCostumeCards();
       renderEtiquetteChecklist();renderQuiz();renderTeacherSettings();
@@ -6048,6 +6540,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       document.getElementById('lessonStageNumber').textContent = step[0];
       document.getElementById('lessonStageTitle').textContent = step[1];
       document.getElementById('lessonStageHint').textContent = step[2];
+      updateLessonPacemaker(tabId);
       document.querySelectorAll(".tab-panel").forEach(panel => {
         if (panel.id === tabId) {
           panel.classList.remove("hidden");
@@ -6285,7 +6778,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           renderStorySlide();
           renderLanternWorkshop();
           syncLessonStage();
+          renderScenario();
           renderThemeSituations();
+          drawSafetyGame();
           renderLearningSummary();
           renderCertificateCanvas();
           saveProgress();
@@ -6389,6 +6884,25 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const lessonStageInfo = document.getElementById('lessonStageInfo');
       if (lessonStageInfo) {
         lessonStageInfo.addEventListener('click', () => document.getElementById('btnMoreTools').click());
+      }
+      const btnSpotlightMode = document.getElementById('btnSpotlightMode');
+      if (btnSpotlightMode) {
+        btnSpotlightMode.addEventListener('click', () => {
+          const active = document.body.classList.toggle('spotlight-mode');
+          btnSpotlightMode.setAttribute('aria-pressed', String(active));
+          btnSpotlightMode.textContent = active ? '🎯 기본 화면' : '🎯 집중 확대';
+          playSound('click');
+          showToast(active ? '전자칠판 집중 확대 모드가 켜졌어요!' : '기본 수업 화면으로 돌아왔어요.', '🎯');
+        });
+      }
+      const btnSpeechRate = document.getElementById('btnSpeechRate');
+      if (btnSpeechRate) {
+        btnSpeechRate.addEventListener('click', () => {
+          state.speechSlow = !state.speechSlow;
+          syncSpeechRateButton();
+          playSound('click');
+          showToast(state.speechSlow ? '음성 읽기 속도를 천천히(0.8x)로 맞췄어요.' : '음성 읽기 속도를 보통 속도로 맞췄어요.', '🐢');
+        });
       }
       document.getElementById('btnMoreTools').addEventListener('click', () => {
         const open = document.body.classList.toggle('tools-open');
@@ -6867,6 +7381,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           document.getElementById("avatarJudgeText").textContent = isNight
             ? "✨ 어두운 밤길에서도 야광 소품과 밝은 의상이 반짝반짝 잘 보여요!"
             : "시야 확보 OK! 밤길 안전 반사 OK!";
+          renderAvatarDressup();
         });
       }
       document.getElementById("btnRunwayShow").addEventListener("click", () => {
@@ -6881,7 +7396,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         awardOnce('avatar:runway','reason',20,'꾸미기 이유 설명');
         saveProgress();
       });
-      document.getElementById('avatarSafetyReason').addEventListener('change',e=>{state.avatarReason=e.target.value;saveProgress();});
+      document.getElementById('avatarSafetyReason').addEventListener('change',e=>{state.avatarReason=e.target.value;saveProgress();renderAvatarDressup();});
       document.getElementById('avatarReasonText').addEventListener('input',e=>{state.avatarReasonText=e.target.value.slice(0,120);saveProgress();});
 
       document.getElementById("btnResetCostume").addEventListener("click", () => {
@@ -7006,6 +7521,37 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         btnAddClassPoster.addEventListener('click', () => {
           playSound('stamp');
           addCurrentStudentToClassPoster();
+        });
+      }
+      const btnDownloadWallPoster = document.getElementById('btnDownloadWallPoster');
+      if (btnDownloadWallPoster) {
+        btnDownloadWallPoster.addEventListener('click', () => {
+          playSound('stamp');
+          downloadCanvas(drawWallPosterCanvas(), `교실게시용_6대안전수칙포스터_${safeLabel(state.profile.className, EDUCATION_DATA[state.grade].classDefault, 20)}.png`);
+        });
+      }
+      const btnDownloadParentCard = document.getElementById('btnDownloadParentCard');
+      if (btnDownloadParentCard) {
+        btnDownloadParentCard.addEventListener('click', () => {
+          playSound('stamp');
+          downloadCanvas(drawParentCardCanvas(), `가정연계_안전대화카드_${safeLabel(state.profile.name, '어린이', 20)}.png`);
+        });
+      }
+      const btnCopyStudentCode = document.getElementById('btnCopyStudentCode');
+      if (btnCopyStudentCode) {
+        btnCopyStudentCode.addEventListener('click', () => {
+          const code = document.getElementById('studentShareCodeInput')?.value || generateStudentShareCode();
+          copyTextWithToast(code, '내 결과 단축 코드가 복사되었어요! 선생님께 전달해 보세요.');
+        });
+      }
+      const btnImportStudentCode = document.getElementById('btnImportStudentCode');
+      if (btnImportStudentCode) {
+        btnImportStudentCode.addEventListener('click', () => {
+          const input = document.getElementById('importStudentCodeInput');
+          if (!input) return;
+          if (importStudentShareCode(input.value)) {
+            input.value = '';
+          }
         });
       }
       document.getElementById('btnExportProgress').addEventListener('click',exportProgressJSON);

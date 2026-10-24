@@ -73,6 +73,64 @@
         });
         summary.appendChild(jumpBox);
       }
+      // 6대 안전 목표 달성률 히트맵 & 원클릭 취약 목표 재수업 (Idea 7)
+      const heatmapWrap=document.createElement('div');
+      heatmapWrap.id='safetyGoalHeatmap';
+      heatmapWrap.className='pt-2 mt-2 border-t border-indigo-800/80 space-y-1.5';
+      const hmTitle=document.createElement('div');
+      hmTitle.className='text-xs font-extrabold text-amber-300';
+      const totalParticipants=classPosterRecords.length>0 ? classPosterRecords.length : 1;
+      hmTitle.textContent=`📊 6대 안전 목표 달성률 히트맵 (${classPosterRecords.length>0?`우리 반 ${totalParticipants}명 합산`:'나의 달성 현황'} · 누르면 바로 복습)`;
+      heatmapWrap.appendChild(hmTitle);
+      const hmGrid=document.createElement('div');
+      hmGrid.className='grid grid-cols-2 sm:grid-cols-3 gap-1.5';
+      SAFETY_GOALS.forEach((goal,goalIndex)=>{
+        let achieved=0;
+        if(classPosterRecords.length>0){
+          classPosterRecords.forEach(rec=>{
+            const g=rec.grade||state.grade;
+            const confirmed=rec.gradeRecords?.[g]?.safetyConfirmed?.[goal.id];
+            if(confirmed?.contentVersion===SAFETY_CONTENT_VERSION)achieved++;
+          });
+        } else if(state.safetyConfirmed[goal.id]?.contentVersion===SAFETY_CONTENT_VERSION){
+          achieved=1;
+        }
+        const pct=Math.round((achieved/totalParticipants)*100);
+        const cell=document.createElement('button');
+        cell.type='button';
+        cell.className='heatmap-goal-btn text-left rounded-xl p-2 bg-indigo-950/90 border border-indigo-700 hover:border-amber-400 transition space-y-1';
+        cell.dataset.goalIndex=String(goalIndex);
+        const rowTop=document.createElement('div');
+        rowTop.className='flex items-center justify-between gap-1 text-[11px] font-bold';
+        const nameSpan=document.createElement('span');
+        nameSpan.textContent=`${pct===100?'🟢':pct>=50?'🟡':'🔴'} ${goal.title}`;
+        const pctSpan=document.createElement('span');
+        pctSpan.className='text-amber-300';
+        pctSpan.textContent=`${pct}%`;
+        rowTop.appendChild(nameSpan);
+        rowTop.appendChild(pctSpan);
+        const track=document.createElement('div');
+        track.className='heatmap-track';
+        const fill=document.createElement('div');
+        fill.className='heatmap-fill';
+        fill.style.width=`${pct}%`;
+        track.appendChild(fill);
+        cell.appendChild(rowTop);
+        cell.appendChild(track);
+        cell.addEventListener('click',()=>{
+          state.scenarioIndex=goalIndex;
+          playSound('click');
+          renderScenario();
+          switchTab('tab-safety');
+        });
+        hmGrid.appendChild(cell);
+      });
+      heatmapWrap.appendChild(hmGrid);
+      summary.appendChild(heatmapWrap);
+      const codeInput=document.getElementById('studentShareCodeInput');
+      if(codeInput && typeof generateStudentShareCode==='function'){
+        codeInput.value=generateStudentShareCode();
+      }
       const certButton=document.getElementById('btnDownloadCert');
       const participationButton=document.getElementById('btnDownloadParticipation');
       if(certButton)certButton.disabled=!(canDownloadSafetyCertificate() || (classPosterActive && classPosterRecords.length>0));
@@ -337,6 +395,173 @@
       drawCanvasQr(ctx, typeof shareLessonUrl === 'function' ? shareLessonUrl() : 'https://gmlduqzhd123-lab.github.io/Halloween/', 915, famY+7, 90);
       ctx.font=`15px ${RESULT_FONT}`;ctx.fillStyle='#475569';
       ctx.fillText(`근거 자료: 국민재난안전포털 다중운집인파사고 국민행동요령 · 유네스코 · © 엽쌤 교육용 활동지`,65,1438);
+      return canvas;
+    }
+    function generateStudentShareCode() {
+      const payload = {
+        g: state.grade,
+        c: safeLabel(state.profile.className, EDUCATION_DATA[state.grade].classDefault, 20),
+        n: safeLabel(state.profile.name, '안전대장', 16),
+        p: safeLabel(state.profile.pledge, '안전 약속을 실천해요!', 42),
+        pts: state.candyPoints,
+        av: [state.avatar.costume || '🎃', state.avatar.char || '🧒', state.avatar.prop || '🕯️'],
+        goals: SAFETY_GOALS.filter(g => state.safetyConfirmed[g.id]?.contentVersion === SAFETY_CONTENT_VERSION).map(g => g.id)
+      };
+      try {
+        const json = JSON.stringify(payload);
+        const bytes = new TextEncoder().encode(json);
+        let binary = '';
+        bytes.forEach(b => { binary += String.fromCharCode(b); });
+        return `HW1:${btoa(binary)}`;
+      } catch (_) {
+        return '';
+      }
+    }
+    function importStudentShareCode(rawText) {
+      const status = document.getElementById('importResults');
+      const tokens = String(rawText || '').trim().split(/\s+/).filter(Boolean);
+      if (!tokens.length) {
+        if (status) status.textContent = '배움 코드를 입력해 주세요.';
+        return false;
+      }
+      let added = 0;
+      tokens.forEach(token => {
+        if (!token.startsWith('HW1:')) return;
+        try {
+          const binary = atob(token.slice(4));
+          const bytes = Uint8Array.from(binary, ch => ch.charCodeAt(0));
+          const parsed = JSON.parse(new TextDecoder().decode(bytes));
+          if (!parsed || typeof parsed !== 'object') return;
+          const grade = EDUCATION_DATA[parsed.g] ? parsed.g : state.grade;
+          const confirmedMap = {};
+          if (Array.isArray(parsed.goals)) {
+            parsed.goals.forEach(gid => {
+              if (SAFETY_GOALS.some(g => g.id === gid)) {
+                confirmedMap[gid] = { contentVersion: SAFETY_CONTENT_VERSION, at: Date.now() };
+              }
+            });
+          }
+          const avArr = Array.isArray(parsed.av) ? parsed.av : ['🎃', '🧒', '🕯️'];
+          classPosterRecords.push({
+            sessionId: `code-${Date.now()}-${Math.random()}`,
+            grade,
+            candyPoints: Number.isInteger(parsed.pts) ? Math.max(0, Math.min(999999, parsed.pts)) : 0,
+            profile: {
+              school: state.profile.school || '',
+              className: safeLabel(parsed.c, EDUCATION_DATA[grade].classDefault, 30),
+              name: safeLabel(parsed.n, `안전대장 ${classPosterRecords.length + 1}호`, 16),
+              pledge: safeLabel(parsed.p, '안전 약속을 실천해요!', 60)
+            },
+            gradeRecords: {
+              [grade]: {
+                avatar: { costume: safeLabel(avArr[0], '🎃', 4), char: safeLabel(avArr[1], '🧒', 4), prop: safeLabel(avArr[2], '🕯️', 4) },
+                safetyConfirmed: confirmedMap
+              }
+            }
+          });
+          added++;
+        } catch (_) {}
+      });
+      if (!added) {
+        if (status) status.textContent = '유효한 배움 코드(HW1:...)를 찾지 못했어요.';
+        return false;
+      }
+      renderClassPosterCanvas(classPosterRecords);
+      if (status) {
+        status.textContent = `⚡ 배움 코드로 ${added}명 추가 완료! (총 ${classPosterRecords.length}명: ${classPosterRecords.map(r => r.profile.name).join(', ')})`;
+      }
+      showToast(`배움 코드로 학생 ${added}명을 협동 포스터에 추가했어요!`, '⚡');
+      return true;
+    }
+    function drawWallPosterCanvas() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1100;
+      canvas.height = 1500;
+      const cls = safeLabel(state.profile.className, EDUCATION_DATA[state.grade].classDefault, 30);
+      const ctx = drawSheetBase(canvas, '🪧 우리 반 6대 다중밀집 보행 안전 수칙', `${THEMES[state.teacher.theme].label} · ${cls} 교실 상시 게시용 안전 포스터`);
+      const icons = ['🚪', '➡️', '↗️', '👐', '🙅', '🙆'];
+      const summaries = [
+        '행사장에 들어가기 전 비상구(초록색 표지판)와 넓은 이동로를 먼저 확인해요.',
+        '평상시 양방향 통로에서는 서로 부딪히지 않도록 오른쪽으로 차근차근 걸어요.',
+        '걸음이 느려지고 어깨가 자꾸 닿는 혼잡 신호가 오면 넓은 가장자리로 벗어나요.',
+        '인파에 떠밀릴 때는 무리하게 맞서지 말고 두 팔로 가슴 앞 숨 쉴 공간을 지켜요.',
+        '붐비는 길에서 물건이나 신발이 떨어져도 허리를 숙이지 않고 내 몸을 먼저 보호해요.',
+        '넘어져서 바로 일어나기 어려울 때는 머리를 감싸고 몸을 공처럼 둥글게 말아요.'
+      ];
+      let y = 210;
+      SAFETY_GOALS.forEach((goal, idx) => {
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
+        ctx.fillRect(68, y, 964, 168);
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(68, y, 964, 168);
+        ctx.fillStyle = '#fde68a';
+        ctx.font = `bold 28px ${RESULT_FONT}`;
+        ctx.fillText(`${icons[idx]} 수칙 ${idx + 1}. ${goal.title}`, 96, y + 48, 900);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `21px ${RESULT_FONT}`;
+        printLines(ctx, summaries[idx], 96, y + 92, 900, 32, 2);
+        y += 186;
+      });
+      ctx.fillStyle = '#fde68a';
+      ctx.textAlign = 'center';
+      ctx.font = `bold 22px ${RESULT_FONT}`;
+      ctx.fillText(`🚨 위급 상황 신고: 경찰 112 · 소방/구급 119 · 출처: 국민재난안전포털 다중운집인파사고 행동요령`, 550, 1385, 960);
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = `17px ${RESULT_FONT}`;
+      ctx.fillText(`생성일: ${new Date().toLocaleDateString('ko-KR')} · © 엽쌤 교육용 안전 포스터`, 550, 1430, 960);
+      ctx.textAlign = 'left';
+      return canvas;
+    }
+    function drawParentCardCanvas() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 900;
+      canvas.height = 900;
+      const cls = safeLabel(state.profile.className, EDUCATION_DATA[state.grade].classDefault, 30);
+      const name = safeLabel(state.profile.name, '우리 아이', 25);
+      const ctx = drawSheetBase(canvas, '💌 가정 연계 안전 교육 안내 카드', `${THEMES[state.teacher.theme].label} · ${cls} · ${name}`);
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
+      ctx.fillRect(60, 185, 780, 440);
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(60, 185, 780, 440);
+      ctx.fillStyle = '#fde68a';
+      ctx.font = `bold 24px ${RESULT_FONT}`;
+      ctx.fillText('🏫 오늘 학교에서 함께 배운 안전 핵심 약속', 88, 232);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `20px ${RESULT_FONT}`;
+      const points = [
+        '1. 행사장·박물관에 들어가기 전 비상구와 넓은 이동로를 먼저 확인해요.',
+        '2. 복도와 통로에서는 오른쪽으로 걷고, 어깨가 닿는 혼잡 신호가 오면 벗어나요.',
+        '3. 떠밀릴 때는 가슴 앞 숨 쉴 공간을 보호하고, 떨어진 물건은 숙여 줍지 않아요.',
+        '4. 서로 다른 문화의 고유한 의미를 존중하고 시야가 트인 안전한 복장을 골라요.'
+      ];
+      let py = 278;
+      points.forEach(line => {
+        py = printLines(ctx, line, 88, py, 720, 30, 2) + 12;
+      });
+      ctx.fillStyle = '#fde68a';
+      ctx.font = `bold 22px ${RESULT_FONT}`;
+      ctx.fillText(`✍ ${name}의 안전 다짐`, 88, py + 18);
+      ctx.fillStyle = '#a7f3d0';
+      ctx.font = `20px ${RESULT_FONT}`;
+      printLines(ctx, safeLabel(state.profile.pledge, '오른쪽으로 안전하게 걷고 비상 출구를 먼저 확인하겠습니다!', 100), 88, py + 54, 720, 28, 2);
+
+      const familyCheck = SAFETY_GOALS[0].checks[state.grade];
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.fillRect(60, 650, 780, 165);
+      ctx.strokeStyle = '#6ee7b7';
+      ctx.strokeRect(60, 650, 780, 165);
+      ctx.fillStyle = '#fde68a';
+      ctx.font = `bold 21px ${RESULT_FONT}`;
+      ctx.fillText('🏡 가정에서 자녀와 함께 나누는 1분 질문', 85, 692);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `19px ${RESULT_FONT}`;
+      ctx.fillText(`질문: ${familyCheck[0]}`, 85, 732, 580);
+      ctx.fillStyle = '#a7f3d0';
+      ctx.font = `bold 19px ${RESULT_FONT}`;
+      ctx.fillText(`정답: ${familyCheck[1][familyCheck[2]]}`, 85, 770, 580);
+      drawCanvasQr(ctx, typeof shareLessonUrl === 'function' ? shareLessonUrl() : 'https://gmlduqzhd123-lab.github.io/Halloween/', 695, 668, 125);
       return canvas;
     }
     function exportProgressJSON() {

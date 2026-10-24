@@ -508,6 +508,43 @@ test('main browser flows and standalone file load without script errors', async 
   assert.equal(await game.locator('#remainingGoalLinks .remaining-goal-btn').count(),6);
   await game.locator('#remainingGoalLinks .remaining-goal-btn').nth(2).click();
   assert.equal(await game.evaluate(()=>state.activeTab==='tab-safety'&&state.scenarioIndex===2),true);
+
+  assert.match(await game.locator('#lessonPacemakerBadge').innerText(),/코스/);
+  await game.locator('#btnSpotlightMode').click();
+  assert.equal(await game.evaluate(()=>document.body.classList.contains('spotlight-mode')),true);
+  await game.locator('#btnSpotlightMode').click();
+
+  await game.locator('[data-tab="tab-culture"]').first().click();
+  await game.locator('#btnSpeechRate').click();
+  assert.equal(await game.locator('#speechRateLabel').innerText(),'천천히 0.8x');
+  await game.locator('#btnSpeechRate').click();
+  assert.equal(await game.locator('#speechRateLabel').innerText(),'보통 속도');
+  await game.locator('#storyPollBox button').first().click();
+  assert.equal(await game.locator('#storyPairTalkBox').isVisible(),true);
+  await game.locator('#btnPairTalkDone').click();
+
+  await game.locator('[data-tab="tab-safety"]').first().click();
+  assert.equal(await game.locator('#safetyPlannerBox .planner-zone-btn').count(),4);
+  await game.locator('#safetyPlannerBox .planner-zone-btn').first().click();
+  assert.match(await game.locator('#safetyPlannerCount').innerText(),/1 \/ 4/);
+  assert.match(await game.locator('#gameCrowdMeterText').innerText(),/실시간 혼잡도/);
+
+  await game.locator('[data-tab="tab-costume"]').first().click();
+  await game.locator('#btnToggleAvatar').click();
+  assert.match(await game.locator('#avatarMissionTitle').innerText(),/오늘의 코디 미션/);
+  assert.equal(await game.locator('#avatarSafetyChecklist > div').count(),4);
+
+  await game.locator('[data-tab="tab-quiz"]').first().click();
+  await game.locator('#quizOptionsContainer .quiz-opt-btn').first().click();
+  assert.equal(await game.locator('.quiz-inline-bridge-btn').count(),1);
+
+  await game.locator('[data-tab="tab-cert"]').first().click();
+  assert.equal(await game.locator('#safetyGoalHeatmap .heatmap-goal-btn').count(),6);
+  const shareCode=await game.locator('#studentShareCodeInput').inputValue();
+  assert.match(shareCode,/^HW1:/);
+  await game.locator('#importStudentCodeInput').fill(shareCode);
+  await game.locator('#btnImportStudentCode').click();
+  assert.match(await game.locator('#importResults').innerText(),/1명 추가 완료/);
   await game.close();
 
   const scoped=await browser.newContext();
