@@ -620,7 +620,7 @@
     .storybook .welcome-restart:hover { background: #f3e5d3; }
     .storybook .welcome-restart.hidden { display: none !important; }
     .storybook .welcome-meta-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; }
-    .storybook .welcome-footnote { display: none !important; }
+    .storybook .welcome-footnote, #safetyPlannerBox { display: none !important; }
     .storybook .welcome-guide-btn { min-height: 36px; padding: 6px 14px; border: 1.5px solid #d5c3b1; border-radius: 999px; background: #fff8ef; color: #493b59; font-size: .82rem; font-weight: 800; cursor: pointer; transition: background-color .15s ease, border-color .15s ease; }
     .storybook .welcome-guide-btn:hover { background: #f3e5d3; border-color: #bfa890; }
     .storybook .welcome-copyright { margin-top: 12px; font-size: .76rem; color: #78695a !important; }

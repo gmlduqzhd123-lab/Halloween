@@ -524,9 +524,6 @@ test('main browser flows and standalone file load without script errors', async 
   await game.locator('#btnPairTalkDone').click();
 
   await game.locator('[data-tab="tab-safety"]').first().click();
-  assert.equal(await game.locator('#safetyPlannerBox .planner-zone-btn').count(),4);
-  await game.locator('#safetyPlannerBox .planner-zone-btn').first().click();
-  assert.match(await game.locator('#safetyPlannerCount').innerText(),/1 \/ 4/);
   assert.match(await game.locator('#gameCrowdMeterText').innerText(),/실시간 혼잡도/);
 
   await game.locator('[data-tab="tab-costume"]').first().click();

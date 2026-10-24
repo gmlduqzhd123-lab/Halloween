@@ -4779,51 +4779,6 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       box.appendChild(btn);
     }
 
-    const SAFETY_PLANNER_ZONES = [
-      { id: 'exit', label: '🚪 비상구 유도등 설치', desc: '들어올 때 가장 먼저 비상구 위치를 표시해요.' },
-      { id: 'right', label: '➡️ 우측통행 화살표 바닥 스티커', desc: '복도에서 마주 오는 친구와 부딪히지 않게 길을 나눠요.' },
-      { id: 'line', label: '🚧 계단 줄서기·멈춤 제한선', desc: '좁은 계단 입구에서 한꺼번에 몰리지 않도록 간격을 띄워요.' },
-      { id: 'flag', label: '🚩 넓은 공터 안전 집결지 깃발', desc: '위험할 때 대각선으로 빠져나와 모일 장소를 알려 줘요.' }
-    ];
-    let safetyPlannerPlaced = {};
-    function renderSafetyPlanner() {
-      const box = document.getElementById('safetyPlannerBox');
-      if (!box) return;
-      box.replaceChildren();
-      const themeLabel = THEMES[state.teacher?.theme]?.label || '학교 행사';
-      const placedCount = SAFETY_PLANNER_ZONES.filter(z => safetyPlannerPlaced[z.id]).length;
-      const header = document.createElement('div');
-      header.className = 'flex flex-wrap items-center justify-between gap-1';
-      header.innerHTML = `<strong class="text-sky-200">🗺️ 내가 안전 기획자라면? (${themeLabel} 안전 표지판 배치)</strong><span id="safetyPlannerCount" class="text-[11px] font-black text-amber-300">설치 ${placedCount} / ${SAFETY_PLANNER_ZONES.length}</span>`;
-      box.appendChild(header);
-      const grid = document.createElement('div');
-      grid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-1.5';
-      SAFETY_PLANNER_ZONES.forEach(zone => {
-        const placed = !!safetyPlannerPlaced[zone.id];
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.dataset.zone = zone.id;
-        btn.setAttribute('aria-pressed', String(placed));
-        btn.className = `planner-zone-btn text-left rounded-xl px-2.5 py-2 border transition text-xs ${
-          placed
-            ? 'bg-emerald-950/80 border-emerald-400 text-emerald-100 font-bold'
-            : 'bg-slate-900/80 border-indigo-700 hover:border-amber-400 text-indigo-100'
-        }`;
-        btn.innerHTML = `<div class="font-extrabold">${placed ? '✅ 설치 완료 · ' : '➕ 클릭해 설치 · '}${zone.label}</div><div class="text-[11px] text-indigo-200 mt-0.5">${zone.desc}</div>`;
-        btn.addEventListener('click', () => {
-          safetyPlannerPlaced[zone.id] = !safetyPlannerPlaced[zone.id];
-          playSound(safetyPlannerPlaced[zone.id] ? 'correct' : 'click');
-          const doneAll = SAFETY_PLANNER_ZONES.every(z => safetyPlannerPlaced[z.id]);
-          if (doneAll) {
-            awardOnce('safety:planner', 'all', 15, '행사장 안전 표지판 4곳 설치 완료');
-          }
-          renderSafetyPlanner();
-        });
-        grid.appendChild(btn);
-      });
-      box.appendChild(grid);
-    }
-
     function renderScenario() {
       if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
       const item = SAFETY_SCENARIOS[state.scenarioIndex];
@@ -4886,7 +4841,6 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       nextBtn.textContent = state.scenarioIndex === SAFETY_SCENARIOS.length - 1 ? "다음: 옷차림 생각하기 →" : "다음 약속 →";
       renderSafetyFollowup();
       renderSafetyActionDrill();
-      renderSafetyPlanner();
       renderGlossaryBox("safetyGlossaryBox", ["다중밀집", "우측통행", "대각선 이동", "가슴 앞 공간(흉강)", "병목 현상", "집결 장소"]);
     }
 
@@ -6625,7 +6579,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
 
     // ==================== INITIALIZATION & EVENT LISTENERS ====================
     window.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll('.welcome-footnote').forEach(el => el.remove());
+      document.querySelectorAll('.welcome-footnote, #safetyPlannerBox').forEach(el => el.remove());
       const offlineStatus=document.getElementById('offlineStatus');
       if ('serviceWorker' in navigator && (location.protocol === 'https:' || ['localhost','127.0.0.1'].includes(location.hostname))) {
         const hadSwController = Boolean(navigator.serviceWorker.controller);
