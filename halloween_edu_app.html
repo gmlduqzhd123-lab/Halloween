@@ -662,7 +662,38 @@
     .storybook .optional-toggle { display: block; width: 100%; min-height: 44px; text-align: left; color: #493b59; font-size: 1rem; font-weight: 700; }
     .storybook .optional-toggle span { float: right; font-size: 1.3rem; }
     .storybook .optional-card:not(.is-open) #safetyGameContents,
-    .storybook .optional-card:not(.is-open) #avatarContents { display: none; }
+    .storybook .optional-card:not(.is-open) #avatarContents,
+    .storybook:not(.tools-open) .optional-card:not(.is-open) #etiquetteContents,
+    .storybook:not(.tools-open) .optional-card:not(.is-open) #teacherSummaryContents { display: none; }
+    .storybook .next-step-calm {
+      background: #fff8ef !important;
+      color: #5f4d70 !important;
+      border: 1.5px solid #c9bbd4 !important;
+      box-shadow: none !important;
+    }
+    .storybook .next-step-ready {
+      background: linear-gradient(135deg, #c96a3b 0%, #b25228 100%) !important;
+      color: #ffffff !important;
+      border: 1.5px solid #a34820 !important;
+      box-shadow: 0 8px 20px rgba(182, 93, 54, 0.28) !important;
+      animation: nextStepPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes nextStepPulse {
+      0%, 100% { box-shadow: 0 8px 20px rgba(182, 93, 54, 0.24), 0 0 0 0 rgba(201, 106, 59, 0.32); filter: brightness(1); }
+      50% { box-shadow: 0 12px 26px rgba(182, 93, 54, 0.38), 0 0 0 4px rgba(201, 106, 59, 0.16); filter: brightness(1.04); }
+    }
+    body.storybook:not(.tools-open) #lessonPacemakerBadge,
+    body.storybook:not(.tools-open) #btnSpotlightMode,
+    body.storybook:not(.tools-open) #btnClassTimer,
+    body.storybook:not(.tools-open) #btnSpeechRate,
+    body.storybook:not(.tools-open) #btnAutoRead,
+    body.storybook:not(.tools-open) #btnEchoRead,
+    body.storybook:not(.tools-open) .costume-guide-banners,
+    body.storybook:not(.tools-open) #btnResetCostume,
+    body.storybook:not(.tools-open) #quizCheerBanner,
+    body.storybook:not(.tools-open) #btnRestartQuiz {
+      display: none !important;
+    }
     .storybook .costume-pager { display: flex; align-items: center; justify-content: center; gap: 12px; }
     .storybook .costume-pager button { min-height: 42px; padding: 8px 13px; border: 1px solid #d5c3b1; border-radius: 10px; background: #fff8ef; font-weight: 700; }
     .storybook .costume-pager button:disabled { opacity: .4; }
@@ -988,7 +1019,7 @@
               <div id="storyVisualCaption" class="nowrap text-xs font-bold text-amber-300 bg-indigo-950/90 px-3 py-1 rounded-full border border-amber-400/30">
                 매년 10월 31일
               </div>
-              <div id="storyClueBox" class="mt-2 px-2.5 py-1.5 rounded-xl bg-indigo-950/90 border border-amber-400/40 text-[11px] font-bold text-amber-200 leading-snug">
+              <div id="storyClueBox" class="hidden mt-2 px-2.5 py-1.5 rounded-xl bg-indigo-950/90 border border-amber-400/40 text-[11px] font-bold text-amber-200 leading-snug">
                 👆 그림을 눌러 숨은 이야기 단서를 찾아보세요!
               </div>
               <div id="storyStepPills" class="flex items-center gap-1.5 mt-3"></div>
@@ -1160,9 +1191,12 @@
           <div class="border-b border-indigo-800 pb-2.5 space-y-1">
             <div class="flex items-center justify-between gap-2">
               <span class="nowrap text-xs font-bold text-rose-400">상황 활동 · 사람이 많을 때의 안전 선택</span>
-              <span id="scenarioStepBadge" class="nowrap px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-200 text-xs font-bold">
-                약속 1 / 6
-              </span>
+              <div class="flex items-center gap-1.5">
+                <button type="button" id="btnSpeakScenario" class="nowrap px-2.5 py-1 rounded-lg bg-indigo-800 hover:bg-indigo-700 text-amber-300 text-xs font-bold border border-indigo-600 transition flex items-center gap-1 min-h-[32px]">🔈 읽어주기</button>
+                <span id="scenarioStepBadge" class="nowrap px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-200 text-xs font-bold">
+                  약속 1 / 6
+                </span>
+              </div>
             </div>
             <h2 class="font-title text-base sm:text-xl text-white nowrap">지금 어떤 행동이 안전할까요?</h2>
           </div>
@@ -1201,10 +1235,9 @@
               <div id="scenarioChoices" class="space-y-2"></div>
               <div id="scenarioFeedbackBox" class="hidden rounded-xl p-3 border text-xs sm:text-sm space-y-1"></div>
               <button type="button" id="btnSpeakSafetyFeedback" class="hidden rounded-xl bg-indigo-800 px-3 py-2 text-sm font-bold">🔈 해설 읽기</button>
-              <div id="safetyFollowup" class="rounded-xl bg-slate-900 border border-sky-500/50 p-3 space-y-2" aria-live="polite"></div>
-              <div id="safetyActionDrill" class="rounded-xl bg-indigo-950/90 border border-amber-400/40 p-3 space-y-1.5 text-xs"></div>
+              <div id="safetyFollowup" class="hidden rounded-xl bg-slate-900 border border-sky-500/50 p-3 space-y-2" aria-live="polite"></div>
+              <div id="safetyActionDrill" class="rounded-xl bg-indigo-950/90 border border-amber-400/40 px-3 py-2 text-xs"></div>
               <div id="safetyGlossaryBox" class="rounded-xl bg-indigo-950/80 border border-indigo-700/80 p-2.5 space-y-1 text-xs"></div>
-              <button type="button" id="btnSpeakScenario" class="rounded-xl bg-indigo-800 px-3 py-2 text-sm font-bold">🔈 질문과 보기 읽기</button>
               <div class="flex justify-between pt-1">
                 <button type="button" id="btnPrevScenario" class="nowrap px-3.5 py-1.5 rounded-xl bg-indigo-900 hover:bg-indigo-800 disabled:opacity-40 text-xs font-bold border border-indigo-700 min-h-[38px]">
                   ← 이전 약속
@@ -1372,11 +1405,11 @@
             <h2 class="font-title text-base sm:text-xl text-white nowrap">입어도 좋은 옷 vs 안 되는 옷!</h2>
           </div>
 
-          <div id="costumeTogetherBanner" class="rounded-xl bg-indigo-950/90 border border-amber-400/40 px-3 py-2 text-xs font-bold text-amber-200">
+          <div id="costumeTogetherBanner" class="costume-guide-banners rounded-xl bg-indigo-950/90 border border-amber-400/40 px-3 py-2 text-xs font-bold text-amber-200">
             🙆‍♂️ 우리 반 몸짓 O·X 퀴즈: 옷 카드를 보고 머리 위로 크게 ⭕(안전) 또는 ❌(피하기)를 만든 뒤 눌러 보세요!
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div class="costume-guide-banners grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div class="rounded-xl bg-rose-950/60 border border-rose-500/40 px-3 py-2.5 text-xs space-y-0.5">
               <div class="font-extrabold text-rose-300">🚓 실제 제복처럼 보이는 옷은 피하고 확인해요</div>
               <p class="text-rose-100">경찰제복과 군복은 각각 다른 법의 조건을 살펴야 해요. 소방관 출동복은 실제 구조대원과 혼동되지 않게 피하는 선택을 해요.</p>
@@ -1387,19 +1420,24 @@
             </div>
           </div>
 
-          <div id="costumeCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5"></div>
-          <div class="costume-pager"><button type="button" id="btnPrevCostumePage">← 이전 옷</button><span id="costumePageLabel">1 / 3</span><button type="button" id="btnNextCostumePage">다음 옷 →</button></div>
+          <div id="costumeCardsGrid" class="grid grid-cols-1 max-w-md mx-auto gap-2.5"></div>
+          <div class="costume-pager"><button type="button" id="btnPrevCostumePage">← 이전 옷</button><span id="costumePageLabel">1 / 12</span><button type="button" id="btnNextCostumePage">다음 옷 →</button></div>
+          <div class="pt-1 flex justify-end">
+            <button type="button" id="btnToQuiz" class="chapter-next">다음 단계: 내 생각 확인하기 →</button>
+          </div>
         </div>
 
-        <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3">
-          <div class="flex items-center justify-between gap-2">
-            <h3 class="font-title text-sm sm:text-lg text-amber-300 nowrap">친구를 배려하는 간식 약속</h3>
-            <span id="etiquetteCheckBadge" class="nowrap text-xs font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2.5 py-0.5 rounded-full">
-              약속 체크 0 / 4
-            </span>
+        <div id="optionalEtiquetteCard" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3 optional-card">
+          <button type="button" id="btnToggleEtiquette" class="optional-toggle" aria-expanded="false" aria-controls="etiquetteContents">더 해보기 · 친구를 배려하는 간식 약속 4가지 <span aria-hidden="true">＋</span></button>
+          <div id="etiquetteContents" class="space-y-3 pt-2">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="font-title text-sm sm:text-lg text-amber-300 nowrap">친구를 배려하는 간식 약속</h3>
+              <span id="etiquetteCheckBadge" class="nowrap text-xs font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2.5 py-0.5 rounded-full">
+                약속 체크 0 / 4
+              </span>
+            </div>
+            <div id="etiquetteChecklist" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
           </div>
-          <div id="etiquetteChecklist" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-          <button type="button" id="btnToQuiz" class="chapter-next">다음: 내 생각 확인하기 →</button>
         </div>
       </section>
 
@@ -1429,10 +1467,14 @@
               <div class="flex items-center gap-1.5">
                 <span id="quizQuestionNumber" class="nowrap px-2.5 py-0.5 rounded-full bg-orange-500 text-white text-xs font-black">Q1</span>
                 <span id="quizCategoryBadge" class="nowrap text-xs font-bold text-amber-300">안전 상식</span>
+                <span id="quizTypeTag" class="px-2 py-0.5 rounded-full bg-orange-500 text-white text-[11px] font-extrabold">⚡ 생각 판단</span>
               </div>
 
               <!-- Quiz Lifelines: Hint & 50:50 Chance -->
-              <div class="flex items-center gap-1.5">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button type="button" id="btnSpeakQuiz" class="nowrap px-2.5 py-1 rounded-lg bg-indigo-800 hover:bg-indigo-700 border border-indigo-600 text-amber-300 text-xs font-bold transition">
+                  🔈 읽어주기
+                </button>
                 <button type="button" id="btnQuizHint" class="nowrap px-2.5 py-1 rounded-lg bg-indigo-900 hover:bg-indigo-800 border border-amber-400/50 text-amber-200 text-xs font-bold transition">
                   💡 힌트 보기
                 </button>
@@ -1444,11 +1486,9 @@
 
             <div id="quizCheerBanner" class="rounded-xl px-3 py-1.5 bg-indigo-950/90 border border-amber-400/40 text-xs font-bold flex flex-wrap items-center justify-between gap-2">
               <span id="quizCheerText">🎃 차근차근 이유를 생각하며 골라 봐요!</span>
-              <span id="quizTypeTag" class="px-2 py-0.5 rounded-full bg-orange-500 text-white text-[11px] font-extrabold">⚡ 생각 판단</span>
             </div>
 
             <h3 id="quizQuestionText" class="font-title text-base sm:text-lg text-white leading-snug"></h3>
-            <button type="button" id="btnSpeakQuiz" class="rounded-xl bg-indigo-800 px-3 py-2 text-sm font-bold">🔈 질문과 보기 읽기</button>
 
             <div id="quizHintBox" class="hidden rounded-xl bg-amber-950/70 border border-amber-400/50 px-3 py-2 text-xs text-amber-200 font-bold"></div>
 
@@ -1481,10 +1521,9 @@
 
       <!-- ==================== TAB 5: CUSTOMIZABLE CERTIFICATE GENERATOR ==================== -->
       <section id="tab-cert" class="tab-panel hidden space-y-4">
-        <div id="learningResultSummary" class="glass-card rounded-xl p-4 space-y-2" aria-live="polite"></div>
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
           <div class="border-b border-indigo-800 pb-2.5 space-y-1">
-            <span class="nowrap text-xs font-bold text-amber-400">배움 기록 · 개인정보는 이 기기에만</span>
+            <span class="nowrap text-xs font-bold text-amber-400">배움 기록 · 이름과 약속을 적고 상장을 저장해요</span>
             <h2 class="font-title text-base sm:text-xl text-white nowrap">🎖️ 할로윈 안전 대장 임명장</h2>
           </div>
 
@@ -1501,13 +1540,13 @@
                   <input id="certClassInput" type="text" value="3학년 1반" maxlength="15" placeholder="예: 3학년 1반" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
                 </div>
                 <div>
-                  <div class="flex items-center justify-between gap-2 mb-1"><label for="certNameInput" class="block text-xs font-bold text-indigo-200">내 이름</label><button type="button" id="btnFillWholeClass" class="mini-chip text-[11px] px-2 py-0.5">+ 우리 반 전체</button></div>
-                  <input id="certNameInput" type="text" value="" maxlength="40" placeholder="별칭 또는 번호 (선택)" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
+                  <div class="flex items-center justify-between gap-2 mb-1"><label for="certNameInput" class="block text-xs font-bold text-indigo-200">1️⃣ 내 이름 (또는 별칭)</label><button type="button" id="btnFillWholeClass" class="mini-chip text-[11px] px-2 py-0.5">+ 우리 반 전체</button></div>
+                  <input id="certNameInput" type="text" value="" maxlength="40" placeholder="예: 김안전 또는 3학년 1반" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
                 </div>
               </div>
 
               <div>
-                <label for="certPledgeInput" class="block text-xs font-bold text-indigo-200 mb-1">나의 한 줄 안전 약속</label>
+                <label for="certPledgeInput" class="block text-xs font-bold text-indigo-200 mb-1">2️⃣ 나의 한 줄 안전 약속 (아래 버튼을 눌러도 채워져요)</label>
                 <input id="certPledgeInput" type="text" value="" maxlength="160" placeholder="내가 실천할 안전 약속" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
                 <div class="grid grid-cols-3 gap-1 mt-2">
                   <button type="button" data-pledge="오른쪽으로 안전하게 걷고 비상 출구를 먼저 확인하겠습니다!" class="preset-pledge-btn nowrap text-[11px] px-2 py-1 rounded-lg bg-indigo-900 hover:bg-indigo-800 text-amber-200 border border-indigo-700 text-center">
@@ -1520,6 +1559,15 @@
                     + 질서지키기
                   </button>
                 </div>
+              </div>
+
+              <div class="space-y-2 pt-1">
+                <button type="button" id="btnDownloadCert" class="w-full nowrap px-4 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-indigo-950 font-black text-sm sm:text-base shadow-lg transition min-h-[48px]">
+                  💾 3️⃣ 내 안전 임명장 이미지 저장하기
+                </button>
+                <button type="button" id="btnRenderCert" class="w-full nowrap px-3 py-2 rounded-xl bg-indigo-800 hover:bg-indigo-700 text-white font-bold text-xs border border-indigo-600 transition min-h-[38px]">
+                  🎨 입력한 이름·약속 상장 그림에 새로고침
+                </button>
               </div>
 
               <!-- Certificate Sticker & Theme Customizer -->
@@ -1565,21 +1613,19 @@
                 </div>
                 <p id="importResults" class="sm:col-span-2 text-sm text-indigo-100"></p>
               </div>
-
-              <div class="grid grid-cols-2 gap-2 pt-1">
-                <button type="button" id="btnRenderCert" class="nowrap px-3 py-2.5 rounded-xl bg-indigo-800 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm border border-indigo-600 transition min-h-[42px]">
-                  🎨 그림에 적용
-                </button>
-                <button type="button" id="btnDownloadCert" class="nowrap px-3 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-indigo-950 font-black text-xs sm:text-sm shadow-lg transition min-h-[42px]">
-                  💾 이미지 저장
-                </button>
-              </div>
             </div>
 
             <div class="lg:col-span-7 glass-panel rounded-2xl p-3 flex flex-col items-center justify-center">
               <canvas id="certificateCanvas" width="800" height="720" class="w-full max-w-full h-auto rounded-xl shadow-2xl border border-amber-400/40"></canvas>
               <p class="text-xs text-indigo-300 mt-2">▲ 결과는 이 기기 안에서 생성됩니다. 브라우저 저장 기록도 이 기기·브라우저에만 남습니다.</p>
             </div>
+          </div>
+        </div>
+
+        <div id="optionalTeacherSummaryCard" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3 optional-card">
+          <button type="button" id="btnToggleTeacherSummary" class="optional-toggle" aria-expanded="false" aria-controls="teacherSummaryContents">👩‍🏫 선생님용 학급 결과 요약 · 목표 달성률 · 인쇄 도구 열기 <span aria-hidden="true">＋</span></button>
+          <div id="teacherSummaryContents" class="space-y-3 pt-2">
+            <div id="learningResultSummary" class="space-y-2" aria-live="polite"></div>
           </div>
         </div>
       </section>
@@ -6164,17 +6210,32 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       "집결 장소": "🚩 모둠 친구나 선생님을 놓쳤을 때 다시 만나기로 미리 약속한 넓은 장소예요."
     };
     const openedGlossaryByBox = {};
+    const glossaryBoxExpanded = {};
     function renderGlossaryBox(boxId, keys) {
       const box = document.getElementById(boxId);
       if (!box) return;
       box.replaceChildren();
+      const toolsOpen = document.body.classList.contains("tools-open");
+      const activeTerm = openedGlossaryByBox[boxId];
+      if (!toolsOpen && !glossaryBoxExpanded[boxId] && !activeTerm) {
+        const openBtn = document.createElement("button");
+        openBtn.type = "button";
+        openBtn.className = "mini-chip text-xs";
+        openBtn.textContent = "💡 어려운 낱말 뜻 보기";
+        openBtn.addEventListener("click", () => {
+          glossaryBoxExpanded[boxId] = true;
+          playSound("click");
+          renderGlossaryBox(boxId, keys);
+        });
+        box.appendChild(openBtn);
+        return;
+      }
       const row = document.createElement("div");
       row.className = "flex flex-wrap items-center gap-1.5";
       const label = document.createElement("span");
       label.className = "font-extrabold text-amber-300 text-[11px]";
       label.textContent = "📚 쉬운 말 사전:";
       row.appendChild(label);
-      const activeTerm = openedGlossaryByBox[boxId];
       keys.forEach(term => {
         if (!EASY_GLOSSARY[term]) return;
         const btn = document.createElement("button");
@@ -6191,6 +6252,19 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         });
         row.appendChild(btn);
       });
+      if (!toolsOpen && glossaryBoxExpanded[boxId]) {
+        const closeBtn = document.createElement("button");
+        closeBtn.type = "button";
+        closeBtn.className = "mini-chip text-[11px]";
+        closeBtn.textContent = "접기 ▲";
+        closeBtn.addEventListener("click", () => {
+          glossaryBoxExpanded[boxId] = false;
+          openedGlossaryByBox[boxId] = null;
+          playSound("click");
+          renderGlossaryBox(boxId, keys);
+        });
+        row.appendChild(closeBtn);
+      }
       box.appendChild(row);
       if (activeTerm && EASY_GLOSSARY[activeTerm]) {
         const desc = document.createElement("p");
@@ -6241,7 +6315,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const clueKey = storyKey(progress.storyIndex);
       const clueBox = document.getElementById("storyClueBox");
       if (clueBox) {
-        clueBox.textContent = storyClueOpened[clueKey]
+        const isClueOpen = !!storyClueOpened[clueKey];
+        clueBox.classList.toggle("hidden", !isClueOpen);
+        clueBox.textContent = isClueOpen
           ? getStoryClues()[progress.storyIndex]
           : "👆 그림을 눌러 숨은 이야기 단서를 찾아보세요!";
       }
@@ -6257,6 +6333,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const pollFeedback = document.getElementById("storyPollFeedback");
       const pairTalkBox = document.getElementById("storyPairTalkBox");
       const poll = getStoryPolls()[progress.storyIndex];
+      const showPairTalk = state.teacher?.mode === "pairs" || document.body.classList.contains("tools-open");
       if (pollBox && pollFeedback && poll) {
         pollBox.replaceChildren();
         poll.options.forEach((opt, idx) => {
@@ -6277,27 +6354,29 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           pollFeedback.className = "text-xs mt-1.5 font-bold text-emerald-300";
           pollFeedback.textContent = `💬 ${fbText}`;
           if (pairTalkBox) {
-            pairTalkBox.classList.remove("hidden");
+            pairTalkBox.classList.toggle("hidden", !showPairTalk);
             pairTalkBox.replaceChildren();
-            const otherIdx = pickedIdx === 0 ? 1 : 0;
-            const otherOpt = poll.options[otherIdx] || poll.options[0];
-            const promptEl = document.createElement("div");
-            promptEl.className = "font-bold text-amber-200 leading-snug";
-            promptEl.textContent = `🤝 짝꿍 생각 나누기(20초): 내가 고른 이유를 말하고, [${otherOpt}] 보기를 고른 친구는 어떤 마음일지 함께 이야기해 볼까요?`;
-            const doneBtn = document.createElement("button");
-            doneBtn.type = "button";
-            doneBtn.id = "btnPairTalkDone";
-            const isTalkDone = !!storyPollPicked[`${pollKey}:talk`];
-            doneBtn.className = `mini-chip text-[11px] ${isTalkDone ? "is-picked" : ""}`;
-            doneBtn.textContent = isTalkDone ? "🌟 짝꿍과 생각 나눔 완료!" : "🗣️ 짝꿍과 이야기 나눴어요!";
-            doneBtn.addEventListener("click", () => {
-              storyPollPicked[`${pollKey}:talk`] = true;
-              playSound("correct");
-              awardOnce(storyRewardId(progress.storyIndex), 'pairtalk', 10, "짝꿍 생각 나누기");
-              renderStorySlide();
-            });
-            pairTalkBox.appendChild(promptEl);
-            pairTalkBox.appendChild(doneBtn);
+            if (showPairTalk) {
+              const otherIdx = pickedIdx === 0 ? 1 : 0;
+              const otherOpt = poll.options[otherIdx] || poll.options[0];
+              const promptEl = document.createElement("div");
+              promptEl.className = "font-bold text-amber-200 leading-snug";
+              promptEl.textContent = `🤝 짝꿍 생각 나누기(20초): 내가 고른 이유를 말하고, [${otherOpt}] 보기를 고른 친구는 어떤 마음일지 함께 이야기해 볼까요?`;
+              const doneBtn = document.createElement("button");
+              doneBtn.type = "button";
+              doneBtn.id = "btnPairTalkDone";
+              const isTalkDone = !!storyPollPicked[`${pollKey}:talk`];
+              doneBtn.className = `mini-chip text-[11px] ${isTalkDone ? "is-picked" : ""}`;
+              doneBtn.textContent = isTalkDone ? "🌟 짝꿍과 생각 나눔 완료!" : "🗣️ 짝꿍과 이야기 나눴어요!";
+              doneBtn.addEventListener("click", () => {
+                storyPollPicked[`${pollKey}:talk`] = true;
+                playSound("correct");
+                awardOnce(storyRewardId(progress.storyIndex), 'pairtalk', 10, "짝꿍 생각 나누기");
+                renderStorySlide();
+              });
+              pairTalkBox.appendChild(promptEl);
+              pairTalkBox.appendChild(doneBtn);
+            }
           }
         } else {
           pollFeedback.className = "hidden text-xs mt-1.5 font-bold";
@@ -6332,6 +6411,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
 
       document.getElementById("btnPrevStory").disabled = progress.storyIndex === 0;
       const nextBtn = document.getElementById("btnNextStory");
+      const hasPickedStoryPoll = storyPollPicked[pollKey] !== undefined;
+      nextBtn.classList.toggle("next-step-ready", hasPickedStoryPoll);
+      nextBtn.classList.toggle("next-step-calm", !hasPickedStoryPoll);
       if (progress.storyIndex === stories.length - 1) {
         nextBtn.textContent = halloween ? "문화 살펴보기 →" : "안전한 선택으로 →";
       } else {
@@ -6469,20 +6551,13 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const isDone = current >= needed;
       const countdown = safetyDrillRemaining[idx];
 
+      const row = document.createElement("div");
+      row.className = "flex flex-wrap items-center justify-between gap-2";
+
       const titleEl = document.createElement("div");
       titleEl.className = "font-extrabold text-amber-300";
       titleEl.textContent = drill.title;
-      box.appendChild(titleEl);
-
-      const descEl = document.createElement("p");
-      descEl.textContent = isDone
-        ? (countdown > 0
-            ? `${drill.doneText} · 🙌 지금 자리에서 3초 동안 몸동작을 따라 해 봐요! (${countdown}초)`
-            : countdown === 0
-            ? `${drill.doneText} · 👏 3초 몸동작 따라 하기 성공!`
-            : drill.doneText)
-        : drill.desc;
-      box.appendChild(descEl);
+      row.appendChild(titleEl);
 
       const btn = document.createElement("button");
       btn.type = "button";
@@ -6502,7 +6577,19 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           renderSafetyActionDrill();
         }
       });
-      box.appendChild(btn);
+      row.appendChild(btn);
+      box.appendChild(row);
+
+      if (isDone) {
+        const descEl = document.createElement("p");
+        descEl.className = "text-xs font-bold text-emerald-300 mt-1";
+        descEl.textContent = countdown > 0
+          ? `${drill.doneText} · 🙌 지금 자리에서 3초 동안 몸동작을 따라 해 봐요! (${countdown}초)`
+          : countdown === 0
+          ? `${drill.doneText} · 👏 3초 몸동작 따라 하기 성공!`
+          : drill.doneText;
+        box.appendChild(descEl);
+      }
     }
 
     function renderScenario() {
@@ -6574,15 +6661,20 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const goal = SAFETY_GOALS[state.scenarioIndex];
       const box = document.getElementById('safetyFollowup');
       box.replaceChildren();
+      const isScenarioDone = !!state.completedScenarios[state.scenarioIndex];
+      const nextBtn = document.getElementById("btnNextScenario");
+      if (nextBtn) {
+        nextBtn.classList.toggle("next-step-ready", isScenarioDone);
+        nextBtn.classList.toggle("next-step-calm", !isScenarioDone);
+      }
+      if (!isScenarioDone) {
+        box.classList.add('hidden');
+        return;
+      }
+      box.classList.remove('hidden');
       const heading = document.createElement('strong');
       heading.textContent = `${state.safetyConfirmed[goal.id] ? '✅ 확인 완료' : '🔎 다시 판단하기'} · ${goal.title}`;
       box.appendChild(heading);
-      if (!state.completedScenarios[state.scenarioIndex]) {
-        const text = document.createElement('p');
-        text.textContent = '위 상황에서 적절한 행동을 고르면 새 질문이 열려요. 해설만 읽어서는 완료되지 않아요.';
-        box.appendChild(text);
-        return;
-      }
       const check = goal.checks[state.grade];
       const question = document.createElement('p');
       question.textContent = check[0];
@@ -7058,7 +7150,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     }
 
     let costumePage = 0;
-    let costumeFocusMode = false;
+    let costumeFocusMode = true;
     function renderCostumeCards() {
       const grid = document.getElementById("costumeCardsGrid");
       grid.innerHTML = "";
@@ -7162,7 +7254,18 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       document.getElementById("costumeScoreBadge").textContent = `${correctCount} / ${COSTUME_ITEMS.length}${pairTurnSuffix(costumePage)}`;
       document.getElementById('costumePageLabel').textContent = `${costumePage + 1} / ${totalPages}`;
       document.getElementById('btnPrevCostumePage').disabled = costumePage === 0;
-      document.getElementById('btnNextCostumePage').disabled = costumePage === totalPages - 1;
+      const nextCostumeBtn = document.getElementById('btnNextCostumePage');
+      nextCostumeBtn.disabled = costumePage === totalPages - 1;
+      const pageItems = COSTUME_ITEMS.filter((_, idx) => Math.floor(idx / perPage) === costumePage);
+      const isPageDone = pageItems.length > 0 && pageItems.every(it => state.costumeChoices[it.id] !== undefined);
+      nextCostumeBtn.classList.toggle("next-step-ready", isPageDone && costumePage < totalPages - 1);
+      nextCostumeBtn.classList.toggle("next-step-calm", !isPageDone || costumePage === totalPages - 1);
+      const toQuizBtn = document.getElementById('btnToQuiz');
+      if (toQuizBtn) {
+        const readyForQuiz = correctCount === COSTUME_ITEMS.length || (isPageDone && costumePage === totalPages - 1);
+        toQuizBtn.classList.toggle("next-step-ready", readyForQuiz);
+        toQuizBtn.classList.toggle("next-step-calm", !readyForQuiz);
+      }
       if (correctCount === COSTUME_ITEMS.length) {
         unlockStamp("s3", "놀이 3: 옷 고르기 놀이");
       }
@@ -7364,6 +7467,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       document.getElementById('btnSpeakQuizFeedback').classList.toggle('hidden',!existing);
       const next=document.getElementById('btnNextQuizQuestion');
       next.classList.toggle('hidden',!existing);
+      next.classList.toggle('next-step-ready',!!existing);
       next.textContent=state.quizIndex===limit-1?'결과 확인':'다음 문제 →';
       order.forEach((originalIndex,displayIndex)=>{
         const btn=document.createElement('button');
@@ -8385,7 +8489,10 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           artEl.classList.add("story-art-pop");
         }
         const clueBox = document.getElementById("storyClueBox");
-        if (clueBox) clueBox.textContent = getStoryClues()[storyIndex];
+        if (clueBox) {
+          clueBox.classList.remove("hidden");
+          clueBox.textContent = getStoryClues()[storyIndex];
+        }
       });
 
       // Jack-o'-Lantern Workshop Listeners
@@ -8613,6 +8720,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         const open = document.body.classList.toggle('tools-open');
         document.getElementById('btnMoreTools').setAttribute('aria-expanded', String(open));
         try { sessionStorage.setItem('halloween-tools-open', String(open)); } catch (_) {}
+        renderStorySlide();
+        renderScenario();
       });
       try {
         if (sessionStorage.getItem('halloween-tools-open') === 'true') {
@@ -8620,10 +8729,12 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           document.getElementById('btnMoreTools').setAttribute('aria-expanded', 'true');
         }
       } catch (_) {}
-      [['btnToggleSafetyGame','optionalSafetyGame'],['btnToggleAvatar','avatarDressupCard']].forEach(([buttonId,cardId]) => {
+      [['btnToggleSafetyGame','optionalSafetyGame'],['btnToggleAvatar','avatarDressupCard'],['btnToggleEtiquette','optionalEtiquetteCard'],['btnToggleTeacherSummary','optionalTeacherSummaryCard']].forEach(([buttonId,cardId]) => {
         const button=document.getElementById(buttonId);
+        const card=document.getElementById(cardId);
+        if(!button || !card) return;
         button.addEventListener('click', () => {
-          const open=document.getElementById(cardId).classList.toggle('is-open');
+          const open=card.classList.toggle('is-open');
           button.setAttribute('aria-expanded', String(open));
           if(open && cardId==='optionalSafetyGame') setTimeout(resizeSafetyCanvas, 50);
         });

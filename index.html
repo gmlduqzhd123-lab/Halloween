@@ -24,7 +24,7 @@
   <script src="./ys-qr.js" defer></script>
   <link rel="manifest" href="./manifest.json" />
   <title>할로윈 안전 놀이터 | 초등 할로윈 수업</title>
-  <link rel="stylesheet" href="./styles.css?v=3081c648273f1326">
+  <link rel="stylesheet" href="./styles.css?v=ce7144ced8c68f10">
 </head>
 <body class="storybook lesson-not-started antialiased selection:bg-orange-200 selection:text-slate-900">
 
@@ -293,7 +293,7 @@
               <div id="storyVisualCaption" class="nowrap text-xs font-bold text-amber-300 bg-indigo-950/90 px-3 py-1 rounded-full border border-amber-400/30">
                 매년 10월 31일
               </div>
-              <div id="storyClueBox" class="mt-2 px-2.5 py-1.5 rounded-xl bg-indigo-950/90 border border-amber-400/40 text-[11px] font-bold text-amber-200 leading-snug">
+              <div id="storyClueBox" class="hidden mt-2 px-2.5 py-1.5 rounded-xl bg-indigo-950/90 border border-amber-400/40 text-[11px] font-bold text-amber-200 leading-snug">
                 👆 그림을 눌러 숨은 이야기 단서를 찾아보세요!
               </div>
               <div id="storyStepPills" class="flex items-center gap-1.5 mt-3"></div>
@@ -465,9 +465,12 @@
           <div class="border-b border-indigo-800 pb-2.5 space-y-1">
             <div class="flex items-center justify-between gap-2">
               <span class="nowrap text-xs font-bold text-rose-400">상황 활동 · 사람이 많을 때의 안전 선택</span>
-              <span id="scenarioStepBadge" class="nowrap px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-200 text-xs font-bold">
-                약속 1 / 6
-              </span>
+              <div class="flex items-center gap-1.5">
+                <button type="button" id="btnSpeakScenario" class="nowrap px-2.5 py-1 rounded-lg bg-indigo-800 hover:bg-indigo-700 text-amber-300 text-xs font-bold border border-indigo-600 transition flex items-center gap-1 min-h-[32px]">🔈 읽어주기</button>
+                <span id="scenarioStepBadge" class="nowrap px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-200 text-xs font-bold">
+                  약속 1 / 6
+                </span>
+              </div>
             </div>
             <h2 class="font-title text-base sm:text-xl text-white nowrap">지금 어떤 행동이 안전할까요?</h2>
           </div>
@@ -506,10 +509,9 @@
               <div id="scenarioChoices" class="space-y-2"></div>
               <div id="scenarioFeedbackBox" class="hidden rounded-xl p-3 border text-xs sm:text-sm space-y-1"></div>
               <button type="button" id="btnSpeakSafetyFeedback" class="hidden rounded-xl bg-indigo-800 px-3 py-2 text-sm font-bold">🔈 해설 읽기</button>
-              <div id="safetyFollowup" class="rounded-xl bg-slate-900 border border-sky-500/50 p-3 space-y-2" aria-live="polite"></div>
-              <div id="safetyActionDrill" class="rounded-xl bg-indigo-950/90 border border-amber-400/40 p-3 space-y-1.5 text-xs"></div>
+              <div id="safetyFollowup" class="hidden rounded-xl bg-slate-900 border border-sky-500/50 p-3 space-y-2" aria-live="polite"></div>
+              <div id="safetyActionDrill" class="rounded-xl bg-indigo-950/90 border border-amber-400/40 px-3 py-2 text-xs"></div>
               <div id="safetyGlossaryBox" class="rounded-xl bg-indigo-950/80 border border-indigo-700/80 p-2.5 space-y-1 text-xs"></div>
-              <button type="button" id="btnSpeakScenario" class="rounded-xl bg-indigo-800 px-3 py-2 text-sm font-bold">🔈 질문과 보기 읽기</button>
               <div class="flex justify-between pt-1">
                 <button type="button" id="btnPrevScenario" class="nowrap px-3.5 py-1.5 rounded-xl bg-indigo-900 hover:bg-indigo-800 disabled:opacity-40 text-xs font-bold border border-indigo-700 min-h-[38px]">
                   ← 이전 약속
@@ -677,11 +679,11 @@
             <h2 class="font-title text-base sm:text-xl text-white nowrap">입어도 좋은 옷 vs 안 되는 옷!</h2>
           </div>
 
-          <div id="costumeTogetherBanner" class="rounded-xl bg-indigo-950/90 border border-amber-400/40 px-3 py-2 text-xs font-bold text-amber-200">
+          <div id="costumeTogetherBanner" class="costume-guide-banners rounded-xl bg-indigo-950/90 border border-amber-400/40 px-3 py-2 text-xs font-bold text-amber-200">
             🙆‍♂️ 우리 반 몸짓 O·X 퀴즈: 옷 카드를 보고 머리 위로 크게 ⭕(안전) 또는 ❌(피하기)를 만든 뒤 눌러 보세요!
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div class="costume-guide-banners grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div class="rounded-xl bg-rose-950/60 border border-rose-500/40 px-3 py-2.5 text-xs space-y-0.5">
               <div class="font-extrabold text-rose-300">🚓 실제 제복처럼 보이는 옷은 피하고 확인해요</div>
               <p class="text-rose-100">경찰제복과 군복은 각각 다른 법의 조건을 살펴야 해요. 소방관 출동복은 실제 구조대원과 혼동되지 않게 피하는 선택을 해요.</p>
@@ -692,19 +694,24 @@
             </div>
           </div>
 
-          <div id="costumeCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5"></div>
-          <div class="costume-pager"><button type="button" id="btnPrevCostumePage">← 이전 옷</button><span id="costumePageLabel">1 / 3</span><button type="button" id="btnNextCostumePage">다음 옷 →</button></div>
+          <div id="costumeCardsGrid" class="grid grid-cols-1 max-w-md mx-auto gap-2.5"></div>
+          <div class="costume-pager"><button type="button" id="btnPrevCostumePage">← 이전 옷</button><span id="costumePageLabel">1 / 12</span><button type="button" id="btnNextCostumePage">다음 옷 →</button></div>
+          <div class="pt-1 flex justify-end">
+            <button type="button" id="btnToQuiz" class="chapter-next">다음 단계: 내 생각 확인하기 →</button>
+          </div>
         </div>
 
-        <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3">
-          <div class="flex items-center justify-between gap-2">
-            <h3 class="font-title text-sm sm:text-lg text-amber-300 nowrap">친구를 배려하는 간식 약속</h3>
-            <span id="etiquetteCheckBadge" class="nowrap text-xs font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2.5 py-0.5 rounded-full">
-              약속 체크 0 / 4
-            </span>
+        <div id="optionalEtiquetteCard" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3 optional-card">
+          <button type="button" id="btnToggleEtiquette" class="optional-toggle" aria-expanded="false" aria-controls="etiquetteContents">더 해보기 · 친구를 배려하는 간식 약속 4가지 <span aria-hidden="true">＋</span></button>
+          <div id="etiquetteContents" class="space-y-3 pt-2">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="font-title text-sm sm:text-lg text-amber-300 nowrap">친구를 배려하는 간식 약속</h3>
+              <span id="etiquetteCheckBadge" class="nowrap text-xs font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2.5 py-0.5 rounded-full">
+                약속 체크 0 / 4
+              </span>
+            </div>
+            <div id="etiquetteChecklist" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
           </div>
-          <div id="etiquetteChecklist" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-          <button type="button" id="btnToQuiz" class="chapter-next">다음: 내 생각 확인하기 →</button>
         </div>
       </section>
 
@@ -734,10 +741,14 @@
               <div class="flex items-center gap-1.5">
                 <span id="quizQuestionNumber" class="nowrap px-2.5 py-0.5 rounded-full bg-orange-500 text-white text-xs font-black">Q1</span>
                 <span id="quizCategoryBadge" class="nowrap text-xs font-bold text-amber-300">안전 상식</span>
+                <span id="quizTypeTag" class="px-2 py-0.5 rounded-full bg-orange-500 text-white text-[11px] font-extrabold">⚡ 생각 판단</span>
               </div>
 
               <!-- Quiz Lifelines: Hint & 50:50 Chance -->
-              <div class="flex items-center gap-1.5">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button type="button" id="btnSpeakQuiz" class="nowrap px-2.5 py-1 rounded-lg bg-indigo-800 hover:bg-indigo-700 border border-indigo-600 text-amber-300 text-xs font-bold transition">
+                  🔈 읽어주기
+                </button>
                 <button type="button" id="btnQuizHint" class="nowrap px-2.5 py-1 rounded-lg bg-indigo-900 hover:bg-indigo-800 border border-amber-400/50 text-amber-200 text-xs font-bold transition">
                   💡 힌트 보기
                 </button>
@@ -749,11 +760,9 @@
 
             <div id="quizCheerBanner" class="rounded-xl px-3 py-1.5 bg-indigo-950/90 border border-amber-400/40 text-xs font-bold flex flex-wrap items-center justify-between gap-2">
               <span id="quizCheerText">🎃 차근차근 이유를 생각하며 골라 봐요!</span>
-              <span id="quizTypeTag" class="px-2 py-0.5 rounded-full bg-orange-500 text-white text-[11px] font-extrabold">⚡ 생각 판단</span>
             </div>
 
             <h3 id="quizQuestionText" class="font-title text-base sm:text-lg text-white leading-snug"></h3>
-            <button type="button" id="btnSpeakQuiz" class="rounded-xl bg-indigo-800 px-3 py-2 text-sm font-bold">🔈 질문과 보기 읽기</button>
 
             <div id="quizHintBox" class="hidden rounded-xl bg-amber-950/70 border border-amber-400/50 px-3 py-2 text-xs text-amber-200 font-bold"></div>
 
@@ -786,10 +795,9 @@
 
       <!-- ==================== TAB 5: CUSTOMIZABLE CERTIFICATE GENERATOR ==================== -->
       <section id="tab-cert" class="tab-panel hidden space-y-4">
-        <div id="learningResultSummary" class="glass-card rounded-xl p-4 space-y-2" aria-live="polite"></div>
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
           <div class="border-b border-indigo-800 pb-2.5 space-y-1">
-            <span class="nowrap text-xs font-bold text-amber-400">배움 기록 · 개인정보는 이 기기에만</span>
+            <span class="nowrap text-xs font-bold text-amber-400">배움 기록 · 이름과 약속을 적고 상장을 저장해요</span>
             <h2 class="font-title text-base sm:text-xl text-white nowrap">🎖️ 할로윈 안전 대장 임명장</h2>
           </div>
 
@@ -806,13 +814,13 @@
                   <input id="certClassInput" type="text" value="3학년 1반" maxlength="15" placeholder="예: 3학년 1반" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
                 </div>
                 <div>
-                  <div class="flex items-center justify-between gap-2 mb-1"><label for="certNameInput" class="block text-xs font-bold text-indigo-200">내 이름</label><button type="button" id="btnFillWholeClass" class="mini-chip text-[11px] px-2 py-0.5">+ 우리 반 전체</button></div>
-                  <input id="certNameInput" type="text" value="" maxlength="40" placeholder="별칭 또는 번호 (선택)" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
+                  <div class="flex items-center justify-between gap-2 mb-1"><label for="certNameInput" class="block text-xs font-bold text-indigo-200">1️⃣ 내 이름 (또는 별칭)</label><button type="button" id="btnFillWholeClass" class="mini-chip text-[11px] px-2 py-0.5">+ 우리 반 전체</button></div>
+                  <input id="certNameInput" type="text" value="" maxlength="40" placeholder="예: 김안전 또는 3학년 1반" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
                 </div>
               </div>
 
               <div>
-                <label for="certPledgeInput" class="block text-xs font-bold text-indigo-200 mb-1">나의 한 줄 안전 약속</label>
+                <label for="certPledgeInput" class="block text-xs font-bold text-indigo-200 mb-1">2️⃣ 나의 한 줄 안전 약속 (아래 버튼을 눌러도 채워져요)</label>
                 <input id="certPledgeInput" type="text" value="" maxlength="160" placeholder="내가 실천할 안전 약속" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
                 <div class="grid grid-cols-3 gap-1 mt-2">
                   <button type="button" data-pledge="오른쪽으로 안전하게 걷고 비상 출구를 먼저 확인하겠습니다!" class="preset-pledge-btn nowrap text-[11px] px-2 py-1 rounded-lg bg-indigo-900 hover:bg-indigo-800 text-amber-200 border border-indigo-700 text-center">
@@ -825,6 +833,15 @@
                     + 질서지키기
                   </button>
                 </div>
+              </div>
+
+              <div class="space-y-2 pt-1">
+                <button type="button" id="btnDownloadCert" class="w-full nowrap px-4 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-indigo-950 font-black text-sm sm:text-base shadow-lg transition min-h-[48px]">
+                  💾 3️⃣ 내 안전 임명장 이미지 저장하기
+                </button>
+                <button type="button" id="btnRenderCert" class="w-full nowrap px-3 py-2 rounded-xl bg-indigo-800 hover:bg-indigo-700 text-white font-bold text-xs border border-indigo-600 transition min-h-[38px]">
+                  🎨 입력한 이름·약속 상장 그림에 새로고침
+                </button>
               </div>
 
               <!-- Certificate Sticker & Theme Customizer -->
@@ -870,21 +887,19 @@
                 </div>
                 <p id="importResults" class="sm:col-span-2 text-sm text-indigo-100"></p>
               </div>
-
-              <div class="grid grid-cols-2 gap-2 pt-1">
-                <button type="button" id="btnRenderCert" class="nowrap px-3 py-2.5 rounded-xl bg-indigo-800 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm border border-indigo-600 transition min-h-[42px]">
-                  🎨 그림에 적용
-                </button>
-                <button type="button" id="btnDownloadCert" class="nowrap px-3 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-indigo-950 font-black text-xs sm:text-sm shadow-lg transition min-h-[42px]">
-                  💾 이미지 저장
-                </button>
-              </div>
             </div>
 
             <div class="lg:col-span-7 glass-panel rounded-2xl p-3 flex flex-col items-center justify-center">
               <canvas id="certificateCanvas" width="800" height="720" class="w-full max-w-full h-auto rounded-xl shadow-2xl border border-amber-400/40"></canvas>
               <p class="text-xs text-indigo-300 mt-2">▲ 결과는 이 기기 안에서 생성됩니다. 브라우저 저장 기록도 이 기기·브라우저에만 남습니다.</p>
             </div>
+          </div>
+        </div>
+
+        <div id="optionalTeacherSummaryCard" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3 optional-card">
+          <button type="button" id="btnToggleTeacherSummary" class="optional-toggle" aria-expanded="false" aria-controls="teacherSummaryContents">👩‍🏫 선생님용 학급 결과 요약 · 목표 달성률 · 인쇄 도구 열기 <span aria-hidden="true">＋</span></button>
+          <div id="teacherSummaryContents" class="space-y-3 pt-2">
+            <div id="learningResultSummary" class="space-y-2" aria-live="polite"></div>
           </div>
         </div>
       </section>
@@ -1029,6 +1044,6 @@
   </div>
   <img id="printResultImage" alt="학습 결과지 인쇄 이미지" />
 
-  <script src="./app.js?v=3081c648273f1326" defer></script>
+  <script src="./app.js?v=ce7144ced8c68f10" defer></script>
 </body>
 </html>

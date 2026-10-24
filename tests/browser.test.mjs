@@ -63,9 +63,9 @@ test('main browser flows and standalone file load without script errors', async 
   await welcome.locator('#btnToggleAvatar').click();
   await welcome.locator('#btnNightLightTest').click();
   assert.match(await welcome.locator('#avatarJudgeText').innerText(),/어두운 밤길/);
-  assert.equal(await welcome.locator('#costumeCardsGrid > div').count(),4);
+  assert.equal(await welcome.locator('#costumeCardsGrid > div').count(),1);
   await welcome.locator('#btnNextCostumePage').click();
-  assert.equal(await welcome.locator('#costumePageLabel').innerText(),'2 / 3');
+  assert.equal(await welcome.locator('#costumePageLabel').innerText(),'2 / 12');
   await welcome.locator('#btnToQuiz').click();
   assert.equal(await welcome.locator('#lessonStageTitle').innerText(),'생각 정리');
   assert.equal(await welcome.locator('#quizTypeTag').isVisible(),true);
@@ -95,6 +95,8 @@ test('main browser flows and standalone file load without script errors', async 
   assert.equal(await welcome.locator('#teacherModal').isVisible(),false);
   await welcome.locator('#btnStartFresh').click();
   assert.equal(await welcome.locator('#lessonStageTitle').innerText(),'문화 이야기');
+  await welcome.locator('#lessonStageInfo').click();
+  assert.equal(await welcome.locator('.header-nav').isVisible(),true);
   await welcome.locator('#btnClassTimer').click();
   assert.equal(await welcome.locator('#classTimerBanner').isVisible(),true);
   await welcome.locator('#btnPickPresenter').click();
@@ -114,13 +116,11 @@ test('main browser flows and standalone file load without script errors', async 
   assert.match(await welcome.locator('#storySlideTag').innerText(),/카드 2/);
   await welcome.keyboard.press('1');
   assert.equal(await welcome.locator('#storyPollFeedback').isVisible(),true);
-  await welcome.locator('#lessonStageInfo').click();
-  assert.equal(await welcome.locator('.header-nav').isVisible(),true);
   await welcome.locator('[data-tab="tab-costume"]').click();
   await welcome.locator('#btnCostumeFocusMode').click();
-  assert.equal(await welcome.locator('#costumeCardsGrid > div').count(),1);
-  await welcome.locator('#btnCostumeFocusMode').click();
   assert.equal(await welcome.locator('#costumeCardsGrid > div').count(),4);
+  await welcome.locator('#btnCostumeFocusMode').click();
+  assert.equal(await welcome.locator('#costumeCardsGrid > div').count(),1);
   await welcome.locator('[data-tab="tab-cert"]').click();
   await welcome.locator('#btnFillWholeClass').click();
   assert.match(await welcome.locator('#certNameInput').inputValue(),/어린이 일동/);
@@ -376,6 +376,7 @@ test('main browser flows and standalone file load without script errors', async 
   await firstRule.click();await firstRule.click();await firstRule.click();
   let points=await reward.evaluate(()=>JSON.parse(localStorage.getItem('halloween_edu_progress_v2')).candyPoints);
   assert.equal(points,10);
+  await reward.locator('#btnNextCostumePage').click();
   await reward.locator('.costume-choice-btn[data-id="c2"][data-choice="unsafe"]').click();
   await reward.locator('.costume-choice-btn[data-id="c2"][data-choice="safe"]').click();
   await reward.locator('.costume-choice-btn[data-id="c2"][data-choice="unsafe"]').click();

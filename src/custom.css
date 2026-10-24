@@ -634,7 +634,38 @@
     .storybook .optional-toggle { display: block; width: 100%; min-height: 44px; text-align: left; color: #493b59; font-size: 1rem; font-weight: 700; }
     .storybook .optional-toggle span { float: right; font-size: 1.3rem; }
     .storybook .optional-card:not(.is-open) #safetyGameContents,
-    .storybook .optional-card:not(.is-open) #avatarContents { display: none; }
+    .storybook .optional-card:not(.is-open) #avatarContents,
+    .storybook:not(.tools-open) .optional-card:not(.is-open) #etiquetteContents,
+    .storybook:not(.tools-open) .optional-card:not(.is-open) #teacherSummaryContents { display: none; }
+    .storybook .next-step-calm {
+      background: #fff8ef !important;
+      color: #5f4d70 !important;
+      border: 1.5px solid #c9bbd4 !important;
+      box-shadow: none !important;
+    }
+    .storybook .next-step-ready {
+      background: linear-gradient(135deg, #c96a3b 0%, #b25228 100%) !important;
+      color: #ffffff !important;
+      border: 1.5px solid #a34820 !important;
+      box-shadow: 0 8px 20px rgba(182, 93, 54, 0.28) !important;
+      animation: nextStepPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes nextStepPulse {
+      0%, 100% { box-shadow: 0 8px 20px rgba(182, 93, 54, 0.24), 0 0 0 0 rgba(201, 106, 59, 0.32); filter: brightness(1); }
+      50% { box-shadow: 0 12px 26px rgba(182, 93, 54, 0.38), 0 0 0 4px rgba(201, 106, 59, 0.16); filter: brightness(1.04); }
+    }
+    body.storybook:not(.tools-open) #lessonPacemakerBadge,
+    body.storybook:not(.tools-open) #btnSpotlightMode,
+    body.storybook:not(.tools-open) #btnClassTimer,
+    body.storybook:not(.tools-open) #btnSpeechRate,
+    body.storybook:not(.tools-open) #btnAutoRead,
+    body.storybook:not(.tools-open) #btnEchoRead,
+    body.storybook:not(.tools-open) .costume-guide-banners,
+    body.storybook:not(.tools-open) #btnResetCostume,
+    body.storybook:not(.tools-open) #quizCheerBanner,
+    body.storybook:not(.tools-open) #btnRestartQuiz {
+      display: none !important;
+    }
     .storybook .costume-pager { display: flex; align-items: center; justify-content: center; gap: 12px; }
     .storybook .costume-pager button { min-height: 42px; padding: 8px 13px; border: 1px solid #d5c3b1; border-radius: 10px; background: #fff8ef; font-weight: 700; }
     .storybook .costume-pager button:disabled { opacity: .4; }

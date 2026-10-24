@@ -156,6 +156,7 @@
       document.getElementById('btnSpeakQuizFeedback').classList.toggle('hidden',!existing);
       const next=document.getElementById('btnNextQuizQuestion');
       next.classList.toggle('hidden',!existing);
+      next.classList.toggle('next-step-ready',!!existing);
       next.textContent=state.quizIndex===limit-1?'결과 확인':'다음 문제 →';
       order.forEach((originalIndex,displayIndex)=>{
         const btn=document.createElement('button');

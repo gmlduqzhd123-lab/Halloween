@@ -4438,17 +4438,32 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       "집결 장소": "🚩 모둠 친구나 선생님을 놓쳤을 때 다시 만나기로 미리 약속한 넓은 장소예요."
     };
     const openedGlossaryByBox = {};
+    const glossaryBoxExpanded = {};
     function renderGlossaryBox(boxId, keys) {
       const box = document.getElementById(boxId);
       if (!box) return;
       box.replaceChildren();
+      const toolsOpen = document.body.classList.contains("tools-open");
+      const activeTerm = openedGlossaryByBox[boxId];
+      if (!toolsOpen && !glossaryBoxExpanded[boxId] && !activeTerm) {
+        const openBtn = document.createElement("button");
+        openBtn.type = "button";
+        openBtn.className = "mini-chip text-xs";
+        openBtn.textContent = "💡 어려운 낱말 뜻 보기";
+        openBtn.addEventListener("click", () => {
+          glossaryBoxExpanded[boxId] = true;
+          playSound("click");
+          renderGlossaryBox(boxId, keys);
+        });
+        box.appendChild(openBtn);
+        return;
+      }
       const row = document.createElement("div");
       row.className = "flex flex-wrap items-center gap-1.5";
       const label = document.createElement("span");
       label.className = "font-extrabold text-amber-300 text-[11px]";
       label.textContent = "📚 쉬운 말 사전:";
       row.appendChild(label);
-      const activeTerm = openedGlossaryByBox[boxId];
       keys.forEach(term => {
         if (!EASY_GLOSSARY[term]) return;
         const btn = document.createElement("button");
@@ -4465,6 +4480,19 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         });
         row.appendChild(btn);
       });
+      if (!toolsOpen && glossaryBoxExpanded[boxId]) {
+        const closeBtn = document.createElement("button");
+        closeBtn.type = "button";
+        closeBtn.className = "mini-chip text-[11px]";
+        closeBtn.textContent = "접기 ▲";
+        closeBtn.addEventListener("click", () => {
+          glossaryBoxExpanded[boxId] = false;
+          openedGlossaryByBox[boxId] = null;
+          playSound("click");
+          renderGlossaryBox(boxId, keys);
+        });
+        row.appendChild(closeBtn);
+      }
       box.appendChild(row);
       if (activeTerm && EASY_GLOSSARY[activeTerm]) {
         const desc = document.createElement("p");
@@ -4515,7 +4543,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const clueKey = storyKey(progress.storyIndex);
       const clueBox = document.getElementById("storyClueBox");
       if (clueBox) {
-        clueBox.textContent = storyClueOpened[clueKey]
+        const isClueOpen = !!storyClueOpened[clueKey];
+        clueBox.classList.toggle("hidden", !isClueOpen);
+        clueBox.textContent = isClueOpen
           ? getStoryClues()[progress.storyIndex]
           : "👆 그림을 눌러 숨은 이야기 단서를 찾아보세요!";
       }
@@ -4531,6 +4561,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const pollFeedback = document.getElementById("storyPollFeedback");
       const pairTalkBox = document.getElementById("storyPairTalkBox");
       const poll = getStoryPolls()[progress.storyIndex];
+      const showPairTalk = state.teacher?.mode === "pairs" || document.body.classList.contains("tools-open");
       if (pollBox && pollFeedback && poll) {
         pollBox.replaceChildren();
         poll.options.forEach((opt, idx) => {
@@ -4551,27 +4582,29 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           pollFeedback.className = "text-xs mt-1.5 font-bold text-emerald-300";
           pollFeedback.textContent = `💬 ${fbText}`;
           if (pairTalkBox) {
-            pairTalkBox.classList.remove("hidden");
+            pairTalkBox.classList.toggle("hidden", !showPairTalk);
             pairTalkBox.replaceChildren();
-            const otherIdx = pickedIdx === 0 ? 1 : 0;
-            const otherOpt = poll.options[otherIdx] || poll.options[0];
-            const promptEl = document.createElement("div");
-            promptEl.className = "font-bold text-amber-200 leading-snug";
-            promptEl.textContent = `🤝 짝꿍 생각 나누기(20초): 내가 고른 이유를 말하고, [${otherOpt}] 보기를 고른 친구는 어떤 마음일지 함께 이야기해 볼까요?`;
-            const doneBtn = document.createElement("button");
-            doneBtn.type = "button";
-            doneBtn.id = "btnPairTalkDone";
-            const isTalkDone = !!storyPollPicked[`${pollKey}:talk`];
-            doneBtn.className = `mini-chip text-[11px] ${isTalkDone ? "is-picked" : ""}`;
-            doneBtn.textContent = isTalkDone ? "🌟 짝꿍과 생각 나눔 완료!" : "🗣️ 짝꿍과 이야기 나눴어요!";
-            doneBtn.addEventListener("click", () => {
-              storyPollPicked[`${pollKey}:talk`] = true;
-              playSound("correct");
-              awardOnce(storyRewardId(progress.storyIndex), 'pairtalk', 10, "짝꿍 생각 나누기");
-              renderStorySlide();
-            });
-            pairTalkBox.appendChild(promptEl);
-            pairTalkBox.appendChild(doneBtn);
+            if (showPairTalk) {
+              const otherIdx = pickedIdx === 0 ? 1 : 0;
+              const otherOpt = poll.options[otherIdx] || poll.options[0];
+              const promptEl = document.createElement("div");
+              promptEl.className = "font-bold text-amber-200 leading-snug";
+              promptEl.textContent = `🤝 짝꿍 생각 나누기(20초): 내가 고른 이유를 말하고, [${otherOpt}] 보기를 고른 친구는 어떤 마음일지 함께 이야기해 볼까요?`;
+              const doneBtn = document.createElement("button");
+              doneBtn.type = "button";
+              doneBtn.id = "btnPairTalkDone";
+              const isTalkDone = !!storyPollPicked[`${pollKey}:talk`];
+              doneBtn.className = `mini-chip text-[11px] ${isTalkDone ? "is-picked" : ""}`;
+              doneBtn.textContent = isTalkDone ? "🌟 짝꿍과 생각 나눔 완료!" : "🗣️ 짝꿍과 이야기 나눴어요!";
+              doneBtn.addEventListener("click", () => {
+                storyPollPicked[`${pollKey}:talk`] = true;
+                playSound("correct");
+                awardOnce(storyRewardId(progress.storyIndex), 'pairtalk', 10, "짝꿍 생각 나누기");
+                renderStorySlide();
+              });
+              pairTalkBox.appendChild(promptEl);
+              pairTalkBox.appendChild(doneBtn);
+            }
           }
         } else {
           pollFeedback.className = "hidden text-xs mt-1.5 font-bold";
@@ -4606,6 +4639,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
 
       document.getElementById("btnPrevStory").disabled = progress.storyIndex === 0;
       const nextBtn = document.getElementById("btnNextStory");
+      const hasPickedStoryPoll = storyPollPicked[pollKey] !== undefined;
+      nextBtn.classList.toggle("next-step-ready", hasPickedStoryPoll);
+      nextBtn.classList.toggle("next-step-calm", !hasPickedStoryPoll);
       if (progress.storyIndex === stories.length - 1) {
         nextBtn.textContent = halloween ? "문화 살펴보기 →" : "안전한 선택으로 →";
       } else {
@@ -4743,20 +4779,13 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const isDone = current >= needed;
       const countdown = safetyDrillRemaining[idx];
 
+      const row = document.createElement("div");
+      row.className = "flex flex-wrap items-center justify-between gap-2";
+
       const titleEl = document.createElement("div");
       titleEl.className = "font-extrabold text-amber-300";
       titleEl.textContent = drill.title;
-      box.appendChild(titleEl);
-
-      const descEl = document.createElement("p");
-      descEl.textContent = isDone
-        ? (countdown > 0
-            ? `${drill.doneText} · 🙌 지금 자리에서 3초 동안 몸동작을 따라 해 봐요! (${countdown}초)`
-            : countdown === 0
-            ? `${drill.doneText} · 👏 3초 몸동작 따라 하기 성공!`
-            : drill.doneText)
-        : drill.desc;
-      box.appendChild(descEl);
+      row.appendChild(titleEl);
 
       const btn = document.createElement("button");
       btn.type = "button";
@@ -4776,7 +4805,19 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           renderSafetyActionDrill();
         }
       });
-      box.appendChild(btn);
+      row.appendChild(btn);
+      box.appendChild(row);
+
+      if (isDone) {
+        const descEl = document.createElement("p");
+        descEl.className = "text-xs font-bold text-emerald-300 mt-1";
+        descEl.textContent = countdown > 0
+          ? `${drill.doneText} · 🙌 지금 자리에서 3초 동안 몸동작을 따라 해 봐요! (${countdown}초)`
+          : countdown === 0
+          ? `${drill.doneText} · 👏 3초 몸동작 따라 하기 성공!`
+          : drill.doneText;
+        box.appendChild(descEl);
+      }
     }
 
     function renderScenario() {
@@ -4848,15 +4889,20 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const goal = SAFETY_GOALS[state.scenarioIndex];
       const box = document.getElementById('safetyFollowup');
       box.replaceChildren();
+      const isScenarioDone = !!state.completedScenarios[state.scenarioIndex];
+      const nextBtn = document.getElementById("btnNextScenario");
+      if (nextBtn) {
+        nextBtn.classList.toggle("next-step-ready", isScenarioDone);
+        nextBtn.classList.toggle("next-step-calm", !isScenarioDone);
+      }
+      if (!isScenarioDone) {
+        box.classList.add('hidden');
+        return;
+      }
+      box.classList.remove('hidden');
       const heading = document.createElement('strong');
       heading.textContent = `${state.safetyConfirmed[goal.id] ? '✅ 확인 완료' : '🔎 다시 판단하기'} · ${goal.title}`;
       box.appendChild(heading);
-      if (!state.completedScenarios[state.scenarioIndex]) {
-        const text = document.createElement('p');
-        text.textContent = '위 상황에서 적절한 행동을 고르면 새 질문이 열려요. 해설만 읽어서는 완료되지 않아요.';
-        box.appendChild(text);
-        return;
-      }
       const check = goal.checks[state.grade];
       const question = document.createElement('p');
       question.textContent = check[0];
@@ -5332,7 +5378,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     }
 
     let costumePage = 0;
-    let costumeFocusMode = false;
+    let costumeFocusMode = true;
     function renderCostumeCards() {
       const grid = document.getElementById("costumeCardsGrid");
       grid.innerHTML = "";
@@ -5436,7 +5482,18 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       document.getElementById("costumeScoreBadge").textContent = `${correctCount} / ${COSTUME_ITEMS.length}${pairTurnSuffix(costumePage)}`;
       document.getElementById('costumePageLabel').textContent = `${costumePage + 1} / ${totalPages}`;
       document.getElementById('btnPrevCostumePage').disabled = costumePage === 0;
-      document.getElementById('btnNextCostumePage').disabled = costumePage === totalPages - 1;
+      const nextCostumeBtn = document.getElementById('btnNextCostumePage');
+      nextCostumeBtn.disabled = costumePage === totalPages - 1;
+      const pageItems = COSTUME_ITEMS.filter((_, idx) => Math.floor(idx / perPage) === costumePage);
+      const isPageDone = pageItems.length > 0 && pageItems.every(it => state.costumeChoices[it.id] !== undefined);
+      nextCostumeBtn.classList.toggle("next-step-ready", isPageDone && costumePage < totalPages - 1);
+      nextCostumeBtn.classList.toggle("next-step-calm", !isPageDone || costumePage === totalPages - 1);
+      const toQuizBtn = document.getElementById('btnToQuiz');
+      if (toQuizBtn) {
+        const readyForQuiz = correctCount === COSTUME_ITEMS.length || (isPageDone && costumePage === totalPages - 1);
+        toQuizBtn.classList.toggle("next-step-ready", readyForQuiz);
+        toQuizBtn.classList.toggle("next-step-calm", !readyForQuiz);
+      }
       if (correctCount === COSTUME_ITEMS.length) {
         unlockStamp("s3", "놀이 3: 옷 고르기 놀이");
       }
@@ -5638,6 +5695,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       document.getElementById('btnSpeakQuizFeedback').classList.toggle('hidden',!existing);
       const next=document.getElementById('btnNextQuizQuestion');
       next.classList.toggle('hidden',!existing);
+      next.classList.toggle('next-step-ready',!!existing);
       next.textContent=state.quizIndex===limit-1?'결과 확인':'다음 문제 →';
       order.forEach((originalIndex,displayIndex)=>{
         const btn=document.createElement('button');
@@ -6659,7 +6717,10 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           artEl.classList.add("story-art-pop");
         }
         const clueBox = document.getElementById("storyClueBox");
-        if (clueBox) clueBox.textContent = getStoryClues()[storyIndex];
+        if (clueBox) {
+          clueBox.classList.remove("hidden");
+          clueBox.textContent = getStoryClues()[storyIndex];
+        }
       });
 
       // Jack-o'-Lantern Workshop Listeners
@@ -6887,6 +6948,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         const open = document.body.classList.toggle('tools-open');
         document.getElementById('btnMoreTools').setAttribute('aria-expanded', String(open));
         try { sessionStorage.setItem('halloween-tools-open', String(open)); } catch (_) {}
+        renderStorySlide();
+        renderScenario();
       });
       try {
         if (sessionStorage.getItem('halloween-tools-open') === 'true') {
@@ -6894,10 +6957,12 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           document.getElementById('btnMoreTools').setAttribute('aria-expanded', 'true');
         }
       } catch (_) {}
-      [['btnToggleSafetyGame','optionalSafetyGame'],['btnToggleAvatar','avatarDressupCard']].forEach(([buttonId,cardId]) => {
+      [['btnToggleSafetyGame','optionalSafetyGame'],['btnToggleAvatar','avatarDressupCard'],['btnToggleEtiquette','optionalEtiquetteCard'],['btnToggleTeacherSummary','optionalTeacherSummaryCard']].forEach(([buttonId,cardId]) => {
         const button=document.getElementById(buttonId);
+        const card=document.getElementById(cardId);
+        if(!button || !card) return;
         button.addEventListener('click', () => {
-          const open=document.getElementById(cardId).classList.toggle('is-open');
+          const open=card.classList.toggle('is-open');
           button.setAttribute('aria-expanded', String(open));
           if(open && cardId==='optionalSafetyGame') setTimeout(resizeSafetyCanvas, 50);
         });
