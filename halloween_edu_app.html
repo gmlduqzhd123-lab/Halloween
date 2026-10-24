@@ -353,7 +353,7 @@
     .storybook .welcome-restart:hover { background: #f3e5d3; }
     .storybook .welcome-restart.hidden { display: none !important; }
     .storybook .welcome-meta-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; margin-top: 14px; }
-    .storybook .welcome-footnote { margin-top: 0; font-size: .84rem; color: #526074; }
+    .storybook .welcome-footnote { display: none !important; }
     .storybook .welcome-guide-btn { min-height: 32px; padding: 4px 12px; border: 1px solid #d5c3b1; border-radius: 999px; background: #fff8ef; color: #493b59; font-size: .8rem; font-weight: 700; cursor: pointer; transition: background-color .15s ease, border-color .15s ease; }
     .storybook .welcome-guide-btn:hover { background: #f3e5d3; border-color: #bfa890; }
     .storybook .welcome-copyright { margin-top: 10px; font-size: .78rem; color: #78695a !important; }
@@ -7961,6 +7961,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
 
     // ==================== INITIALIZATION & EVENT LISTENERS ====================
     window.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.welcome-footnote').forEach(el => el.remove());
       const offlineStatus=document.getElementById('offlineStatus');
       if ('serviceWorker' in navigator && (location.protocol === 'https:' || ['localhost','127.0.0.1'].includes(location.hostname))) {
         const hadSwController = Boolean(navigator.serviceWorker.controller);
@@ -7971,7 +7972,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
             location.reload();
           }
         });
-        navigator.serviceWorker.register('./sw.js', {scope:'./'}).then(async reg=>{
+        navigator.serviceWorker.register('./sw.js', {scope:'./', updateViaCache:'none'}).then(async reg=>{
           if (navigator.onLine !== false && reg && typeof reg.update === 'function') {
             reg.update().catch(()=>{});
           }

@@ -1,11 +1,15 @@
-const VERSION = '76f6d00ba7c2428e';
+const VERSION = '7818b7c2c472e7bb';
 const SCOPE = new URL(self.registration.scope);
 const CACHE = `halloween-edu:${SCOPE.pathname}:${VERSION}`;
 const FILES = ['index.html', 'halloween_edu_app.html', 'app.js', 'styles.css', 'manifest.json', 'icon.svg', '404.html', 'ys-install.js', 'ys-qr.js', 'qr.svg', 'icons/icon-192.png'];
 
 self.addEventListener('install', event => {
   self.skipWaiting();
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES.map(file => new URL(file, SCOPE).href))));
+  event.waitUntil(
+    caches.open(CACHE).then(cache =>
+      cache.addAll(FILES.map(file => new Request(new URL(file, SCOPE).href, { cache: 'reload' })))
+    )
+  );
 });
 
 self.addEventListener('activate', event => {
@@ -31,6 +35,15 @@ self.addEventListener('fetch', event => {
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
     const key = new URL(relative, SCOPE).href;
+    if (relative === 'index.html' || request.mode === 'navigate') {
+      try {
+        const fresh = await fetch(new Request(key, { cache: 'no-cache' }));
+        if (fresh && fresh.ok) {
+          await cache.put(key, fresh.clone());
+          return fresh;
+        }
+      } catch (_) {}
+    }
     return await cache.match(key) || fetch(request);
   })());
 });

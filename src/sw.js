@@ -5,7 +5,11 @@ const FILES = ['index.html', 'halloween_edu_app.html', 'app.js', 'styles.css', '
 
 self.addEventListener('install', event => {
   self.skipWaiting();
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES.map(file => new URL(file, SCOPE).href))));
+  event.waitUntil(
+    caches.open(CACHE).then(cache =>
+      cache.addAll(FILES.map(file => new Request(new URL(file, SCOPE).href, { cache: 'reload' })))
+    )
+  );
 });
 
 self.addEventListener('activate', event => {
@@ -31,6 +35,15 @@ self.addEventListener('fetch', event => {
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
     const key = new URL(relative, SCOPE).href;
+    if (relative === 'index.html' || request.mode === 'navigate') {
+      try {
+        const fresh = await fetch(new Request(key, { cache: 'no-cache' }));
+        if (fresh && fresh.ok) {
+          await cache.put(key, fresh.clone());
+          return fresh;
+        }
+      } catch (_) {}
+    }
     return await cache.match(key) || fetch(request);
   })());
 });

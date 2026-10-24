@@ -6601,6 +6601,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
 
     // ==================== INITIALIZATION & EVENT LISTENERS ====================
     window.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.welcome-footnote').forEach(el => el.remove());
       const offlineStatus=document.getElementById('offlineStatus');
       if ('serviceWorker' in navigator && (location.protocol === 'https:' || ['localhost','127.0.0.1'].includes(location.hostname))) {
         const hadSwController = Boolean(navigator.serviceWorker.controller);
@@ -6611,7 +6612,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
             location.reload();
           }
         });
-        navigator.serviceWorker.register('./sw.js', {scope:'./'}).then(async reg=>{
+        navigator.serviceWorker.register('./sw.js', {scope:'./', updateViaCache:'none'}).then(async reg=>{
           if (navigator.onLine !== false && reg && typeof reg.update === 'function') {
             reg.update().catch(()=>{});
           }
