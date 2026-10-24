@@ -6355,6 +6355,19 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
 
 
     // ==================== NAVIGATION & GRADE SWITCHING ====================
+    const WELCOME_THEME_MOODS = {
+      halloween: { icon: '🎃', badge: '🎃 할로윈 안전 탐험', sub: '가을 축제의 유래와 밤길·인파 속 안전한 움직임을 이야기로 만나요.' },
+      school: { icon: '🏫', badge: '🏫 학교 축제 안전 탐험', sub: '부스와 복도가 붐비는 학교 축제에서 우측통행과 질서를 스스로 판단해요.' },
+      field: { icon: '🚌', badge: '🚌 현장체험학습 안전 탐험', sub: '박물관·전시관 관람 동선과 비상구·집결 약속을 미리 확인해요.' },
+      trip: { icon: '🧳', badge: '🧳 수학여행 안전 탐험', sub: '숙소 비상 탈출로와 관광지 이동 시 안전한 대열 유지를 연습해요.' },
+      sports: { icon: '🏅', badge: '🏅 체육대회 안전 탐험', sub: '응원석과 출입구 병목 구간에서 친구와 안전 거리를 지켜요.' },
+      local: { icon: '🎪', badge: '🎪 지역 행사 안전 탐험', sub: '야외 공연장·야시장 인파 속에서 보호자 동행과 대피 요령을 익혀요.' }
+    };
+    const WELCOME_GRADE_META = {
+      '1-2': '🌱 1~2학년 맞춤',
+      '3-4': '🌿 3~4학년 맞춤',
+      '5-6': '🌳 5~6학년 맞춤'
+    };
     function syncWelcomeGrade() {
       document.querySelectorAll('[data-welcome-grade]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.welcomeGrade === state.grade)));
       const currentTheme = (state.teacher && state.teacher.theme) || 'halloween';
@@ -6363,6 +6376,17 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         button.setAttribute('aria-pressed', String(picked));
         button.classList.toggle('is-picked', picked);
       });
+      const welcomeScreen = document.getElementById('welcomeScreen');
+      if (welcomeScreen) welcomeScreen.setAttribute('data-welcome-active-theme', currentTheme);
+      const mood = WELCOME_THEME_MOODS[currentTheme] || WELCOME_THEME_MOODS.halloween;
+      const heroIcon = document.getElementById('welcomeHeroIcon');
+      if (heroIcon) heroIcon.textContent = mood.icon;
+      const themeBadge = document.getElementById('welcomeThemeBadge');
+      if (themeBadge) themeBadge.textContent = mood.badge;
+      const subEl = document.getElementById('welcomeSubtitle');
+      if (subEl) subEl.textContent = mood.sub;
+      const gradeMeta = document.getElementById('welcomeGradeMeta');
+      if (gradeMeta) gradeMeta.textContent = WELCOME_GRADE_META[state.grade] || WELCOME_GRADE_META['3-4'];
       const kicker = document.querySelector('.hero-kicker');
       if (kicker && THEMES[currentTheme]) {
         kicker.textContent = `우리 반 계기교육 · ${THEMES[currentTheme].label}`;

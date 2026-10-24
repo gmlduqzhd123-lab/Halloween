@@ -307,28 +307,323 @@
     .storybook.lesson-not-started .lesson-stage,
     .storybook.lesson-not-started .tab-panel { display: none !important; }
     .storybook:not(.lesson-not-started) .welcome-screen { display: none; }
-    .storybook .welcome-screen { max-width: 720px; margin: clamp(16px, 5vw, 50px) auto; padding: clamp(26px, 5vw, 50px); background: #fffdf8; border: 1px solid #ead0af; border-radius: 28px; box-shadow: 0 20px 50px rgba(80,56,43,.09); text-align: center; }
-    .storybook .welcome-eyebrow { color: #9b502d; font-size: .93rem; font-weight: 700; }
-    .storybook .welcome-screen h2 { color: #493b59; font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.3; margin: 14px 0; }
-    .storybook .welcome-screen > p:not(.welcome-eyebrow) { color: #526074; line-height: 1.65; }
-    .storybook .welcome-grades { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 9px; margin: 32px 0 20px; }
-    .storybook .welcome-grades legend { width: 100%; margin-bottom: 10px; text-align: left; font-weight: 700; }
-    .storybook .welcome-grade-btn { min-height: 50px; border: 1px solid #d8c9b9; border-radius: 13px; background: #fff8ef; font-size: 1rem; }
-    .storybook .welcome-grade-btn[aria-pressed="true"] { border-color: #624f75; background: #624f75; color: #fff; }
-    .storybook .welcome-themes { margin-bottom: 20px; }
+    .storybook .welcome-screen {
+      max-width: 720px;
+      margin: clamp(4px, 2.5vw, 28px) auto;
+      padding: clamp(14px, 3.2vw, 28px);
+      background: linear-gradient(180deg, #fffdf9 0%, #fff9f0 100%);
+      border: 1px solid #e7ceb0;
+      border-radius: 28px;
+      box-shadow: 0 22px 54px rgba(78, 52, 36, .11), inset 0 1px 0 rgba(255, 255, 255, .9);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .storybook .welcome-hero-banner {
+      position: relative;
+      padding: clamp(14px, 2.8vw, 22px) clamp(12px, 2.6vw, 22px) 13px;
+      border-radius: 22px;
+      background: radial-gradient(circle at 50% 0%, rgba(255, 214, 153, .48) 0%, rgba(255, 246, 230, .85) 62%, #fff8ee 100%);
+      border: 1px solid #edd4b4;
+      box-shadow: inset 0 1px 0 #ffffff, 0 8px 24px rgba(133, 84, 47, .06);
+      margin-bottom: 11px;
+      transition: background .3s ease, border-color .3s ease;
+    }
+    .storybook .welcome-screen[data-welcome-active-theme="school"] .welcome-hero-banner {
+      background: radial-gradient(circle at 50% 0%, rgba(227, 198, 255, .42) 0%, rgba(251, 244, 255, .88) 62%, #fdf8ff 100%);
+      border-color: #dec7ec;
+    }
+    .storybook .welcome-screen[data-welcome-active-theme="field"] .welcome-hero-banner {
+      background: radial-gradient(circle at 50% 0%, rgba(182, 233, 206, .45) 0%, rgba(242, 252, 247, .88) 62%, #f7fcf9 100%);
+      border-color: #c2e2d1;
+    }
+    .storybook .welcome-screen[data-welcome-active-theme="trip"] .welcome-hero-banner {
+      background: radial-gradient(circle at 50% 0%, rgba(186, 224, 254, .46) 0%, rgba(242, 249, 255, .88) 62%, #f7fbff 100%);
+      border-color: #c4dcf0;
+    }
+    .storybook .welcome-screen[data-welcome-active-theme="sports"] .welcome-hero-banner {
+      background: radial-gradient(circle at 50% 0%, rgba(254, 226, 155, .5) 0%, rgba(255, 250, 235, .9) 62%, #fffdf5 100%);
+      border-color: #ebd69e;
+    }
+    .storybook .welcome-screen[data-welcome-active-theme="local"] .welcome-hero-banner {
+      background: radial-gradient(circle at 50% 0%, rgba(255, 198, 189, .45) 0%, rgba(255, 245, 242, .88) 62%, #fff9f7 100%);
+      border-color: #ecc8c1;
+    }
+    .storybook .welcome-pass-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .storybook .welcome-pass-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: .74rem;
+      font-weight: 800;
+      background: rgba(255, 255, 255, .9);
+      color: #8c4a27;
+      border: 1px solid #e7cbb0;
+      box-shadow: 0 2px 6px rgba(90, 58, 38, .05);
+    }
+    .storybook .welcome-pass-chip.is-accent {
+      background: #f5eef9;
+      color: #564269;
+      border-color: #d7c7e6;
+    }
+    .storybook .welcome-emblem-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 2px auto 6px;
+    }
+    .storybook .welcome-emblem-ring {
+      width: 56px;
+      height: 56px;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #ffffff 0%, #fff1db 100%);
+      border: 2px solid #e7be8e;
+      box-shadow: 0 8px 20px rgba(168, 94, 52, .15), inset 0 2px 4px #ffffff;
+      display: grid;
+      place-items: center;
+      transform: rotate(-2deg);
+      transition: transform .25s ease;
+    }
+    .storybook .welcome-hero-icon {
+      font-size: 1.95rem;
+      line-height: 1;
+      filter: drop-shadow(0 3px 6px rgba(90, 52, 28, .16));
+    }
+    .storybook .welcome-sparkle {
+      font-size: 1rem;
+      opacity: .85;
+      animation: floatSlow 2.8s ease-in-out infinite;
+    }
+    .storybook .welcome-sparkle.is-right { animation-delay: 1.1s; }
+    .storybook .welcome-eyebrow {
+      color: #9b502d;
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+    .storybook .welcome-screen h2 {
+      color: #3f3050;
+      font-size: clamp(1.45rem, 4.2vw, 2.25rem);
+      font-weight: 800;
+      line-height: 1.26;
+      margin: 4px 0 6px;
+      letter-spacing: -0.03em;
+    }
+    .storybook .welcome-lead {
+      color: #526074;
+      font-size: clamp(.82rem, 2.1vw, .94rem);
+      line-height: 1.5;
+      max-width: 520px;
+      margin: 0 auto 10px;
+    }
+    .storybook .welcome-journey-preview {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 4px;
+      padding: 6px 8px;
+      border-radius: 13px;
+      background: rgba(255, 255, 255, .82);
+      border: 1px dashed #dfbe9b;
+    }
+    .storybook .welcome-journey-step {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      font-size: .72rem;
+      font-weight: 800;
+      color: #4c3c5c;
+      white-space: nowrap;
+    }
+    .storybook .welcome-journey-step b {
+      display: inline-grid;
+      place-items: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #f3e3ce;
+      color: #8c4a27;
+      font-size: .64rem;
+    }
+    .storybook .welcome-bento-stack {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+    .storybook .welcome-bento-card {
+      margin: 0;
+      padding: 11px 12px 12px;
+      border-radius: 18px;
+      background: #fffaf3;
+      border: 1px solid #e6d4c0;
+      box-shadow: 0 6px 16px rgba(80, 56, 43, .04);
+    }
+    .storybook .welcome-bento-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      margin-bottom: 8px;
+      padding: 0;
+    }
+    .storybook .welcome-step-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #5f4d70;
+      color: #ffffff;
+      font-size: .68rem;
+      font-weight: 900;
+      letter-spacing: .04em;
+    }
+    .storybook .welcome-bento-title {
+      font-size: .92rem;
+      font-weight: 800;
+      color: #3f3050;
+    }
+    .storybook .welcome-bento-sub {
+      margin-left: auto;
+      font-size: .74rem;
+      font-weight: 700;
+      color: #886c57;
+    }
+    .storybook .welcome-grade-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .storybook .welcome-grade-btn {
+      min-height: 58px;
+      padding: 8px 6px;
+      border: 1.5px solid #dfd0c0;
+      border-radius: 15px;
+      background: #ffffff;
+      color: #493b59;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      transition: all .18s ease;
+      box-shadow: 0 2px 6px rgba(80, 56, 43, .04);
+    }
+    .storybook .welcome-grade-btn strong {
+      font-size: .95rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+    .storybook .welcome-grade-btn small {
+      font-size: .7rem;
+      color: #7c6d60;
+      font-weight: 700;
+      line-height: 1.15;
+    }
+    .storybook .welcome-grade-btn:hover {
+      border-color: #bfa68f;
+      transform: translateY(-1px);
+    }
+    .storybook .welcome-grade-btn[aria-pressed="true"] {
+      border-color: #5f4d70;
+      background: linear-gradient(145deg, #67537a 0%, #4e3d5f 100%);
+      color: #ffffff !important;
+      box-shadow: 0 8px 18px rgba(89, 73, 110, .24);
+      transform: translateY(-1px);
+    }
+    .storybook .welcome-grade-btn[aria-pressed="true"] strong,
+    .storybook .welcome-grade-btn[aria-pressed="true"] small {
+      color: #ffffff !important;
+    }
+    .storybook .welcome-theme-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .storybook .welcome-theme-btn {
+      min-height: 54px;
+      padding: 7px 6px !important;
+      border-radius: 14px !important;
+      border: 1.5px solid #dfd0c0 !important;
+      background: #ffffff !important;
+      color: #493b59 !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      box-shadow: 0 2px 5px rgba(80, 56, 43, .04);
+      transition: all .18s ease;
+    }
+    .storybook .welcome-theme-icon {
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+    .storybook .welcome-theme-name {
+      font-size: .78rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+    .storybook .welcome-theme-btn.is-picked {
+      background: linear-gradient(145deg, #fff4e2 0%, #ffe6c4 100%) !important;
+      color: #7c3b19 !important;
+      border-color: #d68249 !important;
+      box-shadow: 0 6px 14px rgba(182, 93, 54, .16);
+      transform: translateY(-1px);
+    }
+    .storybook .welcome-theme-btn.is-picked .welcome-theme-name {
+      color: #7c3b19 !important;
+    }
     .storybook .welcome-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-    .storybook .welcome-start,
-    .storybook .welcome-restart { flex: 1 1 210px; min-height: 55px; padding: 10px 16px; border-radius: 14px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: background-color .15s ease, border-color .15s ease, filter .15s ease; }
-    .storybook .welcome-start { display: block; width: 100%; background: #b65d36; color: #fff; border: 1px solid #b65d36; }
-    .storybook .welcome-start:hover { filter: brightness(0.95); }
-    .storybook .welcome-restart { background: #fff8ef; color: #493b59; border: 2px solid #624f75; }
+    .storybook .welcome-start {
+      display: block;
+      width: 100%;
+      min-height: 56px;
+      padding: 12px 18px;
+      border-radius: 16px;
+      font-size: 1.12rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      background: linear-gradient(135deg, #c96a3b 0%, #b25228 100%) !important;
+      color: #fff !important;
+      border: 1px solid #a34820 !important;
+      box-shadow: 0 12px 24px rgba(182, 93, 54, .26), inset 0 1px 0 rgba(255, 255, 255, .28) !important;
+      transition: transform .15s ease, filter .15s ease, box-shadow .15s ease;
+    }
+    .storybook .welcome-start:hover { filter: brightness(1.03); transform: translateY(-1px); }
+    .storybook .welcome-restart {
+      min-height: 36px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: .82rem;
+      font-weight: 800;
+      cursor: pointer;
+      background: #fff8ef;
+      color: #5f4d70;
+      border: 1.5px solid #bba9c9;
+      transition: background-color .15s ease, border-color .15s ease;
+    }
     .storybook .welcome-restart:hover { background: #f3e5d3; }
     .storybook .welcome-restart.hidden { display: none !important; }
-    .storybook .welcome-meta-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; margin-top: 14px; }
+    .storybook .welcome-meta-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; }
     .storybook .welcome-footnote { display: none !important; }
-    .storybook .welcome-guide-btn { min-height: 32px; padding: 4px 12px; border: 1px solid #d5c3b1; border-radius: 999px; background: #fff8ef; color: #493b59; font-size: .8rem; font-weight: 700; cursor: pointer; transition: background-color .15s ease, border-color .15s ease; }
+    .storybook .welcome-guide-btn { min-height: 36px; padding: 6px 14px; border: 1.5px solid #d5c3b1; border-radius: 999px; background: #fff8ef; color: #493b59; font-size: .82rem; font-weight: 800; cursor: pointer; transition: background-color .15s ease, border-color .15s ease; }
     .storybook .welcome-guide-btn:hover { background: #f3e5d3; border-color: #bfa890; }
-    .storybook .welcome-copyright { margin-top: 10px; font-size: .78rem; color: #78695a !important; }
+    .storybook .welcome-copyright { margin-top: 12px; font-size: .76rem; color: #78695a !important; }
     .storybook .lesson-stage { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 17px 21px; border: 1px solid #ead0af; border-radius: 20px; background: #fff4e4; }
     .storybook .lesson-stage span { display: block; color: #9b502d; font-weight: 700; font-size: .84rem; }
     .storybook .lesson-stage strong { display: block; color: #493b59; font-size: 1.4rem; line-height: 1.45; }

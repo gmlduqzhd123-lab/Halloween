@@ -24,7 +24,7 @@
   <script src="./ys-qr.js" defer></script>
   <link rel="manifest" href="./manifest.json" />
   <title>할로윈 안전 놀이터 | 초등 할로윈 수업</title>
-  <link rel="stylesheet" href="./styles.css?v=7818b7c2c472e7bb">
+  <link rel="stylesheet" href="./styles.css?v=885e60e01f5018dc">
 </head>
 <body class="storybook lesson-not-started antialiased selection:bg-orange-200 selection:text-slate-900">
 
@@ -150,23 +150,96 @@
     <!-- Main Content Container -->
     <main class="max-w-5xl w-full mx-auto px-3 sm:px-4 py-4 space-y-4 flex-1">
 
-      <section id="welcomeScreen" class="welcome-screen" aria-labelledby="welcomeTitle">
-        <p class="welcome-eyebrow">할로윈부터 체험학습까지, 안전 계기교육</p>
-        <h2 id="welcomeTitle">즐거운 행사도<br>안전한 선택에서 시작해요</h2>
-        <p>사람이 많이 모이는 상황을 이야기로 만나고, 안전한 움직임을 스스로 판단해요.</p>
-        <fieldset class="welcome-grades">
-          <legend>학년을 고르세요</legend>
-          <button type="button" class="welcome-grade-btn" data-welcome-grade="1-2" aria-pressed="false">1~2학년</button>
-          <button type="button" class="welcome-grade-btn" data-welcome-grade="3-4" aria-pressed="true">3~4학년</button>
-          <button type="button" class="welcome-grade-btn" data-welcome-grade="5-6" aria-pressed="false">5~6학년</button>
-        </fieldset>
-        <fieldset class="welcome-themes mt-2" aria-label="수업 상황 주제 선택"><legend class="text-xs font-bold text-indigo-200 mb-1.5">연중 언제든 활용하는 다중밀집 상황 주제</legend><div class="flex flex-wrap items-center justify-center gap-1.5"><button type="button" class="mini-chip welcome-theme-btn is-picked" data-welcome-theme="halloween" aria-pressed="true">🎃 할로윈</button><button type="button" class="mini-chip welcome-theme-btn" data-welcome-theme="school" aria-pressed="false">🏫 학교 축제</button><button type="button" class="mini-chip welcome-theme-btn" data-welcome-theme="field" aria-pressed="false">🚌 현장체험학습</button><button type="button" class="mini-chip welcome-theme-btn" data-welcome-theme="trip" aria-pressed="false">🧳 수학여행</button><button type="button" class="mini-chip welcome-theme-btn" data-welcome-theme="sports" aria-pressed="false">🏅 체육대회</button><button type="button" class="mini-chip welcome-theme-btn" data-welcome-theme="local" aria-pressed="false">🎪 지역 행사</button></div></fieldset>
+      <section id="welcomeScreen" class="welcome-screen" data-welcome-active-theme="halloween" aria-labelledby="welcomeTitle">
+        <div class="welcome-hero-banner">
+          <div class="welcome-pass-bar">
+            <span id="welcomeThemeBadge" class="welcome-pass-chip">🎃 할로윈 안전 탐험</span>
+            <span id="welcomeGradeMeta" class="welcome-pass-chip is-accent">🌿 3~4학년 · 이유·안전 약속</span>
+          </div>
+          <div class="welcome-emblem-wrap" aria-hidden="true">
+            <span class="welcome-sparkle is-left">✨</span>
+            <div class="welcome-emblem-ring">
+              <span id="welcomeHeroIcon" class="welcome-hero-icon">🎃</span>
+            </div>
+            <span class="welcome-sparkle is-right">🕯️</span>
+          </div>
+          <p class="welcome-eyebrow">할로윈부터 체험학습까지 · 다중밀집 안전 계기교육</p>
+          <h2 id="welcomeTitle">즐거운 행사도<br>안전한 선택에서 시작해요</h2>
+          <p id="welcomeSubtitle" class="welcome-lead">사람이 많이 모이는 상황을 이야기로 만나고, 안전한 움직임을 스스로 판단해요.</p>
+          <div class="welcome-journey-preview" aria-label="4단계 안전 탐험 코스">
+            <span class="welcome-journey-step"><b>1</b> 📖 이야기</span>
+            <span class="welcome-journey-step"><b>2</b> 🚶 길안전</span>
+            <span class="welcome-journey-step"><b>3</b> 🧙 옷차림</span>
+            <span class="welcome-journey-step"><b>4</b> ⭕ 퀴즈</span>
+          </div>
+        </div>
+
+        <div class="welcome-bento-stack">
+          <fieldset class="welcome-bento-card welcome-grades">
+            <legend class="sr-only">학년을 고르세요</legend>
+            <div class="welcome-bento-head" aria-hidden="true">
+              <span class="welcome-step-badge">STEP 1</span>
+              <span class="welcome-bento-title">학년을 고르세요</span>
+              <span class="welcome-bento-sub">눈높이 어휘·질문 맞춤</span>
+            </div>
+            <div class="welcome-grade-grid">
+              <button type="button" class="welcome-grade-btn" data-welcome-grade="1-2" aria-pressed="false">
+                <strong>1~2학년</strong>
+                <small>쉬운 그림·낱말</small>
+              </button>
+              <button type="button" class="welcome-grade-btn" data-welcome-grade="3-4" aria-pressed="true">
+                <strong>3~4학년</strong>
+                <small>이유·안전 약속</small>
+              </button>
+              <button type="button" class="welcome-grade-btn" data-welcome-grade="5-6" aria-pressed="false">
+                <strong>5~6학년</strong>
+                <small>근거·동선 비교</small>
+              </button>
+            </div>
+          </fieldset>
+
+          <fieldset class="welcome-bento-card welcome-themes" aria-label="수업 상황 주제 선택">
+            <legend class="sr-only">연중 언제든 활용하는 다중밀집 상황 주제</legend>
+            <div class="welcome-bento-head" aria-hidden="true">
+              <span class="welcome-step-badge">STEP 2</span>
+              <span class="welcome-bento-title">다중밀집 상황 주제</span>
+              <span class="welcome-bento-sub">이야기·게임 연동</span>
+            </div>
+            <div class="welcome-theme-grid">
+              <button type="button" class="mini-chip welcome-theme-btn is-picked" data-welcome-theme="halloween" aria-pressed="true">
+                <span class="welcome-theme-icon" aria-hidden="true">🎃</span>
+                <span class="welcome-theme-name">할로윈</span>
+              </button>
+              <button type="button" class="mini-chip welcome-theme-btn" data-welcome-theme="school" aria-pressed="false">
+                <span class="welcome-theme-icon" aria-hidden="true">🏫</span>
+                <span class="welcome-theme-name">학교 축제</span>
+              </button>
+              <button type="button" class="mini-chip welcome-theme-btn" data-welcome-theme="field" aria-pressed="false">
+                <span class="welcome-theme-icon" aria-hidden="true">🚌</span>
+                <span class="welcome-theme-name">현장체험학습</span>
+              </button>
+              <button type="button" class="mini-chip welcome-theme-btn" data-welcome-theme="trip" aria-pressed="false">
+                <span class="welcome-theme-icon" aria-hidden="true">🧳</span>
+                <span class="welcome-theme-name">수학여행</span>
+              </button>
+              <button type="button" class="mini-chip welcome-theme-btn" data-welcome-theme="sports" aria-pressed="false">
+                <span class="welcome-theme-icon" aria-hidden="true">🏅</span>
+                <span class="welcome-theme-name">체육대회</span>
+              </button>
+              <button type="button" class="mini-chip welcome-theme-btn" data-welcome-theme="local" aria-pressed="false">
+                <span class="welcome-theme-icon" aria-hidden="true">🎪</span>
+                <span class="welcome-theme-name">지역 행사</span>
+              </button>
+            </div>
+          </fieldset>
+        </div>
+
         <div class="welcome-actions">
-          <button type="button" id="btnStartFresh" class="welcome-restart hidden">처음부터 시작하기</button>
           <button type="button" id="btnStartLesson" class="welcome-start">처음부터 시작하기 →</button>
         </div>
         <div class="welcome-meta-row">
-          <button type="button" id="btnWelcomeGuide" class="welcome-guide-btn" title="사용 설명서 및 수업 설정 열기">📖 설명서</button>
+          <button type="button" id="btnStartFresh" class="welcome-restart hidden">↻ 처음부터 시작하기</button>
+          <button type="button" id="btnWelcomeGuide" class="welcome-guide-btn" title="사용 설명서 및 수업 설정 열기">📖 설명서 · 수업 설정</button>
         </div>
         <p class="welcome-copyright">© 엽쌤 · 교육용 콘텐츠 (무단 수정·상업적 이용 금지)</p>
       </section>
@@ -958,6 +1031,6 @@
   </div>
   <img id="printResultImage" alt="학습 결과지 인쇄 이미지" />
 
-  <script src="./app.js?v=7818b7c2c472e7bb" defer></script>
+  <script src="./app.js?v=885e60e01f5018dc" defer></script>
 </body>
 </html>
