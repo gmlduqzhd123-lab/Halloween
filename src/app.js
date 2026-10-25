@@ -948,17 +948,22 @@
       if (!state.teacher || state.teacher.mode !== 'pairs') return '';
       return index % 2 === 0 ? ' · 🐥짝꿍1' : ' · 🐣짝꿍2';
     }
-    function updatePairBatonBanner(index = 0) {
+    function updatePairBatonBanner() {
       const banner = document.getElementById('pairBatonBanner');
       if (!banner) return;
-      const isPairs = state.teacher && state.teacher.mode === 'pairs';
+      const isPairs = state.teacher && state.teacher.mode === 'pairs' && state.activeTab !== 'tab-cert';
       banner.classList.toggle('hidden', !isPairs);
       if (isPairs) {
-        const turnName = index % 2 === 0 ? '🐥 짝꿍 1(A)' : '🐣 짝꿍 2(B)';
+        let idx = 0;
+        if (state.activeTab === 'tab-culture') idx = storyProgress().storyIndex || 0;
+        else if (state.activeTab === 'tab-safety') idx = state.scenarioIndex || 0;
+        else if (state.activeTab === 'tab-costume') idx = typeof costumePage === 'number' ? costumePage : 0;
+        else if (state.activeTab === 'tab-quiz') idx = state.quizIndex || 0;
+        const turnName = idx % 2 === 0 ? '🐥 짝꿍 1(A)' : '🐣 짝꿍 2(B)';
         banner.textContent = `🤝 릴레이 바통 터치! 이번 순서는 [${turnName}] 차례예요 · 화면을 터치하고 짝꿍에게 이유를 말해 주세요!`;
       }
     }
-    const HIGHLIGHT_KEYWORDS = ['비상구', '비상 출구', '출구', '넓은 길', '행사장', '오른쪽', '우측통행', '대각선', '가슴 앞 공간', '병목', '집결 장소', '무형문화유산', '배려', '존중'];
+    const HIGHLIGHT_KEYWORDS = ['무형문화유산', '가슴 앞 공간', '비상 출구', '집결 장소', '우측통행', '넓은 길', '비상구', '행사장', '오른쪽', '대각선', '출구', '병목', '배려', '존중'];
     function renderHighlightedText(el, rawText) {
       if (!el) return;
       const text = String(rawText || '');
@@ -1875,6 +1880,23 @@
       currentFestivalKey = key;
       const detail = FESTIVAL_DETAILS[key];
       const descEl = document.getElementById('festivalCompareDesc');
+      if (detail) {
+        document.querySelectorAll('.festival-card').forEach(c => {
+          const isMatch = c.getAttribute('data-festival') === key;
+          c.classList.toggle('ring-2', isMatch);
+          c.classList.toggle('ring-amber-400', isMatch);
+        });
+        const titleEl = document.getElementById('festivalCompareTitle');
+        if (titleEl) titleEl.textContent = detail.title;
+        if (descEl) descEl.textContent = detail.desc;
+        const qEl = document.getElementById('festivalCompareQuestion');
+        if (qEl) qEl.textContent = detail.question;
+        const link = document.getElementById('festivalSourceLink');
+        if (link) {
+          link.href = detail.sourceUrl;
+          link.textContent = `자료: ${detail.sourceText} ↗`;
+        }
+      }
       if (detail && descEl && descEl.parentElement) {
         let timelineEl = document.getElementById('festivalTimelineBar');
         if (!timelineEl) {
@@ -1896,7 +1918,7 @@
           pill.className = `mini-chip text-[11px] ${fKey === key ? 'is-picked' : ''}`;
           pill.textContent = fLabel;
           pill.addEventListener('click', () => {
-            const tabBtn = document.querySelector(`.festival-btn[data-festival="${fKey}"]`);
+            const tabBtn = document.querySelector(`.festival-card[data-festival="${fKey}"]`);
             if (tabBtn) tabBtn.click();
             else renderFestivalQuiz(fKey);
           });
@@ -3280,6 +3302,15 @@
       emergencyCallState.wrongMsg = "";
       costumeWorldCupState = { stage: 'semi1', semi1Winner: null, semi2Winner: null, champion: null };
       pledgeBuilderPick = { where: null, action: null, heart: null };
+      densityLabLevel = 1;
+      currentFestivalKey = 'halloween';
+      safetyGame.visionMask = false;
+      const nvBtn = document.getElementById("btnToggleNightVision");
+      if (nvBtn) {
+        nvBtn.setAttribute("aria-pressed", "false");
+        nvBtn.classList.remove("is-picked");
+        nvBtn.textContent = "🕶️ 시야 제한 OFF";
+      }
     }
     function startFromBeginning() {
       stopSpeaking();
@@ -3440,6 +3471,7 @@
           renderCertificateCanvas();
         }
       }
+      updatePairBatonBanner();
       saveProgress();
     }
 
@@ -3774,6 +3806,7 @@
             return;
           }
           if (classTimerHideTimeout) clearTimeout(classTimerHideTimeout);
+          classVoteTally = { one: 0, two: 0 };
           let remaining = 5;
           classTimerBanner.classList.remove('hidden');
           renderClassTimerBannerContent(`⏱️ 생각 시간 ${remaining}초 · 손가락(1번·2번)으로 정답 번호를 준비해요!`);
@@ -3816,6 +3849,7 @@
             if (btnClassTimer) btnClassTimer.textContent = '⏱️ 5초 투표';
           }
           if (classTimerHideTimeout) clearTimeout(classTimerHideTimeout);
+          classVoteTally = { one: 0, two: 0 };
           const missionText = CLASSROOM_RANDOM_MISSIONS[randomMissionCursor % CLASSROOM_RANDOM_MISSIONS.length];
           randomMissionCursor = (randomMissionCursor + 1) % CLASSROOM_RANDOM_MISSIONS.length;
           classTimerBanner.classList.remove('hidden');
