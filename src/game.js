@@ -225,6 +225,7 @@
       const p=safetyGame.player;
       if(safetyGame.hazards.some(h=>Math.hypot(p.x-h.x,p.y-h.y)<p.r+h.r-3)) {
         p.x=42;p.y=210;p.targetX=null;p.targetY=null;
+        if(safetyGame.companion){safetyGame.companion.x=22;safetyGame.companion.y=216;}
         updateGameStatusText('혼잡한 구역을 피해서 다시 이동해요');
       }
       if(Array.isArray(safetyGame.items)) {
@@ -232,6 +233,7 @@
           if(Math.hypot(p.x-item.x,p.y-item.y)<p.r+item.r) {
             if(item.kind==='candyTrap') {
               p.x=42;p.y=210;p.targetX=null;p.targetY=null;
+              if(safetyGame.companion){safetyGame.companion.x=22;safetyGame.companion.y=216;}
               updateGameStatusText('떨어진 물건은 줍지 않고 넓은 길로 이동해요!');
             } else if(!item.done) {
               item.done=true;

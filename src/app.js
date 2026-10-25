@@ -2143,6 +2143,9 @@
       if (titleEl) titleEl.textContent = cfg.title;
       if (toCompareBtn) toCompareBtn.textContent = cfg.nextText;
 
+      if (state.lantern.hat === "🌟" && !isAllStampsMaster()) {
+        state.lantern.hat = "🎩";
+      }
       document.getElementById("pumpkinEyesDisplay").textContent = state.lantern.eye;
       document.getElementById("pumpkinMouthDisplay").textContent = state.lantern.mouth;
       document.getElementById("pumpkinHatDisplay").textContent = state.lantern.hat;
@@ -2795,7 +2798,7 @@
       action: ['오른쪽으로 차근차근 걷고', '비상구와 안전 거리를 먼저 살피고', '절대 밀거나 뛰지 않고'],
       heart: ['친구의 마음을 다정하게 배려하겠습니다!', '모두가 웃는 안전 약속을 꼭 지키겠습니다!', '내 몸과 친구의 안전을 먼저 생각하겠습니다!']
     };
-    let pledgeBuilderPick = { where: 0, action: 0, heart: 0 };
+    let pledgeBuilderPick = { where: null, action: null, heart: null };
 
     function renderPledgeBuilder() {
       const box = document.getElementById("pledgeBuilderBox");
@@ -2827,8 +2830,11 @@
           chip.dataset.kwIdx = String(wIdx);
           chip.textContent = word;
           chip.addEventListener("click", () => {
+            if (pledgeBuilderPick.where === null) pledgeBuilderPick.where = 0;
+            if (pledgeBuilderPick.action === null) pledgeBuilderPick.action = 0;
+            if (pledgeBuilderPick.heart === null) pledgeBuilderPick.heart = 0;
             pledgeBuilderPick[g.key] = wIdx;
-            const composed = `${PLEDGE_KEYWORDS.where[pledgeBuilderPick.where]} ${PLEDGE_KEYWORDS.action[pledgeBuilderPick.action]} ${PLEDGE_KEYWORDS.heart[pledgeBuilderPick.heart]}`;
+            const composed = `${PLEDGE_KEYWORDS.where[pledgeBuilderPick.where]} ${PLEDGE_KEYWORDS.action[pledgeBuilderPick.action]} ${PLEDGE_KEYWORDS.heart[pledgeBuilderPick.heart]}`.slice(0, 160);
             const input = document.getElementById("certPledgeInput");
             if (input) {
               input.value = composed;
@@ -3149,7 +3155,9 @@
     }
     function clearTransientInteractionState() {
       if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
-      if (typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
+      if (echoReadTimer) { clearInterval(echoReadTimer); echoReadTimer = null; }
+      if (typeof resetSpeedOxState === 'function') resetSpeedOxState();
+      else if (typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
       [storyPollPicked, storyClueOpened, festivalStamps, safetyDrillCounts, safetyDrillRemaining, scenarioSpotPicked].forEach(mapObj => {
         if (mapObj && typeof mapObj === 'object') {
           Object.keys(mapObj).forEach(k => { delete mapObj[k]; });
@@ -3159,6 +3167,7 @@
       emergencyCallState.q2Done = false;
       emergencyCallState.wrongMsg = "";
       costumeWorldCupState = { stage: 'semi1', semi1Winner: null, semi2Winner: null, champion: null };
+      pledgeBuilderPick = { where: null, action: null, heart: null };
     }
     function startFromBeginning() {
       stopSpeaking();
@@ -3178,6 +3187,10 @@
       safetyGame.won = false;
       safetyGame.paused = false;
       safetyGame.route = null;
+      safetyGame.bonusCollected = false;
+      safetyGame.friendRescued = false;
+      safetyGame.companion = null;
+      safetyGame.items = [];
       safetyGame.player = {x:42, y:210, r:13, targetX:null, targetY:null};
       safetyGame.hazards = [];
       saveProgress();
@@ -3193,6 +3206,9 @@
     function returnToMainScreen() {
       stopSpeaking();
       pauseSafetyGame();
+      if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
+      if (echoReadTimer) { clearInterval(echoReadTimer); echoReadTimer = null; }
+      if (typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
       document.body.classList.add('lesson-not-started');
       document.body.classList.remove('tools-open');
       document.getElementById('btnMoreTools').setAttribute('aria-expanded', 'false');
@@ -3244,6 +3260,7 @@
       restoreGrade(state.grade);
       state.activeTab=state.teacher.start;
       safetyGame.running=false;safetyGame.won=false;safetyGame.paused=false;safetyGame.route=null;
+      safetyGame.bonusCollected=false;safetyGame.friendRescued=false;safetyGame.companion=null;safetyGame.items=[];
       safetyGame.player={x:42,y:210,r:13,targetX:null,targetY:null};
       safetyGame.hazards=[];
       saveProgress();renderAllLearning();
@@ -3281,6 +3298,9 @@
     function switchTab(tabId) {
       stopSpeaking();
       if (state.activeTab === 'tab-safety' && tabId !== 'tab-safety') pauseSafetyGame();
+      if (tabId !== 'tab-safety' && safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
+      if (tabId !== 'tab-culture' && echoReadTimer) { clearInterval(echoReadTimer); echoReadTimer = null; }
+      if (tabId !== 'tab-quiz' && typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
       state.activeTab = tabId;
       const step = lessonStep(tabId);
       document.getElementById('lessonStageNumber').textContent = step[0];
@@ -3316,6 +3336,9 @@
       if (gradeKey === state.grade) return;
       stopSpeaking();
       pauseSafetyGame();
+      if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
+      if (echoReadTimer) { clearInterval(echoReadTimer); echoReadTimer = null; }
+      if (typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
       rememberGrade();
       state.grade = gradeKey;
       syncWelcomeGrade();
@@ -3331,13 +3354,15 @@
         }
       });
 
-      document.getElementById("certClassInput").value = EDUCATION_DATA[gradeKey].classDefault;
+      document.getElementById("certClassInput").value = state.profile.className || EDUCATION_DATA[gradeKey].classDefault;
       setCultureStage('story');
+      renderStamps();
       renderStorySlide();
+      renderLanternWorkshop();
       renderScenario();
+      renderAvatarDressup();
       renderCostumeCards();
       renderEtiquetteChecklist();
-      renderStamps();
       renderThemeSituations();
       renderQuiz();
       renderCertificateCanvas();

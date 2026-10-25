@@ -4875,6 +4875,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       if (titleEl) titleEl.textContent = cfg.title;
       if (toCompareBtn) toCompareBtn.textContent = cfg.nextText;
 
+      if (state.lantern.hat === "🌟" && !isAllStampsMaster()) {
+        state.lantern.hat = "🎩";
+      }
       document.getElementById("pumpkinEyesDisplay").textContent = state.lantern.eye;
       document.getElementById("pumpkinMouthDisplay").textContent = state.lantern.mouth;
       document.getElementById("pumpkinHatDisplay").textContent = state.lantern.hat;
@@ -5649,6 +5652,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const p=safetyGame.player;
       if(safetyGame.hazards.some(h=>Math.hypot(p.x-h.x,p.y-h.y)<p.r+h.r-3)) {
         p.x=42;p.y=210;p.targetX=null;p.targetY=null;
+        if(safetyGame.companion){safetyGame.companion.x=22;safetyGame.companion.y=216;}
         updateGameStatusText('혼잡한 구역을 피해서 다시 이동해요');
       }
       if(Array.isArray(safetyGame.items)) {
@@ -5656,6 +5660,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           if(Math.hypot(p.x-item.x,p.y-item.y)<p.r+item.r) {
             if(item.kind==='candyTrap') {
               p.x=42;p.y=210;p.targetX=null;p.targetY=null;
+              if(safetyGame.companion){safetyGame.companion.x=22;safetyGame.companion.y=216;}
               updateGameStatusText('떨어진 물건은 줍지 않고 넓은 길로 이동해요!');
             } else if(!item.done) {
               item.done=true;
@@ -5864,7 +5869,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       action: ['오른쪽으로 차근차근 걷고', '비상구와 안전 거리를 먼저 살피고', '절대 밀거나 뛰지 않고'],
       heart: ['친구의 마음을 다정하게 배려하겠습니다!', '모두가 웃는 안전 약속을 꼭 지키겠습니다!', '내 몸과 친구의 안전을 먼저 생각하겠습니다!']
     };
-    let pledgeBuilderPick = { where: 0, action: 0, heart: 0 };
+    let pledgeBuilderPick = { where: null, action: null, heart: null };
 
     function renderPledgeBuilder() {
       const box = document.getElementById("pledgeBuilderBox");
@@ -5896,8 +5901,11 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           chip.dataset.kwIdx = String(wIdx);
           chip.textContent = word;
           chip.addEventListener("click", () => {
+            if (pledgeBuilderPick.where === null) pledgeBuilderPick.where = 0;
+            if (pledgeBuilderPick.action === null) pledgeBuilderPick.action = 0;
+            if (pledgeBuilderPick.heart === null) pledgeBuilderPick.heart = 0;
             pledgeBuilderPick[g.key] = wIdx;
-            const composed = `${PLEDGE_KEYWORDS.where[pledgeBuilderPick.where]} ${PLEDGE_KEYWORDS.action[pledgeBuilderPick.action]} ${PLEDGE_KEYWORDS.heart[pledgeBuilderPick.heart]}`;
+            const composed = `${PLEDGE_KEYWORDS.where[pledgeBuilderPick.where]} ${PLEDGE_KEYWORDS.action[pledgeBuilderPick.action]} ${PLEDGE_KEYWORDS.heart[pledgeBuilderPick.heart]}`.slice(0, 160);
             const input = document.getElementById("certPledgeInput");
             if (input) {
               input.value = composed;
@@ -6244,6 +6252,10 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     function stopSpeedOxTimer() {
       if (speedOxInterval) { clearInterval(speedOxInterval); speedOxInterval = null; }
     }
+    function resetSpeedOxState() {
+      stopSpeedOxTimer();
+      speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false };
+    }
     function renderSpeedOxBonus() {
       const box = document.getElementById('speedOxBonusBox');
       if (!box) return;
@@ -6381,6 +6393,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         renderLearningSummary();
         return;
       }
+      stopSpeedOxTimer();
       active.classList.remove('hidden');result.classList.add('hidden');
       const qi=currentQuizIndex();
       const q=quizzes[qi];
@@ -6427,6 +6440,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
             hintUsed:!!state.quizHints[id],fiftyUsed:!!state.quizFifties[id],at:Date.now()};
           if(!state.quizFirst[id])state.quizFirst[id]=answer;
           (state.quizAttempts[id] ||= []).push(answer);
+          playSound(answer.correct?'correct':'wrong');
           if(answer.correct){state.quizCombo++;awardOnce(`quiz:${id}`,'first-correct',20,'퀴즈 정답');}
           else state.quizCombo=0;
           document.getElementById('importantStatus').textContent=answer.correct?'정답입니다.':'오답입니다. 해설을 확인하고 다시 판단하세요.';
@@ -7211,7 +7225,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     }
     function clearTransientInteractionState() {
       if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
-      if (typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
+      if (echoReadTimer) { clearInterval(echoReadTimer); echoReadTimer = null; }
+      if (typeof resetSpeedOxState === 'function') resetSpeedOxState();
+      else if (typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
       [storyPollPicked, storyClueOpened, festivalStamps, safetyDrillCounts, safetyDrillRemaining, scenarioSpotPicked].forEach(mapObj => {
         if (mapObj && typeof mapObj === 'object') {
           Object.keys(mapObj).forEach(k => { delete mapObj[k]; });
@@ -7221,6 +7237,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       emergencyCallState.q2Done = false;
       emergencyCallState.wrongMsg = "";
       costumeWorldCupState = { stage: 'semi1', semi1Winner: null, semi2Winner: null, champion: null };
+      pledgeBuilderPick = { where: null, action: null, heart: null };
     }
     function startFromBeginning() {
       stopSpeaking();
@@ -7240,6 +7257,10 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       safetyGame.won = false;
       safetyGame.paused = false;
       safetyGame.route = null;
+      safetyGame.bonusCollected = false;
+      safetyGame.friendRescued = false;
+      safetyGame.companion = null;
+      safetyGame.items = [];
       safetyGame.player = {x:42, y:210, r:13, targetX:null, targetY:null};
       safetyGame.hazards = [];
       saveProgress();
@@ -7255,6 +7276,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     function returnToMainScreen() {
       stopSpeaking();
       pauseSafetyGame();
+      if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
+      if (echoReadTimer) { clearInterval(echoReadTimer); echoReadTimer = null; }
+      if (typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
       document.body.classList.add('lesson-not-started');
       document.body.classList.remove('tools-open');
       document.getElementById('btnMoreTools').setAttribute('aria-expanded', 'false');
@@ -7306,6 +7330,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       restoreGrade(state.grade);
       state.activeTab=state.teacher.start;
       safetyGame.running=false;safetyGame.won=false;safetyGame.paused=false;safetyGame.route=null;
+      safetyGame.bonusCollected=false;safetyGame.friendRescued=false;safetyGame.companion=null;safetyGame.items=[];
       safetyGame.player={x:42,y:210,r:13,targetX:null,targetY:null};
       safetyGame.hazards=[];
       saveProgress();renderAllLearning();
@@ -7343,6 +7368,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     function switchTab(tabId) {
       stopSpeaking();
       if (state.activeTab === 'tab-safety' && tabId !== 'tab-safety') pauseSafetyGame();
+      if (tabId !== 'tab-safety' && safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
+      if (tabId !== 'tab-culture' && echoReadTimer) { clearInterval(echoReadTimer); echoReadTimer = null; }
+      if (tabId !== 'tab-quiz' && typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
       state.activeTab = tabId;
       const step = lessonStep(tabId);
       document.getElementById('lessonStageNumber').textContent = step[0];
@@ -7378,6 +7406,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       if (gradeKey === state.grade) return;
       stopSpeaking();
       pauseSafetyGame();
+      if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
+      if (echoReadTimer) { clearInterval(echoReadTimer); echoReadTimer = null; }
+      if (typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
       rememberGrade();
       state.grade = gradeKey;
       syncWelcomeGrade();
@@ -7393,13 +7424,15 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         }
       });
 
-      document.getElementById("certClassInput").value = EDUCATION_DATA[gradeKey].classDefault;
+      document.getElementById("certClassInput").value = state.profile.className || EDUCATION_DATA[gradeKey].classDefault;
       setCultureStage('story');
+      renderStamps();
       renderStorySlide();
+      renderLanternWorkshop();
       renderScenario();
+      renderAvatarDressup();
       renderCostumeCards();
       renderEtiquetteChecklist();
-      renderStamps();
       renderThemeSituations();
       renderQuiz();
       renderCertificateCanvas();

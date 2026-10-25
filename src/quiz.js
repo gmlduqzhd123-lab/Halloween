@@ -117,6 +117,10 @@
     function stopSpeedOxTimer() {
       if (speedOxInterval) { clearInterval(speedOxInterval); speedOxInterval = null; }
     }
+    function resetSpeedOxState() {
+      stopSpeedOxTimer();
+      speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false };
+    }
     function renderSpeedOxBonus() {
       const box = document.getElementById('speedOxBonusBox');
       if (!box) return;
@@ -254,6 +258,7 @@
         renderLearningSummary();
         return;
       }
+      stopSpeedOxTimer();
       active.classList.remove('hidden');result.classList.add('hidden');
       const qi=currentQuizIndex();
       const q=quizzes[qi];
@@ -300,6 +305,7 @@
             hintUsed:!!state.quizHints[id],fiftyUsed:!!state.quizFifties[id],at:Date.now()};
           if(!state.quizFirst[id])state.quizFirst[id]=answer;
           (state.quizAttempts[id] ||= []).push(answer);
+          playSound(answer.correct?'correct':'wrong');
           if(answer.correct){state.quizCombo++;awardOnce(`quiz:${id}`,'first-correct',20,'퀴즈 정답');}
           else state.quizCombo=0;
           document.getElementById('importantStatus').textContent=answer.correct?'정답입니다.':'오답입니다. 해설을 확인하고 다시 판단하세요.';
