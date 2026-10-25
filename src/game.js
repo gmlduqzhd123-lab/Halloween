@@ -1,9 +1,14 @@
     // Canvas coordinates stay at 600×250. CSS scales only the display.
     let gameAnimId = null;
     const STAGE_MISSIONS = {
-      1: '1단계 미션: 🟩 비상구 표지판을 확인하며 넓은 출구로 이동해요!',
-      2: '2단계 미션: ➡️ 우측통행 화살표를 따라가고 🍬 떨어진 물건은 줍지 말아요!',
-      3: '3단계 미션: 👧 길가의 친구와 함께 대각선 넓은 출구로 빠져나와요!'
+      1: '1단계 [입구 탐색]: 🟩 비상구 표지판과 🗺️ 안전 지도를 확인하며 출구로!',
+      2: '2단계 [병목 탈출]: ➡️ 우측통행과 🛡️ 가슴 보호! 🍬 떨어진 물건은 패스!',
+      3: '3단계 [비상 합류]: 👧 친구를 만나 🚩 약속한 집결지 깃발을 거쳐 출구로!'
+    };
+    const STAGE_BG_COLORS = {
+      1: '#0f172a',
+      2: '#17153b',
+      3: '#111827'
     };
     const THEME_GAME_MAP = {
       halloween: { place: '🎃 할로윈 축제 거리', trapIcon: '🍬', trapLabel: '떨어진 사탕 주의' },
@@ -91,14 +96,22 @@
       }
       const themeCfg = getActiveGameTheme();
       if (state.gameStage === 1) {
-        safetyGame.items = [{x:240,y:76,r:16,kind:'sign',icon:'🟩',label:'비상구 확인',done:false}];
+        safetyGame.items = [
+          {x:200,y:82,r:16,kind:'sign',icon:'🟩',label:'비상구 확인',done:false},
+          {x:370,y:62,r:16,kind:'map',icon:'🗺️',label:'우회로 지도',done:false}
+        ];
       } else if (state.gameStage === 2) {
         safetyGame.items = [
-          {x:280,y:72,r:16,kind:'lane',icon:'➡️',label:'우측통행 유지',done:false},
+          {x:220,y:76,r:16,kind:'lane',icon:'➡️',label:'우측통행 유지',done:false},
+          {x:390,y:60,r:16,kind:'guard',icon:'🛡️',label:'가슴 공간 확보',done:false},
           {x:270,y:165,r:18,kind:'candyTrap',icon:themeCfg.trapIcon,label:themeCfg.trapLabel,done:false}
         ];
       } else {
-        safetyGame.items = [{x:175,y:86,r:16,kind:'friend',icon:'👧',label:'친구와 동행',done:false}];
+        safetyGame.items = [
+          {x:175,y:86,r:16,kind:'friend',icon:'👧',label:'친구와 동행',done:false},
+          {x:365,y:62,r:16,kind:'rally',icon:'🚩',label:'비상 집결지',done:false},
+          {x:250,y:168,r:18,kind:'candyTrap',icon:themeCfg.trapIcon,label:themeCfg.trapLabel,done:false}
+        ];
       }
       safetyGame.keys.clear();
       document.getElementById('btnStartCanvasGame').textContent = '⏸ 일시정지';
@@ -246,7 +259,7 @@
       const ctx=canvas.getContext('2d');
       const {x,y}=safetyGame.player;
       const stageNum=(typeof state!=='undefined' && state.gameStage) ? state.gameStage : 1;
-      ctx.fillStyle='#0f172a';ctx.fillRect(0,0,600,250);
+      ctx.fillStyle=STAGE_BG_COLORS[stageNum] || '#0f172a';ctx.fillRect(0,0,600,250);
       ctx.strokeStyle='#064e3b';ctx.lineWidth=38;ctx.lineCap='round';
       ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(120,100);ctx.lineTo(460,58);ctx.lineTo(545,46);ctx.stroke();
       ctx.strokeStyle='#10b98155';ctx.lineWidth=2;ctx.setLineDash([6,6]);

@@ -274,9 +274,29 @@
       ctx.fillText(stampLabels.map(([k,l])=>`${state.stamps[k]?'🏅':'⬜'}${l}`).join('  '),canvas.width/2,322,280);
 
       ctx.fillStyle='#111827';ctx.fillRect(65,356,670,244);
-      ctx.fillStyle='#fde68a';ctx.font=`bold 16px ${RESULT_FONT}`;ctx.fillText('나의 안전 약속',canvas.width/2,392);
+      ctx.fillStyle='#fde68a';ctx.font=`bold 16px ${RESULT_FONT}`;ctx.fillText('나의 안전 약속',canvas.width/2,386);
       ctx.fillStyle='#fff';ctx.font=`16px ${RESULT_FONT}`;
-      printLines(ctx,safeLabel(state.profile.pledge,'안전 약속을 적어 보세요.'),canvas.width/2,428,620,28,5);
+      printLines(ctx,safeLabel(state.profile.pledge,'안전 약속을 적어 보세요.'),canvas.width/2,418,620,26,4);
+
+      // Collector badges & Special Title (Idea 10)
+      const clueCount = Object.keys(state.storyCluesFound || {}).length;
+      const collectionBadges = [
+        [clueCount >= 1 || state.stamps.s1, '🕵️단서탐정'],
+        [Boolean(state.lantern && state.lantern.lit), '🕯️등불장인'],
+        [Boolean(state.festivalCompareAnswered || state.stamps.s1), '🌏문화대사'],
+        [Boolean(state.stamps.s2), '🛡️안전수호자'],
+        [Boolean(state.stamps.s3), '✂️배려디자이너'],
+        [Boolean(state.stamps.s4), '👑퀴즈박사']
+      ];
+      const earnedCount = collectionBadges.filter(([ok]) => ok).length;
+      const explorerTitle = earnedCount >= 6 ? '🌟 전설의 할로윈 안전·문화 마스터' : earnedCount >= 4 ? '🎃 빛나는 호박 마을 수호 대장' : '🕯️ 꼬마 안전 탐험가';
+      ctx.fillStyle='rgba(30, 27, 75, 0.9)';ctx.fillRect(85,526,630,60);
+      ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;ctx.strokeRect(85,526,630,60);
+      ctx.fillStyle='#fcd34d';ctx.font=`bold 13px ${RESULT_FONT}`;
+      ctx.fillText(`특별 칭호: ${explorerTitle} (${earnedCount}/6 컬렉션 달성)`,canvas.width/2,547,600);
+      ctx.fillStyle='#e0e7ff';ctx.font=`12px ${RESULT_FONT}`;
+      ctx.fillText(collectionBadges.map(([ok, label]) => `${ok ? '✨' : '▫️'}${label}`).join('   '),canvas.width/2,572,600);
+
       ctx.fillStyle='#e0e7ff';ctx.font=`15px ${RESULT_FONT}`;
       ctx.fillText(`${state.certSticker} 확인 날짜 ${new Date().toLocaleDateString('ko-KR')} · © 엽쌤`,canvas.width/2,649);
       ctx.fillText('학습 확인 기록 · 실제 안전을 보장하는 증명은 아닙니다.',canvas.width/2,683);

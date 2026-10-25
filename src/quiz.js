@@ -49,6 +49,16 @@
       '🧙 배려하는 복장',
       '🌏 다문화 존중'
     ];
+    const QUIZ_FUN_FACTS = [
+      '🏛️ 깜짝 상식 박물관: 왜 박쥐가 할로윈 상징이 되었을까요? 옛날 가을 모닥불을 피우면 불빛을 보고 벌레들이 몰려들었고, 그 벌레를 먹으러 박쥐들이 밤하늘을 날아다닌 자연스러운 풍경에서 시작되었대요!',
+      '🏛️ 깜짝 상식 박물관: 미국에서는 음식 알레르기가 있는 어린이를 배려해 사탕 대신 작은 문구류·장난감을 나눠 주는 집 앞에 ‘청록색 호박(Teal Pumpkin)’을 놓는 다정한 캠페인도 있어요!',
+      '🏛️ 깜짝 상식 박물관: 비상구 표지판이 초록색인 이유는 연기가 자욱하거나 어두운 곳에서도 우리 눈의 망막이 가장 또렷하게 구별할 수 있는 빛의 파장이 초록색(약 500~550nm)이기 때문이에요!',
+      '🏛️ 깜짝 상식 박물관: 1㎡(가로·세로 1m) 안에 5명 이상이 모이면 내 힘으로 걷기 어렵고 물결처럼 흔들리기 시작해요. 그래서 어깨가 자꾸 닿을 때 미리 대각선 가장자리로 빠져나와야 해요!',
+      '🏛️ 깜짝 상식 박물관: 두 손으로 가슴 앞 공간(흉강)을 감싸면 갈비뼈가 움직일 수 있는 최소 3~5cm의 공간이 유지되어 압박 속에서도 소중한 호흡을 지킬 수 있어요!',
+      '🏛️ 깜짝 상식 박물관: 붐비는 길에서 한 사람이 물건을 주우려 멈춰 허리를 숙이면 뒤따라오던 사람들의 시야가 가려져 단 3초 만에 도미노처럼 연쇄 넘어짐이 일어날 수 있어요!',
+      '🏛️ 깜짝 상식 박물관: 기네스북에 오른 세계에서 가장 무거운 호박은 무려 1,246kg으로, 소형 자동차 한 대 무게와 비슷하대요!',
+      '🏛️ 깜짝 상식 박물관: 멕시코의 ‘죽은 자들의 날’에 장식하는 주황색 금잔화(마리골드)는 태양의 빛과 진한 향기로 가족들이 집으로 오는 길을 밝혀 준다는 따뜻한 뜻을 담고 있어요!'
+    ];
     const QUIZ_GOAL_BRIDGE = [
       { label: '문화의 기원과 다양성', tab: 'tab-culture', scenarioIdx: null },
       { label: '보호자 동행·사전 약속', tab: 'tab-culture', scenarioIdx: null },
@@ -184,6 +194,13 @@
         const mainText = document.createElement('p');
         mainText.textContent = `${existing.correct?'⭕ 이번 판단은 맞았어요.':'❌ 이번 판단은 다시 살펴봐요.'} ${q.explanation}`;
         explanation.appendChild(mainText);
+        const funFactText = QUIZ_FUN_FACTS[qi % QUIZ_FUN_FACTS.length];
+        if (funFactText) {
+          const factEl = document.createElement('div');
+          factEl.className = 'rounded-lg bg-indigo-950/70 border border-amber-400/40 px-2.5 py-1.5 text-xs font-bold text-amber-200 leading-snug';
+          factEl.textContent = funFactText;
+          explanation.appendChild(factEl);
+        }
         if (bridge) {
           const diagRow = document.createElement('div');
           diagRow.className = 'flex flex-wrap items-center justify-between gap-1.5 pt-1 border-t border-indigo-700/60 text-xs';

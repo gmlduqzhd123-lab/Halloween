@@ -2367,12 +2367,12 @@ const SAFETY_GOALS = [
 ];
 
 const SAFETY_SCENARIO_LOW = [
-  {title:'축제에 도착했어요. 먼저 어디를 볼까요?', desc:'사람이 많아지기 전에 길을 살펴봐요.', choices:['넓은 길과 나가는 곳을 찾아요.','사람이 꽉 찬 좁은 길로 달려가요.']},
-  {title:'사람들이 마주 보고 걷는 길이에요.', desc:'서로 부딪히지 않으려면?', choices:['오른쪽으로 천천히 걷고 멈출 때도 살펴요.','길 가운데서 갑자기 멈춰요.']},
-  {title:'사람들과 어깨가 자꾸 닿아요.', desc:'걸음도 느려졌어요. 어떻게 할까요?', choices:['흐름을 보며 넓은 쪽으로 벗어나요.','사람들을 밀며 더 안쪽으로 가요.']},
-  {title:'사람들에게 떠밀리고 있어요.', desc:'가슴 앞 숨 쉴 공간을 지켜요.', choices:['두 손이나 가방을 가슴 앞에 두어요.','두 팔을 몸에 꼭 붙여요.']},
-  {title:'사람이 많은 길에 물건이 떨어졌어요.', desc:'물건보다 내 몸이 먼저예요.', choices:['숙이지 않고 먼저 안전한 쪽으로 가요.','바로 숙여서 물건을 주워요.']},
-  {title:'넘어져서 바로 일어날 수 없어요.', desc:'내 머리와 몸을 보호해요.', choices:['머리를 감싸고 몸을 둥글게 해요.','팔과 다리를 길게 뻗어요.']}
+  {title:'축제에 도착했어요. 먼저 어디를 볼까요?', desc:'친구 뭉치가 "저기 좁은 골목 끝에 반짝이 풍선을 준대! 출구는 이따 보고 얼른 뛰어가자!"라고 해요.', choices:['풍선보다 먼저 넓은 길과 나가는 곳(비상구)부터 눈으로 확인해요.','풍선이 다 떨어질까 봐 사람이 꽉 찬 좁은 골목으로 먼저 달려가요.']},
+  {title:'사람들이 마주 보고 걷는 길이에요.', desc:'멋진 분장 행렬이 지나가자 친구가 "길 한가운데 멈춰서 사진 찍자!"라고 해요.', choices:['오른쪽(우측통행)으로 차근차근 걷고, 사진은 길가 안전한 곳에서 찍어요.','걸어가는 사람들 한가운데 갑자기 멈춰 서서 사진을 찍어요.']},
+  {title:'사람들과 어깨가 자꾸 닿아요.', desc:'사탕 부스 앞인데 걸음이 느려졌어요. 친구는 "조금만 더 비집고 들어가자!"라고 해요.', choices:['어깨가 닿는 건 위험 신호예요! 흐름을 보며 넓은 가장자리로 벗어나요.','기다린 게 아까우니 사람들을 밀며 더 좁은 안쪽으로 들어가요.']},
+  {title:'사람들에게 떠밀리고 있어요.', desc:'뒤에서 사람들이 몰려 내 몸이 밀려요! 가슴 앞 숨 쉴 공간을 어떻게 지킬까요?', choices:['무리하게 밀치지 않고 두 손이나 가방을 가슴 앞에 모아 숨 쉴 공간을 지켜요.','양팔을 옆구리에 꼭 붙이거나 앞사람을 두 손으로 세게 밀어내요.']},
+  {title:'사람이 많은 길에 물건이 떨어졌어요.', desc:'친구가 아끼는 호박 열쇠고리가 떨어지자 "1초만 숙여서 얼른 주워 줘!"라고 외쳐요.', choices:['아깝더라도 인파 속에선 절대 숙이지 않고 친구 손을 잡고 안전한 곳으로 먼저 가요.','1초면 되니까 걸어오는 사람들 발 사이로 바로 허리를 숙여 주워요.']},
+  {title:'넘어져서 바로 일어날 수 없어요.', desc:'위급한 순간! 내 머리와 가슴(숨 쉴 곳)을 어떻게 보호할까요?', choices:['어른·119에 알리고, 두 팔로 머리를 감싼 채 무릎을 당겨 공처럼 둥글게 말아요.','넘어진 자리에서 떨어진 가방을 찾거나 팔다리를 길게 뻗고 있어요.']}
 ];
 
 // Each theme is a distinct setting with three complete decisions. They reuse the reviewed crowd objectives.
@@ -2733,20 +2733,32 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     // ==================== ENRICHED GRADE-LEVEL EDUCATIONAL DATASET ====================
     const FESTIVAL_DETAILS = {
       halloween: {
-        title: "할로윈 · 10월 31일",
-        desc: "옛 켈트 지역의 계절 풍습과 만성절 전야 등 여러 역사적 요소가 전해져요. 오늘날에는 지역과 가족에 따라 분장, 호박 장식, 이웃 행사 등 다른 방식으로 즐깁니다.",
+        title: "할로윈 · 10월 31일 (영미권 등 여러 지역)",
+        desc: "옛 켈트 지역의 계절 풍습(서우인)과 만성절 전야 등 여러 역사적 요소가 전해져요. 오늘날에는 지역과 가족에 따라 분장, 호박 등불 꾸미기, 이웃과 인사 나누기, 자선 모금 등 서로 다른 방식으로 즐깁니다.",
+        food: "🎃 호박 파이 · 🍎 달콤한 사과 사탕(캔디 애플)",
+        symbol: "🕯️ 잭오랜턴 등불 (옛날 아일랜드 순무 등불에서 유래)",
+        greeting: "💬 \"해피 할로윈! 안전하고 즐거운 가을밤 보내요!\"",
+        secret: "🕵️ 문화 도감 비밀: 미국에서는 간식 대신 유니세프 구호 모금함을 들고 이웃을 돕는 어린이들도 많아요!",
         question: "모든 지역의 할로윈 모습이 같을까요?",
         sourceText: "미국 의회도서관", sourceUrl: "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
       },
       muertos: {
-        title: "죽은 자들의 날 · 멕시코",
-        desc: "세상을 떠난 가족을 기억하고 맞이하는 고유한 전통입니다. 지역과 가족마다 기리는 모습이 다르며, 할로윈과 날짜가 가깝더라도 같은 축제로 묶을 수 없어요.",
+        title: "죽은 자들의 날 · 멕시코 (11월 1~2일)",
+        desc: "세상을 떠난 가족을 사랑으로 기억하고 맞이하는 멕시코의 고유한 전통입니다. 지역과 가정마다 제단(오프렌다)을 꾸미는 모습이 다르며, 할로윈과 날짜가 가깝더라도 같은 축제로 묶을 수 없어요.",
+        food: "🍞 판 데 무에르토(영혼의 달콤한 빵) · 🍫 따뜻한 초콜릿",
+        symbol: "🌼 주황색 금잔화(마리골드) 꽃길 · ✂️ 알록달록 종이 장식(파펠 피카도)",
+        greeting: "💬 \"사랑하는 가족을 마음속에 따뜻하게 기억해요!\"",
+        secret: "🕵️ 문화 도감 비밀: 해골 장식(칼라베라)은 무서운 공포가 아니라 가족과의 영원한 사랑과 반가움을 뜻해요!",
         question: "이 문화를 소개할 때 먼저 말해야 할 뜻은 무엇일까요?",
         sourceText: "유네스코", sourceUrl: "https://ich.unesco.org/en/RL/dia-de-muertos-the-indigenous-festivity-dedicated-to-the-dead-00054"
       },
       korea: {
-        title: "추석 · 대한민국",
-        desc: "음력 8월 15일을 중심으로 가족이 모여 수확을 돌아보고 음식을 나누는 명절입니다. 할로윈이나 죽은 자들의 날과 기원도 날짜도 다르므로 각각의 의미를 따로 배웁니다.",
+        title: "추석(한가위) · 대한민국 (음력 8월 15일)",
+        desc: "음력 8월 15일을 중심으로 가족이 모여 한 해의 수확을 돌아보고 음식을 나누는 한국의 고유한 명절입니다. 할로윈이나 죽은 자들의 날과 기원도 날짜도 다르므로 각각의 의미를 따로 배웁니다.",
+        food: "🥮 솔잎 향 가득한 송편 · 🍐 달콤한 햇과일과 토란국",
+        symbol: "🌕 둥근 보름달 소원 빌기 · 💃 손잡고 도는 강강술래",
+        greeting: "💬 \"더도 말고 덜도 말고 늘 한가위만 같아라!\"",
+        secret: "🕵️ 문화 도감 비밀: 반달 모양 송편에는 앞으로 보름달처럼 꿈과 행복이 가득 차오르길 바라는 마음이 담겨 있어요!",
         question: "가까운 시기의 명절이라도 무엇이 서로 다를까요?",
         sourceText: "국립민속박물관 어린이박물관", sourceUrl: "https://www.nfm.go.kr/kids/user/content.do?pageId=PAGE_000000000000051"
       }
@@ -2759,61 +2771,61 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         stories: [
           {
             "art": "pumpkin",
-            "caption": "10월 31일",
+            "caption": "호박 탐정 잭과의 첫 만남",
             "title": "할로윈은 어떤 날일까요?",
-            "body": "10월 31일, 여러 나라에서 분장하거나 호박을 꾸미며 즐겨요. 모든 사람이 같은 방법으로 보내는 날은 아니에요.",
-            "keyPoint": "날짜와 놀이 모습을 알아보아요.",
-            "question": "우리 반에서는 어떤 놀이를 해 보고 싶나요?",
+            "body": "🎃 호박 탐정 잭이 반짝이는 돋보기를 들고 나타났어요! \"안녕! 10월 31일 할로윈에는 호박을 꾸미거나 재미있는 옷을 입기도 해. 하지만 모든 나라와 가족이 똑같은 놀이를 하는 건 아니란다!\"",
+            "keyPoint": "10월 31일, 지역과 가족마다 다양하게 즐기는 날이에요.",
+            "question": "우리 반 친구들과 함께한다면 어떤 놀이를 해 보고 싶나요?",
             "sourceText": "미국 의회도서관",
             "sourceUrl": "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
           },
           {
             "art": "lantern",
-            "caption": "호박 등불",
-            "title": "호박에 얼굴을 그려요",
-            "body": "속을 파낸 호박에 얼굴을 새긴 장식을 잭오랜턴이라고 해요. 옛날에는 순무로 만들기도 했어요.",
-            "keyPoint": "잭오랜턴은 호박 등불이에요.",
-            "question": "내 호박에는 어떤 표정을 그릴까요?",
+            "caption": "순무 등불의 깜짝 변신",
+            "title": "호박에 얼굴을 그려요 (잭오랜턴)",
+            "body": "🕯️ 잭이 옛날 사진첩을 펼쳤어요. \"옛날 아일랜드 사람들은 호박 대신 단단한 '순무'를 파서 등불을 만들었어! 그러다 미국으로 건너간 뒤, 크고 파기 쉬운 주황색 호박으로 등불(잭오랜턴)을 만들게 됐지!\"",
+            "keyPoint": "순무 등불이 오늘날의 호박 등불(잭오랜턴)로 변했어요.",
+            "question": "내가 호박 등불을 만든다면 어떤 표정을 그려 줄까요?",
             "sourceText": "스미스소니언",
             "sourceUrl": "https://gardens.si.edu/american-garden-story/ghosts-of-pumpkins-past/"
           },
           {
             "art": "neighbor",
-            "caption": "이웃과 인사",
+            "caption": "뭉치의 급한 발걸음",
             "title": "간식을 나눌 때 지킬 약속",
-            "body": "어떤 지역에서는 아이들이 어른과 함께 이웃을 찾아가 간식을 받아요. 처음 보는 집에 혼자 찾아가지는 않아요.",
-            "keyPoint": "간식보다 어른과 함께하는 안전한 약속이 먼저예요.",
-            "question": "방문하기 전에 누구와 상의해야 할까요?",
+            "body": "🏃 성격 급한 친구 뭉치가 사탕 바구니를 들고 혼자 달려가려 해요! 그때 안전 대원 별이가 외쳤어요. \"잠깐만, 뭉치야! 모르는 집에 혼자 찾아가면 위험해. 꼭 부모님이나 선생님과 먼저 약속하고 함께 가야 해!\"",
+            "keyPoint": "간식보다 나를 지켜 주는 어른과 함께하는 약속이 먼저예요.",
+            "question": "이웃과 인사 나누기 전에 누구와 먼저 약속해야 할까요?",
             "sourceText": "UNICEF USA",
             "sourceUrl": "https://www.unicefusa.org/trick-or-treat/groups"
           },
           {
             "art": "path",
-            "caption": "잘 보이고 잘 걷기",
+            "caption": "휘청휘청 긴 망토 사건",
             "title": "분장 옷도 안전하게 골라요",
-            "body": "앞이 잘 보이는 가면과 걷기 편한 옷을 골라요. 어두운 곳에서는 밝은 표시가 도움이 돼요.",
-            "keyPoint": "멋진 옷보다 잘 보고 잘 걷는 일이 중요해요.",
-            "question": "길게 끌리는 망토는 어떻게 고치면 좋을까요?",
+            "body": "🧙 뭉치가 눈구멍이 작고 바닥에 길게 끌리는 망토를 입고 왔다가 그만 발이 걸려 기우뚱했어요! 별이가 반짝이는 야광 스티커를 붙여 주며 말했어요. \"눈이 시원하게 잘 보이고 걷기 편한 옷이 진짜 멋진 옷이야!\"",
+            "keyPoint": "화려한 옷보다 앞이 잘 보이고 걷기 편한 옷이 최고예요.",
+            "question": "바닥에 길게 끌리는 망토는 어떻게 고쳐 입으면 좋을까요?",
             "sourceText": "국민재난안전포털",
             "sourceUrl": "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
           },
           {
             "art": "flower",
-            "caption": "서로 다른 문화",
+            "caption": "멕시코에서 온 편지",
             "title": "멕시코에는 다른 기념일이 있어요",
-            "body": "멕시코의 죽은 자들의 날에는 세상을 떠난 가족을 기억해요. 할로윈과 날짜가 가깝지만 서로 다른 뜻을 지닌 날이에요.",
-            "keyPoint": "다른 문화의 이름과 뜻을 존중해요.",
-            "question": "두 날이 다르다는 걸 친구에게 어떻게 설명할까요?",
+            "body": "🌼 멕시코 친구 소피아가 주황색 금잔화 꽃잎 사진을 보내왔어요. \"우리나라의 '죽은 자들의 날'은 무서운 귀신 놀이가 아니라, 하늘나라에 계신 할머니·할아버지를 사랑으로 기억하고 맞이하는 따뜻한 가족 명절이야!\"",
+            "keyPoint": "날짜가 비슷해도 다른 문화의 고유한 이름과 뜻을 존중해요.",
+            "question": "할로윈과 죽은 자들의 날이 다르다는 걸 친구에게 어떻게 알려줄까요?",
             "sourceText": "유네스코",
             "sourceUrl": "https://ich.unesco.org/en/RL/dia-de-muertos-the-indigenous-festivity-dedicated-to-the-dead-00054"
           },
           {
             "art": "classroom",
-            "caption": "우리 반 축제",
+            "caption": "모두가 웃는 교실 파티",
             "title": "안전하고 다정하게 마무리해요",
-            "body": "교실에서 꾸미고 인사하며 즐길 수도 있어요. 친구가 싫다는 장난은 멈추고, 쓰레기는 함께 치워요.",
-            "keyPoint": "즐거움은 모두가 편안할 때 더 커져요.",
-            "question": "우리 반에서 지킬 약속 하나를 말해 볼까요?",
+            "body": "🏫 교실 파티가 시작됐어요! 뭉치가 장난감 거미로 친구를 놀래키려 하자, 잭이 다정하게 말했어요. \"친구가 싫어하는 장난은 바로 멈추고, 사탕 껍질도 함께 주워 담으면 우리 반 모두가 행복한 축제가 돼!\"",
+            "keyPoint": "친구의 마음을 배려하고 함께 정리할 때 즐거움이 두 배가 돼요.",
+            "question": "우리 반 축제에서 꼭 지키고 싶은 다정한 약속은 무엇인가요?",
             "sourceText": "국민재난안전포털",
             "sourceUrl": "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
           }
@@ -2923,61 +2935,61 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         stories: [
           {
             "art": "pumpkin",
-            "caption": "여러 풍습이 만난 날",
+            "caption": "호박 탐정 잭의 시간 여행 수첩",
             "title": "할로윈의 이야기는 하나일까요?",
-            "body": "할로윈에는 옛 켈트 지역의 계절 풍습과 만성절 전야에 얽힌 이야기가 함께 전해져요. 지금은 지역마다 즐기는 방식도 달라요.",
-            "keyPoint": "한 가지 이야기로 기원을 단정하지 않아요.",
-            "question": "오래된 풍습이 오늘날 놀이로 바뀐 예가 있나요?",
+            "body": "🎃 호박 탐정 잭이 고대 지도를 펼쳤어요! \"많은 친구들이 할로윈이 단 하나의 사건에서 시작됐다고 생각하지만, 사실 옛 켈트족의 가을 끝 명절 '서우인(Samhain)'과 만성절 전야(All Hallows' Eve) 등 여러 시대의 풍습이 만나 오늘날처럼 다양한 문화가 되었단다!\"",
+            "keyPoint": "여러 시대의 풍습이 만났으므로 한 가지 기원으로만 단정하지 않아요.",
+            "question": "오래된 옛 풍습이 오늘날 즐거운 놀이로 바뀐 예는 무엇이 있을까요?",
             "sourceText": "미국 의회도서관",
             "sourceUrl": "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
           },
           {
             "art": "lantern",
-            "caption": "순무에서 호박으로",
-            "title": "등불 재료가 바뀐 까닭",
-            "body": "아일랜드에서는 순무에 얼굴을 새기기도 했어요. 사람들이 미국으로 이주하면서 조각하기 쉬운 호박이 널리 쓰이게 되었어요.",
-            "keyPoint": "사람이 이동하면 문화의 모습도 변해요.",
-            "question": "재료가 달라져도 이어진 것은 무엇일까요?",
+            "caption": "순무 조각칼과 주황색 호박의 비밀",
+            "title": "등불 재료가 순무에서 호박으로 바뀐 까닭",
+            "body": "🕯️ \"아일랜드에서는 원래 단단한 '순무'나 감자 속을 파서 등불을 만들었어!\" 잭이 웃으며 말했어요. \"그런데 사람들이 대서양을 건너 미국으로 이주해 보니, 순무보다 훨씬 크고 속을 파기 쉬운 주황색 호박이 가득했던 거야!\"",
+            "keyPoint": "사람들이 이동하고 사는 환경이 달라지면 문화의 재료와 모습도 변해요.",
+            "question": "순무에서 호박으로 재료가 달라져도 변하지 않고 이어진 것은 무엇일까요?",
             "sourceText": "스미스소니언",
             "sourceUrl": "https://gardens.si.edu/american-garden-story/ghosts-of-pumpkins-past/"
           },
           {
             "art": "neighbor",
-            "caption": "함께 정하는 놀이",
-            "title": "간식을 나누는 방법도 다양해요",
-            "body": "이웃을 방문하는 지역도 있고, 학교나 어른이 마련한 장소에서 즐기는 지역도 있어요. 참여하기 전에는 보호자와 장소·시간을 정해요.",
-            "keyPoint": "낯선 곳을 혼자 찾아가는 놀이는 하지 않아요.",
-            "question": "행사 전에 어른과 어떤 두 가지를 확인할까요?",
+            "caption": "사탕 바구니 vs 오렌지 모금 상자",
+            "title": "간식을 나누는 방법도 지역마다 다양해요",
+            "body": "🍬 뭉치가 \"할로윈엔 무조건 모르는 집 문을 두드리는 거지?\"라고 묻자, 안전 대원 별이가 고개를 저었어요. \"아니야! 학교·마을 회관 행사로 즐기는 곳도 많고, 간식 대신 유니세프 모금 상자를 들고 이웃을 돕기도 해. 어디든 어른과 장소·시간부터 약속해야 해!\"",
+            "keyPoint": "낯선 곳을 혼자 찾아가지 않고 보호자와 방문 장소·시간을 먼저 정해요.",
+            "question": "행사나 모임에 참여하기 전에 어른과 꼭 약속할 두 가지는 무엇일까요?",
             "sourceText": "UNICEF USA",
             "sourceUrl": "https://www.unicefusa.org/trick-or-treat/groups"
           },
           {
             "art": "path",
-            "caption": "축제장에 도착하면",
-            "title": "길과 출구를 먼저 살펴요",
-            "body": "축제장에 들어가기 전에는 혼잡한 곳과 이동로를 확인해요. 사람이 몰리기 시작하면 사진보다 안전한 길을 먼저 생각해요.",
-            "keyPoint": "들어가기 전에 나갈 길도 확인해요.",
-            "question": "입구는 넓지만 안쪽 길이 좁다면 어떻게 할까요?",
+            "caption": "별이의 축제장 안전 레이더",
+            "title": "길과 비상 출구를 먼저 살펴요",
+            "body": "🗺️ 축제 거리 입구에 도착하자 뭉치는 포토존으로 달려가려 했지만, 별이는 멈춰 서서 초록색 비상구 표지판과 넓은 우회 통로부터 손가락으로 짚어 보았어요. \"사람이 갑자기 몰릴 땐 사진보다 빠져나갈 넓은 길을 미리 알아 두는 게 진짜 탐정의 비결이야!\"",
+            "keyPoint": "행사장에 들어가기 전에 주변 이동로와 나갈 수 있는 출구부터 확인해요.",
+            "question": "입구는 넓어 보이지만 안쪽 골목길이 좁다면 어떻게 행동해야 할까요?",
             "sourceText": "국민재난안전포털",
             "sourceUrl": "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
           },
           {
             "art": "flower",
-            "caption": "비슷한 날짜, 다른 뜻",
-            "title": "죽은 자들의 날과 비교해요",
-            "body": "멕시코의 죽은 자들의 날은 세상을 떠난 가족을 기리는 전통이에요. 할로윈과 날짜가 가깝다는 이유로 같은 축제라고 부르지 않아요.",
-            "keyPoint": "이름·뜻·방식을 따로 살펴보아요.",
-            "question": "두 문화를 비교할 때 먼저 확인할 것은 무엇일까요?",
+            "caption": "금잔화 꽃길과 가족의 기억",
+            "title": "멕시코의 죽은 자들의 날과 비교해요",
+            "body": "🌼 \"해골 장식이 있으니까 할로윈이랑 똑같은 축제지?\" 뭉치의 말에 잭이 멕시코 금잔화 꽃잎을 보여 주었어요. \"천만에! 멕시코의 '죽은 자들의 날'은 세상을 떠난 가족을 사랑으로 기억하고 맞이하는 유네스코 인류무형문화유산이야. 날짜가 가깝다고 같은 축제라고 부르면 안 돼!\"",
+            "keyPoint": "비슷한 시기에 열려도 각 문화의 고유한 이름·뜻·방식을 따로 존중해요.",
+            "question": "서로 다른 두 문화를 비교할 때 가장 먼저 확인해야 할 것은 무엇일까요?",
             "sourceText": "유네스코",
             "sourceUrl": "https://ich.unesco.org/en/RL/dia-de-muertos-the-indigenous-festivity-dedicated-to-the-dead-00054"
           },
           {
             "art": "classroom",
-            "caption": "함께 만드는 축제",
-            "title": "우리 반의 안전 계획을 세워요",
-            "body": "교실에서도 분장과 만들기를 즐길 수 있어요. 이동하는 길은 비워 두고, 싫어하는 장난은 하지 않으며, 끝나면 함께 정리해요.",
-            "keyPoint": "재미와 배려를 함께 계획해요.",
-            "question": "우리 반 축제 규칙을 한 문장으로 써 볼까요?",
+            "caption": "우리 반 안전 탐정단의 약속",
+            "title": "우리 반의 안전하고 다정한 계획을 세워요",
+            "body": "🏫 교실에서도 호박등 꾸미기와 퀴즈로 멋진 가을 축제를 열 수 있어요! 별이가 칠판에 세 가지 황금 규칙을 적었어요. \"첫째, 책상 사이 이동 통로 비워 두기! 둘째, 친구가 싫어하는 무서운 장난 멈추기! 셋째, 끝난 뒤 내 자리 함께 정리하기!\"",
+            "keyPoint": "재미있는 놀이에 안전한 동선과 친구 배려가 더해질 때 완벽한 축제가 돼요.",
+            "question": "우리 반 축제를 모두가 기분 좋게 즐기기 위한 규칙을 골라 볼까요?",
             "sourceText": "국민재난안전포털",
             "sourceUrl": "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
           }
@@ -3095,61 +3107,61 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         stories: [
           {
             "art": "pumpkin",
-            "caption": "역사를 읽는 눈",
+            "caption": "역사 탐정 잭의 사료 검증",
             "title": "할로윈은 어떻게 형성됐을까요?",
-            "body": "켈트 지역의 서우인 풍습과 만성절 전야를 비롯한 여러 역사적 요소가 오늘날 할로윈 설명에 등장합니다. 각 풍습의 관계를 단순한 한 줄의 기원으로 단정하지 않습니다.",
-            "keyPoint": "문화의 역사는 여러 자료를 함께 읽어야 합니다.",
-            "question": "기원에 관한 설명이 서로 다르면 무엇을 확인해야 할까요?",
+            "body": "🎃 역사 탐정 잭이 미국 의회도서관 자료를 펼쳤습니다. \"고대 켈트 지역의 수확·계절 풍습(서우인)과 중세 만성절 전야(All Hallows' Eve) 등 여러 역사적 층위가 겹쳐 오늘날의 할로윈이 형성되었어. 따라서 단 하나의 기원으로 단순화하지 않고 여러 사료를 교차 확인하는 태도가 필요해!\"",
+            "keyPoint": "문화의 역사는 복합적이므로 출처가 분명한 여러 자료를 함께 읽어야 합니다.",
+            "question": "기원에 관한 설명이 자료마다 서로 다를 때 무엇을 확인해야 할까요?",
             "sourceText": "미국 의회도서관",
             "sourceUrl": "https://blogs.loc.gov/headlinesandheroes/2021/10/the-origins-of-halloween-traditions/"
           },
           {
             "art": "lantern",
-            "caption": "이주와 변화",
+            "caption": "대서양을 건넌 등불의 문화사",
             "title": "순무 등불이 호박 등불이 되다",
-            "body": "아일랜드의 순무 조각 풍습은 이주와 함께 북미로 전해졌고 호박 장식으로 변했습니다. 같은 상징도 재료와 환경에 따라 달라질 수 있습니다.",
-            "keyPoint": "문화는 이동하며 변화합니다.",
-            "question": "재료의 변화가 문화 전체의 변화와 어떻게 연결될까요?",
+            "body": "🕯️ 19세기 아일랜드와 스코틀랜드에서는 순무나 사탕무를 파서 등불을 만들었습니다. 이후 북미 대륙으로 이주한 사람들이 현지의 풍부하고 조각하기 쉬운 원산 작물인 '호박'을 활용하면서 오늘날의 잭오랜턴이 자리 잡았습니다.",
+            "keyPoint": "문화는 사람들의 이주와 자연·생태 환경에 맞추어 끊임없이 변화합니다.",
+            "question": "재료의 변화가 문화의 전파·적응 과정과 어떻게 연결될까요?",
             "sourceText": "스미스소니언",
             "sourceUrl": "https://gardens.si.edu/american-garden-story/ghosts-of-pumpkins-past/"
           },
           {
             "art": "neighbor",
-            "caption": "참여와 선택",
+            "caption": "자율성과 공동체 배려",
             "title": "축제 방식은 누가 정할까요?",
-            "body": "지역마다 이웃 방문, 학교 행사, 모금 활동처럼 참여 방식이 다릅니다. 참여하지 않을 자유도 존중하고, 참여한다면 장소와 동행할 어른을 먼저 정합니다.",
-            "keyPoint": "모든 사람이 같은 방식으로 즐길 필요는 없습니다.",
-            "question": "친구가 참여하고 싶지 않다면 어떻게 배려할까요?",
+            "body": "🤝 지역과 공동체에 따라 이웃 방문, 학교 문화 행사, 구호 모금(Trick-or-Treat for UNICEF), 혹은 조용한 가족 모임 등 선택지가 다양합니다. 안전 대원 별이는 강조합니다. \"즐기는 방식의 다양성만큼이나 '참여하지 않을 자유'도 온전히 존중받아야 해!\"",
+            "keyPoint": "참여 방식의 다양성과 참여하지 않을 선택권을 모두 존중합니다.",
+            "question": "친구가 분장이나 행사 참여를 원하지 않는다면 어떻게 배려할까요?",
             "sourceText": "UNICEF USA",
             "sourceUrl": "https://www.unicefusa.org/trick-or-treat/groups"
           },
           {
             "art": "path",
-            "caption": "위험 신호 읽기",
+            "caption": "병목 구간과 군중 유체 역학",
             "title": "좁은 길에서 걸음이 느려진다면",
-            "body": "사람과 자꾸 몸이 닿고 보행 속도가 떨어지면 혼잡 신호입니다. 이동 흐름을 살피며 벗어나고, 떠밀릴 때는 무리하게 역행하지 않습니다.",
-            "keyPoint": "혼잡을 일찍 알아차리는 판단이 중요합니다.",
-            "question": "출구로 가는 길이 더 붐빈다면 어떤 경로를 찾을까요?",
+            "body": "↗️ 넓은 광장에서 좁은 골목으로 인파가 몰리는 '병목 구간'에서는 보행 속도가 급격히 줄고 어깨 접촉이 잦아집니다. 이때 정면으로 역행하려 힘을 쓰면 위험하므로, 초기 신호를 읽고 흐름에 맞춰 대각선 가장자리나 대체 출구로 빠져나와야 합니다.",
+            "keyPoint": "밀집 초기 신호(속도 저하·신체 접촉)를 일찍 읽고 우회 동선을 선택합니다.",
+            "question": "주 출구로 가는 길이 더 붐빈다면 어떤 경로를 선택해야 할까요?",
             "sourceText": "국민재난안전포털",
             "sourceUrl": "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
           },
           {
             "art": "flower",
-            "caption": "문화의 맥락",
+            "caption": "문화 상대주의와 고유한 맥락",
             "title": "날짜가 비슷해도 같은 축제일까요?",
-            "body": "멕시코의 죽은 자들의 날에는 세상을 떠난 가족을 기억하는 고유한 전통이 있습니다. 할로윈이나 한국의 추석과 닮은 점을 찾더라도 각각의 역사와 의미를 먼저 설명해야 합니다.",
-            "keyPoint": "비교는 차이를 지우는 일이 아닙니다.",
-            "question": "다른 문화를 소개할 때 피해야 할 단정은 무엇일까요?",
+            "body": "🌼 멕시코의 '죽은 자들의 날(Día de los Muertos)'은 세상을 떠난 가족을 기리고 공동체의 유대를 확인하는 유네스코 인류무형문화유산입니다. 할로윈이나 한국의 추석과 시기·모습 일부가 닮아 보여도 각 문화가 형성된 역사적 맥락과 고유한 의미를 먼저 존중해야 합니다.",
+            "keyPoint": "문화 비교는 겉모습으로 단정하지 않고 고유한 맥락과 차이를 이해하는 과정입니다.",
+            "question": "다른 나라의 문화를 소개할 때 반드시 피해야 할 단정은 무엇일까요?",
             "sourceText": "유네스코",
             "sourceUrl": "https://ich.unesco.org/en/RL/dia-de-muertos-the-indigenous-festivity-dedicated-to-the-dead-00054"
           },
           {
             "art": "classroom",
-            "caption": "기획자의 관점",
+            "caption": "모두를 위한 안전 설계자",
             "title": "우리 반 축제를 다시 설계한다면",
-            "body": "이동로, 참여 선택권, 쓰레기 정리, 싫은 장난을 멈출 규칙을 함께 정해 봅니다. 안전 대책이 있으면 어떤 학생도 소외되지 않는 축제를 만들 수 있습니다.",
-            "keyPoint": "즐거움과 안전은 함께 설계할 수 있습니다.",
-            "question": "우리 반 행사 안내문에 넣을 규칙 두 가지는 무엇일까요?",
+            "body": "🏫 진정한 축제는 '얼마나 화려한가'보다 '누구도 다치거나 소외되지 않는가'로 완성됩니다. 병목 없는 교실 이동 통로 확보, 참여 선택권 보장, 싫은 장난 즉시 멈추기, 공동 정리 약속을 사전 설계할 때 모두가 안전한 행사가 됩니다.",
+            "keyPoint": "즐거움과 안전, 배려는 행사 기획 단계에서 함께 설계할 수 있습니다.",
+            "question": "우리 반 행사 안내문에 최우선으로 넣을 핵심 규칙 두 가지는 무엇일까요?",
             "sourceText": "국민재난안전포털",
             "sourceUrl": "https://old.safekorea.go.kr/idsiSFK/neo/main_m/sot/massCrowd.html"
           }
@@ -3269,17 +3281,20 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         stage: "약속 1 · 방문 전 & 도착 직후",
         emoji: "🗺️",
         title: "축제 거리에 도착했어요! 제일 먼저 무엇을 확인할까요?",
-        desc: "신나는 구경을 시작하기 전에, 혹시 사람이 많아질 때를 대비해 꼭 먼저 눈으로 찾아두어야 하는 곳이 있어요.",
+        desc: "입구에 도착하자 친구 뭉치가 손을 잡아끌어요! \"저기 좁은 골목 안쪽에서 선착순 50명에게 반짝이 호박 풍선을 준대! 출구는 이따 보고 지금 바로 뛰어가자!\"",
+        scienceTip: "🔬 안전 과학 노트: 입구는 넓어도 안쪽이 좁아지는 '병목 구간'은 단 몇 분 만에 빠져나오기 힘들어지므로 들어가기 전에 비상구와 우회 통로, 집결 장소를 먼저 확인해야 해요.",
         choices: [
           {
-            text: "빠져나갈 수 있는 넓은 길과 비상 대피로(출구) 위치를 먼저 확인해요.",
+            text: "풍선보다 먼저 빠져나갈 수 있는 넓은 이동로와 비상 대피로(출구)·집결 장소를 눈으로 확인해요.",
             correct: true,
-            feedback: "딩동댕! 도착하자마자 비상 이동로와 넓은 출구를 미리 확인해 두면 위급할 때 빠르게 대피할 수 있어요."
+            feedback: "딩동댕! 도착하자마자 비상 이동로와 넓은 출구를 미리 확인해 두면 위급할 때 당황하지 않고 대피할 수 있어요.",
+            aftermath: "🎬 [1분 뒤 웹툰 후일담] 별이와 함께 초록색 비상구 표지판과 넓은 공원 출구를 먼저 확인했어요! 잠시 뒤 좁은 골목이 꽉 막혔지만 우리는 여유 있는 옆길로 안전하게 구경을 시작했답니다!"
           },
           {
-            text: "사람이 제일 빽빽하게 모여 있는 좁은 골목으로 무조건 달려가요.",
+            text: "선착순 풍선이 다 떨어지기 전에 사람이 빽빽하게 몰린 좁은 골목 안쪽으로 먼저 달려가요.",
             correct: false,
-            feedback: "위험해요! 좁은 골목이나 가파른 비탈길에 사람이 많이 몰린 곳은 사고 위험이 높으니 피해야 해요."
+            feedback: "아찔해요! 출구도 모른 채 좁은 골목이나 비탈길 인파 속으로 달려들어가면 오도 가도 못 하는 위험에 빠질 수 있어요.",
+            aftermath: "🎬 [1분 뒤 아찔 상황] 풍선을 받으려 좁은 골목 끝까지 뛰어갔다가 뒤에서 밀려드는 사람들에 막혀 20분 동안 옴짝달싹 못 하고 진땀을 뺐어요!"
           }
         ]
       },
@@ -3287,17 +3302,20 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         stage: "약속 2 · 길을 걸을 때",
         emoji: "🚶‍♂️",
         title: "양방향으로 사람이 많이 걷는 길에서는 어떻게 걸을까요?",
-        desc: "앞뒤에서 많은 사람들이 걸어오고 있어요. 서로 부딪히지 않고 원활하게 이동하려면 어떻게 걸어야 할까요?",
+        desc: "앞뒤에서 많은 사람들이 걸어오는데 멋진 퍼레이드 행렬이 지나가요! 뭉치가 외쳤어요. \"우와, 지금 바로 길 한가운데 멈춰 서서 단체 셀카 찍자!\"",
+        scienceTip: "🔬 안전 과학 노트: 많은 사람이 걷는 길에서 한 사람이 갑자기 멈추면 뒤따라오던 사람들의 시야가 가려져 3초 만에 연쇄 추돌(도미노 현상)이 일어날 수 있어요.",
         choices: [
           {
-            text: "오른쪽(우측통행)으로 차근차근 걷고, 갑자기 멈추거나 방향을 바꾸지 않아요.",
+            text: "오른쪽(우측통행) 흐름에 맞춰 차근차근 걷고, 사진은 길가 안전한 쉼터로 빠져나온 뒤에 찍어요.",
             correct: true,
-            feedback: "맞아요! 양방향 통행 시 오른쪽으로 걷고, 앞뒤 흐름을 살피며 걸어야 넘어지지 않고 안전해요."
+            feedback: "맞아요! 양방향 통행 시 오른쪽으로 걷고, 멈춰야 할 때는 먼저 통로 가장자리 안전한 곳으로 이동해야 해요.",
+            aftermath: "🎬 [1분 뒤 웹툰 후일담] 오른쪽 흐름을 따라 걸어 넓은 벤치 쉼터로 나온 뒤 사진을 찍었어요! 지나가던 사람들과 부딪히지 않고 훨씬 멋진 인생 사진을 건졌답니다!"
           },
           {
-            text: "길 한가운데 갑자기 멈춰 서서 사진을 찍거나 반대 방향으로 밀치며 달려요.",
+            text: "멋진 장면을 놓칠 수 없으니 걷고 있는 사람들 한가운데 갑자기 멈춰 서서 사진을 찍어요.",
             correct: false,
-            feedback: "위험해요! 많은 사람이 걷는 길에서 갑자기 멈추면 뒤따라오던 사람들이 연달아 넘어질 수 있어요."
+            feedback: "위험해요! 보행 흐름 한가운데서 갑자기 멈추거나 반대 방향으로 비집고 들어가면 뒤따라오던 사람들이 연달아 넘어질 수 있어요.",
+            aftermath: "🎬 [1분 뒤 아찔 상황] 길 한가운데서 갑자기 멈추는 바람에 바로 뒤에서 걷던 친구들이 부딪혀 넘어질 뻔하고 휴대폰도 떨어뜨릴 뻔했어요!"
           }
         ]
       },
@@ -3305,17 +3323,20 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         stage: "약속 3 · 위험 신호 감지",
         emoji: "↗️",
         title: "옆 사람과 자꾸 어깨가 부딪히고 걸음이 느려지기 시작했어요!",
-        desc: "점점 사람이 많아져서 내 몸이 다른 사람과 닿기 시작했어요. 인파 사고를 막기 위한 행동은 무엇일까요?",
+        desc: "인기 부스 앞을 지나는데 점점 사람이 불어나 옆 사람과 어깨가 계속 부딪혀요. 뭉치는 \"기다린 시간이 아까운데 조금만 더 안쪽으로 비집고 들어가자!\"고 해요.",
+        scienceTip: "🔬 안전 과학 노트: 1㎡(가로·세로 1m) 안에 5명 이상 모이면 내 힘으로 방향을 바꾸기 어려워져요. 어깨가 자꾸 닿고 속도가 느려지는 순간이 바로 탈출 골든타임이에요!",
         choices: [
           {
-            text: "위험 신호이므로 사람들의 이동 흐름에 맞춰 대각선 방향 넓은 곳으로 즉시 빠져나와요.",
+            text: "혼잡 위험 신호이므로 인파의 이동 흐름에 맞춰 대각선 방향 가장자리나 넓은 곳으로 즉시 빠져나와요.",
             correct: true,
-            feedback: "정확해요! 신체 접촉이 시작되면 흐름을 거스르지 말고 대각선 방향 가장자리나 넓은 곳으로 바로 벗어나야 해요."
+            feedback: "정확해요! 신체 접촉이 시작되면 흐름을 정면으로 거스르지 말고 대각선 방향 가장자리 넓은 곳으로 바로 벗어나야 해요.",
+            aftermath: "🎬 [1분 뒤 웹툰 후일담] 물결을 타듯 대각선 방향(↗️)으로 한 걸음씩 움직여 1분 만에 넓은 광장 가장자리로 빠져나왔어요! 뭉치도 \"휴, 빠져나오길 정말 잘했다!\"며 가슴을 쓸어내렸어요."
           },
           {
-            text: "사람들이 걸어오는 정반대 방향으로 억지로 몸을 돌려 세게 밀쳐요.",
+            text: "기다린 시간이 아까우니 더 좁은 중심부로 파고들거나 걸어오는 반대 방향으로 억지로 밀치며 나가요.",
             correct: false,
-            feedback: "위험해요! 인파의 흐름을 정면으로 거슬러 역행하면 더 큰 압력을 받아 넘어지기 쉬워요."
+            feedback: "위험해요! 인파의 흐름을 정면으로 거슬러 역행하거나 더 좁은 곳으로 들어가면 큰 압력을 받아 넘어지기 쉬워요.",
+            aftermath: "🎬 [1분 뒤 아찔 상황] 반대 방향으로 억지로 몸을 돌려 밀치려다 양쪽에서 밀려오는 힘에 균형을 잃어 더 위험한 상황에 놓일 뻔했어요!"
           }
         ]
       },
@@ -3323,35 +3344,41 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         stage: "약속 4 · 숨 쉴 공간 확보",
         emoji: "🛡️",
         title: "사람들에게 떠밀릴 때 내 가슴(숨 쉴 공간)을 지키는 자세는?",
-        desc: "사람이 너무 많아 내 의지와 상관없이 밀리고 있을 때, 답답하지 않게 숨 쉴 공간을 확보해야 해요!",
+        desc: "갑자기 뒤쪽에서 관람객이 몰려 내 의지와 상관없이 몸이 떠밀리기 시작했어요! 답답하지 않게 내 폐가 숨 쉴 공간을 어떻게 지켜야 할까요?",
+        scienceTip: "🔬 안전 과학 노트: 우리가 숨을 쉴 때는 갈비뼈(흉강)가 앞으로 약 3~5cm 부풀어 올라야 해요. 팔짱을 끼거나 가방을 가슴 앞에 안으면 소중한 호흡 공간이 지켜져요!",
         choices: [
           {
-            text: "두 손을 가슴 앞으로 모으거나 팔짱을 끼고(또는 가방을 가슴 앞에 안아) 공간을 확보해요.",
+            text: "무리하게 맞서 밀치지 않고, 권투 선수처럼 두 손을 가슴 앞으로 모으거나 팔짱(가방 안기)을 껴 공간을 확보해요.",
             correct: true,
-            feedback: "최고예요! 권투 선수처럼 두 손을 가슴 앞에 모으거나 팔짱을 끼면 폐가 숨을 쉴 수 있는 공간(흉강)을 지킬 수 있어요."
+            feedback: "최고예요! 두 손을 가슴 앞에 모으거나 가방을 가슴 앞에 안으면 압박 속에서도 폐가 숨을 쉴 수 있는 공간(흉강)을 지킬 수 있어요.",
+            aftermath: "🎬 [1분 뒤 웹툰 후일담] 가방을 가슴 앞에 든든하게 안고 두 발을 어깨너비로 벌려 중심을 잡았어요! 숨 쉴 공간을 지킨 채 흐름을 따라 무사히 넓은 곳으로 이동했답니다!"
           },
           {
-            text: "양팔을 차렷 자세로 몸에 붙이거나 두 손을 머리 위로 높이 들어요.",
+            text: "양팔을 차렷 자세로 옆구리에 딱 붙이거나, 앞사람의 등을 두 손으로 세게 밀어내요.",
             correct: false,
-            feedback: "위험해요! 팔을 내려놓으면 가슴이 압박되어 숨쉬기 어려워질 수 있어요. 꼭 가슴 앞 공간을 지켜 주세요."
+            feedback: "위험해요! 팔을 내려놓으면 가슴이 바로 압박되어 숨쉬기 힘들어지고, 앞사람을 밀치면 연쇄 넘어짐이 일어날 수 있어요.",
+            aftermath: "🎬 [1분 뒤 아찔 상황] 양팔을 내린 채 앞사람을 밀치려다 가슴 앞 공간이 좁아져 숨이 가빠지고 발까지 엉킬 뻔했어요!"
           }
         ]
       },
       {
         stage: "약속 5 · 떨어진 물건 대처",
         emoji: "🙅",
-        title: "인파 속에서 걷다가 사탕 바구니나 신발이 바닥에 떨어졌어요!",
-        desc: "사람들이 계속 걸어오고 있는 복잡한 길에서 내 소지품이 발밑에 떨어졌을 때 어떻게 해야 할까요?",
+        title: "인파 속에서 걷다가 아끼는 키링이나 신발이 바닥에 떨어졌어요!",
+        desc: "사람들이 빽빽하게 걸어오고 있는데, 뭉치가 가장 아끼는 한정판 호박 키링과 신발 한 짝이 벗겨졌어요! \"내 보물이야! 1초만 숙여서 얼른 주워 줘!\"",
+        scienceTip: "🔬 안전 과학 노트: 빽빽한 인파 속에서 한 사람이 허리를 숙이면 시야에서 사라져 뒷사람이 걸려 넘어지고, 순식간에 여러 사람이 겹쳐 넘어지는 큰 사고로 이어져요.",
         choices: [
           {
-            text: "절대 허리를 숙여 줍지 않고, 물건을 포기한 채 안전한 곳으로 먼저 빠져나와요.",
+            text: "아깝더라도 인파 속에선 절대 허리를 숙여 줍지 않고, 친구 손을 잡고 안전한 가장자리로 먼저 빠져나와요.",
             correct: true,
-            feedback: "맞아요! 국민재난안전포털에서도 '소지품이 떨어졌다고 주우려고 허리를 숙이면 매우 위험하다'고 강조하고 있어요."
+            feedback: "맞아요! 국민재난안전포털에서도 '소지품이나 신발이 떨어졌다고 주우려고 허리를 숙이면 매우 위험하다'고 가장 강조하고 있어요.",
+            aftermath: "🎬 [1분 뒤 웹툰 후일담] 뭉치의 손을 꼭 잡고 먼저 안전 펜스 밖으로 빠져나왔어요! 인파가 지나간 뒤 안전요원 선생님께 말씀드려 키링도 안전하게 되찾았답니다!"
           },
           {
-            text: "아까운 물건을 주우려고 그 자리에서 즉시 허리를 숙여 바닥을 짚어요.",
+            text: "1초면 되니까 걸어오는 사람들의 발 사이로 그 자리에서 즉시 허리를 숙여 바닥을 짚어요.",
             correct: false,
-            feedback: "절대 안 돼요! 인파 속에서 허리를 숙이면 뒤따라오는 사람들에게 밟히거나 넘어져 큰 사고로 이어질 수 있어요."
+            feedback: "절대 안 돼요! 인파 속에서 허리를 숙이는 단 1~2초가 가장 위험해요. 어떤 비싼 물건보다 내 몸과 생명이 먼저예요!",
+            aftermath: "🎬 [1분 뒤 아찔 상황] 허리를 숙이는 순간 바로 뒤에서 걷던 사람들이 미처 보지 못해 부딪히면서 손등을 밟히고 넘어질 뻔했어요!"
           }
         ]
       },
@@ -3359,17 +3386,20 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         stage: "약속 6 · 넘어졌을 때 & 신고",
         emoji: "🚑",
         title: "위험이 느껴지거나 넘어져서 바로 일어날 수 없을 때는?",
-        desc: "위급한 상황을 발견했거나, 만약 넘어졌는데 즉시 일어나기 어려운 순간의 행동요령이에요.",
+        desc: "주변에서 위험 신호가 커지거나, 만약 인파 속에서 넘어졌는데 바로 일어나기 어려운 위급한 순간에는 어떻게 몸을 보호해야 할까요?",
+        scienceTip: "🔬 안전 과학 노트: 넘어졌을 때 무릎을 당겨 공처럼 몸을 둥글게 말면(태아 자세), 가장 중요한 머리·목·심장·폐가 팔과 다리 보호막 안쪽에 들어가 압박을 줄일 수 있어요.",
         choices: [
           {
-            text: "위험 시 112·119에 바로 신고하고, 넘어졌을 땐 머리를 두 팔로 감싸고 다리를 당겨 공처럼 둥글게 말아요.",
+            text: "위험 시 112·119에 즉시 알리고, 넘어졌을 땐 두 팔로 머리를 감싸고 다리를 당겨 공처럼 몸을 둥글게 말아요.",
             correct: true,
-            feedback: "적절한 몸 보호 행동이에요. 다른 상황도 새 질문으로 다시 확인해 보세요."
+            feedback: "정확한 위기 대처 행동이에요! 머리와 가슴(장기)을 보호하는 자세를 기억하고 다른 상황도 새 질문으로 확인해 보세요.",
+            aftermath: "🎬 [1분 뒤 웹툰 후일담] 침착하게 몸을 보호하고 주변 어른과 119 안전요원에게 도움을 요청해 모두가 무사히 안전 구역으로 대피했어요!"
           },
           {
-            text: "팔다리를 길게 뻗고 누워 있거나 장난으로 119에 거짓 신고를 해요.",
+            text: "넘어진 자리에서 떨어진 가방부터 찾으려고 팔다리를 길게 뻗어 바닥을 더듬어요.",
             correct: false,
-            feedback: "넘어졌을 땐 머리와 가슴(장기)을 보호하기 위해 공처럼 둥글게 몸을 말아야 하며, 장난 신고는 절대 금물이에요!"
+            feedback: "위험해요! 팔다리를 길게 뻗거나 물건을 찾으려 하면 머리와 가슴이 보호되지 않아 크게 다칠 수 있어요!",
+            aftermath: "🎬 [1분 뒤 아찔 상황] 가방을 찾으려고 팔을 뻗는 동안 머리와 가슴이 그대로 노출되어 주변 사람들의 발에 부딪힐 뻔했어요!"
           }
         ]
       }
@@ -3383,6 +3413,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         name: "경찰관 제복과 수갑",
         checkPoint: "🚨 제복 오인 방지",
         safe: false,
+        story: "💬 민수의 고민: \"진짜 경찰관 아저씨랑 똑같은 제복에 수갑까지 차고 축제 거리에 나가면 다들 깜짝 놀라겠지?\"",
+        afterLook: "🕵️✨ 변신 완료: 체크무늬 동화 속 명탐정 망토 & 돋보기",
         reason: "실제 경찰관과 혼동될 수 있는 제복·장비는 피하고, 법률의 조건과 예외는 선생님과 확인해요.",
         reform: "✂️ 이렇게 바꿔 입어요: 실제 경찰 제복 대신 동화 속 명탐정 망토나 별빛 보안관 모자로 꾸며요!"
       },
@@ -3392,6 +3424,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         name: "주황색 호박 망토",
         checkPoint: "👟 보행·움직임 안전",
         safe: true,
+        story: "💬 지우의 코디: \"무릎 위로 오는 가벼운 주황색 호박 망토에 운동화를 신었더니 계단 오르내리기도 정말 편해!\"",
+        afterLook: "🎃🌟 안전 패스: 야광 별 배지를 단 무릎 길이 호박 망토",
         reason: "걷기도 편하고 친구들과 기분 좋게 즐길 수 있는 안전한 할로윈 옷이에요!",
         reform: "✨ 이렇게 입으면 더 안전해요: 망토 길이를 무릎 위로 맞추고 똑딱단추로 고정하면 계단에서도 걸리지 않아요!"
       },
@@ -3401,6 +3435,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         name: "소방관 출동복과 헬멧",
         checkPoint: "🚨 구조대 혼동 방지",
         safe: false,
+        story: "💬 현우의 고민: \"실제 119 대원님들이 입는 방화복이랑 똑같은 옷을 입으면 영웅처럼 보이지 않을까?\"",
+        afterLook: "🦸🧡 변신 완료: 주황빛 호박 슈퍼히어로 조끼",
         reason: "실제 소방관과 혼동될 수 있는 출동복은 행사 분장으로 피하는 것이 좋아요. 경찰제복장비법이나 군복단속법이 똑같이 적용되는 것은 아니에요.",
         reform: "✂️ 이렇게 바꿔 입어요: 실제 출동복은 소방관님께 양보하고 주황색 호박 영웅 조끼로 바꿔 입어요!"
       },
@@ -3410,6 +3446,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         name: "별 무늬 마법사 옷",
         checkPoint: "👀 시야 확보",
         safe: true,
+        story: "💬 서연이의 코디: \"반짝이는 별 무늬 마법사 옷에 챙이 짧은 고깔모자를 썼더니 앞도 시원하게 잘 보여!\"",
+        afterLook: "🧙‍♀️⭐ 안전 패스: 반짝이는 별빛 마법사 로브",
         reason: "동화 속 주인공처럼 재미있고 안전하게 즐길 수 있는 멋진 분장이에요!",
         reform: "✨ 이렇게 입으면 더 안전해요: 모자 챙이 눈을 가리지 않게 살짝 올려 쓰고 가벼운 천 소재를 골라요!"
       },
@@ -3419,6 +3457,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         name: "뾰족한 장난감 칼·총",
         checkPoint: "🛡️ 소품 부상 방지",
         safe: false,
+        story: "💬 도윤이의 고민: \"멋진 기사가 되려고 길고 딱딱한 플라스틱 칼을 휘두르며 복도를 걸어가 볼까 해!\"",
+        afterLook: "🪄🎃 변신 완료: 폭신한 솜방울 별 요술봉 & 호박 바구니",
         reason: "사람이 많은 곳에서 뾰족하고 딱딱한 소품을 들면 옆 친구가 다칠 수 있어요!",
         reform: "✂️ 이렇게 바꿔 입어요: 딱딱한 무기 소품 대신 폭신한 솜방울 요술봉이나 둥근 호박 바구니를 들어요!"
       },
@@ -3428,6 +3468,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         name: "실제 군인 전투복",
         checkPoint: "🚨 제복 규정 확인",
         safe: false,
+        story: "💬 태오의 고민: \"삼촌 옷장에 있던 진짜 군인 전투복과 장구를 그대로 착용하고 행사장에 가도 될까?\"",
+        afterLook: "🧑‍🚀🌌 변신 완료: 은하계 우주 탐험가 점프슈트",
         reason: "실제 군복·군용장구는 별도 규정이 있어요. 단순한 무늬 옷까지 똑같이 판단하지 말고 선생님과 확인해요.",
         reform: "✂️ 이렇게 바꿔 입어요: 실제 전투복 대신 우주 탐험가 복장이나 숲속 요정 망토로 멋지게 변신해요!"
       },
@@ -3437,6 +3479,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         name: "피 묻은 무서운 분장",
         checkPoint: "🤝 친구 배려·응급 구분",
         safe: false,
+        story: "💬 수아의 고민: \"진짜 다친 것처럼 빨간 물감과 무서운 상처 스티커를 잔뜩 붙여서 친구들을 깜짝 놀래킬래!\"",
+        afterLook: "🎨🌙 변신 완료: 야광 달빛·호박 페이스 페인팅 스티커",
         reason: "친구가 놀라고, 실제 다친 응급 환자가 생겼을 때 분장으로 오해받을 수 있어요!",
         reform: "✂️ 이렇게 바꿔 입어요: 무서운 상처 분장 대신 반짝이는 별·달·호박 페이스 스티커를 붙여요!"
       },
@@ -3446,6 +3490,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         name: "야광 스티커 붙인 옷",
         checkPoint: "🌙 야간 시인성 확보",
         safe: true,
+        story: "💬 하은이의 코디: \"어두운 저녁 길에서도 멀리서 나를 한눈에 볼 수 있게 소매와 가방에 야광 별 스티커를 붙였어!\"",
+        afterLook: "🧚✨ 안전 패스: 360도 반짝이는 야광 별빛 요정 코디",
         reason: "눈에 잘 띄는 꾸미기는 좋지만, 밤길에서는 어른의 안내와 주변 이동로를 계속 살펴요.",
         reform: "✨ 이렇게 입으면 더 안전해요: 가방·소매·운동화 뒤쪽에 야광 반사띠를 붙이면 어두운 곳에서도 잘 보여요!"
       },
@@ -3455,6 +3501,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         name: "앞이 안 보이는 가면",
         checkPoint: "👀 시야 가림 주의",
         safe: false,
+        story: "💬 준호의 고민: \"얼굴 전체를 다 덮는 유령 가면을 썼더니 눈구멍이 작아서 발밑 계단이 잘 안 보여!\"",
+        afterLook: "👑🐱 변신 완료: 시야가 활짝 트인 야광 호박 왕관 머리띠",
         reason: "눈구멍이 좁아 앞이 잘 안 보이는 가면을 쓰면 계단이나 길에서 넘어지기 쉬워요!",
         reform: "✂️ 이렇게 바꿔 입어요: 얼굴 전체를 덮는 가면 대신 시야가 활짝 트인 귀여운 머리띠나 모자를 써요!"
       },
@@ -3464,6 +3512,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         name: "바닥에 끌리는 긴 망토",
         checkPoint: "👟 걸림·넘어짐 주의",
         safe: false,
+        story: "💬 시우의 고민: \"발목 밑으로 길게 끌리는 드라큘라 망토를 입었더니 걸을 때마다 뒷사람 발에 자꾸 밟혀!\"",
+        afterLook: "🦇✨ 변신 완료: 활동하기 편한 무릎 위 숏 망토 & 날개 배지",
         reason: "옷자락이 너무 길어 발에 걸리면 다른 사람과 엉켜 넘어질 위험이 커요!",
         reform: "✂️ 이렇게 바꿔 입어요: 발목에 걸리지 않게 허리·무릎 길이의 짧은 망토나 날개 장식으로 바꿔 입어요!"
       },
@@ -3473,6 +3523,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         name: "119 구급대원 조끼",
         checkPoint: "🚨 응급 구조 보호",
         safe: false,
+        story: "💬 예린이의 고민: \"진짜 119 구급대원 조끼와 응급 가방을 메고 가면 사람들이 진짜 구급대원인 줄 알겠지?\"",
+        afterLook: "🧚‍♀️🌈 변신 완료: 무지개 마음 치유 요정 망토",
         reason: "응급 현장에서 진짜 구급대원과 혼동을 주어 구조 활동을 방해할 수 있어요!",
         reform: "✂️ 이렇게 바꿔 입어요: 실제 구급 조끼 대신 동화 속 마음 치유 요정이나 무지개 마법사로 꾸며요!"
       },
@@ -3482,6 +3534,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         name: "활동하기 편한 동화 옷",
         checkPoint: "👟 활동성·안전 최고",
         safe: true,
+        story: "💬 유진이의 코디: \"시야도 활짝 트여 있고 두 손이 자유로운 동화 속 주인공 옷에 편한 운동화를 신었어!\"",
+        afterLook: "🦸🌟 안전 패스: 두 손이 자유로운 슈퍼 탐험가 코디",
         reason: "시야가 트여 있고 움직이기 편해서 안전하고 즐겁게 축제를 즐길 수 있어요!",
         reform: "✨ 이렇게 입으면 더 안전해요: 발에 꼭 맞는 운동화를 신고 양손을 자유롭게 비워 두면 더욱 안전해요!"
       }
@@ -4372,6 +4426,43 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     };
     const storyPollPicked = {};
     const storyClueOpened = {};
+    const STORY_EXTRA_CLUES = [
+      [
+        "🕵️ 그림 속 비밀(2/3): 호박 꼭지가 초록색인 이유는 방금 밭에서 수확한 신선한 가을 작물이라는 뜻이에요!",
+        "🌟 탐정 특급 상식(3/3): 옛 켈트족 달력에서는 10월 31일이 한 해의 마지막 날이었고 11월 1일이 새해 첫날이었대요!"
+      ],
+      [
+        "🕵️ 그림 속 비밀(2/3): 호박 주변의 노란 원은 밤길을 안전하게 밝혀 주는 따뜻한 등불 빛을 뜻해요!",
+        "🌟 탐정 특급 상식(3/3): 아일랜드 박물관에는 지금도 100년 전에 만든 진짜 ‘순무 잭오랜턴’ 유물이 보관되어 있어요!"
+      ],
+      [
+        "🕵️ 그림 속 비밀(2/3): 두 집 사이에 그려진 하트 모양은 이웃끼리 서로 배려하고 안전을 지키는 마음을 나타내요!",
+        "🌟 탐정 특급 상식(3/3): 미국에서는 1950년부터 어린이들이 작은 주황색 모금함을 들고 전 세계 친구들을 돕는 나눔 활동도 이어오고 있어요!"
+      ],
+      [
+        "🕵️ 그림 속 비밀(2/3): 그림 오른쪽 초록색 화살표 표지판은 어느 건물에서나 출구를 뜻하는 국제 공통 비상구 기호예요!",
+        "🌟 탐정 특급 상식(3/3): 우리 눈은 어두운 곳에서 초록색 빛을 가장 잘 구별할 수 있어서 전 세계 비상구 표지판이 초록색이 되었어요!"
+      ],
+      [
+        "🕵️ 그림 속 비밀(2/3): 주황색 금잔화 꽃잎은 향기가 아주 진해서 가족들이 집을 잘 찾아오도록 꽃길을 만드는 데 쓰여요!",
+        "🌟 탐정 특급 상식(3/3): 유네스코는 2008년 멕시코의 ‘죽은 자들의 날’을 인류 전체가 소중히 보전할 무형문화유산으로 등재했어요!"
+      ],
+      [
+        "🕵️ 그림 속 비밀(2/3): 교실 칠판 옆이 넓게 비어 있는 이유는 친구들이 부딪히지 않고 안전하게 걸어 다니는 통로이기 때문이에요!",
+        "🌟 탐정 특급 상식(3/3): 우리 반 모두가 웃는 최고의 축제는 ‘재미있는 놀이 + 안전한 통로 + 다정한 배려’ 세 가지가 만날 때 완성돼요!"
+      ]
+    ];
+    function formatStoryClueText(storyIndex, level) {
+      const base = getStoryClues()[storyIndex] || "";
+      const extra = STORY_EXTRA_CLUES[storyIndex % STORY_EXTRA_CLUES.length] || [];
+      if (level <= 1) {
+        return `${base} (👆 그림을 한 번 더 누르면 숨은 단서 2/3단계가 열려요!)`;
+      }
+      if (level === 2) {
+        return `${base}\n${extra[0]} (👆 한 번 더 누르면 마지막 3/3단계 특급 상식이 열려요!)`;
+      }
+      return `${base}\n${extra[0]}\n${extra[1]}`;
+    }
     const festivalStamps = {};
     let currentFestivalKey = 'halloween';
 
@@ -4396,6 +4487,30 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     }
     function renderFestivalQuiz(key) {
       currentFestivalKey = key;
+      const detail = FESTIVAL_DETAILS[key];
+      const descEl = document.getElementById('festivalCompareDesc');
+      if (detail && descEl && descEl.parentElement) {
+        let passportEl = document.getElementById('festivalPassportGrid');
+        if (!passportEl) {
+          passportEl = document.createElement('div');
+          passportEl.id = 'festivalPassportGrid';
+          passportEl.className = 'grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1 text-xs';
+          descEl.insertAdjacentElement('afterend', passportEl);
+        }
+        passportEl.replaceChildren();
+        [
+          ['🍽️ 전통 음식', detail.food],
+          ['🕯️ 대표 상징물', detail.symbol],
+          ['🗣️ 나누는 인사', detail.greeting],
+          ['💡 문화 도감 비밀', detail.secret]
+        ].forEach(([label, text]) => {
+          if (!text) return;
+          const item = document.createElement('div');
+          item.className = 'rounded-lg bg-indigo-900/60 border border-indigo-700/70 px-2.5 py-1.5 leading-snug';
+          item.innerHTML = `<div class="font-extrabold text-amber-300 text-[11px]">${label}</div><div class="text-indigo-100 font-bold mt-0.5">${text}</div>`;
+          passportEl.appendChild(item);
+        });
+      }
       const qBox = document.getElementById('festivalQuizBox');
       const fBox = document.getElementById('festivalQuizFeedback');
       if (!qBox || !fBox) return;
@@ -4409,6 +4524,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         btn.textContent = `${idx === 0 ? '🅰️' : '🅱️'} ${optText}`;
         btn.addEventListener('click', () => {
           festivalStamps[key] = idx;
+          if (idx === quiz.correct) {
+            awardOnce(`festival:${key}`, 'stamp', 10, `${detail?.title || key} 문화 도감 확인`);
+          }
           playSound(idx === quiz.correct ? 'correct' : 'wrong');
           renderFestivalQuiz(key);
         });
@@ -4419,8 +4537,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         fBox.className = `text-xs font-bold mt-1 ${isRight ? 'text-emerald-300' : 'text-rose-300'}`;
         const stampTotal = Object.keys(FESTIVAL_QUIZZES).filter(k => festivalStamps[k] === FESTIVAL_QUIZZES[k].correct).length;
         fBox.textContent = isRight
-          ? `${quiz.feedback} (문화 스탬프 ${stampTotal}/3)`
-          : '❌ 설명을 다시 읽고 그 문화의 고유한 뜻을 골라 보세요!';
+          ? `${quiz.feedback} (문화 여권 스탬프 ${stampTotal}/3)`
+          : '❌ 문화 도감 설명을 다시 읽고 그 문화의 고유한 뜻을 골라 보세요!';
       } else {
         fBox.className = 'hidden text-xs font-bold';
         fBox.textContent = '';
@@ -4543,10 +4661,10 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const clueKey = storyKey(progress.storyIndex);
       const clueBox = document.getElementById("storyClueBox");
       if (clueBox) {
-        const isClueOpen = !!storyClueOpened[clueKey];
-        clueBox.classList.toggle("hidden", !isClueOpen);
-        clueBox.textContent = isClueOpen
-          ? getStoryClues()[progress.storyIndex]
+        const clueLevel = Number(storyClueOpened[clueKey] || 0);
+        clueBox.classList.toggle("hidden", clueLevel === 0);
+        clueBox.textContent = clueLevel > 0
+          ? formatStoryClueText(progress.storyIndex, clueLevel)
           : "👆 그림을 눌러 숨은 이야기 단서를 찾아보세요!";
       }
       document.getElementById("storySlideTag").textContent = `카드 ${progress.storyIndex + 1} / ${stories.length}${pairTurnSuffix(progress.storyIndex)}`;
@@ -4680,16 +4798,23 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const capEl = document.getElementById("pumpkinStatusCaption");
       const recipeEl = document.getElementById("pumpkinRecipeBox");
 
+      const LANTERN_SPELLS = {
+        "🎩": { role: "별빛 마법사 잭", spell: "✨ 안전 주문: \"초록 비상구 먼저 찾고, 좁은 길은 대각선으로!\"" },
+        "👑": { role: "꼬마 안전 국왕", spell: "👑 왕실 칙령: \"걸을 때는 오른쪽, 떨어진 물건보다 내 몸이 먼저!\"" },
+        "🎀": { role: "다정한 배려 요정", spell: "🎀 배려 주문: \"친구가 싫다는 장난은 멈추고, 함께 웃으며 정리해요!\"" },
+        "🌱": { role: "싱그러운 호박 탐정", spell: "🕵️ 탐정 암호: \"어깨가 닿으면 위험 신호! 팔짱 끼고 숨 쉴 공간 수호!\"" }
+      };
+      const persona = LANTERN_SPELLS[state.lantern.hat] || LANTERN_SPELLS["🎩"];
       if (state.lantern.lit) {
         bodyEl.classList.add("lantern-lit");
         boxEl.classList.add("border-amber-400");
         btnEl.textContent = cfg.btnOff;
-        capEl.textContent = cfg.litCaption;
+        capEl.textContent = `🕯️ [${persona.role}] ${persona.spell}`;
       } else {
         bodyEl.classList.remove("lantern-lit");
         boxEl.classList.remove("border-amber-400");
         btnEl.textContent = cfg.btnOn;
-        capEl.textContent = cfg.unlitCaption;
+        capEl.textContent = `${cfg.unlitCaption} (현재 캐릭터: ${persona.role})`;
       }
       if (recipeEl) {
         const recipe = PUMPKIN_RECIPES[currentRecipeIdx % PUMPKIN_RECIPES.length];
@@ -4697,8 +4822,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         recipeEl.replaceChildren();
         const span = document.createElement("span");
         span.textContent = matched
-          ? `🎉 [${recipe.name}] 레시피 완성! 다른 조합도 만들어 볼까요? `
-          : `🎯 오늘의 호박 미션: [${recipe.name}] (${recipe.eye} + ${recipe.mouth} + ${recipe.hat}) `;
+          ? `🎉 [${recipe.name}] 레시피 완성! (${persona.spell}) `
+          : `🎯 호박 미션: [${recipe.name}] (${recipe.eye} + ${recipe.mouth} + ${recipe.hat}) `;
         const nextBtn = document.createElement("button");
         nextBtn.type = "button";
         nextBtn.className = "mini-chip ml-1";
@@ -4854,6 +4979,12 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         `;
         btn.addEventListener("click", () => {
           if (!state.safetyFirst[goal.id]) state.safetyFirst[goal.id] = {correct: !!choice.correct, at: Date.now()};
+          const aftermathHtml = choice.aftermath
+            ? `<div class="pt-1.5 mt-1 border-t border-white/15 font-bold text-amber-200">${choice.aftermath}</div>`
+            : "";
+          const scienceHtml = item.scienceTip
+            ? `<div class="pt-1 text-[11px] font-bold text-sky-200">${item.scienceTip}</div>`
+            : "";
           if (choice.correct) {
             playSound("correct");
             if (!state.completedScenarios[state.scenarioIndex]) {
@@ -4862,12 +4993,12 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
             }
             if (signalBar) signalBar.textContent = "🟢 안전 확보 · 올바른 판단이에요!";
             feedbackBox.className = "rounded-xl p-3 border bg-emerald-950/80 border-emerald-400/60 text-emerald-100 text-xs sm:text-sm space-y-1";
-            feedbackBox.innerHTML = `<div class="font-black text-emerald-300">⭕ 적절한 선택이에요. 이유를 한 번 더 확인해요.</div><p>${choice.feedback}</p>`;
+            feedbackBox.innerHTML = `<div class="font-black text-emerald-300">⭕ 적절한 선택이에요. 이유를 한 번 더 확인해요.</div><p>${choice.feedback}</p>${aftermathHtml}${scienceHtml}`;
           } else {
             playSound("wrong");
             if (signalBar) signalBar.textContent = "🔴 위험 주의 · 다시 안전한 길을 골라 봐요!";
             feedbackBox.className = "rounded-xl p-3 border bg-rose-950/80 border-rose-400/60 text-rose-100 text-xs sm:text-sm space-y-1";
-            feedbackBox.innerHTML = `<div class="font-black text-rose-300">❌ 다시 골라 볼까요?</div><p>${choice.feedback}</p>`;
+            feedbackBox.innerHTML = `<div class="font-black text-rose-300">❌ 다시 골라 볼까요?</div><p>${choice.feedback}</p>${aftermathHtml}${scienceHtml}`;
           }
           document.getElementById('importantStatus').textContent = choice.feedback;
           document.getElementById('btnSpeakSafetyFeedback').classList.remove('hidden');
@@ -5019,9 +5150,14 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     // Canvas coordinates stay at 600×250. CSS scales only the display.
     let gameAnimId = null;
     const STAGE_MISSIONS = {
-      1: '1단계 미션: 🟩 비상구 표지판을 확인하며 넓은 출구로 이동해요!',
-      2: '2단계 미션: ➡️ 우측통행 화살표를 따라가고 🍬 떨어진 물건은 줍지 말아요!',
-      3: '3단계 미션: 👧 길가의 친구와 함께 대각선 넓은 출구로 빠져나와요!'
+      1: '1단계 [입구 탐색]: 🟩 비상구 표지판과 🗺️ 안전 지도를 확인하며 출구로!',
+      2: '2단계 [병목 탈출]: ➡️ 우측통행과 🛡️ 가슴 보호! 🍬 떨어진 물건은 패스!',
+      3: '3단계 [비상 합류]: 👧 친구를 만나 🚩 약속한 집결지 깃발을 거쳐 출구로!'
+    };
+    const STAGE_BG_COLORS = {
+      1: '#0f172a',
+      2: '#17153b',
+      3: '#111827'
     };
     const THEME_GAME_MAP = {
       halloween: { place: '🎃 할로윈 축제 거리', trapIcon: '🍬', trapLabel: '떨어진 사탕 주의' },
@@ -5109,14 +5245,22 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       }
       const themeCfg = getActiveGameTheme();
       if (state.gameStage === 1) {
-        safetyGame.items = [{x:240,y:76,r:16,kind:'sign',icon:'🟩',label:'비상구 확인',done:false}];
+        safetyGame.items = [
+          {x:200,y:82,r:16,kind:'sign',icon:'🟩',label:'비상구 확인',done:false},
+          {x:370,y:62,r:16,kind:'map',icon:'🗺️',label:'우회로 지도',done:false}
+        ];
       } else if (state.gameStage === 2) {
         safetyGame.items = [
-          {x:280,y:72,r:16,kind:'lane',icon:'➡️',label:'우측통행 유지',done:false},
+          {x:220,y:76,r:16,kind:'lane',icon:'➡️',label:'우측통행 유지',done:false},
+          {x:390,y:60,r:16,kind:'guard',icon:'🛡️',label:'가슴 공간 확보',done:false},
           {x:270,y:165,r:18,kind:'candyTrap',icon:themeCfg.trapIcon,label:themeCfg.trapLabel,done:false}
         ];
       } else {
-        safetyGame.items = [{x:175,y:86,r:16,kind:'friend',icon:'👧',label:'친구와 동행',done:false}];
+        safetyGame.items = [
+          {x:175,y:86,r:16,kind:'friend',icon:'👧',label:'친구와 동행',done:false},
+          {x:365,y:62,r:16,kind:'rally',icon:'🚩',label:'비상 집결지',done:false},
+          {x:250,y:168,r:18,kind:'candyTrap',icon:themeCfg.trapIcon,label:themeCfg.trapLabel,done:false}
+        ];
       }
       safetyGame.keys.clear();
       document.getElementById('btnStartCanvasGame').textContent = '⏸ 일시정지';
@@ -5264,7 +5408,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const ctx=canvas.getContext('2d');
       const {x,y}=safetyGame.player;
       const stageNum=(typeof state!=='undefined' && state.gameStage) ? state.gameStage : 1;
-      ctx.fillStyle='#0f172a';ctx.fillRect(0,0,600,250);
+      ctx.fillStyle=STAGE_BG_COLORS[stageNum] || '#0f172a';ctx.fillRect(0,0,600,250);
       ctx.strokeStyle='#064e3b';ctx.lineWidth=38;ctx.lineCap='round';
       ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(120,100);ctx.lineTo(460,58);ctx.lineTo(545,46);ctx.stroke();
       ctx.strokeStyle='#10b98155';ctx.lineWidth=2;ctx.setLineDash([6,6]);
@@ -5420,6 +5564,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
             <div class="text-3xl sm:text-4xl select-none py-0.5">${item.emoji}</div>
             <h4 class="font-title text-xs sm:text-sm text-white nowrap">${item.name}</h4>
             ${item.checkPoint ? `<span class="inline-block px-2 py-0.5 rounded-full bg-indigo-950/90 border border-indigo-700 text-[11px] font-bold text-amber-300">${item.checkPoint}</span>` : ""}
+            ${item.story ? `<p class="text-[11px] text-indigo-100 font-bold leading-snug pt-1 px-1">${item.story}</p>` : ""}
           </div>
 
           <div class="mt-2.5 space-y-1.5">
@@ -5446,6 +5591,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
                   }">
                     <div class="font-black mb-0.5 nowrap">${isCorrect ? "딩동댕! 👏" : "다시 확인!"}</div>
                     <div>${item.reason}</div>
+                    ${item.afterLook ? `<div class="pt-1 font-extrabold text-emerald-300">${item.afterLook}</div>` : ""}
                     ${item.reform ? `<div class="costume-reform-tip pt-1.5 mt-1 border-t border-amber-400/40 font-extrabold text-amber-200">${item.reform}</div>` : ""}
                   </div><button type="button" class="speak-costume-feedback w-full rounded-lg bg-indigo-800 p-2 text-xs" data-id="${item.id}">🔈 이유와 대체 코디 읽기</button>`
                 : ""
@@ -5588,6 +5734,16 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       '🧙 배려하는 복장',
       '🌏 다문화 존중'
     ];
+    const QUIZ_FUN_FACTS = [
+      '🏛️ 깜짝 상식 박물관: 왜 박쥐가 할로윈 상징이 되었을까요? 옛날 가을 모닥불을 피우면 불빛을 보고 벌레들이 몰려들었고, 그 벌레를 먹으러 박쥐들이 밤하늘을 날아다닌 자연스러운 풍경에서 시작되었대요!',
+      '🏛️ 깜짝 상식 박물관: 미국에서는 음식 알레르기가 있는 어린이를 배려해 사탕 대신 작은 문구류·장난감을 나눠 주는 집 앞에 ‘청록색 호박(Teal Pumpkin)’을 놓는 다정한 캠페인도 있어요!',
+      '🏛️ 깜짝 상식 박물관: 비상구 표지판이 초록색인 이유는 연기가 자욱하거나 어두운 곳에서도 우리 눈의 망막이 가장 또렷하게 구별할 수 있는 빛의 파장이 초록색(약 500~550nm)이기 때문이에요!',
+      '🏛️ 깜짝 상식 박물관: 1㎡(가로·세로 1m) 안에 5명 이상이 모이면 내 힘으로 걷기 어렵고 물결처럼 흔들리기 시작해요. 그래서 어깨가 자꾸 닿을 때 미리 대각선 가장자리로 빠져나와야 해요!',
+      '🏛️ 깜짝 상식 박물관: 두 손으로 가슴 앞 공간(흉강)을 감싸면 갈비뼈가 움직일 수 있는 최소 3~5cm의 공간이 유지되어 압박 속에서도 소중한 호흡을 지킬 수 있어요!',
+      '🏛️ 깜짝 상식 박물관: 붐비는 길에서 한 사람이 물건을 주우려 멈춰 허리를 숙이면 뒤따라오던 사람들의 시야가 가려져 단 3초 만에 도미노처럼 연쇄 넘어짐이 일어날 수 있어요!',
+      '🏛️ 깜짝 상식 박물관: 기네스북에 오른 세계에서 가장 무거운 호박은 무려 1,246kg으로, 소형 자동차 한 대 무게와 비슷하대요!',
+      '🏛️ 깜짝 상식 박물관: 멕시코의 ‘죽은 자들의 날’에 장식하는 주황색 금잔화(마리골드)는 태양의 빛과 진한 향기로 가족들이 집으로 오는 길을 밝혀 준다는 따뜻한 뜻을 담고 있어요!'
+    ];
     const QUIZ_GOAL_BRIDGE = [
       { label: '문화의 기원과 다양성', tab: 'tab-culture', scenarioIdx: null },
       { label: '보호자 동행·사전 약속', tab: 'tab-culture', scenarioIdx: null },
@@ -5723,6 +5879,13 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         const mainText = document.createElement('p');
         mainText.textContent = `${existing.correct?'⭕ 이번 판단은 맞았어요.':'❌ 이번 판단은 다시 살펴봐요.'} ${q.explanation}`;
         explanation.appendChild(mainText);
+        const funFactText = QUIZ_FUN_FACTS[qi % QUIZ_FUN_FACTS.length];
+        if (funFactText) {
+          const factEl = document.createElement('div');
+          factEl.className = 'rounded-lg bg-indigo-950/70 border border-amber-400/40 px-2.5 py-1.5 text-xs font-bold text-amber-200 leading-snug';
+          factEl.textContent = funFactText;
+          explanation.appendChild(factEl);
+        }
         if (bridge) {
           const diagRow = document.createElement('div');
           diagRow.className = 'flex flex-wrap items-center justify-between gap-1.5 pt-1 border-t border-indigo-700/60 text-xs';
@@ -6025,9 +6188,29 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       ctx.fillText(stampLabels.map(([k,l])=>`${state.stamps[k]?'🏅':'⬜'}${l}`).join('  '),canvas.width/2,322,280);
 
       ctx.fillStyle='#111827';ctx.fillRect(65,356,670,244);
-      ctx.fillStyle='#fde68a';ctx.font=`bold 16px ${RESULT_FONT}`;ctx.fillText('나의 안전 약속',canvas.width/2,392);
+      ctx.fillStyle='#fde68a';ctx.font=`bold 16px ${RESULT_FONT}`;ctx.fillText('나의 안전 약속',canvas.width/2,386);
       ctx.fillStyle='#fff';ctx.font=`16px ${RESULT_FONT}`;
-      printLines(ctx,safeLabel(state.profile.pledge,'안전 약속을 적어 보세요.'),canvas.width/2,428,620,28,5);
+      printLines(ctx,safeLabel(state.profile.pledge,'안전 약속을 적어 보세요.'),canvas.width/2,418,620,26,4);
+
+      // Collector badges & Special Title (Idea 10)
+      const clueCount = Object.keys(state.storyCluesFound || {}).length;
+      const collectionBadges = [
+        [clueCount >= 1 || state.stamps.s1, '🕵️단서탐정'],
+        [Boolean(state.lantern && state.lantern.lit), '🕯️등불장인'],
+        [Boolean(state.festivalCompareAnswered || state.stamps.s1), '🌏문화대사'],
+        [Boolean(state.stamps.s2), '🛡️안전수호자'],
+        [Boolean(state.stamps.s3), '✂️배려디자이너'],
+        [Boolean(state.stamps.s4), '👑퀴즈박사']
+      ];
+      const earnedCount = collectionBadges.filter(([ok]) => ok).length;
+      const explorerTitle = earnedCount >= 6 ? '🌟 전설의 할로윈 안전·문화 마스터' : earnedCount >= 4 ? '🎃 빛나는 호박 마을 수호 대장' : '🕯️ 꼬마 안전 탐험가';
+      ctx.fillStyle='rgba(30, 27, 75, 0.9)';ctx.fillRect(85,526,630,60);
+      ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;ctx.strokeRect(85,526,630,60);
+      ctx.fillStyle='#fcd34d';ctx.font=`bold 13px ${RESULT_FONT}`;
+      ctx.fillText(`특별 칭호: ${explorerTitle} (${earnedCount}/6 컬렉션 달성)`,canvas.width/2,547,600);
+      ctx.fillStyle='#e0e7ff';ctx.font=`12px ${RESULT_FONT}`;
+      ctx.fillText(collectionBadges.map(([ok, label]) => `${ok ? '✨' : '▫️'}${label}`).join('   '),canvas.width/2,572,600);
+
       ctx.fillStyle='#e0e7ff';ctx.font=`15px ${RESULT_FONT}`;
       ctx.fillText(`${state.certSticker} 확인 날짜 ${new Date().toLocaleDateString('ko-KR')} · © 엽쌤`,canvas.width/2,649);
       ctx.fillText('학습 확인 기록 · 실제 안전을 보장하는 증명은 아닙니다.',canvas.width/2,683);
@@ -6704,12 +6887,15 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         showToast(`현재 사탕 점수: ${state.candyPoints}점 (${getLevelTitle(state.candyPoints)})`, "🍭");
       });
 
-      // Fun Story Emoji tap reaction + Hidden Clue discovery
+      // Fun Story Emoji tap reaction + 3-stage Hidden Clue discovery
       document.getElementById("btnTapStoryEmoji").addEventListener("click", () => {
         playSound("correct");
         burstCandyConfetti(8);
         const storyIndex = storyProgress().storyIndex;
-        storyClueOpened[storyKey(storyIndex)] = true;
+        const cKey = storyKey(storyIndex);
+        const prevLevel = Number(storyClueOpened[cKey] || 0);
+        const nextLevel = Math.min(3, prevLevel + 1);
+        storyClueOpened[cKey] = nextLevel;
         const artEl = document.getElementById("storyEmojiGraphic");
         if (artEl) {
           artEl.classList.remove("story-art-pop");
@@ -6719,7 +6905,10 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         const clueBox = document.getElementById("storyClueBox");
         if (clueBox) {
           clueBox.classList.remove("hidden");
-          clueBox.textContent = getStoryClues()[storyIndex];
+          clueBox.textContent = formatStoryClueText(storyIndex, nextLevel);
+        }
+        if (nextLevel === 3 && prevLevel < 3) {
+          showToast("3단계 숨은 이야기 단서를 모두 찾아냈어요! 명탐정 등극!", "🕵️");
         }
       });
 
