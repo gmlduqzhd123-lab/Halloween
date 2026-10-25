@@ -596,6 +596,7 @@ test('main browser flows and standalone file load without script errors', async 
   await game.locator('#costumeWorldCupBox .worldcup-cand-btn').first().click();
   await game.locator('#costumeWorldCupBox .worldcup-cand-btn').first().click();
   assert.match(await game.locator('#costumeWorldCupBox').innerText(),/우승 코디/);
+  assert.equal(await game.locator('.avatar-prop-btn.border-amber-400').count(),1);
 
   await game.evaluate(()=>{
     ['s1','s2','s3','s4'].forEach(k=>unlockStamp(k,'테스트'));
@@ -641,6 +642,9 @@ test('main browser flows and standalone file load without script errors', async 
   await game.evaluate(()=>setCultureStage('compare'));
   assert.equal(await game.locator('#festivalTimelineBar').isVisible(),true);
   assert.equal(await game.locator('#btnSpeakFestivalGreeting').isVisible(),true);
+  await game.locator('#festivalTimelineBar [data-timeline-festival="korea"]').click();
+  assert.match(await game.locator('#festivalCompareTitle').innerText(),/추석/);
+  assert.equal(await game.locator('#festivalQuizBox button').count(),2);
   await game.close();
 
   const scoped=await browser.newContext();

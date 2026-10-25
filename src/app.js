@@ -1909,12 +1909,13 @@
         const tlWrap = document.createElement('div');
         tlWrap.className = 'flex flex-wrap items-center gap-1';
         [
-          ['chuseok', '🌕 9~10월 한국 추석'],
+          ['korea', '🌕 9~10월 한국 추석'],
           ['halloween', '🎃 10월 31일 할로윈'],
           ['muertos', '🌼 11월 1~2일 멕시코 죽은 자들의 날']
         ].forEach(([fKey, fLabel]) => {
           const pill = document.createElement('button');
           pill.type = 'button';
+          pill.dataset.timelineFestival = fKey;
           pill.className = `mini-chip text-[11px] ${fKey === key ? 'is-picked' : ''}`;
           pill.textContent = fLabel;
           pill.addEventListener('click', () => {
@@ -2835,10 +2836,10 @@
     ];
     let avatarMissionIndex = 0;
     const COSTUME_WORLDCUP_CANDIDATES = [
-      { id: 'wc1', name: '🌟 별빛 반사 마법사', char: '🧒', costume: '🧙', prop: '⭐', desc: '어두운 밤에도 반짝이는 별빛 봉과 앞이 잘 보이는 마법 모자' },
-      { id: 'wc2', name: '🎃 호박 등불 요정', char: '👧', costume: '🧚', prop: '🎃', desc: '발에 걸리지 않는 활동복과 밤길을 밝히는 호박 등불' },
-      { id: 'wc3', name: '🕯️ 꼬마 등불 탐험가', char: '🧑', costume: '🧛', prop: '🕯️', desc: '짧고 단정한 망토와 두 손이 편한 안전 손전등' },
-      { id: 'wc4', name: '🍬 달콤 호박 수호자', char: '🧒', costume: '🎃', prop: '🍬', desc: '푹신하고 따뜻한 호박 조끼와 친구와 나누는 사탕 바구니' }
+      { id: 'wc1', name: '🌟 별빛 반사 마법사', char: '🧒', costume: '🧙', prop: '✨', desc: '어두운 밤에도 반짝이는 야광 팔찌와 앞이 잘 보이는 마법 모자' },
+      { id: 'wc2', name: '🎃 호박 등불 요정', char: '👧', costume: '🧚', prop: '🕯️', desc: '발에 걸리지 않는 활동복과 밤길을 밝히는 호박 등불' },
+      { id: 'wc3', name: '🪄 꼬마 영웅 탐험가', char: '🐱', costume: '🦸', prop: '🪄', desc: '짧고 단정한 영웅 망토와 끝이 둥근 안전 요술봉' },
+      { id: 'wc4', name: '🍬 달콤 호박 수호자', char: '🐶', costume: '🎃', prop: '🪣', desc: '푹신하고 따뜻한 호박 망토와 친구와 나누는 사탕 바구니' }
     ];
     let costumeWorldCupState = { stage: 'semi1', semi1Winner: null, semi2Winner: null, champion: null };
 
@@ -2912,6 +2913,7 @@
             state.avatar.char = cand.char;
             state.avatar.costume = cand.costume;
             state.avatar.prop = cand.prop;
+            state.certSticker = cand.costume;
             playSound("fanfare");
             saveProgress();
             renderAvatarDressup();
@@ -3020,7 +3022,7 @@
         const checks = [
           { label: "👀 시야 확보 (눈 가리지 않음)", ok: true },
           { label: "👟 보행 편리 (끌리지 않는 길이)", ok: true },
-          { label: "✨ 야간 식별 (밝은 소품·야광 확인)", ok: Boolean(isNightTested || ["🎃", "🕯️", "⭐"].includes(state.avatar.prop) || ["🧙", "🧚"].includes(state.avatar.costume)) },
+          { label: "✨ 야간 식별 (밝은 소품·야광 확인)", ok: Boolean(isNightTested || ["🎃", "🕯️", "⭐", "✨", "🪄"].includes(state.avatar.prop) || ["🧙", "🧚"].includes(state.avatar.costume)) },
           { label: "🚫 유사 제복·위험 소품 제외", ok: true }
         ];
         checklistBox.innerHTML = checks.map(c => `
@@ -3287,12 +3289,29 @@
       if (startBtn) startBtn.textContent = hasProgress ? '이어서 시작하기 →' : '처음부터 시작하기 →';
       if (freshBtn) freshBtn.classList.toggle('hidden', !hasProgress);
     }
-    function clearTransientInteractionState() {
+    let classTimerInterval = null;
+    let classTimerHideTimeout = null;
+    let pickedPresenterNumbers = [];
+    let classVoteTally = { one: 0, two: 0 };
+    function stopClassTimerBanner(resetTally = false) {
+      if (classTimerInterval) { clearInterval(classTimerInterval); classTimerInterval = null; }
+      if (classTimerHideTimeout) { clearTimeout(classTimerHideTimeout); classTimerHideTimeout = null; }
+      if (resetTally) {
+        pickedPresenterNumbers = [];
+        classVoteTally = { one: 0, two: 0 };
+      }
+      const btn = document.getElementById('btnClassTimer');
+      if (btn) btn.textContent = '⏱️ 5초 투표';
+      const banner = document.getElementById('classTimerBanner');
+      if (banner) banner.classList.add('hidden');
+    }
+    function clearTransientInteractionState(keepClassPoster = false) {
       if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
       if (echoReadTimer) { clearInterval(echoReadTimer); echoReadTimer = null; }
+      stopClassTimerBanner(true);
       if (typeof resetSpeedOxState === 'function') resetSpeedOxState();
       else if (typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
-      [storyPollPicked, storyClueOpened, festivalStamps, safetyDrillCounts, safetyDrillRemaining, scenarioSpotPicked].forEach(mapObj => {
+      [storyPollPicked, storyClueOpened, festivalStamps, safetyDrillCounts, safetyDrillRemaining, scenarioSpotPicked, openedGlossaryByBox, glossaryBoxExpanded].forEach(mapObj => {
         if (mapObj && typeof mapObj === 'object') {
           Object.keys(mapObj).forEach(k => { delete mapObj[k]; });
         }
@@ -3304,6 +3323,8 @@
       pledgeBuilderPick = { where: null, action: null, heart: null };
       densityLabLevel = 1;
       currentFestivalKey = 'halloween';
+      currentRecipeIdx = 0;
+      avatarMissionIndex = 0;
       safetyGame.visionMask = false;
       const nvBtn = document.getElementById("btnToggleNightVision");
       if (nvBtn) {
@@ -3311,11 +3332,23 @@
         nvBtn.classList.remove("is-picked");
         nvBtn.textContent = "🕶️ 시야 제한 OFF";
       }
+      const stageEl = document.getElementById("avatarRunwayStage");
+      const nightBtn = document.getElementById("btnNightLightTest");
+      const judgeEl = document.getElementById("avatarJudgeText");
+      if (stageEl) stageEl.classList.remove("night-stage-active");
+      if (nightBtn) nightBtn.textContent = "🌙 밤길 야광 반사 테스트";
+      if (judgeEl) judgeEl.textContent = "시야 확보 OK! 밤길 안전 반사 OK!";
+      if (!keepClassPoster) {
+        if (typeof classPosterActive !== 'undefined') classPosterActive = false;
+        if (typeof classPosterRecords !== 'undefined' && Array.isArray(classPosterRecords)) classPosterRecords.length = 0;
+        const importStatus = document.getElementById("importResults");
+        if (importStatus) importStatus.textContent = "";
+      }
     }
     function startFromBeginning() {
       stopSpeaking();
       stopSafetyGameLoop();
-      clearTransientInteractionState();
+      clearTransientInteractionState(false);
       const selectedGrade = state.grade;
       const startTab = (state.teacher && state.teacher.start) || 'tab-culture';
       state.sessionId = (globalThis.crypto && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
@@ -3349,9 +3382,11 @@
     function returnToMainScreen() {
       stopSpeaking();
       pauseSafetyGame();
+      stopClassTimerBanner(false);
       if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
       if (echoReadTimer) { clearInterval(echoReadTimer); echoReadTimer = null; }
-      if (typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
+      if (typeof resetSpeedOxState === 'function') resetSpeedOxState();
+      else if (typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
       document.body.classList.add('lesson-not-started');
       document.body.classList.remove('tools-open');
       document.getElementById('btnMoreTools').setAttribute('aria-expanded', 'false');
@@ -3388,7 +3423,7 @@
     }
     function startNewSession(kind) {
       stopSpeaking();stopSafetyGameLoop();
-      clearTransientInteractionState();
+      clearTransientInteractionState(kind === 'student');
       if(preserveExistingProgress){
         try{
           const previous=localStorage.getItem(PROGRESS_KEY);
@@ -3443,7 +3478,10 @@
       if (state.activeTab === 'tab-safety' && tabId !== 'tab-safety') pauseSafetyGame();
       if (tabId !== 'tab-safety' && safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
       if (tabId !== 'tab-culture' && echoReadTimer) { clearInterval(echoReadTimer); echoReadTimer = null; }
-      if (tabId !== 'tab-quiz' && typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
+      if (tabId !== 'tab-quiz') {
+        if (typeof resetSpeedOxState === 'function') resetSpeedOxState();
+        else if (typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
+      }
       state.activeTab = tabId;
       const step = lessonStep(tabId);
       document.getElementById('lessonStageNumber').textContent = step[0];
@@ -3480,9 +3518,11 @@
       if (gradeKey === state.grade) return;
       stopSpeaking();
       pauseSafetyGame();
+      stopClassTimerBanner(false);
       if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
       if (echoReadTimer) { clearInterval(echoReadTimer); echoReadTimer = null; }
-      if (typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
+      if (typeof resetSpeedOxState === 'function') resetSpeedOxState();
+      else if (typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
       rememberGrade();
       state.grade = gradeKey;
       syncWelcomeGrade();
@@ -3715,10 +3755,6 @@
           saveProgress();
         });
       });
-      let classTimerInterval = null;
-      let classTimerHideTimeout = null;
-      let pickedPresenterNumbers = [];
-      let classVoteTally = { one: 0, two: 0 };
       const btnClassTimer = document.getElementById('btnClassTimer');
       const classTimerBanner = document.getElementById('classTimerBanner');
       function renderClassTimerBannerContent(messageText, buttonText = '🎲 발표 번호 뽑기') {
@@ -4198,16 +4234,8 @@
       document.querySelectorAll(".festival-card").forEach(card => {
         card.addEventListener("click", () => {
           playSound("click");
-          document.querySelectorAll(".festival-card").forEach(c => c.classList.remove("ring-2", "ring-amber-400"));
-          card.classList.add("ring-2", "ring-amber-400");
           const key = card.getAttribute("data-festival");
           if (FESTIVAL_DETAILS[key]) {
-            document.getElementById("festivalCompareTitle").textContent = FESTIVAL_DETAILS[key].title;
-            document.getElementById("festivalCompareDesc").textContent = FESTIVAL_DETAILS[key].desc;
-            document.getElementById('festivalCompareQuestion').textContent = FESTIVAL_DETAILS[key].question;
-            const link = document.getElementById('festivalSourceLink');
-            link.href = FESTIVAL_DETAILS[key].sourceUrl;
-            link.textContent = `자료: ${FESTIVAL_DETAILS[key].sourceText} ↗`;
             renderFestivalQuiz(key);
           }
         });
@@ -4479,6 +4507,10 @@
       [['certSchoolInput','school'],['certClassInput','className'],['certNameInput','name'],['certPledgeInput','pledge']].forEach(([id,key]) => {
         document.getElementById(id).addEventListener('input',event=>{
           state.profile[key]=event.target.value.slice(0,{school:40,className:30,name:40,pledge:160}[key]);
+          if (key === 'pledge') {
+            pledgeBuilderPick = { where: null, action: null, heart: null };
+            renderPledgeBuilder();
+          }
           saveProgress();renderCertificateCanvas();renderLearningSummary();
         });
       });
@@ -4493,6 +4525,8 @@
             const defaultPledge = "우리 반 모두 오른쪽으로 안전하게 걷고 서로를 배려하며 즐거운 축제를 만들겠습니다!";
             document.getElementById("certPledgeInput").value = defaultPledge;
             state.profile.pledge = defaultPledge;
+            pledgeBuilderPick = { where: null, action: null, heart: null };
+            renderPledgeBuilder();
           }
           playSound("click");
           saveProgress();
@@ -4504,9 +4538,12 @@
         btn.addEventListener("click", () => {
           document.getElementById("certPledgeInput").value = btn.getAttribute("data-pledge");
           state.profile.pledge=document.getElementById("certPledgeInput").value;
+          pledgeBuilderPick = { where: null, action: null, heart: null };
+          renderPledgeBuilder();
           saveProgress();
           playSound("click");
           renderCertificateCanvas();
+          renderLearningSummary();
         });
       });
       document.getElementById("btnRenderCert").addEventListener("click", () => {

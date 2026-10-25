@@ -319,7 +319,9 @@
 
       // Collector badges & Special Title (Idea 10)
       const clueCount = Object.keys(typeof storyClueOpened === 'object' ? storyClueOpened : {}).length;
-      const festivalStampCount = Object.keys(typeof festivalStamps === 'object' ? festivalStamps : {}).length;
+      const festivalStampCount = (typeof FESTIVAL_QUIZZES === 'object' && typeof festivalStamps === 'object')
+        ? Object.keys(FESTIVAL_QUIZZES).filter(k => festivalStamps[k] === FESTIVAL_QUIZZES[k].correct).length
+        : 0;
       const collectionBadges = [
         [clueCount >= 1 || Boolean(state.stamps.s1), '🕵️단서탐정'],
         [Boolean(state.lantern && state.lantern.lit), '🕯️등불장인'],
