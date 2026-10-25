@@ -42,11 +42,16 @@ test('main browser flows and standalone file load without script errors', async 
   assert.equal(await welcome.locator('.header-nav').isVisible(),false);
   await welcome.locator('#btnTapStoryEmoji').click();
   assert.match(await welcome.locator('#storyClueBox').innerText(),/숨은 단서/);
+  await welcome.locator('#btnTapStoryEmoji').click();
+  assert.match(await welcome.locator('#storyClueBox').innerText(),/그림 속 비밀/);
+  await welcome.locator('#btnTapStoryEmoji').click();
+  assert.match(await welcome.locator('#storyClueBox').innerText(),/탐정 특급 상식/);
   await welcome.locator('#storyPollBox button').first().click();
   assert.equal(await welcome.locator('#storyPollFeedback').isVisible(),true);
   await welcome.locator('#storyStepPills button').last().click();
   await welcome.locator('#btnNextStory').click();
   assert.equal(await welcome.locator('[data-culture-stage="compare"]').isVisible(),true);
+  assert.equal(await welcome.locator('#festivalPassportGrid > div').count(),4);
   await welcome.locator('#festivalQuizBox button').first().click();
   assert.match(await welcome.locator('#festivalQuizFeedback').innerText(),/도장 완료/);
   await welcome.locator('#btnOptionalCraft').click();
@@ -160,6 +165,11 @@ test('main browser flows and standalone file load without script errors', async 
   }
   await page.locator('#btnBoardMode').click();
   await page.setViewportSize({width:320,height:700});
+  for (const stage of ['craft','compare','story']) {
+    await page.locator(`[data-culture-step="${stage}"]`).click();
+    const bounds=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,view:document.documentElement.clientWidth}));
+    assert.ok(bounds.scroll<=bounds.view+1,`culture:${stage} at 320px overflow`);
+  }
   for (const tab of ['culture','safety','costume','quiz','cert']) {
     await page.locator(`[data-tab="tab-${tab}"]`).first().click();
     const bounds=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,view:document.documentElement.clientWidth}));
@@ -431,6 +441,8 @@ test('main browser flows and standalone file load without script errors', async 
   await themed.locator('#btnToCompare').click();
   await themed.locator('#btnTapStoryEmoji').click();
   assert.match(await themed.locator('#storyClueBox').innerText(),/숨은 단서/);
+  await themed.locator('#btnTapStoryEmoji').click();
+  assert.doesNotMatch(await themed.locator('#storyClueBox').innerText(),/호박 꼭지/);
   await themed.locator('#storyStepPills button').last().click();
   assert.equal(await themed.locator('#btnNextStory').innerText(),'안전한 선택으로 →');
   await themed.locator('#btnNextStory').click();
@@ -454,6 +466,8 @@ test('main browser flows and standalone file load without script errors', async 
     }
     await safety.locator('#scenarioChoices button').first().click();
     assert.equal(await safety.locator('#btnSpeakSafetyFeedback').isVisible(),true);
+    assert.match(await safety.locator('#scenarioFeedbackBox').innerText(),/웹툰 후일담/);
+    assert.match(await safety.locator('#scenarioFeedbackBox').innerText(),/안전 과학 노트/);
     const answer=await safety.evaluate(index=>SAFETY_GOALS[index].checks['3-4'][2],i);
     await safety.locator('#safetyFollowup button').nth(answer).click();
     if(i<5)await safety.locator('#btnNextScenario').click();
@@ -535,6 +549,7 @@ test('main browser flows and standalone file load without script errors', async 
   await game.locator('[data-tab="tab-quiz"]').first().click();
   await game.locator('#quizOptionsContainer .quiz-opt-btn').first().click();
   assert.equal(await game.locator('.quiz-inline-bridge-btn').count(),1);
+  assert.match(await game.locator('#quizExplanationBox').innerText(),/깜짝 상식 박물관/);
 
   await game.locator('[data-tab="tab-cert"]').first().click();
   assert.equal(await game.locator('#safetyGoalHeatmap .heatmap-goal-btn').count(),6);

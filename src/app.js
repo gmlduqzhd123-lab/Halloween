@@ -1720,9 +1720,36 @@
         "🌟 탐정 특급 상식(3/3): 우리 반 모두가 웃는 최고의 축제는 ‘재미있는 놀이 + 안전한 통로 + 다정한 배려’ 세 가지가 만날 때 완성돼요!"
       ]
     ];
+    const EVENT_STORY_EXTRA_CLUES = [
+      [
+        "🕵️ 그림 속 비밀(2/3): 여러 사람이 한꺼번에 움직이는 행사 날에는 시작 직전과 끝난 직후가 가장 붐벼요!",
+        "🌟 탐정 특급 상식(3/3): 도착하자마자 모둠 인원과 이동 순서를 먼저 확인하면 혼잡 속에서도 흩어지지 않아요!"
+      ],
+      [
+        "🕵️ 그림 속 비밀(2/3): 초록색 비상구 표지판은 어두운 곳이나 연기 속에서도 눈에 가장 잘 띄는 색이에요!",
+        "🌟 탐정 특급 상식(3/3): 들어왔던 입구 하나만 기억하지 말고 다른 방향의 비상 출구도 함께 알아 두면 훨씬 안전해요!"
+      ],
+      [
+        "🕵️ 그림 속 비밀(2/3): 양방향 통로에서 오른쪽으로 걸으면 마주 오는 사람과 어깨가 부딪히지 않아요!",
+        "🌟 탐정 특급 상식(3/3): 사진을 찍거나 친구를 기다릴 때는 길 한가운데가 아니라 가장자리 안전한 곳으로 먼저 비켜서요!"
+      ],
+      [
+        "🕵️ 그림 속 비밀(2/3): 계단이나 좁은 문 앞처럼 길이 갑자기 좁아지는 곳을 ‘병목 구간’이라고 불러요!",
+        "🌟 탐정 특급 상식(3/3): 걸음이 느려지고 옆 사람과 어깨가 자꾸 닿기 시작하면 즉시 덜 붐비는 넓은 곳으로 이동해요!"
+      ],
+      [
+        "🕵️ 그림 속 비밀(2/3): 붐비는 길에서 허리를 숙이면 뒤따라오던 사람들의 시야가 가려져 연쇄 넘어짐이 일어날 수 있어요!",
+        "🌟 탐정 특급 상식(3/3): 물건은 사람이 줄어든 뒤에 어른과 함께 찾고, 인파 속에서는 언제나 내 몸과 호흡 공간을 먼저 지켜요!"
+      ],
+      [
+        "🕵️ 그림 속 비밀(2/3): 높은 깃발이나 안내 데스크처럼 멀리서도 한눈에 보이는 곳을 집결 장소로 정하면 찾기 쉬워요!",
+        "🌟 탐정 특급 상식(3/3): 친구나 선생님을 놓쳤을 때는 혼자 돌아다니지 말고 약속한 장소에서 기다리거나 112·119에 도움을 요청해요!"
+      ]
+    ];
     function formatStoryClueText(storyIndex, level) {
       const base = getStoryClues()[storyIndex] || "";
-      const extra = STORY_EXTRA_CLUES[storyIndex % STORY_EXTRA_CLUES.length] || [];
+      const cluePool = isHalloweenTheme() ? STORY_EXTRA_CLUES : EVENT_STORY_EXTRA_CLUES;
+      const extra = cluePool[storyIndex % cluePool.length] || [];
       if (level <= 1) {
         return `${base} (👆 그림을 한 번 더 누르면 숨은 단서 2/3단계가 열려요!)`;
       }
@@ -1797,6 +1824,7 @@
           }
           playSound(idx === quiz.correct ? 'correct' : 'wrong');
           renderFestivalQuiz(key);
+          renderCertificateCanvas();
         });
         qBox.appendChild(btn);
       });
@@ -2077,7 +2105,9 @@
         bodyEl.classList.add("lantern-lit");
         boxEl.classList.add("border-amber-400");
         btnEl.textContent = cfg.btnOff;
-        capEl.textContent = `🕯️ [${persona.role}] ${persona.spell}`;
+        capEl.textContent = isHalloweenTheme()
+          ? `🕯️ [${persona.role}] ${persona.spell}`
+          : `🕯️ ${cfg.litCaption} (${persona.spell})`;
       } else {
         bodyEl.classList.remove("lantern-lit");
         boxEl.classList.remove("border-amber-400");
@@ -2725,9 +2755,18 @@
       if (startBtn) startBtn.textContent = hasProgress ? '이어서 시작하기 →' : '처음부터 시작하기 →';
       if (freshBtn) freshBtn.classList.toggle('hidden', !hasProgress);
     }
+    function clearTransientInteractionState() {
+      if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
+      [storyPollPicked, storyClueOpened, festivalStamps, safetyDrillCounts, safetyDrillRemaining].forEach(mapObj => {
+        if (mapObj && typeof mapObj === 'object') {
+          Object.keys(mapObj).forEach(k => { delete mapObj[k]; });
+        }
+      });
+    }
     function startFromBeginning() {
       stopSpeaking();
       stopSafetyGameLoop();
+      clearTransientInteractionState();
       const selectedGrade = state.grade;
       const startTab = (state.teacher && state.teacher.start) || 'tab-culture';
       state.sessionId = (globalThis.crypto && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
@@ -2792,6 +2831,7 @@
     }
     function startNewSession(kind) {
       stopSpeaking();stopSafetyGameLoop();
+      clearTransientInteractionState();
       if(preserveExistingProgress){
         try{
           const previous=localStorage.getItem(PROGRESS_KEY);
@@ -2999,6 +3039,7 @@
         if (nextLevel === 3 && prevLevel < 3) {
           showToast("3단계 숨은 이야기 단서를 모두 찾아냈어요! 명탐정 등극!", "🕵️");
         }
+        renderCertificateCanvas();
       });
 
       // Jack-o'-Lantern Workshop Listeners

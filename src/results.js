@@ -279,17 +279,23 @@
       printLines(ctx,safeLabel(state.profile.pledge,'안전 약속을 적어 보세요.'),canvas.width/2,418,620,26,4);
 
       // Collector badges & Special Title (Idea 10)
-      const clueCount = Object.keys(state.storyCluesFound || {}).length;
+      const clueCount = Object.keys(typeof storyClueOpened === 'object' ? storyClueOpened : {}).length;
+      const festivalStampCount = Object.keys(typeof festivalStamps === 'object' ? festivalStamps : {}).length;
       const collectionBadges = [
-        [clueCount >= 1 || state.stamps.s1, '🕵️단서탐정'],
+        [clueCount >= 1 || Boolean(state.stamps.s1), '🕵️단서탐정'],
         [Boolean(state.lantern && state.lantern.lit), '🕯️등불장인'],
-        [Boolean(state.festivalCompareAnswered || state.stamps.s1), '🌏문화대사'],
+        [festivalStampCount >= 1 || Boolean(state.stamps.s1), '🌏문화대사'],
         [Boolean(state.stamps.s2), '🛡️안전수호자'],
         [Boolean(state.stamps.s3), '✂️배려디자이너'],
         [Boolean(state.stamps.s4), '👑퀴즈박사']
       ];
       const earnedCount = collectionBadges.filter(([ok]) => ok).length;
-      const explorerTitle = earnedCount >= 6 ? '🌟 전설의 할로윈 안전·문화 마스터' : earnedCount >= 4 ? '🎃 빛나는 호박 마을 수호 대장' : '🕯️ 꼬마 안전 탐험가';
+      const themeLabel = THEMES[state.teacher?.theme]?.label || '할로윈';
+      const explorerTitle = earnedCount >= 6
+        ? `🌟 전설의 ${themeLabel} 안전·문화 마스터`
+        : earnedCount >= 4
+        ? `🎃 빛나는 ${themeLabel} 수호 대장`
+        : '🕯️ 꼬마 안전 탐험가';
       ctx.fillStyle='rgba(30, 27, 75, 0.9)';ctx.fillRect(85,526,630,60);
       ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;ctx.strokeRect(85,526,630,60);
       ctx.fillStyle='#fcd34d';ctx.font=`bold 13px ${RESULT_FONT}`;

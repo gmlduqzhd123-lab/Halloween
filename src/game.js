@@ -268,9 +268,9 @@
       ctx.strokeStyle='#7f1d1d';ctx.lineWidth=32;
       ctx.beginPath();ctx.moveTo(42,210);ctx.lineTo(230,165);ctx.lineTo(400,170);ctx.stroke();
       ctx.fillStyle='#a7f3d0';ctx.font='bold 12px "Gowun Dodum", sans-serif';
-      ctx.fillText(STAGE_MISSIONS[stageNum] || '🟢 덜 붐비는 넓은 길',18,22);
+      ctx.fillText(STAGE_MISSIONS[stageNum] || '🟢 덜 붐비는 넓은 길',18,22,465);
       ctx.fillStyle='#fde68a';ctx.font='bold 11px "Gowun Dodum", sans-serif';
-      ctx.fillText(getActiveGameTheme().place,435,20);
+      ctx.fillText(getActiveGameTheme().place,18,40,260);
       ctx.fillStyle='#fecaca';ctx.font='bold 12px "Gowun Dodum", sans-serif';ctx.fillText('🔴 혼잡한 좁은 길',220,208);
       if(typeof state!=='undefined' && state.grade==='1-2'){
         if(!safetyGame.running) safetyGame.exitZone={x:500,y:18,w:85,h:56};
