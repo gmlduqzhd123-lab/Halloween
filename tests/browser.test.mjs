@@ -558,6 +558,56 @@ test('main browser flows and standalone file load without script errors', async 
   await game.locator('#importStudentCodeInput').fill(shareCode);
   await game.locator('#btnImportStudentCode').click();
   assert.match(await game.locator('#importResults').innerText(),/1명 추가 완료/);
+
+  // Verify the 10 additional development ideas
+  await game.locator('.pledge-kw-chip[data-kw-group="where"]').nth(1).click();
+  assert.match(await game.locator('#certPledgeInput').inputValue(),/축제를 즐길 때/);
+
+  await game.locator('#btnRandomMission').click();
+  assert.equal(await game.locator('#classTimerBanner').isVisible(),true);
+  assert.match(await game.locator('#classTimerMessage').innerText(),/랜덤 미션/);
+
+  await game.locator('[data-tab="tab-culture"]').first().click();
+  await game.locator('#btnTapStoryEmoji').click();
+  assert.equal(await game.locator('#storyEmojiGraphic .svg-clue-sparkle').count()>=1,true);
+
+  await game.locator('[data-tab="tab-safety"]').first().click();
+  await game.locator('#scenarioHazardSpotBox .scenario-spot-chip').first().click();
+  assert.match(await game.locator('#scenarioHazardSpotBox').innerText(),/딩동댕|정답/);
+  await game.evaluate(()=>{state.scenarioIndex=5;renderScenario();});
+  assert.equal(await game.locator('#emergencyCallSimBox').isVisible(),true);
+  await game.locator('#emergencyCallSimBox .emergency-sim-btn[data-sim-step="1-0"]').click();
+  await game.locator('#emergencyCallSimBox .emergency-sim-btn[data-sim-step="2-0"]').click();
+  assert.match(await game.locator('#emergencyCallSimBox').innerText(),/침착 신고 완료/);
+
+  await game.evaluate(()=>{
+    state.gameStage=3;
+    initSafetyGame();
+    safetyGame.player.x=safetyGame.items[0].x;
+    safetyGame.player.y=safetyGame.items[0].y;
+    checkGamePosition();
+    drawSafetyGame();
+    stopSafetyGameLoop();
+  });
+  assert.equal(await game.evaluate(()=>safetyGame.friendRescued===true && safetyGame.companion!==null),true);
+
+  await game.locator('[data-tab="tab-costume"]').first().click();
+  await game.locator('#costumeWorldCupBox .worldcup-cand-btn').first().click();
+  await game.locator('#costumeWorldCupBox .worldcup-cand-btn').first().click();
+  await game.locator('#costumeWorldCupBox .worldcup-cand-btn').first().click();
+  assert.match(await game.locator('#costumeWorldCupBox').innerText(),/우승 코디/);
+
+  await game.evaluate(()=>{
+    ['s1','s2','s3','s4'].forEach(k=>unlockStamp(k,'테스트'));
+    renderSpeedOxBonus();
+    document.getElementById('quizResultContainer').classList.remove('hidden');
+  });
+  assert.equal(await game.evaluate(()=>document.body.dataset.masterTheme),'gold');
+  assert.equal(await game.locator('#masterFinaleBanner').isVisible(),true);
+  await game.locator('[data-tab="tab-quiz"]').first().click();
+  await game.locator('#btnStartSpeedOx').click();
+  for(let i=0;i<5;i++)await game.locator('#speedOxBonusBox .speed-ox-btn').first().click();
+  assert.match(await game.locator('#speedOxBonusBox').innerText(),/스피드 OX 완주 결과/);
   await game.close();
 
   const scoped=await browser.newContext();

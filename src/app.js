@@ -1346,6 +1346,44 @@
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
           osc.start(now);
           osc.stop(now + 0.3);
+        } else if (type === "magic") {
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(587.33, now);
+          osc.frequency.setValueAtTime(783.99, now + 0.07);
+          osc.frequency.setValueAtTime(987.77, now + 0.14);
+          osc.frequency.setValueAtTime(1174.66, now + 0.21);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+          osc.start(now);
+          osc.stop(now + 0.42);
+        } else if (type === "whistle") {
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(880, now);
+          osc.frequency.setValueAtTime(1046.5, now + 0.08);
+          osc.frequency.setValueAtTime(880, now + 0.16);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+          osc.start(now);
+          osc.stop(now + 0.28);
+        } else if (type === "passport") {
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(330, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.06);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          osc.start(now);
+          osc.stop(now + 0.22);
+        } else if (type === "fanfare") {
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.08);
+          osc.frequency.setValueAtTime(783.99, now + 0.16);
+          osc.frequency.setValueAtTime(1046.5, now + 0.24);
+          osc.frequency.setValueAtTime(1318.5, now + 0.34);
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.62);
+          osc.start(now);
+          osc.stop(now + 0.62);
         } else if (type === "stamp") {
           osc.type = "sine";
           osc.frequency.setValueAtTime(523.25, now);
@@ -1384,16 +1422,21 @@
     }
 
     // ==================== STAMP & HEADER RENDER ====================
+    function isAllStampsMaster() {
+      return ["s1", "s2", "s3", "s4"].every(k => !!state.stamps[k]);
+    }
     function unlockStamp(key, label) {
       if (!state.stamps[key]) {
         state.stamps[key] = true;
         awardOnce(`stamp:${key}`, 'completion', 50, `${label} 활동 완료`);
         saveProgress();
-        playSound("stamp");
-        burstCandyConfetti(22);
-        showToast(`[${label}] 활동 완료를 기록했어요.`, "🏅");
+        const allDone = isAllStampsMaster();
+        playSound(allDone ? "fanfare" : "stamp");
+        burstCandyConfetti(allDone ? 36 : 22);
+        showToast(allDone ? `👑 4대 활동 스탬프 올클리어! 히든 마스터 보상이 해금되었어요!` : `[${label}] 활동 완료를 기록했어요.`, allDone ? "👑" : "🏅");
         renderStamps();
         renderCandyHeader();
+        renderLanternWorkshop();
         renderCertificateCanvas();
       }
     }
@@ -1416,6 +1459,22 @@
       });
       document.getElementById("stampCountText").textContent = `${count}/4`;
       document.getElementById("journeyCount").textContent = `${count} / 4`;
+      if (count >= 4) {
+        document.body.dataset.masterTheme = "gold";
+      } else {
+        delete document.body.dataset.masterTheme;
+      }
+      const masterBanner = document.getElementById("masterFinaleBanner");
+      if (masterBanner) {
+        masterBanner.classList.toggle("hidden", count < 4);
+        if (count >= 4) {
+          masterBanner.textContent = "👑 축하합니다! 4대 활동 스탬프 올클리어 달성! 호박 공방의 [🌟 전설의 마스터 후광]과 임명장 [로열 마스터 인장]이 해금되었어요!";
+        }
+      }
+      const masterHatBtn = document.getElementById("btnMasterLanternHat");
+      if (masterHatBtn) {
+        masterHatBtn.classList.toggle("hidden", count < 4);
+      }
     }
 
     // ==================== SPEECH SYNTHESIS CLEANUP ====================
@@ -1470,9 +1529,12 @@
       stage: '<rect x="34" y="34" width="152" height="64" rx="8" fill="#7b6a96"/><path d="M34 34h152v14H34z" fill="#c4677a"/><path d="M34 48q12 30 0 50m152-50q-12 30 0 50" fill="#c4677a"/><rect x="66" y="78" width="88" height="20" rx="3" fill="#ffe3a8"/><circle cx="110" cy="64" r="8" fill="#f2b78f"/><g fill="#f2b78f"><circle cx="54" cy="124" r="9"/><circle cx="80" cy="120" r="9"/><circle cx="106" cy="124" r="9"/><circle cx="132" cy="120" r="9"/><circle cx="158" cy="124" r="9"/></g><g fill="#8fa7c9"><ellipse cx="54" cy="138" rx="12" ry="6"/><ellipse cx="80" cy="134" rx="12" ry="6"/><ellipse cx="106" cy="138" rx="12" ry="6"/><ellipse cx="132" cy="134" rx="12" ry="6"/><ellipse cx="158" cy="138" rx="12" ry="6"/></g>',
       help: '<rect x="78" y="26" width="64" height="112" rx="13" fill="#5d5470"/><rect x="85" y="40" width="50" height="80" rx="6" fill="#fff4de"/><text x="110" y="72" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#3e66a8">112</text><text x="110" y="102" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#c4544b">119</text><circle cx="110" cy="129" r="4" fill="#d8d0e4"/>'
     };
-    function storyArtwork(kind) {
+    function storyArtwork(kind, clueLevel = 0) {
       const scene = STORY_SCENES[kind] || STORY_SCENES.pumpkin;
-      return `<svg viewBox="0 0 220 170" focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect width="220" height="170" rx="25" fill="#fff1da"/><circle cx="35" cy="37" r="6" fill="#ffe0a0"/><circle cx="181" cy="35" r="4" fill="#ffe0a0"/><path d="M0 146q110-28 220 0v24H0z" fill="#e3e9d6"/>${scene}</svg>`;
+      const fx1 = clueLevel >= 1 ? '<g class="svg-clue-sparkle"><circle cx="26" cy="24" r="5" fill="#f59e0b"/><circle cx="194" cy="28" r="6" fill="#f59e0b"/><circle cx="24" cy="130" r="4" fill="#10b981"/></g>' : '';
+      const fx2 = clueLevel >= 2 ? '<circle cx="110" cy="92" r="64" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="6 5" class="svg-clue-sparkle"/>' : '';
+      const fx3 = clueLevel >= 3 ? '<g><rect x="134" y="10" width="76" height="22" rx="11" fill="#d97706"/><text x="172" y="25" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#fff">🕵️ 단서완성</text></g>' : '';
+      return `<svg viewBox="0 0 220 170" focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect width="220" height="170" rx="25" fill="#fff1da"/><circle cx="35" cy="37" r="6" fill="#ffe0a0"/><circle cx="181" cy="35" r="4" fill="#ffe0a0"/><path d="M0 146q110-28 220 0v24H0z" fill="#e3e9d6"/>${scene}${fx1}${fx2}${fx3}</svg>`;
     }
     const STORY_CLUES_BY_GRADE = {
       "1-2": [
@@ -1822,7 +1884,7 @@
           if (idx === quiz.correct) {
             awardOnce(`festival:${key}`, 'stamp', 10, `${detail?.title || key} 문화 도감 확인`);
           }
-          playSound(idx === quiz.correct ? 'correct' : 'wrong');
+          playSound(idx === quiz.correct ? 'passport' : 'wrong');
           renderFestivalQuiz(key);
           renderCertificateCanvas();
         });
@@ -1950,14 +2012,15 @@
       }
 
       document.getElementById("currentGradeBadge").textContent = gradeData.label;
+      const clueKey = storyKey(progress.storyIndex);
+      const clueLevel = Number(storyClueOpened[clueKey] || 0);
       const picture = document.getElementById("storyEmojiGraphic");
-      picture.innerHTML = storyArtwork(current.art);
+      picture.dataset.clueLevel = String(clueLevel);
+      picture.innerHTML = storyArtwork(current.art, clueLevel);
       picture.setAttribute('aria-label', current.caption);
       document.getElementById("storyVisualCaption").textContent = current.caption;
-      const clueKey = storyKey(progress.storyIndex);
       const clueBox = document.getElementById("storyClueBox");
       if (clueBox) {
-        const clueLevel = Number(storyClueOpened[clueKey] || 0);
         clueBox.classList.toggle("hidden", clueLevel === 0);
         clueBox.textContent = clueLevel > 0
           ? formatStoryClueText(progress.storyIndex, clueLevel)
@@ -2098,7 +2161,8 @@
         "🎩": { role: "별빛 마법사 잭", spell: "✨ 안전 주문: \"초록 비상구 먼저 찾고, 좁은 길은 대각선으로!\"" },
         "👑": { role: "꼬마 안전 국왕", spell: "👑 왕실 칙령: \"걸을 때는 오른쪽, 떨어진 물건보다 내 몸이 먼저!\"" },
         "🎀": { role: "다정한 배려 요정", spell: "🎀 배려 주문: \"친구가 싫다는 장난은 멈추고, 함께 웃으며 정리해요!\"" },
-        "🌱": { role: "싱그러운 호박 탐정", spell: "🕵️ 탐정 암호: \"어깨가 닿으면 위험 신호! 팔짱 끼고 숨 쉴 공간 수호!\"" }
+        "🌱": { role: "싱그러운 호박 탐정", spell: "🕵️ 탐정 암호: \"어깨가 닿으면 위험 신호! 팔짱 끼고 숨 쉴 공간 수호!\"" },
+        "🌟": { role: "전설의 안전 그랜드 마스터", spell: "👑 마스터 주문: \"4대 안전·문화 비법을 모두 깨우친 우리 반 최고 수호자!\"" }
       };
       const persona = LANTERN_SPELLS[state.lantern.hat] || LANTERN_SPELLS["🎩"];
       if (state.lantern.lit) {
@@ -2171,6 +2235,88 @@
     ];
     const safetyDrillCounts = {};
     const safetyDrillRemaining = {};
+    const scenarioSpotPicked = {};
+    const emergencyCallState = { q1Done: false, q2Done: false, wrongMsg: "" };
+    const SCENARIO_HAZARD_SPOTS = [
+      {
+        prompt: "👀 안전 레이더: 도착 직후 눈으로 가장 먼저 찾아야 할 안전 표식은?",
+        spots: [
+          { label: "🟩 초록색 비상구(EXIT) 표지판", target: true, tip: "딩동댕! 비상구와 대피 동선을 가장 먼저 스캔해요." },
+          { label: "🎈 화려한 포토존 풍선 장식", target: false, tip: "풍선보다 초록색 비상구(EXIT) 표지판을 먼저 찾아봐요!" }
+        ]
+      },
+      {
+        prompt: "👀 안전 레이더: 양방향 통로에서 부딪힘을 막아 주는 안전 기준은?",
+        spots: [
+          { label: "➡️ 오른쪽 통행 화살표 차선", target: true, tip: "정답! 서로 오른쪽으로 걸으면 정면충돌을 예방해요." },
+          { label: "📸 길 한가운데 멈춰 선 모둠", target: false, tip: "길 한가운데 멈추면 병목이 생겨요. 오른쪽 차선을 찾아봐요!" }
+        ]
+      },
+      {
+        prompt: "👀 안전 레이더: 인파가 갑자기 빽빽해지는 위험 신호 지점은?",
+        spots: [
+          { label: "⚠️ 어깨가 닿는 좁은 병목 입구", target: true, tip: "정답! 어깨가 닿기 시작하면 대각선 가장자리로 빠져나가요." },
+          { label: "🌳 한산하고 넓은 공원 벤치", target: false, tip: "좁아지는 병목 입구가 위험 신호예요!" }
+        ]
+      },
+      {
+        prompt: "👀 안전 레이더: 사람이 밀릴 때 가장 먼저 확보해야 할 내 몸 공간은?",
+        spots: [
+          { label: "👐 가슴 앞 숨 쉴 공간(흉강)", target: true, tip: "정답! 팔짱을 끼듯 가슴 앞 공간을 확보해 호흡을 지켜요." },
+          { label: "🎒 등 뒤에 멘 무거운 가방", target: false, tip: "숨을 쉬려면 가슴 앞 공간(흉강)을 먼저 지켜야 해요!" }
+        ]
+      },
+      {
+        prompt: "👀 안전 레이더: 복잡한 인파 속에서 절대 숙이면 안 되는 위험 요소는?",
+        spots: [
+          { label: "🍬 발밑에 떨어진 사탕·소품", target: true, tip: "정답! 인파 속에서 바닥 물건을 주우려 숙이는 것이 가장 위험해요." },
+          { label: "👟 앞사람과의 안전한 걸음 간격", target: false, tip: "발밑에 떨어진 물건을 주우려 숙이는 행동을 조심해야 해요!" }
+        ]
+      },
+      {
+        prompt: "👀 안전 레이더: 일행과 헤어졌을 때 찾아가야 할 안전 약속 지점은?",
+        spots: [
+          { label: "🚩 미리 약속한 큰 나무·안내소 집결지", target: true, tip: "정답! 혼자 돌아다니지 않고 약속한 집결지에서 만나요." },
+          { label: "🏃 사람 많은 골목 안쪽 깊은 곳", target: false, tip: "미리 정해 둔 눈에 잘 띄는 집결 장소를 찾아봐요!" }
+        ]
+      }
+    ];
+    function renderScenarioHazardSpot() {
+      const box = document.getElementById("scenarioHazardSpotBox");
+      if (!box) return;
+      box.replaceChildren();
+      const idx = state.scenarioIndex;
+      const cfg = SCENARIO_HAZARD_SPOTS[idx];
+      if (!cfg) return;
+      const pickedIdx = scenarioSpotPicked[idx];
+      const header = document.createElement("div");
+      header.className = "font-extrabold text-amber-300";
+      header.textContent = cfg.prompt;
+      box.appendChild(header);
+      const btnRow = document.createElement("div");
+      btnRow.className = "flex flex-wrap gap-1.5";
+      cfg.spots.forEach((spot, sIdx) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        const isPicked = pickedIdx === sIdx;
+        chip.className = `mini-chip scenario-spot-chip ${isPicked ? "is-picked" : ""}`;
+        chip.textContent = spot.label;
+        chip.addEventListener("click", () => {
+          scenarioSpotPicked[idx] = sIdx;
+          playSound(spot.target ? "whistle" : "wrong");
+          renderScenarioHazardSpot();
+        });
+        btnRow.appendChild(chip);
+      });
+      box.appendChild(btnRow);
+      if (pickedIdx !== undefined && cfg.spots[pickedIdx]) {
+        const chosenSpot = cfg.spots[pickedIdx];
+        const fb = document.createElement("p");
+        fb.className = `text-xs font-bold ${chosenSpot.target ? "text-emerald-300" : "text-rose-300"}`;
+        fb.textContent = `${chosenSpot.target ? "🎯" : "💡"} ${chosenSpot.tip}`;
+        box.appendChild(fb);
+      }
+    }
     let safetyDrillInterval = null;
     function startSafetyDrillCountdown(idx) {
       if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
@@ -2241,6 +2387,104 @@
           : drill.doneText;
         box.appendChild(descEl);
       }
+
+      if (idx === 5) {
+        const simBox = document.createElement("div");
+        simBox.id = "emergencyCallSimBox";
+        simBox.className = "mt-2 pt-2 border-t border-indigo-700/80 space-y-1.5";
+        const simHeader = document.createElement("div");
+        simHeader.className = "font-extrabold text-amber-200 text-xs";
+        simHeader.textContent = "🚨 112·119 침착 신고 시뮬레이터 (2단계 대화 체험)";
+        simBox.appendChild(simHeader);
+
+        if (!emergencyCallState.q1Done) {
+          const q1 = document.createElement("p");
+          q1.className = "text-xs text-indigo-100 font-bold";
+          q1.textContent = "👩🏻‍🚒 119 상황실(1/2): \"119입니다! 지금 어디이고 무슨 일이 생겼나요?\"";
+          simBox.appendChild(q1);
+          const optRow = document.createElement("div");
+          optRow.className = "flex flex-wrap gap-1.5";
+          [
+            { text: "⭕ \"광장 시계탑 앞 계단인데 사람이 밀려 넘어졌어요!\"", ok: true },
+            { text: "❌ \"사람이 너무 많아요! 빨리 와 주세요!\" (장소 누락)", ok: false }
+          ].forEach((opt, oIdx) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "mini-chip emergency-sim-btn text-left";
+            b.dataset.simStep = `1-${oIdx}`;
+            b.textContent = opt.text;
+            b.addEventListener("click", () => {
+              if (opt.ok) {
+                emergencyCallState.q1Done = true;
+                emergencyCallState.wrongMsg = "";
+                playSound("whistle");
+              } else {
+                emergencyCallState.wrongMsg = "💡 출동 대원이 바로 찾을 수 있도록 '정확한 건물·지형지물 위치'를 먼저 말해 주세요!";
+                playSound("wrong");
+              }
+              renderSafetyActionDrill();
+            });
+            optRow.appendChild(b);
+          });
+          simBox.appendChild(optRow);
+        } else if (!emergencyCallState.q2Done) {
+          const q2 = document.createElement("p");
+          q2.className = "text-xs text-indigo-100 font-bold";
+          q2.textContent = "👩🏻‍🚒 119 상황실(2/2): \"시계탑 앞으로 출동 중입니다! 도착 전까지 어떻게 계실 건가요?\"";
+          simBox.appendChild(q2);
+          const optRow = document.createElement("div");
+          optRow.className = "flex flex-wrap gap-1.5";
+          [
+            { text: "⭕ \"머리와 가슴을 보호하고 안전한 가장자리에서 기다릴게요!\"", ok: true },
+            { text: "❌ \"사람들 사이를 비집고 혼자 뛰어다닐게요!\"", ok: false }
+          ].forEach((opt, oIdx) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "mini-chip emergency-sim-btn text-left";
+            b.dataset.simStep = `2-${oIdx}`;
+            b.textContent = opt.text;
+            b.addEventListener("click", () => {
+              if (opt.ok) {
+                emergencyCallState.q2Done = true;
+                emergencyCallState.wrongMsg = "";
+                playSound("correct");
+              } else {
+                emergencyCallState.wrongMsg = "💡 구급대원이 올 때까지 머리와 가슴을 보호하며 안전한 가장자리에서 기다려요!";
+                playSound("wrong");
+              }
+              renderSafetyActionDrill();
+            });
+            optRow.appendChild(b);
+          });
+          simBox.appendChild(optRow);
+        } else {
+          const doneMsg = document.createElement("div");
+          doneMsg.className = "flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-emerald-300";
+          const span = document.createElement("span");
+          span.textContent = "📞 119 침착 신고 완료! [정확한 장소 + 현재 상황 + 내 몸 보호] 3박자 완벽해요!";
+          const resetBtn = document.createElement("button");
+          resetBtn.type = "button";
+          resetBtn.className = "mini-chip text-[11px]";
+          resetBtn.textContent = "🔄 다시 연습";
+          resetBtn.addEventListener("click", () => {
+            emergencyCallState.q1Done = false;
+            emergencyCallState.q2Done = false;
+            emergencyCallState.wrongMsg = "";
+            playSound("click");
+            renderSafetyActionDrill();
+          });
+          doneMsg.appendChild(span);
+          doneMsg.appendChild(resetBtn);
+          simBox.appendChild(doneMsg);
+        }
+        if (emergencyCallState.wrongMsg) {
+          const wEl = document.createElement("p");
+          wEl.className = "text-xs font-bold text-rose-300";
+          wEl.textContent = emergencyCallState.wrongMsg;
+          simBox.appendChild(wEl);
+        }
+        box.appendChild(simBox);
+      }
     }
 
     function renderScenario() {
@@ -2310,6 +2554,7 @@
       const nextBtn = document.getElementById("btnNextScenario");
       nextBtn.textContent = state.scenarioIndex === SAFETY_SCENARIOS.length - 1 ? "다음: 옷차림 생각하기 →" : "다음 약속 →";
       renderSafetyFollowup();
+      renderScenarioHazardSpot();
       renderSafetyActionDrill();
       renderGlossaryBox("safetyGlossaryBox", ["다중밀집", "우측통행", "대각선 이동", "가슴 앞 공간(흉강)", "병목 현상", "집결 장소"]);
     }
@@ -2454,6 +2699,152 @@
       { id: 'respect', title: '🤝 친구를 놀라게 하지 않고 경찰·소방관과 헷갈리지 않는 코디', tip: '실제 제복이나 날카로운 장난감 대신 친근한 축제 소품을 골라 보세요!' }
     ];
     let avatarMissionIndex = 0;
+    const COSTUME_WORLDCUP_CANDIDATES = [
+      { id: 'wc1', name: '🌟 별빛 반사 마법사', char: '🧒', costume: '🧙', prop: '⭐', desc: '어두운 밤에도 반짝이는 별빛 봉과 앞이 잘 보이는 마법 모자' },
+      { id: 'wc2', name: '🎃 호박 등불 요정', char: '👧', costume: '🧚', prop: '🎃', desc: '발에 걸리지 않는 활동복과 밤길을 밝히는 호박 등불' },
+      { id: 'wc3', name: '🕯️ 꼬마 등불 탐험가', char: '🧑', costume: '🧛', prop: '🕯️', desc: '짧고 단정한 망토와 두 손이 편한 안전 손전등' },
+      { id: 'wc4', name: '🍬 달콤 호박 수호자', char: '🧒', costume: '🎃', prop: '🍬', desc: '푹신하고 따뜻한 호박 조끼와 친구와 나누는 사탕 바구니' }
+    ];
+    let costumeWorldCupState = { stage: 'semi1', semi1Winner: null, semi2Winner: null, champion: null };
+
+    function renderCostumeWorldCup() {
+      const box = document.getElementById("costumeWorldCupBox");
+      if (!box) return;
+      box.replaceChildren();
+      const titleRow = document.createElement("div");
+      titleRow.className = "flex flex-wrap items-center justify-between gap-1";
+      const title = document.createElement("span");
+      title.className = "font-extrabold text-amber-300";
+      const stageLabel = costumeWorldCupState.stage === 'semi1'
+        ? '4강 1경기'
+        : costumeWorldCupState.stage === 'semi2'
+        ? '4강 2경기'
+        : costumeWorldCupState.stage === 'final'
+        ? '결승전'
+        : '우승 코디 확정!';
+      title.textContent = `🆚 베스트 안전 코디 월드컵 (${stageLabel})`;
+      titleRow.appendChild(title);
+      box.appendChild(titleRow);
+
+      if (costumeWorldCupState.stage === 'done' && costumeWorldCupState.champion) {
+        const champ = costumeWorldCupState.champion;
+        const winRow = document.createElement("div");
+        winRow.className = "flex flex-wrap items-center justify-between gap-2 text-emerald-300 font-bold";
+        const span = document.createElement("span");
+        span.textContent = `🏆 우승 코디: ${champ.name} (${champ.char}${champ.costume}${champ.prop}) — 아바타에 자동 적용되었어요!`;
+        const resetBtn = document.createElement("button");
+        resetBtn.type = "button";
+        resetBtn.id = "btnResetCostumeWorldCup";
+        resetBtn.className = "mini-chip text-[11px]";
+        resetBtn.textContent = "🔄 다시 투표";
+        resetBtn.addEventListener("click", () => {
+          costumeWorldCupState = { stage: 'semi1', semi1Winner: null, semi2Winner: null, champion: null };
+          playSound("click");
+          renderCostumeWorldCup();
+        });
+        winRow.appendChild(span);
+        winRow.appendChild(resetBtn);
+        box.appendChild(winRow);
+        return;
+      }
+
+      const pair = costumeWorldCupState.stage === 'semi1'
+        ? [COSTUME_WORLDCUP_CANDIDATES[0], COSTUME_WORLDCUP_CANDIDATES[1]]
+        : costumeWorldCupState.stage === 'semi2'
+        ? [COSTUME_WORLDCUP_CANDIDATES[2], COSTUME_WORLDCUP_CANDIDATES[3]]
+        : [costumeWorldCupState.semi1Winner || COSTUME_WORLDCUP_CANDIDATES[0], costumeWorldCupState.semi2Winner || COSTUME_WORLDCUP_CANDIDATES[2]];
+
+      const grid = document.createElement("div");
+      grid.className = "grid grid-cols-1 sm:grid-cols-2 gap-1.5";
+      pair.forEach((cand, cIdx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "worldcup-cand-btn text-left rounded-lg bg-indigo-900/80 hover:bg-indigo-800 border border-indigo-600 hover:border-amber-400 p-2 transition";
+        btn.dataset.wcId = cand.id;
+        btn.innerHTML = `<div class="font-extrabold text-amber-200">${cIdx === 0 ? '🅰️' : '🅱️'} ${cand.name} (${cand.char}${cand.costume}${cand.prop})</div><div class="text-[11px] text-indigo-100 mt-0.5">${cand.desc}</div>`;
+        btn.addEventListener("click", () => {
+          if (costumeWorldCupState.stage === 'semi1') {
+            costumeWorldCupState.semi1Winner = cand;
+            costumeWorldCupState.stage = 'semi2';
+            playSound("click");
+          } else if (costumeWorldCupState.stage === 'semi2') {
+            costumeWorldCupState.semi2Winner = cand;
+            costumeWorldCupState.stage = 'final';
+            playSound("click");
+          } else {
+            costumeWorldCupState.champion = cand;
+            costumeWorldCupState.stage = 'done';
+            state.avatar.char = cand.char;
+            state.avatar.costume = cand.costume;
+            state.avatar.prop = cand.prop;
+            playSound("fanfare");
+            saveProgress();
+            renderAvatarDressup();
+            renderCertificateCanvas();
+            return;
+          }
+          renderCostumeWorldCup();
+        });
+        grid.appendChild(btn);
+      });
+      box.appendChild(grid);
+    }
+
+    const PLEDGE_KEYWORDS = {
+      where: ['복도와 계단에서', '축제를 즐길 때', '사람이 많은 곳에서'],
+      action: ['오른쪽으로 차근차근 걷고', '비상구와 안전 거리를 먼저 살피고', '절대 밀거나 뛰지 않고'],
+      heart: ['친구의 마음을 다정하게 배려하겠습니다!', '모두가 웃는 안전 약속을 꼭 지키겠습니다!', '내 몸과 친구의 안전을 먼저 생각하겠습니다!']
+    };
+    let pledgeBuilderPick = { where: 0, action: 0, heart: 0 };
+
+    function renderPledgeBuilder() {
+      const box = document.getElementById("pledgeBuilderBox");
+      if (!box) return;
+      box.replaceChildren();
+      const header = document.createElement("div");
+      header.className = "font-extrabold text-amber-300";
+      header.textContent = "💬 키워드 3개 톡톡! 나만의 안전 약속 문장 조합기";
+      box.appendChild(header);
+
+      const groups = [
+        { key: 'where', label: '① 어디서' },
+        { key: 'action', label: '② 어떻게' },
+        { key: 'heart', label: '③ 마음 다짐' }
+      ];
+      groups.forEach(g => {
+        const row = document.createElement("div");
+        row.className = "flex flex-wrap items-center gap-1";
+        const tag = document.createElement("span");
+        tag.className = "text-[11px] font-bold text-indigo-200 mr-1";
+        tag.textContent = `${g.label}:`;
+        row.appendChild(tag);
+        PLEDGE_KEYWORDS[g.key].forEach((word, wIdx) => {
+          const chip = document.createElement("button");
+          chip.type = "button";
+          const isPicked = pledgeBuilderPick[g.key] === wIdx;
+          chip.className = `mini-chip pledge-kw-chip text-[11px] ${isPicked ? "is-picked" : ""}`;
+          chip.dataset.kwGroup = g.key;
+          chip.dataset.kwIdx = String(wIdx);
+          chip.textContent = word;
+          chip.addEventListener("click", () => {
+            pledgeBuilderPick[g.key] = wIdx;
+            const composed = `${PLEDGE_KEYWORDS.where[pledgeBuilderPick.where]} ${PLEDGE_KEYWORDS.action[pledgeBuilderPick.action]} ${PLEDGE_KEYWORDS.heart[pledgeBuilderPick.heart]}`;
+            const input = document.getElementById("certPledgeInput");
+            if (input) {
+              input.value = composed;
+              state.profile.pledge = composed;
+              saveProgress();
+              renderCertificateCanvas();
+              renderLearningSummary();
+            }
+            playSound("click");
+            renderPledgeBuilder();
+          });
+          row.appendChild(chip);
+        });
+        box.appendChild(row);
+      });
+    }
 
     function renderAvatarDressup() {
       document.getElementById("avatarCharIcon").textContent = state.avatar.char;
@@ -2500,6 +2891,7 @@
           </div>
         `).join("");
       }
+      renderCostumeWorldCup();
     }
 
     let costumePage = 0;
@@ -2757,11 +3149,16 @@
     }
     function clearTransientInteractionState() {
       if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
-      [storyPollPicked, storyClueOpened, festivalStamps, safetyDrillCounts, safetyDrillRemaining].forEach(mapObj => {
+      if (typeof stopSpeedOxTimer === 'function') stopSpeedOxTimer();
+      [storyPollPicked, storyClueOpened, festivalStamps, safetyDrillCounts, safetyDrillRemaining, scenarioSpotPicked].forEach(mapObj => {
         if (mapObj && typeof mapObj === 'object') {
           Object.keys(mapObj).forEach(k => { delete mapObj[k]; });
         }
       });
+      emergencyCallState.q1Done = false;
+      emergencyCallState.q2Done = false;
+      emergencyCallState.wrongMsg = "";
+      costumeWorldCupState = { stage: 'semi1', semi1Winner: null, semi2Winner: null, champion: null };
     }
     function startFromBeginning() {
       stopSpeaking();
@@ -2822,6 +3219,7 @@
       [['certSchoolInput','school'],['certClassInput','className'],['certNameInput','name'],['certPledgeInput','pledge']].forEach(([id,key])=>{
         document.getElementById(id).value=state.profile[key]||'';
       });
+      renderPledgeBuilder();
       document.getElementById('avatarSafetyReason').value=state.avatarReason||'';
       document.getElementById('avatarReasonText').value=state.avatarReasonText||'';
       renderCertificateCanvas();renderLearningSummary();
@@ -3018,15 +3416,18 @@
 
       // Fun Story Emoji tap reaction + 3-stage Hidden Clue discovery
       document.getElementById("btnTapStoryEmoji").addEventListener("click", () => {
-        playSound("correct");
+        playSound("magic");
         burstCandyConfetti(8);
         const storyIndex = storyProgress().storyIndex;
+        const current = getStories()[storyIndex];
         const cKey = storyKey(storyIndex);
         const prevLevel = Number(storyClueOpened[cKey] || 0);
         const nextLevel = Math.min(3, prevLevel + 1);
         storyClueOpened[cKey] = nextLevel;
         const artEl = document.getElementById("storyEmojiGraphic");
         if (artEl) {
+          artEl.dataset.clueLevel = String(nextLevel);
+          if (current) artEl.innerHTML = storyArtwork(current.art, nextLevel);
           artEl.classList.remove("story-art-pop");
           void artEl.offsetWidth;
           artEl.classList.add("story-art-pop");
@@ -3067,7 +3468,7 @@
       document.getElementById("btnToggleLanternLight").addEventListener("click", () => {
         state.lantern.lit = !state.lantern.lit;
         if (state.lantern.lit) {
-          playSound("stamp");
+          playSound("magic");
           burstCandyConfetti(18);
           if (!state.lantern.rewarded) {
             state.lantern.rewarded = true;
@@ -3223,6 +3624,35 @@
               }, 6000);
             }
           }, 1000);
+        });
+      }
+      const btnRandomMission = document.getElementById('btnRandomMission');
+      const CLASSROOM_RANDOM_MISSIONS = [
+        "🎰 랜덤 미션: 짝꿍과 눈 마주치며 '오늘도 안전하게 놀자!' 인사하기 🤝",
+        "🎰 랜덤 미션: 지금 우리 교실에서 초록색 비상구(출구) 방향 손가락으로 가리키기 🟩",
+        "🎰 랜덤 미션: 권투 선수처럼 가슴 앞 숨 쉴 공간(흉강) 지키는 팔짱 자세 3초 취하기 👐",
+        "🎰 랜덤 미션: 복도에서 만났을 때 어느 쪽으로 걸어야 하는지 다 함께 외치기! (오른쪽!) ➡️",
+        "🎰 랜덤 미션: 친구가 싫어하는 장난 대신 기분 좋아지는 칭찬 한마디 건네기 💬",
+        "🎰 랜덤 미션: 112·119에 신고할 때 가장 먼저 말해야 하는 것 외치기! (정확한 장소!) 🚨"
+      ];
+      let randomMissionCursor = 0;
+      if (btnRandomMission && classTimerBanner) {
+        btnRandomMission.addEventListener('click', () => {
+          if (classTimerInterval) {
+            clearInterval(classTimerInterval);
+            classTimerInterval = null;
+            if (btnClassTimer) btnClassTimer.textContent = '⏱️ 5초 투표';
+          }
+          if (classTimerHideTimeout) clearTimeout(classTimerHideTimeout);
+          const missionText = CLASSROOM_RANDOM_MISSIONS[randomMissionCursor % CLASSROOM_RANDOM_MISSIONS.length];
+          randomMissionCursor = (randomMissionCursor + 1) % CLASSROOM_RANDOM_MISSIONS.length;
+          classTimerBanner.classList.remove('hidden');
+          playSound('whistle');
+          burstCandyConfetti(8);
+          renderClassTimerBannerContent(missionText, '🎲 발표 번호 뽑기');
+          classTimerHideTimeout = setTimeout(() => {
+            classTimerBanner.classList.add('hidden');
+          }, 8000);
         });
       }
       document.getElementById('btnHomeLogo').addEventListener('click', () => {

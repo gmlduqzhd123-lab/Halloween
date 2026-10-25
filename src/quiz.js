@@ -105,6 +105,124 @@
       });
       box.appendChild(wrap);
     }
+    const SPEED_OX_QUESTIONS = [
+      { q: '행사장에 도착하면 간식 줄보다 초록색 비상구와 넓은 이동로를 먼저 확인해야 한다.', answer: true, exp: '맞아요(O)! 들어가기 전에 나갈 수 있는 비상구와 이동로부터 확인해요.' },
+      { q: '사람이 많이 몰려 걷는 길에서 좋아하는 물건이 떨어지면 즉시 허리를 숙여 주워야 한다.', answer: false, exp: '아니에요(X)! 붐비는 길에서 숙이면 연쇄 넘어짐이 일어날 수 있어 내 몸을 먼저 지켜요.' },
+      { q: '멕시코의 죽은 자들의 날과 한국의 추석은 가을에 열리므로 할로윈과 똑같은 축제이다.', answer: false, exp: '아니에요(X)! 시기가 가까워도 나라마다 고유한 기원과 뜻이 서로 달라요.' },
+      { q: '어깨가 자꾸 부딪히고 걸음이 느려지면 흐름을 보며 대각선 가장자리 넓은 곳으로 벗어나야 한다.', answer: true, exp: '맞아요(O)! 신체 접촉과 감속은 혼잡 위험 신호이므로 즉시 넓은 곳으로 이동해요.' },
+      { q: '인파에게 떠밀릴 때는 두 팔로 가슴 앞 공간을 감싸 숨 쉴 공간(흉강)을 확보하는 것이 좋다.', answer: true, exp: '맞아요(O)! 팔짱이나 가방 안기 자세로 가슴 앞 호흡 공간을 지켜요.' }
+    ];
+    let speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false };
+    let speedOxInterval = null;
+    function stopSpeedOxTimer() {
+      if (speedOxInterval) { clearInterval(speedOxInterval); speedOxInterval = null; }
+    }
+    function renderSpeedOxBonus() {
+      const box = document.getElementById('speedOxBonusBox');
+      if (!box) return;
+      box.replaceChildren();
+      if (!speedOxState.active && !speedOxState.done) {
+        const row = document.createElement('div');
+        row.className = 'flex flex-wrap items-center justify-between gap-2';
+        const title = document.createElement('span');
+        title.className = 'font-extrabold text-amber-300';
+        title.textContent = '⚡ 보너스 미션 · 30초 스피드 OX 진실 혹은 거짓 (5문항)';
+        const startBtn = document.createElement('button');
+        startBtn.type = 'button';
+        startBtn.id = 'btnStartSpeedOx';
+        startBtn.className = 'mini-chip font-extrabold';
+        startBtn.textContent = '⚡ 30초 스피드 OX 시작!';
+        startBtn.addEventListener('click', () => {
+          stopSpeedOxTimer();
+          speedOxState = { active: true, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false };
+          playSound('whistle');
+          speedOxInterval = setInterval(() => {
+            if (speedOxState.secondsLeft > 1) {
+              speedOxState.secondsLeft--;
+              const timerEl = document.getElementById('speedOxTimerText');
+              if (timerEl) timerEl.textContent = `⏱️ ${speedOxState.secondsLeft}초`;
+            } else {
+              stopSpeedOxTimer();
+              speedOxState.active = false;
+              speedOxState.done = true;
+              playSound('stamp');
+              renderSpeedOxBonus();
+            }
+          }, 1000);
+          renderSpeedOxBonus();
+        });
+        row.appendChild(title);
+        row.appendChild(startBtn);
+        box.appendChild(row);
+        return;
+      }
+      if (speedOxState.done) {
+        stopSpeedOxTimer();
+        const wrap = document.createElement('div');
+        wrap.className = 'space-y-1.5';
+        const head = document.createElement('div');
+        head.className = 'font-extrabold text-amber-300 text-sm';
+        head.textContent = `🏆 스피드 OX 완주 결과: ${speedOxState.score} / ${SPEED_OX_QUESTIONS.length} 정답!`;
+        const retryBtn = document.createElement('button');
+        retryBtn.type = 'button';
+        retryBtn.className = 'mini-chip text-[11px]';
+        retryBtn.textContent = '🔄 스피드 OX 다시 도전';
+        retryBtn.addEventListener('click', () => {
+          speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false };
+          renderSpeedOxBonus();
+        });
+        wrap.appendChild(head);
+        if (speedOxState.feedback) {
+          const fb = document.createElement('p');
+          fb.className = 'text-indigo-100 font-bold';
+          fb.textContent = speedOxState.feedback;
+          wrap.appendChild(fb);
+        }
+        wrap.appendChild(retryBtn);
+        box.appendChild(wrap);
+        return;
+      }
+      const item = SPEED_OX_QUESTIONS[speedOxState.idx];
+      const top = document.createElement('div');
+      top.className = 'flex items-center justify-between gap-2 font-extrabold text-amber-300';
+      top.innerHTML = `<span>⚡ 스피드 OX (${speedOxState.idx + 1}/${SPEED_OX_QUESTIONS.length})</span><span id="speedOxTimerText">⏱️ ${speedOxState.secondsLeft}초</span>`;
+      const qEl = document.createElement('p');
+      qEl.className = 'font-bold text-white text-xs sm:text-sm py-1';
+      qEl.textContent = `Q. ${item.q}`;
+      const btnRow = document.createElement('div');
+      btnRow.className = 'grid grid-cols-2 gap-2';
+      [[true, '⭕ 맞아요 (O)'], [false, '❌ 아니에요 (X)']].forEach(([val, label]) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'speed-ox-btn mini-chip justify-center py-2 font-extrabold text-xs';
+        b.textContent = label;
+        b.addEventListener('click', () => {
+          const right = val === item.answer;
+          if (right) speedOxState.score++;
+          speedOxState.feedback = item.exp;
+          playSound(right ? 'correct' : 'wrong');
+          if (speedOxState.idx + 1 < SPEED_OX_QUESTIONS.length) {
+            speedOxState.idx++;
+          } else {
+            stopSpeedOxTimer();
+            speedOxState.active = false;
+            speedOxState.done = true;
+            awardOnce('quiz:speedox', 'bonus', 20, '스피드 OX 보너스 라운드 완주');
+          }
+          renderSpeedOxBonus();
+        });
+        btnRow.appendChild(b);
+      });
+      box.appendChild(top);
+      box.appendChild(qEl);
+      box.appendChild(btnRow);
+      if (speedOxState.feedback) {
+        const fb = document.createElement('p');
+        fb.className = 'text-[11px] font-bold text-emerald-300 pt-1';
+        fb.textContent = `💡 직전 문제 해설: ${speedOxState.feedback}`;
+        box.appendChild(fb);
+      }
+    }
     function quizCheerMessage(combo) {
       if (combo >= 6) return `👑 ${combo}연속 정답! 우리 반 최고 안전 박사님이에요!`;
       if (combo >= 3) return `✨ ${combo}연속 정답! 안전 감각이 반짝반짝 빛나요!`;
@@ -132,6 +250,7 @@
         document.getElementById('btnReviewQuiz').disabled=first===quizzes.length;
         if(!state.quizReview && Object.keys(state.quizFirst).length>=quizzes.length) unlockStamp('s4','퀴즈 참여');
         renderQuizWeaknessBridge();
+        renderSpeedOxBonus();
         renderLearningSummary();
         return;
       }

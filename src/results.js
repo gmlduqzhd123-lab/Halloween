@@ -303,6 +303,12 @@
       ctx.fillStyle='#e0e7ff';ctx.font=`12px ${RESULT_FONT}`;
       ctx.fillText(collectionBadges.map(([ok, label]) => `${ok ? '✨' : '▫️'}${label}`).join('   '),canvas.width/2,572,600);
 
+      if (typeof isAllStampsMaster === 'function' && isAllStampsMaster()) {
+        ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.strokeRect(32,32,canvas.width-64,canvas.height-64);
+        ctx.fillStyle='#fef08a';ctx.font=`bold 13px ${RESULT_FONT}`;
+        ctx.fillText('👑 [4대 영역 올클리어] 골든 호박 그랜드 마스터 특별 훈장 수여',canvas.width/2,616,600);
+      }
+
       ctx.fillStyle='#e0e7ff';ctx.font=`15px ${RESULT_FONT}`;
       ctx.fillText(`${state.certSticker} 확인 날짜 ${new Date().toLocaleDateString('ko-KR')} · © 엽쌤`,canvas.width/2,649);
       ctx.fillText('학습 확인 기록 · 실제 안전을 보장하는 증명은 아닙니다.',canvas.width/2,683);

@@ -52,7 +52,7 @@
     const safetyGame = {
       running:false, won:false, paused:false, route:null, lastFrame:0,
       player:{x:42,y:210,r:13,targetX:null,targetY:null},
-      hazards:[], items:[], bonusCollected:false, exitZone:{x:520,y:22,w:65,h:48}, keys:new Set(), decisionRecorded:false
+      hazards:[], items:[], bonusCollected:false, friendRescued:false, companion:null, exitZone:{x:520,y:22,w:65,h:48}, keys:new Set(), decisionRecorded:false
     };
     function stopSafetyGameLoop() {
       if (gameAnimId !== null) cancelAnimationFrame(gameAnimId);
@@ -81,6 +81,8 @@
       safetyGame.route = null;
       safetyGame.decisionRecorded = false;
       safetyGame.bonusCollected = false;
+      safetyGame.friendRescued = false;
+      safetyGame.companion = null;
       safetyGame.player = {x:42,y:210,r:13,targetX:null,targetY:null};
       const isEasyGrade = typeof state !== 'undefined' && state.grade === '1-2';
       safetyGame.easyMode = isEasyGrade;
@@ -234,10 +236,20 @@
             } else if(!item.done) {
               item.done=true;
               safetyGame.bonusCollected=true;
-              updateGameStatusText(`✅ ${item.label} 성공! 이제 출구로 이동해요`);
+              if(item.kind==='friend') {
+                safetyGame.friendRescued=true;
+                safetyGame.companion={x:Math.max(15,p.x-22),y:Math.min(235,p.y+6)};
+                updateGameStatusText('🤝 친구와 합류 성공! 손을 잡고 함께 집결지·출구로 이동해요');
+              } else {
+                updateGameStatusText(`✅ ${item.label} 성공! 이제 출구로 이동해요`);
+              }
             }
           }
         });
+      }
+      if(safetyGame.friendRescued && safetyGame.companion) {
+        safetyGame.companion.x += (Math.max(15, p.x - 22) - safetyGame.companion.x) * 0.35;
+        safetyGame.companion.y += (Math.min(235, p.y + 6) - safetyGame.companion.y) * 0.35;
       }
       const e=safetyGame.exitZone;
       if(safetyGame.route==='wide' && p.x>e.x && p.x<e.x+e.w && p.y>e.y && p.y<e.y+e.h) {
@@ -294,6 +306,14 @@
         });
       }
       safetyGame.hazards.forEach(h=>{ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.fillStyle='#be123c88';ctx.fill();ctx.strokeStyle='#fb7185';ctx.stroke();ctx.fillStyle='#ffe4e6';ctx.font='11px "Gowun Dodum", sans-serif';ctx.fillText('밀집',h.x-11,h.y+4);});
+      if(safetyGame.friendRescued && safetyGame.companion){
+        const c=safetyGame.companion;
+        ctx.strokeStyle='#fde047';ctx.lineWidth=2;ctx.setLineDash([3,3]);
+        ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(c.x,c.y);ctx.stroke();ctx.setLineDash([]);
+        ctx.beginPath();ctx.arc(c.x,c.y,11,0,Math.PI*2);ctx.fillStyle='#ec4899';ctx.fill();
+        ctx.fillStyle='white';ctx.font='14px "Gowun Dodum", sans-serif';ctx.fillText('👧',c.x-7,c.y+5);
+        ctx.fillStyle='#fef08a';ctx.font='bold 10px "Gowun Dodum", sans-serif';ctx.fillText('🤝동행',c.x-14,c.y-14);
+      }
       ctx.beginPath();ctx.arc(x,y,13,0,Math.PI*2);ctx.fillStyle='#f97316';ctx.fill();
       ctx.fillStyle='white';ctx.font='16px "Gowun Dodum", sans-serif';ctx.fillText((typeof state!=='undefined' && state.avatar?.char) || '🧒',x-9,y+5);
       if(safetyGame.bonusCollected && !safetyGame.won){
