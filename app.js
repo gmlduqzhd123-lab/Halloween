@@ -3680,6 +3680,35 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       if (!state.teacher || state.teacher.mode !== 'pairs') return '';
       return index % 2 === 0 ? ' · 🐥짝꿍1' : ' · 🐣짝꿍2';
     }
+    function updatePairBatonBanner(index = 0) {
+      const banner = document.getElementById('pairBatonBanner');
+      if (!banner) return;
+      const isPairs = state.teacher && state.teacher.mode === 'pairs';
+      banner.classList.toggle('hidden', !isPairs);
+      if (isPairs) {
+        const turnName = index % 2 === 0 ? '🐥 짝꿍 1(A)' : '🐣 짝꿍 2(B)';
+        banner.textContent = `🤝 릴레이 바통 터치! 이번 순서는 [${turnName}] 차례예요 · 화면을 터치하고 짝꿍에게 이유를 말해 주세요!`;
+      }
+    }
+    const HIGHLIGHT_KEYWORDS = ['비상구', '비상 출구', '출구', '넓은 길', '행사장', '오른쪽', '우측통행', '대각선', '가슴 앞 공간', '병목', '집결 장소', '무형문화유산', '배려', '존중'];
+    function renderHighlightedText(el, rawText) {
+      if (!el) return;
+      const text = String(rawText || '');
+      el.replaceChildren();
+      const pattern = new RegExp(`(${HIGHLIGHT_KEYWORDS.join('|')})`, 'g');
+      const parts = text.split(pattern);
+      parts.forEach(part => {
+        if (!part) return;
+        if (HIGHLIGHT_KEYWORDS.includes(part)) {
+          const mark = document.createElement('span');
+          mark.className = 'kw-highlight';
+          mark.textContent = part;
+          el.appendChild(mark);
+        } else {
+          el.appendChild(document.createTextNode(part));
+        }
+      });
+    }
     const THEME_CRAFT_CONFIG = {
       halloween: {
         badge: '체험 놀이터 · 나만의 호박 등불 만들기',
@@ -4579,6 +4608,43 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const detail = FESTIVAL_DETAILS[key];
       const descEl = document.getElementById('festivalCompareDesc');
       if (detail && descEl && descEl.parentElement) {
+        let timelineEl = document.getElementById('festivalTimelineBar');
+        if (!timelineEl) {
+          timelineEl = document.createElement('div');
+          timelineEl.id = 'festivalTimelineBar';
+          timelineEl.className = 'flex flex-wrap items-center justify-between gap-1.5 rounded-xl bg-indigo-950/90 border border-indigo-700/80 p-2 text-xs';
+          descEl.insertAdjacentElement('beforebegin', timelineEl);
+        }
+        timelineEl.replaceChildren();
+        const tlWrap = document.createElement('div');
+        tlWrap.className = 'flex flex-wrap items-center gap-1';
+        [
+          ['chuseok', '🌕 9~10월 한국 추석'],
+          ['halloween', '🎃 10월 31일 할로윈'],
+          ['muertos', '🌼 11월 1~2일 멕시코 죽은 자들의 날']
+        ].forEach(([fKey, fLabel]) => {
+          const pill = document.createElement('button');
+          pill.type = 'button';
+          pill.className = `mini-chip text-[11px] ${fKey === key ? 'is-picked' : ''}`;
+          pill.textContent = fLabel;
+          pill.addEventListener('click', () => {
+            const tabBtn = document.querySelector(`.festival-btn[data-festival="${fKey}"]`);
+            if (tabBtn) tabBtn.click();
+            else renderFestivalQuiz(fKey);
+          });
+          tlWrap.appendChild(pill);
+        });
+        const speakGreetBtn = document.createElement('button');
+        speakGreetBtn.type = 'button';
+        speakGreetBtn.id = 'btnSpeakFestivalGreeting';
+        speakGreetBtn.className = 'mini-chip text-[11px]';
+        speakGreetBtn.textContent = '🗣️ 인사말·의미 듣기';
+        speakGreetBtn.addEventListener('click', () => {
+          speakText(`${detail.title}. 나누는 인사: ${detail.greeting}. 대표 상징물: ${detail.symbol}. ${detail.desc}`);
+        });
+        timelineEl.appendChild(tlWrap);
+        timelineEl.appendChild(speakGreetBtn);
+
         let passportEl = document.getElementById('festivalPassportGrid');
         if (!passportEl) {
           passportEl = document.createElement('div');
@@ -4758,12 +4824,14 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           ? formatStoryClueText(progress.storyIndex, clueLevel)
           : "👆 그림을 눌러 숨은 이야기 단서를 찾아보세요!";
       }
-      document.getElementById("storySlideTag").textContent = `카드 ${progress.storyIndex + 1} / ${stories.length}${pairTurnSuffix(progress.storyIndex)}`;
+      const isStoryCore10 = Number(state.teacher?.minutes) === 10 && [0, 3, 4].includes(progress.storyIndex);
+      document.getElementById("storySlideTag").textContent = `카드 ${progress.storyIndex + 1} / ${stories.length}${pairTurnSuffix(progress.storyIndex)}${isStoryCore10 ? ' · ⚡10분 핵심' : ''}`;
       document.getElementById("storySlideTitle").textContent = current.title;
-      document.getElementById("storySlideBody").textContent = current.body;
-      document.getElementById("storySlideKeyPoint").textContent = current.keyPoint;
+      renderHighlightedText(document.getElementById("storySlideBody"), current.body);
+      renderHighlightedText(document.getElementById("storySlideKeyPoint"), current.keyPoint);
       document.getElementById("storyThinkingQuestion").textContent = current.question;
       document.getElementById("storySourceLink").innerHTML = `<a href="${current.sourceUrl}" target="_blank" rel="noopener noreferrer" class="underline hover:text-amber-300">${current.sourceText} ↗</a>`;
+      updatePairBatonBanner(progress.storyIndex);
 
       const pollKey = storyKey(progress.storyIndex);
       const pollBox = document.getElementById("storyPollBox");
@@ -5016,6 +5084,12 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         ]
       }
     ];
+    let densityLabLevel = 1;
+    const DENSITY_LAB_STEPS = {
+      1: { btn: "🟢⭕ 1~2명/㎡", visual: "🧍      🧍", desc: "🟢⭕ [안전·실선] 1㎡당 1~2명: 팔을 뻗어도 닿지 않아 내 걸음 속도로 편안하게 이동해요." },
+      3: { btn: "🟡⚠️ 3~4명/㎡", visual: "🧍 🧍 🧍 🧍", desc: "🟡⚠️ [주의·점선] 1㎡당 3~4명: 옷깃과 어깨가 스치기 시작해요! 지금 대각선 가장자리로 빠져나가요." },
+      5: { btn: "🔴✖ 5명+/㎡", visual: "🧍🧍🧍🧍🧍⚠️", desc: "🔴✖ [위험·빗금] 1㎡당 5명 이상: 물결처럼 떠밀려 내 뜻대로 멈추기 어려워요! 가슴 앞 호흡 공간을 지켜요." }
+    };
     function renderScenarioHazardSpot() {
       const box = document.getElementById("scenarioHazardSpotBox");
       if (!box) return;
@@ -5051,6 +5125,40 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         fb.textContent = `${chosenSpot.target ? "🎯" : "💡"} ${chosenSpot.tip}`;
         box.appendChild(fb);
       }
+
+      // Strategy 4: 1㎡ Crowd Density Science Lab
+      const labWrap = document.createElement("div");
+      labWrap.id = "densityLabBox";
+      labWrap.className = "pt-1.5 mt-1.5 border-t border-indigo-800/80 space-y-1";
+      const labTop = document.createElement("div");
+      labTop.className = "flex flex-wrap items-center justify-between gap-1";
+      const labTitle = document.createElement("span");
+      labTitle.className = "text-[11px] font-extrabold text-amber-200";
+      labTitle.textContent = "🧪 1㎡ 밀집도 실험실:";
+      labTop.appendChild(labTitle);
+      const labBtns = document.createElement("div");
+      labBtns.className = "flex flex-wrap gap-1";
+      [1, 3, 5].forEach(lv => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = `mini-chip density-lab-btn text-[11px] ${densityLabLevel === lv ? "is-picked" : ""}`;
+        b.dataset.density = String(lv);
+        b.textContent = DENSITY_LAB_STEPS[lv].btn;
+        b.addEventListener("click", () => {
+          densityLabLevel = lv;
+          playSound("click");
+          renderScenarioHazardSpot();
+        });
+        labBtns.appendChild(b);
+      });
+      labTop.appendChild(labBtns);
+      labWrap.appendChild(labTop);
+      const curLab = DENSITY_LAB_STEPS[densityLabLevel] || DENSITY_LAB_STEPS[1];
+      const labDesc = document.createElement("p");
+      labDesc.className = "text-[11px] font-bold text-indigo-100 leading-snug";
+      labDesc.textContent = `[${curLab.visual}] ${curLab.desc}`;
+      labWrap.appendChild(labDesc);
+      box.appendChild(labWrap);
     }
     let safetyDrillInterval = null;
     function startSafetyDrillCountdown(idx) {
@@ -5227,16 +5335,18 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const item = SAFETY_SCENARIOS[state.scenarioIndex];
       const goal = SAFETY_GOALS[state.scenarioIndex];
       const low = state.grade === '1-2' ? SAFETY_SCENARIO_LOW[state.scenarioIndex] : null;
+      const isScenarioCore10 = Number(state.teacher?.minutes) === 10 && [0, 2, 3].includes(state.scenarioIndex);
       document.getElementById("scenarioStepBadge").textContent = `약속 ${state.scenarioIndex + 1} / ${SAFETY_SCENARIOS.length}${pairTurnSuffix(state.scenarioIndex)}`;
       document.getElementById("scenarioEmoji").textContent = item.emoji;
-      document.getElementById("scenarioStageTag").textContent = item.stage;
+      document.getElementById("scenarioStageTag").textContent = `${item.stage}${isScenarioCore10 ? ' · ⚡10분 핵심' : ''}`;
       document.getElementById("scenarioTitle").textContent = low?.title || item.title;
-      document.getElementById("scenarioDesc").textContent = low?.desc || (state.grade === '5-6' ? `${item.desc} 두 행동의 위험과 근거를 비교해 보세요.` : item.desc);
+      renderHighlightedText(document.getElementById("scenarioDesc"), low?.desc || (state.grade === '5-6' ? `${item.desc} 두 행동의 위험과 근거를 비교해 보세요.` : item.desc));
+      updatePairBatonBanner(state.scenarioIndex);
       const signalBar = document.getElementById("scenarioSignalBar");
       if (signalBar) {
         signalBar.textContent = state.completedScenarios[state.scenarioIndex]
-          ? "🟢 안전 신호등 · 올바른 행동을 찾았어요!"
-          : "🟡 상황 살피기 · 어떤 행동이 안전할까요?";
+          ? "🟢⭕ [안전·실선] 안전 신호등 · 올바른 행동을 찾았어요!"
+          : "🟡⚠️ [주의·점선] 상황 살피기 · 어떤 행동이 안전할까요?";
       }
 
       const choicesEl = document.getElementById("scenarioChoices");
@@ -5268,12 +5378,12 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
               state.completedScenarios[state.scenarioIndex] = true;
               awardOnce(`scenario:${goal.id}`, 'first-correct', 15, "안전 상황 판단");
             }
-            if (signalBar) signalBar.textContent = "🟢 안전 확보 · 올바른 판단이에요!";
+            if (signalBar) signalBar.textContent = "🟢⭕ [안전·실선] 안전 확보 · 올바른 판단이에요!";
             feedbackBox.className = "rounded-xl p-3 border bg-emerald-950/80 border-emerald-400/60 text-emerald-100 text-xs sm:text-sm space-y-1";
             feedbackBox.innerHTML = `<div class="font-black text-emerald-300">⭕ 적절한 선택이에요. 이유를 한 번 더 확인해요.</div><p>${choice.feedback}</p>${aftermathHtml}${scienceHtml}`;
           } else {
             playSound("wrong");
-            if (signalBar) signalBar.textContent = "🔴 위험 주의 · 다시 안전한 길을 골라 봐요!";
+            if (signalBar) signalBar.textContent = "🔴✖ [위험·빗금] 위험 주의 · 다시 안전한 길을 골라 봐요!";
             feedbackBox.className = "rounded-xl p-3 border bg-rose-950/80 border-rose-400/60 text-rose-100 text-xs sm:text-sm space-y-1";
             feedbackBox.innerHTML = `<div class="font-black text-rose-300">❌ 다시 골라 볼까요?</div><p>${choice.feedback}</p>${aftermathHtml}${scienceHtml}`;
           }
@@ -5457,11 +5567,11 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       if (placeBadge) placeBadge.textContent = themeCfg.place;
       if (!meterText) return;
       if (safetyGame.won) {
-        meterText.textContent = '🟢 실시간 혼잡도: 안전 출구 도착 완료!';
+        meterText.textContent = '🟢⭕ [안전·실선] 실시간 혼잡도: 안전 출구 도착 완료!';
         return;
       }
       if (safetyGame.route === 'crowded') {
-        meterText.textContent = '🔴 실시간 혼잡도: 위험 (좁은 병목 구간! 넓은 길로 바꾸세요)';
+        meterText.textContent = '🔴✖ [위험·빗금] 실시간 혼잡도: 위험 (좁은 병목 구간! 넓은 길로 바꾸세요)';
         return;
       }
       const p = safetyGame.player;
@@ -5469,15 +5579,15 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         ? Math.min(...safetyGame.hazards.map(h => Math.hypot(p.x - h.x, p.y - h.y) - h.r))
         : 999;
       if (minDist < 48) {
-        meterText.textContent = '🔴 실시간 혼잡도: 밀집 경고 (어깨가 닿아요! 가장자리로 이동)';
+        meterText.textContent = '🔴✖ [위험·빗금] 실시간 혼잡도: 밀집 경고 (어깨가 닿아요! 가장자리로 이동)';
       } else if (minDist < 95) {
-        meterText.textContent = '🟡 실시간 혼잡도: 주의 (보행 속도와 앞뒤 간격 살피기)';
+        meterText.textContent = '🟡⚠️ [주의·점선] 실시간 혼잡도: 주의 (보행 속도와 앞뒤 간격 살피기)';
       } else {
-        meterText.textContent = '🟢 실시간 혼잡도: 여유 (안전 거리 유지 중)';
+        meterText.textContent = '🟢⭕ [안전·실선] 실시간 혼잡도: 여유 (안전 거리 유지 중)';
       }
     }
     const safetyGame = {
-      running:false, won:false, paused:false, route:null, lastFrame:0,
+      running:false, won:false, paused:false, route:null, lastFrame:0, visionMask:false,
       player:{x:42,y:210,r:13,targetX:null,targetY:null},
       hazards:[], items:[], bonusCollected:false, friendRescued:false, companion:null, exitZone:{x:520,y:22,w:65,h:48}, keys:new Set(), decisionRecorded:false
     };
@@ -5734,7 +5844,13 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           ctx.fillStyle='#e0f2fe';ctx.font='bold 11px "Gowun Dodum", sans-serif';ctx.fillText(item.label,item.x-28,item.y-20);
         });
       }
-      safetyGame.hazards.forEach(h=>{ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.fillStyle='#be123c88';ctx.fill();ctx.strokeStyle='#fb7185';ctx.stroke();ctx.fillStyle='#ffe4e6';ctx.font='11px "Gowun Dodum", sans-serif';ctx.fillText('밀집',h.x-11,h.y+4);});
+      safetyGame.hazards.forEach(h=>{
+        ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.fillStyle='#be123c88';ctx.fill();ctx.strokeStyle='#fb7185';ctx.stroke();
+        ctx.strokeStyle='#fda4af66';ctx.lineWidth=1.5;
+        ctx.beginPath();ctx.moveTo(h.x-h.r*0.6,h.y-h.r*0.6);ctx.lineTo(h.x+h.r*0.6,h.y+h.r*0.6);
+        ctx.moveTo(h.x+h.r*0.6,h.y-h.r*0.6);ctx.lineTo(h.x-h.r*0.6,h.y+h.r*0.6);ctx.stroke();
+        ctx.fillStyle='#ffe4e6';ctx.font='11px "Gowun Dodum", sans-serif';ctx.fillText('✖밀집',h.x-15,h.y+4);
+      });
       if(safetyGame.friendRescued && safetyGame.companion){
         const c=safetyGame.companion;
         ctx.strokeStyle='#fde047';ctx.lineWidth=2;ctx.setLineDash([3,3]);
@@ -5747,6 +5863,18 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       ctx.fillStyle='white';ctx.font='16px "Gowun Dodum", sans-serif';ctx.fillText((typeof state!=='undefined' && state.avatar?.char) || '🧒',x-9,y+5);
       if(safetyGame.bonusCollected && !safetyGame.won){
         ctx.fillStyle='#fde68a';ctx.font='12px "Gowun Dodum", sans-serif';ctx.fillText('✨',x+10,y-8);
+      }
+      if(safetyGame.visionMask && !safetyGame.won){
+        const maskGrad=ctx.createRadialGradient(x,y,24,x,y,92);
+        maskGrad.addColorStop(0,'rgba(2, 6, 23, 0.05)');
+        maskGrad.addColorStop(0.65,'rgba(2, 6, 23, 0.78)');
+        maskGrad.addColorStop(1,'rgba(2, 6, 23, 0.94)');
+        ctx.fillStyle=maskGrad;
+        ctx.fillRect(0,0,600,250);
+        ctx.strokeStyle='#34d399';ctx.lineWidth=2.5;ctx.strokeRect(e.x,e.y,e.w,e.h);
+        ctx.fillStyle='#6ee7b7';ctx.font='bold 12px "Gowun Dodum", sans-serif';ctx.fillText('🟩 비상구 불빛',e.x+3,e.y+28);
+        ctx.fillStyle='#fde68a';ctx.font='bold 11px "Gowun Dodum", sans-serif';
+        ctx.fillText('🕶️ 가면·어두운 밤 시야 제한 체험 중 (앞이 잘 보이는 모자·야광 소품이 필요해요!)',18,240);
       }
       if(safetyGame.won){ctx.fillStyle='#0f172adc';ctx.fillRect(0,0,600,250);ctx.fillStyle='#fde68a';ctx.font='bold 20px "Gowun Dodum", sans-serif';ctx.fillText(safetyGame.bonusCollected?'🌟 미션 성공! 안전한 출구를 찾았어요!':'이동 가능한 출구를 찾았어요!',118,120);}
     }
@@ -6077,6 +6205,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
 
       document.getElementById("costumeScoreBadge").textContent = `${correctCount} / ${COSTUME_ITEMS.length}${pairTurnSuffix(costumePage)}`;
       document.getElementById('costumePageLabel').textContent = `${costumePage + 1} / ${totalPages}`;
+      updatePairBatonBanner(costumePage);
       document.getElementById('btnPrevCostumePage').disabled = costumePage === 0;
       const nextCostumeBtn = document.getElementById('btnNextCostumePage');
       nextCostumeBtn.disabled = costumePage === totalPages - 1;
@@ -6218,6 +6347,10 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         ? `🔍 오답 원인 진단 · 다시 살펴볼 핵심 원칙 (${missedIndices.length}개)`
         : '🌟 모든 핵심 안전·문화 원칙을 첫 시도에 정확히 판단했어요!';
       box.appendChild(header);
+      const growthText = document.createElement('p');
+      growthText.className = 'text-xs font-bold text-emerald-300';
+      growthText.textContent = `🌱→🌳 성장 비교: 첫 생각 정답 ${firstQuizScore()}/${quizzes.length}개 → 복습으로 스스로 바로잡은 문항 +${reviewedQuizScore()}개`;
+      box.appendChild(growthText);
       const wrap = document.createElement('div');
       wrap.className = 'flex flex-wrap gap-1.5 pt-1';
       const targetList = missedIndices.length ? missedIndices : [2, 3, 4];
@@ -6406,7 +6539,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       document.getElementById('quizQuestionNumber').textContent=`Q${qi+1}${state.quizReview?' 복습':''}`;
       document.getElementById('quizCategoryBadge').textContent=q.category;
       const typeTagEl=document.getElementById('quizTypeTag');
-      if(typeTagEl)typeTagEl.textContent=QUIZ_TYPE_TAGS[qi % QUIZ_TYPE_TAGS.length];
+      const isCore10=Number(state.teacher?.minutes)===10 && [0,2,3,5].includes(qi);
+      if(typeTagEl)typeTagEl.textContent=`${QUIZ_TYPE_TAGS[qi % QUIZ_TYPE_TAGS.length]}${isCore10?' · ⚡10분 핵심':''}`;
+      if(typeof updatePairBatonBanner==='function')updatePairBatonBanner(state.quizIndex);
       const cheerEl=document.getElementById('quizCheerText');
       if(cheerEl)cheerEl.textContent=quizCheerMessage(state.quizCombo);
       document.getElementById('quizQuestionText').textContent=q.q;
@@ -6517,6 +6652,29 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       ctx.textAlign='left';
       return ctx;
     }
+    function buildPersonalSafetyCoachNote() {
+      const learnerName = safeLabel(state.profile.name, '우리 안전 대장', 16);
+      const confirmedGoals = SAFETY_GOALS.filter(g => state.safetyConfirmed[g.id]?.contentVersion === SAFETY_CONTENT_VERSION);
+      const unconfirmedGoals = SAFETY_GOALS.filter(g => state.safetyConfirmed[g.id]?.contentVersion !== SAFETY_CONTENT_VERSION);
+      const firstMissedGoal = SAFETY_GOALS.find(g => state.safetyFirst[g.id] && !state.safetyFirst[g.id].correct);
+      const safeCostumes = typeof COSTUME_ITEMS !== 'undefined'
+        ? COSTUME_ITEMS.filter(c => state.costumeChoices[c.id] === c.safe).length
+        : 0;
+
+      const strength = confirmedGoals.length >= 4
+        ? `[${confirmedGoals[0].title}] 등 ${confirmedGoals.length}개 안전 원칙을 정확히 익혔어요`
+        : safeCostumes >= 4
+        ? `시야와 활동성을 지키는 안전 옷차림 감각(${safeCostumes}개 정답)이 훌륭해요`
+        : `차근차근 안전과 배려의 이유를 살피며 탐험하고 있어요`;
+
+      const prescription = firstMissedGoal
+        ? `처음 헷갈렸던 [${firstMissedGoal.title}] 수칙만 한 번 더 떠올리면 완벽해요!`
+        : unconfirmedGoals.length > 0
+        ? `[${unconfirmedGoals[0].title}] 목표를 새 질문으로 확인하면 더욱 든든해요!`
+        : `6대 다중밀집 안전 원칙을 모두 마스터했어요! 친구들에게도 안전 비법을 알려주세요!`;
+
+      return `🩺 AI 안전 코치 맞춤 처방: ${learnerName}님은 ${strength}! ${prescription}`;
+    }
     function renderLearningSummary() {
       const summary=document.getElementById('learningResultSummary');
       if(!summary)return;
@@ -6536,6 +6694,22 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         state.storageAvailable ? '진행 기록은 현재 기기·브라우저에 저장됩니다.' : '현재 저장되지 않습니다. 탭을 닫기 전에 JSON으로 내보내세요.'
       ];
       lines.forEach((line,index)=>{const p=document.createElement('p');p.textContent=line;if(index>=3)p.className='teacher-summary-detail';summary.appendChild(p);});
+
+      // Strategy 1 & 2: AI Personal Safety Coach Note + Growth Comparison Report
+      const coachBox=document.createElement('div');
+      coachBox.id='personalCoachNoteBox';
+      coachBox.className='rounded-xl bg-indigo-950/90 border border-amber-400/50 px-3 py-2 text-xs font-extrabold text-amber-200 mt-1.5';
+      coachBox.textContent=buildPersonalSafetyCoachNote();
+      summary.appendChild(coachBox);
+
+      const firstScenarioRight=Object.values(state.safetyFirst||{}).filter(v=>v&&v.correct).length;
+      const reviewedQ=reviewedQuizScore();
+      const growthBadge=document.createElement('div');
+      growthBadge.id='growthComparisonBadge';
+      growthBadge.className='rounded-xl bg-emerald-950/75 border border-emerald-400/50 px-3 py-1.5 text-xs font-bold text-emerald-200 mt-1';
+      growthBadge.textContent=`🌱→🌳 나의 생각 성장 리포트: 안전 판단(첫 시도 ${firstScenarioRight}/6 → 목표 확인 ${goals}/6) · 생각 확인(첫 정답 ${first}/${all} → 스스로 고친 문항 +${reviewedQ}개)`;
+      summary.appendChild(growthBadge);
+
       const remaining=SAFETY_GOALS.filter(goal=>!state.safetyConfirmed[goal.id] || state.safetyConfirmed[goal.id].contentVersion!==SAFETY_CONTENT_VERSION);
       if(remaining.length){
         const p=document.createElement('p');p.className='teacher-summary-detail';p.textContent=`다시 확인할 목표: ${remaining.map(g=>g.title).join(', ')}`;summary.appendChild(p);
@@ -6592,7 +6766,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         const rowTop=document.createElement('div');
         rowTop.className='flex items-center justify-between gap-1 text-[11px] font-bold';
         const nameSpan=document.createElement('span');
-        nameSpan.textContent=`${pct===100?'🟢':pct>=50?'🟡':'🔴'} ${goal.title}`;
+        nameSpan.textContent=`${pct===100?'🟢⭕':pct>=50?'🟡⚠️':'🔴✖'} ${goal.title}`;
         const pctSpan=document.createElement('span');
         pctSpan.className='text-amber-300';
         pctSpan.textContent=`${pct}%`;
@@ -6882,19 +7056,23 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       ctx.beginPath();ctx.moveTo(60,165);ctx.lineTo(1040,165);ctx.lineWidth=2;ctx.stroke();
       ctx.textAlign='left';
       let y=210;
-      ctx.font=`bold 24px ${RESULT_FONT}`;ctx.fillText('1. 꼭 기억할 다중밀집 보행 안전 약속 6가지 (실천할 약속에 ✓ 표시해요)',65,y);y+=38;
+      ctx.font=`bold 24px ${RESULT_FONT}`;ctx.fillText('1. 꼭 기억할 다중밀집 보행 안전 약속 6가지 (올바른 행동 번호를 [  ] 안에 적어요)',65,y);y+=38;
       ctx.font=`19px ${RESULT_FONT}`;
+      const goalAnswerKeys=[];
       SAFETY_GOALS.forEach((goal,idx)=>{
         const check=goal.checks[state.grade];
-        ctx.fillText(`□ 약속 ${idx+1} [${goal.title}] ${check[0]} → 정답: ${check[1][check[2]]}`,75,y,955);
+        goalAnswerKeys.push(`약속${idx+1}: (${check[2]+1}) ${check[1][check[2]]}`);
+        ctx.fillText(`[   ] 약속 ${idx+1} [${goal.title}] ${check[0]}  ① ${check[1][0]}   ② ${check[1][1]}`,75,y,955);
         y+=34;
       });
       y+=18;
       ctx.font=`bold 24px ${RESULT_FONT}`;ctx.fillText(`2. 스스로 풀어 보는 생각 확인 문제 (${EDUCATION_DATA[state.grade].label} 핵심 4문항)`,65,y);y+=38;
       const quizzes=EDUCATION_DATA[state.grade].quizzes.slice(0,4);
+      const quizAnswerKeys=[];
       quizzes.forEach((q,idx)=>{
+        quizAnswerKeys.push(`문항${idx+1}: ${['①','②','③','④'][q.answer]||q.answer+1}`);
         ctx.font=`bold 19px ${RESULT_FONT}`;
-        y=printLines(ctx,`문항 ${idx+1}. ${q.q}`,75,y,950,28,2)+4;
+        y=printLines(ctx,`문항 ${idx+1}. ${q.q}   (정답 번호: [     ])`,75,y,950,28,2)+4;
         ctx.font=`18px ${RESULT_FONT}`;
         const opts=q.options.map((opt,oi)=>`${['①','②','③','④'][oi]||oi+1} ${opt}`).join('    ');
         y=printLines(ctx,opts,95,y,930,27,2)+14;
@@ -6905,17 +7083,24 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       ctx.fillText('□ 앞이 잘 보이는 가면·모자 쓰기   □ 바닥에 끌리지 않는 옷 입기   □ 실제 경찰·소방 제복과 혼동되는 옷 피하기   □ 뾰족한 소품 피하기',75,y,955);
       y+=36;
       ctx.strokeStyle='#334155';ctx.lineWidth=1.5;
-      ctx.strokeRect(75,y,950,130);
-      ctx.font=`bold 19px ${RESULT_FONT}`;ctx.fillText('✍ 나의 안전·배려 다짐:',95,y+36);
-      ctx.beginPath();ctx.moveTo(95,y+78);ctx.lineTo(1005,y+78);ctx.moveTo(95,y+114);ctx.lineTo(1005,y+114);ctx.stroke();
-      const famY = y + 148;
+      ctx.strokeRect(75,y,950,115);
+      ctx.font=`bold 19px ${RESULT_FONT}`;ctx.fillText('✍ 나의 안전·배려 다짐:',95,y+34);
+      ctx.beginPath();ctx.moveTo(95,y+72);ctx.lineTo(1005,y+72);ctx.moveTo(95,y+102);ctx.lineTo(1005,y+102);ctx.stroke();
+      const famY = y + 130;
       const famCheck = SAFETY_GOALS[1].checks[state.grade];
-      ctx.strokeRect(75,famY,950,104);
-      ctx.font=`bold 18px ${RESULT_FONT}`;ctx.fillText(`🏡 가정 연계 1분 안전 퀴즈: "${famCheck[0]}" (정답: ${famCheck[1][famCheck[2]]})`,95,famY+40,800);
-      ctx.font=`16px ${RESULT_FONT}`;ctx.fillText('가족에게 오늘 배운 안전 약속 한 가지를 소개하고 확인 서명을 받아 보세요: ________________ (인)',95,famY+78,800);
-      drawCanvasQr(ctx, typeof shareLessonUrl === 'function' ? shareLessonUrl() : 'https://gmlduqzhd123-lab.github.io/Halloween/', 915, famY+7, 90);
-      ctx.font=`15px ${RESULT_FONT}`;ctx.fillStyle='#475569';
-      ctx.fillText(`근거 자료: 국민재난안전포털 다중운집인파사고 국민행동요령 · 유네스코 · © 엽쌤 교육용 활동지`,65,1438);
+      ctx.strokeRect(75,famY,950,96);
+      ctx.font=`bold 18px ${RESULT_FONT}`;ctx.fillText(`🏡 가정 연계 1분 안전 대화: "${famCheck[0]}"`,95,famY+36,800);
+      ctx.font=`16px ${RESULT_FONT}`;ctx.fillText('가족에게 오늘 배운 안전 약속 한 가지를 소개하고 확인 서명을 받아 보세요: ________________ (인)',95,famY+72,800);
+      drawCanvasQr(ctx, typeof shareLessonUrl === 'function' ? shareLessonUrl() : 'https://gmlduqzhd123-lab.github.io/Halloween/', 915, famY+5, 86);
+      const cutY = famY + 114;
+      ctx.setLineDash([8, 6]);
+      ctx.beginPath();ctx.moveTo(60, cutY);ctx.lineTo(1040, cutY);ctx.strokeStyle='#64748b';ctx.lineWidth=1.5;ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle='#334155';ctx.font=`bold 15px ${RESULT_FONT}`;
+      ctx.fillText(`✂️ [교사·보호자 확인용 정답] 1번: ${goalAnswerKeys.slice(0,3).join(' / ')}`,65,cutY+24,960);
+      ctx.fillText(`   ${goalAnswerKeys.slice(3).join(' / ')}  |  2번: ${quizAnswerKeys.join(', ')}  |  가정퀴즈 정답: ${famCheck[1][famCheck[2]]}`,65,cutY+46,960);
+      ctx.font=`14px ${RESULT_FONT}`;ctx.fillStyle='#475569';
+      ctx.fillText(`근거 자료: 국민재난안전포털 다중운집인파사고 국민행동요령 · 유네스코 · © 엽쌤 교육용 활동지`,65,1445);
       return canvas;
     }
     function generateStudentShareCode() {
@@ -7190,6 +7375,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const badge = document.getElementById('lessonPacemakerBadge');
       if (!badge) return;
       const mins = Number(state.teacher?.minutes) || 20;
+      document.body.dataset.courseMinutes = String(mins);
       const map = LESSON_PACEMAKER[mins] || LESSON_PACEMAKER[20];
       badge.textContent = map[tabId] || `⏱️ ${mins}분 수업`;
     }
@@ -7644,6 +7830,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       let classTimerInterval = null;
       let classTimerHideTimeout = null;
       let pickedPresenterNumbers = [];
+      let classVoteTally = { one: 0, two: 0 };
       const btnClassTimer = document.getElementById('btnClassTimer');
       const classTimerBanner = document.getElementById('classTimerBanner');
       function renderClassTimerBannerContent(messageText, buttonText = '🎲 발표 번호 뽑기') {
@@ -7681,7 +7868,41 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
             classTimerBanner.classList.add('hidden');
           }, 8000);
         });
+        const tally1Btn = document.createElement('button');
+        tally1Btn.type = 'button';
+        tally1Btn.id = 'btnVoteTally1';
+        tally1Btn.className = 'mini-chip text-xs';
+        tally1Btn.textContent = `👆 1번 (${classVoteTally.one}명)`;
+        tally1Btn.addEventListener('click', () => {
+          if (classTimerHideTimeout) clearTimeout(classTimerHideTimeout);
+          classVoteTally.one++;
+          playSound('click');
+          renderClassTimerBannerContent(messageText, buttonText);
+        });
+        const tally2Btn = document.createElement('button');
+        tally2Btn.type = 'button';
+        tally2Btn.id = 'btnVoteTally2';
+        tally2Btn.className = 'mini-chip text-xs';
+        tally2Btn.textContent = `✌️ 2번 (${classVoteTally.two}명)`;
+        tally2Btn.addEventListener('click', () => {
+          if (classTimerHideTimeout) clearTimeout(classTimerHideTimeout);
+          classVoteTally.two++;
+          playSound('click');
+          renderClassTimerBannerContent(messageText, buttonText);
+        });
         wrap.appendChild(span);
+        wrap.appendChild(tally1Btn);
+        wrap.appendChild(tally2Btn);
+        const totalVotes = classVoteTally.one + classVoteTally.two;
+        if (totalVotes > 0) {
+          const pct1 = Math.round((classVoteTally.one / totalVotes) * 100);
+          const pct2 = 100 - pct1;
+          const ratioSpan = document.createElement('span');
+          ratioSpan.id = 'voteTallyRatioText';
+          ratioSpan.className = 'text-xs font-extrabold text-emerald-300';
+          ratioSpan.textContent = `📊 집계: 1번 ${pct1}% vs 2번 ${pct2}%`;
+          wrap.appendChild(ratioSpan);
+        }
         wrap.appendChild(pickBtn);
         classTimerBanner.appendChild(wrap);
       }
@@ -8137,6 +8358,17 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         else if (safetyGame.running) pauseSafetyGame();
         else { if (safetyGame.won && state.gameStage < 3) state.gameStage++; initSafetyGame(); }
       });
+      const btnToggleNightVision = document.getElementById("btnToggleNightVision");
+      if (btnToggleNightVision) {
+        btnToggleNightVision.addEventListener("click", () => {
+          safetyGame.visionMask = !safetyGame.visionMask;
+          btnToggleNightVision.setAttribute("aria-pressed", String(safetyGame.visionMask));
+          btnToggleNightVision.classList.toggle("is-picked", safetyGame.visionMask);
+          btnToggleNightVision.textContent = safetyGame.visionMask ? "🕶️ 시야 제한 ON" : "🕶️ 시야 제한 OFF";
+          playSound("click");
+          drawSafetyGame();
+        });
+      }
       document.getElementById("btnChestGuardBoost").addEventListener("click", activateChestGuardBoost);
 
       const gameCanvas = document.getElementById("safetyGameCanvas");

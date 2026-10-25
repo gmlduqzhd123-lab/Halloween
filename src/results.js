@@ -28,6 +28,29 @@
       ctx.textAlign='left';
       return ctx;
     }
+    function buildPersonalSafetyCoachNote() {
+      const learnerName = safeLabel(state.profile.name, '우리 안전 대장', 16);
+      const confirmedGoals = SAFETY_GOALS.filter(g => state.safetyConfirmed[g.id]?.contentVersion === SAFETY_CONTENT_VERSION);
+      const unconfirmedGoals = SAFETY_GOALS.filter(g => state.safetyConfirmed[g.id]?.contentVersion !== SAFETY_CONTENT_VERSION);
+      const firstMissedGoal = SAFETY_GOALS.find(g => state.safetyFirst[g.id] && !state.safetyFirst[g.id].correct);
+      const safeCostumes = typeof COSTUME_ITEMS !== 'undefined'
+        ? COSTUME_ITEMS.filter(c => state.costumeChoices[c.id] === c.safe).length
+        : 0;
+
+      const strength = confirmedGoals.length >= 4
+        ? `[${confirmedGoals[0].title}] 등 ${confirmedGoals.length}개 안전 원칙을 정확히 익혔어요`
+        : safeCostumes >= 4
+        ? `시야와 활동성을 지키는 안전 옷차림 감각(${safeCostumes}개 정답)이 훌륭해요`
+        : `차근차근 안전과 배려의 이유를 살피며 탐험하고 있어요`;
+
+      const prescription = firstMissedGoal
+        ? `처음 헷갈렸던 [${firstMissedGoal.title}] 수칙만 한 번 더 떠올리면 완벽해요!`
+        : unconfirmedGoals.length > 0
+        ? `[${unconfirmedGoals[0].title}] 목표를 새 질문으로 확인하면 더욱 든든해요!`
+        : `6대 다중밀집 안전 원칙을 모두 마스터했어요! 친구들에게도 안전 비법을 알려주세요!`;
+
+      return `🩺 AI 안전 코치 맞춤 처방: ${learnerName}님은 ${strength}! ${prescription}`;
+    }
     function renderLearningSummary() {
       const summary=document.getElementById('learningResultSummary');
       if(!summary)return;
@@ -47,6 +70,22 @@
         state.storageAvailable ? '진행 기록은 현재 기기·브라우저에 저장됩니다.' : '현재 저장되지 않습니다. 탭을 닫기 전에 JSON으로 내보내세요.'
       ];
       lines.forEach((line,index)=>{const p=document.createElement('p');p.textContent=line;if(index>=3)p.className='teacher-summary-detail';summary.appendChild(p);});
+
+      // Strategy 1 & 2: AI Personal Safety Coach Note + Growth Comparison Report
+      const coachBox=document.createElement('div');
+      coachBox.id='personalCoachNoteBox';
+      coachBox.className='rounded-xl bg-indigo-950/90 border border-amber-400/50 px-3 py-2 text-xs font-extrabold text-amber-200 mt-1.5';
+      coachBox.textContent=buildPersonalSafetyCoachNote();
+      summary.appendChild(coachBox);
+
+      const firstScenarioRight=Object.values(state.safetyFirst||{}).filter(v=>v&&v.correct).length;
+      const reviewedQ=reviewedQuizScore();
+      const growthBadge=document.createElement('div');
+      growthBadge.id='growthComparisonBadge';
+      growthBadge.className='rounded-xl bg-emerald-950/75 border border-emerald-400/50 px-3 py-1.5 text-xs font-bold text-emerald-200 mt-1';
+      growthBadge.textContent=`🌱→🌳 나의 생각 성장 리포트: 안전 판단(첫 시도 ${firstScenarioRight}/6 → 목표 확인 ${goals}/6) · 생각 확인(첫 정답 ${first}/${all} → 스스로 고친 문항 +${reviewedQ}개)`;
+      summary.appendChild(growthBadge);
+
       const remaining=SAFETY_GOALS.filter(goal=>!state.safetyConfirmed[goal.id] || state.safetyConfirmed[goal.id].contentVersion!==SAFETY_CONTENT_VERSION);
       if(remaining.length){
         const p=document.createElement('p');p.className='teacher-summary-detail';p.textContent=`다시 확인할 목표: ${remaining.map(g=>g.title).join(', ')}`;summary.appendChild(p);
@@ -103,7 +142,7 @@
         const rowTop=document.createElement('div');
         rowTop.className='flex items-center justify-between gap-1 text-[11px] font-bold';
         const nameSpan=document.createElement('span');
-        nameSpan.textContent=`${pct===100?'🟢':pct>=50?'🟡':'🔴'} ${goal.title}`;
+        nameSpan.textContent=`${pct===100?'🟢⭕':pct>=50?'🟡⚠️':'🔴✖'} ${goal.title}`;
         const pctSpan=document.createElement('span');
         pctSpan.className='text-amber-300';
         pctSpan.textContent=`${pct}%`;
@@ -393,19 +432,23 @@
       ctx.beginPath();ctx.moveTo(60,165);ctx.lineTo(1040,165);ctx.lineWidth=2;ctx.stroke();
       ctx.textAlign='left';
       let y=210;
-      ctx.font=`bold 24px ${RESULT_FONT}`;ctx.fillText('1. 꼭 기억할 다중밀집 보행 안전 약속 6가지 (실천할 약속에 ✓ 표시해요)',65,y);y+=38;
+      ctx.font=`bold 24px ${RESULT_FONT}`;ctx.fillText('1. 꼭 기억할 다중밀집 보행 안전 약속 6가지 (올바른 행동 번호를 [  ] 안에 적어요)',65,y);y+=38;
       ctx.font=`19px ${RESULT_FONT}`;
+      const goalAnswerKeys=[];
       SAFETY_GOALS.forEach((goal,idx)=>{
         const check=goal.checks[state.grade];
-        ctx.fillText(`□ 약속 ${idx+1} [${goal.title}] ${check[0]} → 정답: ${check[1][check[2]]}`,75,y,955);
+        goalAnswerKeys.push(`약속${idx+1}: (${check[2]+1}) ${check[1][check[2]]}`);
+        ctx.fillText(`[   ] 약속 ${idx+1} [${goal.title}] ${check[0]}  ① ${check[1][0]}   ② ${check[1][1]}`,75,y,955);
         y+=34;
       });
       y+=18;
       ctx.font=`bold 24px ${RESULT_FONT}`;ctx.fillText(`2. 스스로 풀어 보는 생각 확인 문제 (${EDUCATION_DATA[state.grade].label} 핵심 4문항)`,65,y);y+=38;
       const quizzes=EDUCATION_DATA[state.grade].quizzes.slice(0,4);
+      const quizAnswerKeys=[];
       quizzes.forEach((q,idx)=>{
+        quizAnswerKeys.push(`문항${idx+1}: ${['①','②','③','④'][q.answer]||q.answer+1}`);
         ctx.font=`bold 19px ${RESULT_FONT}`;
-        y=printLines(ctx,`문항 ${idx+1}. ${q.q}`,75,y,950,28,2)+4;
+        y=printLines(ctx,`문항 ${idx+1}. ${q.q}   (정답 번호: [     ])`,75,y,950,28,2)+4;
         ctx.font=`18px ${RESULT_FONT}`;
         const opts=q.options.map((opt,oi)=>`${['①','②','③','④'][oi]||oi+1} ${opt}`).join('    ');
         y=printLines(ctx,opts,95,y,930,27,2)+14;
@@ -416,17 +459,24 @@
       ctx.fillText('□ 앞이 잘 보이는 가면·모자 쓰기   □ 바닥에 끌리지 않는 옷 입기   □ 실제 경찰·소방 제복과 혼동되는 옷 피하기   □ 뾰족한 소품 피하기',75,y,955);
       y+=36;
       ctx.strokeStyle='#334155';ctx.lineWidth=1.5;
-      ctx.strokeRect(75,y,950,130);
-      ctx.font=`bold 19px ${RESULT_FONT}`;ctx.fillText('✍ 나의 안전·배려 다짐:',95,y+36);
-      ctx.beginPath();ctx.moveTo(95,y+78);ctx.lineTo(1005,y+78);ctx.moveTo(95,y+114);ctx.lineTo(1005,y+114);ctx.stroke();
-      const famY = y + 148;
+      ctx.strokeRect(75,y,950,115);
+      ctx.font=`bold 19px ${RESULT_FONT}`;ctx.fillText('✍ 나의 안전·배려 다짐:',95,y+34);
+      ctx.beginPath();ctx.moveTo(95,y+72);ctx.lineTo(1005,y+72);ctx.moveTo(95,y+102);ctx.lineTo(1005,y+102);ctx.stroke();
+      const famY = y + 130;
       const famCheck = SAFETY_GOALS[1].checks[state.grade];
-      ctx.strokeRect(75,famY,950,104);
-      ctx.font=`bold 18px ${RESULT_FONT}`;ctx.fillText(`🏡 가정 연계 1분 안전 퀴즈: "${famCheck[0]}" (정답: ${famCheck[1][famCheck[2]]})`,95,famY+40,800);
-      ctx.font=`16px ${RESULT_FONT}`;ctx.fillText('가족에게 오늘 배운 안전 약속 한 가지를 소개하고 확인 서명을 받아 보세요: ________________ (인)',95,famY+78,800);
-      drawCanvasQr(ctx, typeof shareLessonUrl === 'function' ? shareLessonUrl() : 'https://gmlduqzhd123-lab.github.io/Halloween/', 915, famY+7, 90);
-      ctx.font=`15px ${RESULT_FONT}`;ctx.fillStyle='#475569';
-      ctx.fillText(`근거 자료: 국민재난안전포털 다중운집인파사고 국민행동요령 · 유네스코 · © 엽쌤 교육용 활동지`,65,1438);
+      ctx.strokeRect(75,famY,950,96);
+      ctx.font=`bold 18px ${RESULT_FONT}`;ctx.fillText(`🏡 가정 연계 1분 안전 대화: "${famCheck[0]}"`,95,famY+36,800);
+      ctx.font=`16px ${RESULT_FONT}`;ctx.fillText('가족에게 오늘 배운 안전 약속 한 가지를 소개하고 확인 서명을 받아 보세요: ________________ (인)',95,famY+72,800);
+      drawCanvasQr(ctx, typeof shareLessonUrl === 'function' ? shareLessonUrl() : 'https://gmlduqzhd123-lab.github.io/Halloween/', 915, famY+5, 86);
+      const cutY = famY + 114;
+      ctx.setLineDash([8, 6]);
+      ctx.beginPath();ctx.moveTo(60, cutY);ctx.lineTo(1040, cutY);ctx.strokeStyle='#64748b';ctx.lineWidth=1.5;ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle='#334155';ctx.font=`bold 15px ${RESULT_FONT}`;
+      ctx.fillText(`✂️ [교사·보호자 확인용 정답] 1번: ${goalAnswerKeys.slice(0,3).join(' / ')}`,65,cutY+24,960);
+      ctx.fillText(`   ${goalAnswerKeys.slice(3).join(' / ')}  |  2번: ${quizAnswerKeys.join(', ')}  |  가정퀴즈 정답: ${famCheck[1][famCheck[2]]}`,65,cutY+46,960);
+      ctx.font=`14px ${RESULT_FONT}`;ctx.fillStyle='#475569';
+      ctx.fillText(`근거 자료: 국민재난안전포털 다중운집인파사고 국민행동요령 · 유네스코 · © 엽쌤 교육용 활동지`,65,1445);
       return canvas;
     }
     function generateStudentShareCode() {

@@ -24,7 +24,7 @@
   <script src="./ys-qr.js" defer></script>
   <link rel="manifest" href="./manifest.json" />
   <title>할로윈 안전 놀이터 | 초등 할로윈 수업</title>
-  <link rel="stylesheet" href="./styles.css?v=325ad4660adf7157">
+  <link rel="stylesheet" href="./styles.css?v=48a38156176e7afb">
 </head>
 <body class="storybook lesson-not-started antialiased selection:bg-orange-200 selection:text-slate-900">
 
@@ -250,6 +250,7 @@
       </div>
       <div id="classTimerBanner" class="hidden rounded-2xl bg-amber-500/20 border-2 border-amber-400 px-4 py-3 text-center font-extrabold text-amber-200 text-sm sm:text-base shadow-lg" aria-live="assertive">
       </div>
+      <div id="pairBatonBanner" class="hidden pair-baton-banner rounded-xl px-3 py-1.5 text-center font-extrabold text-xs" aria-live="polite"></div>
       <div id="masterFinaleBanner" class="hidden master-finale-banner rounded-2xl px-4 py-3 text-center font-extrabold text-xs sm:text-sm" aria-live="polite"></div>
 
       <div class="lesson-hero" aria-label="오늘의 탐험 안내">
@@ -540,9 +541,12 @@
                 <button type="button" data-stage="2" class="game-stage-btn nowrap px-2 py-0.5 rounded-lg bg-indigo-900 text-indigo-200 border border-indigo-700 text-xs font-bold">2단계</button>
                 <button type="button" data-stage="3" class="game-stage-btn nowrap px-2 py-0.5 rounded-lg bg-indigo-900 text-indigo-200 border border-indigo-700 text-xs font-bold">3단계</button>
               </div>
-              <button type="button" id="btnStartCanvasGame" class="nowrap px-3 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-indigo-950 font-black text-xs transition min-h-[32px]">
-                ▶ 다시 시작
-              </button>
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button type="button" id="btnToggleNightVision" aria-pressed="false" class="mini-chip text-xs font-extrabold" title="가면·어두운 밤길 시야 제한 체험">🕶️ 시야 제한 OFF</button>
+                <button type="button" id="btnStartCanvasGame" class="nowrap px-3 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-indigo-950 font-black text-xs transition min-h-[32px]">
+                  ▶ 다시 시작
+                </button>
+              </div>
             </div>
             <h3 class="font-title text-base sm:text-xl text-amber-300">🎮 안전한 길을 찾아 이동해요</h3>
           </div>
@@ -1050,6 +1054,6 @@
   </div>
   <img id="printResultImage" alt="학습 결과지 인쇄 이미지" />
 
-  <script src="./app.js?v=325ad4660adf7157" defer></script>
+  <script src="./app.js?v=48a38156176e7afb" defer></script>
 </body>
 </html>

@@ -83,6 +83,10 @@
         ? `🔍 오답 원인 진단 · 다시 살펴볼 핵심 원칙 (${missedIndices.length}개)`
         : '🌟 모든 핵심 안전·문화 원칙을 첫 시도에 정확히 판단했어요!';
       box.appendChild(header);
+      const growthText = document.createElement('p');
+      growthText.className = 'text-xs font-bold text-emerald-300';
+      growthText.textContent = `🌱→🌳 성장 비교: 첫 생각 정답 ${firstQuizScore()}/${quizzes.length}개 → 복습으로 스스로 바로잡은 문항 +${reviewedQuizScore()}개`;
+      box.appendChild(growthText);
       const wrap = document.createElement('div');
       wrap.className = 'flex flex-wrap gap-1.5 pt-1';
       const targetList = missedIndices.length ? missedIndices : [2, 3, 4];
@@ -271,7 +275,9 @@
       document.getElementById('quizQuestionNumber').textContent=`Q${qi+1}${state.quizReview?' 복습':''}`;
       document.getElementById('quizCategoryBadge').textContent=q.category;
       const typeTagEl=document.getElementById('quizTypeTag');
-      if(typeTagEl)typeTagEl.textContent=QUIZ_TYPE_TAGS[qi % QUIZ_TYPE_TAGS.length];
+      const isCore10=Number(state.teacher?.minutes)===10 && [0,2,3,5].includes(qi);
+      if(typeTagEl)typeTagEl.textContent=`${QUIZ_TYPE_TAGS[qi % QUIZ_TYPE_TAGS.length]}${isCore10?' · ⚡10분 핵심':''}`;
+      if(typeof updatePairBatonBanner==='function')updatePairBatonBanner(state.quizIndex);
       const cheerEl=document.getElementById('quizCheerText');
       if(cheerEl)cheerEl.textContent=quizCheerMessage(state.quizCombo);
       document.getElementById('quizQuestionText').textContent=q.q;

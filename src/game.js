@@ -30,11 +30,11 @@
       if (placeBadge) placeBadge.textContent = themeCfg.place;
       if (!meterText) return;
       if (safetyGame.won) {
-        meterText.textContent = '🟢 실시간 혼잡도: 안전 출구 도착 완료!';
+        meterText.textContent = '🟢⭕ [안전·실선] 실시간 혼잡도: 안전 출구 도착 완료!';
         return;
       }
       if (safetyGame.route === 'crowded') {
-        meterText.textContent = '🔴 실시간 혼잡도: 위험 (좁은 병목 구간! 넓은 길로 바꾸세요)';
+        meterText.textContent = '🔴✖ [위험·빗금] 실시간 혼잡도: 위험 (좁은 병목 구간! 넓은 길로 바꾸세요)';
         return;
       }
       const p = safetyGame.player;
@@ -42,15 +42,15 @@
         ? Math.min(...safetyGame.hazards.map(h => Math.hypot(p.x - h.x, p.y - h.y) - h.r))
         : 999;
       if (minDist < 48) {
-        meterText.textContent = '🔴 실시간 혼잡도: 밀집 경고 (어깨가 닿아요! 가장자리로 이동)';
+        meterText.textContent = '🔴✖ [위험·빗금] 실시간 혼잡도: 밀집 경고 (어깨가 닿아요! 가장자리로 이동)';
       } else if (minDist < 95) {
-        meterText.textContent = '🟡 실시간 혼잡도: 주의 (보행 속도와 앞뒤 간격 살피기)';
+        meterText.textContent = '🟡⚠️ [주의·점선] 실시간 혼잡도: 주의 (보행 속도와 앞뒤 간격 살피기)';
       } else {
-        meterText.textContent = '🟢 실시간 혼잡도: 여유 (안전 거리 유지 중)';
+        meterText.textContent = '🟢⭕ [안전·실선] 실시간 혼잡도: 여유 (안전 거리 유지 중)';
       }
     }
     const safetyGame = {
-      running:false, won:false, paused:false, route:null, lastFrame:0,
+      running:false, won:false, paused:false, route:null, lastFrame:0, visionMask:false,
       player:{x:42,y:210,r:13,targetX:null,targetY:null},
       hazards:[], items:[], bonusCollected:false, friendRescued:false, companion:null, exitZone:{x:520,y:22,w:65,h:48}, keys:new Set(), decisionRecorded:false
     };
@@ -307,7 +307,13 @@
           ctx.fillStyle='#e0f2fe';ctx.font='bold 11px "Gowun Dodum", sans-serif';ctx.fillText(item.label,item.x-28,item.y-20);
         });
       }
-      safetyGame.hazards.forEach(h=>{ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.fillStyle='#be123c88';ctx.fill();ctx.strokeStyle='#fb7185';ctx.stroke();ctx.fillStyle='#ffe4e6';ctx.font='11px "Gowun Dodum", sans-serif';ctx.fillText('밀집',h.x-11,h.y+4);});
+      safetyGame.hazards.forEach(h=>{
+        ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.fillStyle='#be123c88';ctx.fill();ctx.strokeStyle='#fb7185';ctx.stroke();
+        ctx.strokeStyle='#fda4af66';ctx.lineWidth=1.5;
+        ctx.beginPath();ctx.moveTo(h.x-h.r*0.6,h.y-h.r*0.6);ctx.lineTo(h.x+h.r*0.6,h.y+h.r*0.6);
+        ctx.moveTo(h.x+h.r*0.6,h.y-h.r*0.6);ctx.lineTo(h.x-h.r*0.6,h.y+h.r*0.6);ctx.stroke();
+        ctx.fillStyle='#ffe4e6';ctx.font='11px "Gowun Dodum", sans-serif';ctx.fillText('✖밀집',h.x-15,h.y+4);
+      });
       if(safetyGame.friendRescued && safetyGame.companion){
         const c=safetyGame.companion;
         ctx.strokeStyle='#fde047';ctx.lineWidth=2;ctx.setLineDash([3,3]);
@@ -320,6 +326,18 @@
       ctx.fillStyle='white';ctx.font='16px "Gowun Dodum", sans-serif';ctx.fillText((typeof state!=='undefined' && state.avatar?.char) || '🧒',x-9,y+5);
       if(safetyGame.bonusCollected && !safetyGame.won){
         ctx.fillStyle='#fde68a';ctx.font='12px "Gowun Dodum", sans-serif';ctx.fillText('✨',x+10,y-8);
+      }
+      if(safetyGame.visionMask && !safetyGame.won){
+        const maskGrad=ctx.createRadialGradient(x,y,24,x,y,92);
+        maskGrad.addColorStop(0,'rgba(2, 6, 23, 0.05)');
+        maskGrad.addColorStop(0.65,'rgba(2, 6, 23, 0.78)');
+        maskGrad.addColorStop(1,'rgba(2, 6, 23, 0.94)');
+        ctx.fillStyle=maskGrad;
+        ctx.fillRect(0,0,600,250);
+        ctx.strokeStyle='#34d399';ctx.lineWidth=2.5;ctx.strokeRect(e.x,e.y,e.w,e.h);
+        ctx.fillStyle='#6ee7b7';ctx.font='bold 12px "Gowun Dodum", sans-serif';ctx.fillText('🟩 비상구 불빛',e.x+3,e.y+28);
+        ctx.fillStyle='#fde68a';ctx.font='bold 11px "Gowun Dodum", sans-serif';
+        ctx.fillText('🕶️ 가면·어두운 밤 시야 제한 체험 중 (앞이 잘 보이는 모자·야광 소품이 필요해요!)',18,240);
       }
       if(safetyGame.won){ctx.fillStyle='#0f172adc';ctx.fillRect(0,0,600,250);ctx.fillStyle='#fde68a';ctx.font='bold 20px "Gowun Dodum", sans-serif';ctx.fillText(safetyGame.bonusCollected?'🌟 미션 성공! 안전한 출구를 찾았어요!':'이동 가능한 출구를 찾았어요!',118,120);}
     }

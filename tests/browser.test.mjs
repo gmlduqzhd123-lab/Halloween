@@ -608,6 +608,39 @@ test('main browser flows and standalone file load without script errors', async 
   await game.locator('#btnStartSpeedOx').click();
   for(let i=0;i<5;i++)await game.locator('#speedOxBonusBox .speed-ox-btn').first().click();
   assert.match(await game.locator('#speedOxBonusBox').innerText(),/스피드 OX 완주 결과/);
+
+  // Verify the 10 app advancement strategies
+  await game.locator('[data-tab="tab-cert"]').first().click();
+  assert.match(await game.locator('#personalCoachNoteBox').innerText(),/AI 안전 코치 맞춤 처방/);
+  assert.match(await game.locator('#growthComparisonBadge').innerText(),/나의 생각 성장 리포트/);
+
+  await game.locator('#btnRandomMission').click();
+  await game.locator('#btnVoteTally1').click();
+  await game.locator('#btnVoteTally2').click();
+  assert.match(await game.locator('#voteTallyRatioText').innerText(),/1번 50% vs 2번 50%/);
+
+  await game.locator('[data-tab="tab-safety"]').first().click();
+  await game.locator('#densityLabBox .density-lab-btn[data-density="5"]').click();
+  assert.match(await game.locator('#densityLabBox').innerText(),/5명 이상/);
+  await game.locator('#btnToggleNightVision').click();
+  assert.equal(await game.evaluate(()=>safetyGame.visionMask),true);
+  await game.locator('#btnToggleNightVision').click();
+
+  await game.evaluate(()=>{
+    state.teacher.minutes = 10;
+    state.teacher.mode = 'pairs';
+    state.scenarioIndex = 0;
+    updateLessonPacemaker();
+    renderScenario();
+  });
+  assert.match(await game.locator('#scenarioStageTag').innerText(),/10분 핵심/);
+  assert.equal(await game.locator('#pairBatonBanner').isVisible(),true);
+  assert.equal(await game.locator('#scenarioDesc .kw-highlight').count()>=1,true);
+
+  await game.locator('[data-tab="tab-culture"]').first().click();
+  await game.evaluate(()=>setCultureStage('compare'));
+  assert.equal(await game.locator('#festivalTimelineBar').isVisible(),true);
+  assert.equal(await game.locator('#btnSpeakFestivalGreeting').isVisible(),true);
   await game.close();
 
   const scoped=await browser.newContext();
