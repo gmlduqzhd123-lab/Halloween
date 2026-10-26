@@ -24,7 +24,7 @@
   <script src="./ys-qr.js" defer></script>
   <link rel="manifest" href="./manifest.json" />
   <title>할로윈 안전 놀이터 | 초등 할로윈 수업</title>
-  <link rel="stylesheet" href="./styles.css?v=6c1d69f76c624848">
+  <link rel="stylesheet" href="./styles.css?v=2abde95d6a6fe466">
 </head>
 <body class="storybook lesson-not-started antialiased selection:bg-orange-200 selection:text-slate-900">
 
@@ -154,33 +154,23 @@
         <div class="welcome-hero-banner">
           <div class="welcome-pass-bar">
             <span id="welcomeThemeBadge" class="welcome-pass-chip">🎃 할로윈 안전 탐험</span>
-            <span id="welcomeGradeMeta" class="welcome-pass-chip is-accent">🌿 3~4학년 · 이유·안전 약속</span>
+            <span id="welcomeGradeMeta" class="welcome-pass-chip is-accent">🌿 3~4학년 맞춤</span>
           </div>
           <div class="welcome-emblem-wrap" aria-hidden="true">
-            <span class="welcome-sparkle is-left">✨</span>
             <div class="welcome-emblem-ring">
               <span id="welcomeHeroIcon" class="welcome-hero-icon">🎃</span>
             </div>
-            <span class="welcome-sparkle is-right">🕯️</span>
           </div>
-          <p class="welcome-eyebrow">할로윈부터 체험학습까지 · 다중밀집 안전 계기교육</p>
-          <h2 id="welcomeTitle">즐거운 행사도<br>안전한 선택에서 시작해요</h2>
+          <h2 id="welcomeTitle">즐거운 행사도 안전한 선택에서 시작해요</h2>
           <p id="welcomeSubtitle" class="welcome-lead">사람이 많이 모이는 상황을 이야기로 만나고, 안전한 움직임을 스스로 판단해요.</p>
-          <div class="welcome-journey-preview" aria-label="4단계 안전 탐험 코스">
-            <span class="welcome-journey-step"><b>1</b> 📖 이야기</span>
-            <span class="welcome-journey-step"><b>2</b> 🚶 길안전</span>
-            <span class="welcome-journey-step"><b>3</b> 🧙 옷차림</span>
-            <span class="welcome-journey-step"><b>4</b> ⭕ 퀴즈</span>
-          </div>
         </div>
 
         <div class="welcome-bento-stack">
           <fieldset class="welcome-bento-card welcome-grades">
             <legend class="sr-only">학년을 고르세요</legend>
             <div class="welcome-bento-head" aria-hidden="true">
-              <span class="welcome-step-badge">STEP 1</span>
+              <span class="welcome-step-badge">1</span>
               <span class="welcome-bento-title">학년을 고르세요</span>
-              <span class="welcome-bento-sub">눈높이 어휘·질문 맞춤</span>
             </div>
             <div class="welcome-grade-grid">
               <button type="button" class="welcome-grade-btn" data-welcome-grade="1-2" aria-pressed="false">
@@ -201,9 +191,9 @@
           <fieldset class="welcome-bento-card welcome-themes" aria-label="수업 상황 주제 선택">
             <legend class="sr-only">연중 언제든 활용하는 다중밀집 상황 주제</legend>
             <div class="welcome-bento-head" aria-hidden="true">
-              <span class="welcome-step-badge">STEP 2</span>
-              <span class="welcome-bento-title">다중밀집 상황 주제</span>
-              <span class="welcome-bento-sub">이야기·게임 연동</span>
+              <span class="welcome-step-badge">2</span>
+              <span class="welcome-bento-title">상황 주제</span>
+              <span class="welcome-bento-sub">기본: 할로윈 · 필요시 변경</span>
             </div>
             <div class="welcome-theme-grid">
               <button type="button" class="mini-chip welcome-theme-btn is-picked" data-welcome-theme="halloween" aria-pressed="true">
@@ -245,8 +235,23 @@
       </section>
 
       <div id="lessonStage" class="lesson-stage" aria-live="polite">
-        <div id="lessonStageInfo" class="cursor-pointer" title="누르면 활동 이동 메뉴가 열려요"><span id="lessonStageNumber">1 / 4</span><strong id="lessonStageTitle" tabindex="-1">문화 이야기</strong><p id="lessonStageHint">그림 이야기를 읽고 문화를 살펴봐요.</p><div id="lessonPacemakerBadge" class="text-[11px] font-bold text-amber-200 mt-0.5">⏳ 40분 수업 · 권장 10분</div></div>
-        <div class="flex flex-wrap items-center gap-1.5"><button type="button" id="btnSpotlightMode" aria-pressed="false" class="nowrap px-2.5 py-1.5 rounded-xl bg-indigo-900 hover:bg-indigo-800 border border-indigo-700 text-xs font-extrabold text-indigo-100 transition" title="전자칠판 본문·질문 집중 확대 모드">🔭 칠판 집중</button><button type="button" id="btnClassTimer" class="nowrap px-2.5 py-1.5 rounded-xl bg-indigo-900 hover:bg-indigo-800 border border-amber-400/50 text-xs font-extrabold text-amber-200 transition" title="학급 전체 손가락(1·2번) 투표 5초 카운트다운">⏱️ 5초 투표</button><button type="button" id="btnRandomMission" class="nowrap px-2.5 py-1.5 rounded-xl bg-indigo-900 hover:bg-indigo-800 border border-amber-400/50 text-xs font-extrabold text-amber-200 transition" title="오늘의 안전·문화 랜덤 미션 돌림판">🎰 랜덤 미션</button><button type="button" id="btnMoreTools" aria-expanded="false" aria-controls="headerTools">설정·활동 이동</button></div>
+        <div id="lessonStageInfo" class="cursor-pointer" title="누르면 활동 이동 메뉴가 열려요">
+          <div class="lesson-stage-meta">
+            <span id="lessonStageNumber" class="stage-step-pill">1 / 4</span>
+            <span id="stageJourneyBadge" class="stage-journey-pill">나의 배움 0 / 4</span>
+            <span id="lessonPacemakerBadge" class="stage-pace-pill">⏳ 40분 수업 · 권장 10분</span>
+          </div>
+          <div class="lesson-stage-headline">
+            <strong id="lessonStageTitle" tabindex="-1">문화 이야기</strong>
+            <p id="lessonStageHint">그림 이야기를 읽고 문화를 살펴봐요.</p>
+          </div>
+        </div>
+        <div class="stage-toolbar">
+          <button type="button" id="btnSpotlightMode" aria-pressed="false" class="stage-tool-btn" title="전자칠판 본문·질문 집중 확대 모드">🔭 칠판 집중</button>
+          <button type="button" id="btnClassTimer" class="stage-tool-btn" title="학급 전체 손가락(1·2번) 투표 5초 카운트다운">⏱️ 5초 투표</button>
+          <button type="button" id="btnRandomMission" class="stage-tool-btn" title="오늘의 안전·문화 랜덤 미션 돌림판">🎰 랜덤 미션</button>
+          <button type="button" id="btnMoreTools" aria-expanded="false" aria-controls="headerTools">⚙️ 메뉴·도구</button>
+        </div>
       </div>
       <div id="classTimerBanner" class="hidden rounded-2xl bg-amber-500/20 border-2 border-amber-400 px-4 py-3 text-center font-extrabold text-amber-200 text-sm sm:text-base shadow-lg" aria-live="assertive">
       </div>
@@ -272,19 +277,20 @@
         <div id="storyChapter" data-culture-stage="story" class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-xl">
           <div class="border-b border-indigo-800/80 pb-2.5 space-y-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="nowrap text-xs font-bold text-orange-400">이야기 1 · 그림 카드 6장</span>
-              <div class="flex flex-wrap items-center gap-1.5">
-                <button type="button" id="btnSpeakStory" class="nowrap px-2.5 py-1 rounded-lg bg-indigo-800 hover:bg-indigo-700 text-amber-300 text-xs font-bold border border-indigo-600 transition flex items-center gap-1 min-h-[32px]">
-                  <span aria-hidden="true">🔈</span> <span id="speakBtnLabel">소리 듣기</span>
-                </button>
-                <button type="button" id="btnSpeechRate" aria-pressed="false" class="speech-rate-btn nowrap px-2.5 py-1 rounded-lg bg-indigo-900 hover:bg-indigo-800 text-indigo-200 text-xs font-bold border border-indigo-700 transition flex items-center gap-1 min-h-[32px]" title="읽어주기 속도를 천천히(0.8배속) 또는 보통(1.0배속)으로 바꿔요"><span aria-hidden="true">🐢</span> <span id="speechRateLabel">보통 속도</span></button>
-                <button type="button" id="btnAutoRead" aria-pressed="false" class="auto-read-btn nowrap px-2.5 py-1 rounded-lg bg-indigo-900 hover:bg-indigo-800 text-indigo-200 text-xs font-bold border border-indigo-700 transition flex items-center gap-1 min-h-[32px]" title="카드를 넘길 때마다 자동으로 읽어 줘요"><span aria-hidden="true">📖</span> <span class="auto-read-label">자동 읽기 OFF</span></button>
-                <span id="storyReadCountBadge" class="nowrap px-2.5 py-1 rounded-lg bg-orange-500/20 border border-orange-400/40 text-orange-200 text-xs font-bold">
+              <div class="flex items-center gap-2">
+                <h2 id="cultureSectionTitle" class="font-title text-base sm:text-xl text-white nowrap">할로윈 이야기</h2>
+                <span id="storyReadCountBadge" class="nowrap px-2 py-0.5 rounded-full bg-orange-500/20 border border-orange-400/40 text-orange-200 text-xs font-bold">
                   1 / 6
                 </span>
               </div>
+              <div class="story-audio-bar flex flex-wrap items-center gap-1">
+                <button type="button" id="btnSpeakStory" class="nowrap px-2.5 py-1 rounded-lg bg-indigo-800 hover:bg-indigo-700 text-amber-300 text-xs font-bold border border-indigo-600 transition flex items-center gap-1 min-h-[32px]">
+                  <span aria-hidden="true">🔈</span> <span id="speakBtnLabel">소리 듣기</span>
+                </button>
+                <button type="button" id="btnSpeechRate" aria-pressed="false" class="speech-rate-btn mini-chip text-[11px]" title="읽어주기 속도를 천천히(0.8배속) 또는 보통(1.0배속)으로 바꿔요"><span aria-hidden="true">🐢</span> <span id="speechRateLabel">보통 속도</span></button>
+                <button type="button" id="btnAutoRead" aria-pressed="false" class="auto-read-btn mini-chip text-[11px]" title="카드를 넘길 때마다 자동으로 읽어 줘요"><span aria-hidden="true">📖</span> <span class="auto-read-label">자동 읽기 OFF</span></button>
+              </div>
             </div>
-            <h2 id="cultureSectionTitle" class="font-title text-base sm:text-xl text-white nowrap">할로윈 이야기</h2>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-stretch">
@@ -309,12 +315,11 @@
                 </div>
                 <h3 id="storySlideTitle" class="font-title text-base sm:text-lg text-amber-200 nowrap"></h3>
                 <p id="storySlideBody" class="text-xs sm:text-sm text-gray-100 leading-relaxed"></p>
-                <div id="storyKeyPointBox" class="rounded-xl bg-indigo-950/90 border border-amber-400/40 p-2.5">
-                  <div class="flex flex-wrap items-center justify-between gap-1.5 mb-0.5">
-                    <div class="text-[11px] font-extrabold text-amber-400">한 문장으로 기억해요</div>
-                    <button type="button" id="btnEchoRead" class="mini-chip text-[11px] px-2 py-0.5" title="핵심 문장을 듣고 다 함께 따라 읽어요">🗣️ 따라 읽기</button>
+                <div id="storyKeyPointBox" class="rounded-xl bg-indigo-950/90 border border-amber-400/40 px-3 py-2">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <p class="text-xs sm:text-sm text-indigo-100 font-bold flex-1"><span class="text-amber-400 font-extrabold mr-1">💡 핵심:</span><span id="storySlideKeyPoint"></span></p>
+                    <button type="button" id="btnEchoRead" class="mini-chip text-[11px] px-2 py-0.5 shrink-0" title="핵심 문장을 듣고 다 함께 따라 읽어요">🗣️ 따라 읽기</button>
                   </div>
-                  <p id="storySlideKeyPoint" class="text-xs sm:text-sm text-indigo-100 font-bold"></p>
                   <p id="storyEchoStatus" class="hidden text-xs font-extrabold text-amber-300 mt-1"></p>
                 </div>
                 <div class="thinking-prompt">
@@ -478,23 +483,11 @@
             <h2 class="font-title text-base sm:text-xl text-white nowrap">지금 어떤 행동이 안전할까요?</h2>
           </div>
 
-          <div class="safety-reminders grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div class="rounded-xl bg-indigo-950/90 border border-indigo-800 px-2.5 py-2 text-center">
-              <div class="text-xs font-title text-amber-300">👉 양방향 통행</div>
-              <div class="text-[11px] text-indigo-200">평상시 오른쪽으로 걷기</div>
-            </div>
-            <div class="rounded-xl bg-indigo-950/90 border border-indigo-800 px-2.5 py-2 text-center">
-              <div class="text-xs font-title text-emerald-300">↗️ 밀집 신호</div>
-              <div class="text-[11px] text-indigo-200">움직임을 살펴 벗어나기</div>
-            </div>
-            <div class="rounded-xl bg-indigo-950/90 border border-indigo-800 px-2.5 py-2 text-center">
-              <div class="text-xs font-title text-sky-300">👐 떠밀릴 때</div>
-              <div class="text-[11px] text-indigo-200">가슴 앞 공간 보호</div>
-            </div>
-            <div class="rounded-xl bg-indigo-950/90 border border-indigo-800 px-2.5 py-2 text-center">
-              <div class="text-xs font-title text-rose-300">🙅 물건보다 몸</div>
-              <div class="text-[11px] text-indigo-200">떨어진 물건 줍지 않기</div>
-            </div>
+          <div class="safety-reminders rounded-xl bg-indigo-950/90 border border-indigo-800 px-3 py-2 text-xs font-bold text-indigo-200 flex flex-wrap items-center justify-between gap-2">
+            <span>👉 평상시 오른쪽 걷기</span>
+            <span>↗️ 밀집 신호 시 대각선 이동</span>
+            <span>👐 떠밀릴 때 가슴 앞 공간 확보</span>
+            <span>🙅 떨어진 물건보다 내 몸 먼저</span>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-center">
@@ -688,18 +681,7 @@
           </div>
 
           <div id="costumeTogetherBanner" class="costume-guide-banners rounded-xl bg-indigo-950/90 border border-amber-400/40 px-3 py-2 text-xs font-bold text-amber-200">
-            🙆‍♂️ 우리 반 몸짓 O·X 퀴즈: 옷 카드를 보고 머리 위로 크게 ⭕(안전) 또는 ❌(피하기)를 만든 뒤 눌러 보세요!
-          </div>
-
-          <div class="costume-guide-banners grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <div class="rounded-xl bg-rose-950/60 border border-rose-500/40 px-3 py-2.5 text-xs space-y-0.5">
-              <div class="font-extrabold text-rose-300">🚓 실제 제복처럼 보이는 옷은 피하고 확인해요</div>
-              <p class="text-rose-100">경찰제복과 군복은 각각 다른 법의 조건을 살펴야 해요. 소방관 출동복은 실제 구조대원과 혼동되지 않게 피하는 선택을 해요.</p>
-            </div>
-            <div class="rounded-xl bg-emerald-950/60 border border-emerald-500/40 px-3 py-2.5 text-xs space-y-0.5">
-              <div class="font-extrabold text-emerald-300 nowrap">✨ 어떤 분장과 소품이 안전할까요?</div>
-              <p class="text-emerald-100">시야를 가리지 않고 밤길에도 잘 보이는 밝은 옷이 최고예요!</p>
-            </div>
+            💡 앞이 잘 보이고 걷기 편한 옷은 ⭕안전, 실제 제복(경찰·소방·군복)이나 위험한 소품은 ❌피하기를 골라요!
           </div>
 
           <div id="costumeCardsGrid" class="grid grid-cols-1 max-w-md mx-auto gap-2.5"></div>
@@ -1054,6 +1036,6 @@
   </div>
   <img id="printResultImage" alt="학습 결과지 인쇄 이미지" />
 
-  <script src="./app.js?v=6c1d69f76c624848" defer></script>
+  <script src="./app.js?v=2abde95d6a6fe466" defer></script>
 </body>
 </html>

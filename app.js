@@ -4225,6 +4225,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       });
       document.getElementById("stampCountText").textContent = `${count}/4`;
       document.getElementById("journeyCount").textContent = `${count} / 4`;
+      const stageJourneyEl = document.getElementById("stageJourneyBadge");
+      if (stageJourneyEl) stageJourneyEl.textContent = `나의 배움 ${count} / 4`;
       if (count >= 4) {
         document.body.dataset.masterTheme = "gold";
       } else {
@@ -4887,23 +4889,26 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
             if (showPairTalk) {
               const otherIdx = pickedIdx === 0 ? 1 : 0;
               const otherOpt = poll.options[otherIdx] || poll.options[0];
-              const promptEl = document.createElement("div");
+              const rowEl = document.createElement("div");
+              rowEl.className = "flex flex-wrap items-center justify-between gap-2";
+              const promptEl = document.createElement("span");
               promptEl.className = "font-bold text-amber-200 leading-snug";
-              promptEl.textContent = `🤝 짝꿍 생각 나누기(20초): 내가 고른 이유를 말하고, [${otherOpt}] 보기를 고른 친구는 어떤 마음일지 함께 이야기해 볼까요?`;
+              promptEl.textContent = `🤝 짝꿍 나눔: 내가 고른 이유와 [${otherOpt}] 생각도 나눠 봐요!`;
               const doneBtn = document.createElement("button");
               doneBtn.type = "button";
               doneBtn.id = "btnPairTalkDone";
               const isTalkDone = !!storyPollPicked[`${pollKey}:talk`];
-              doneBtn.className = `mini-chip text-[11px] ${isTalkDone ? "is-picked" : ""}`;
-              doneBtn.textContent = isTalkDone ? "🌟 짝꿍과 생각 나눔 완료!" : "🗣️ 짝꿍과 이야기 나눴어요!";
+              doneBtn.className = `mini-chip text-[11px] shrink-0 ${isTalkDone ? "is-picked" : ""}`;
+              doneBtn.textContent = isTalkDone ? "🌟 나눔 완료!" : "🗣️ 이야기 나눴어요!";
               doneBtn.addEventListener("click", () => {
                 storyPollPicked[`${pollKey}:talk`] = true;
                 playSound("correct");
                 awardOnce(storyRewardId(progress.storyIndex), 'pairtalk', 10, "짝꿍 생각 나누기");
                 renderStorySlide();
               });
-              pairTalkBox.appendChild(promptEl);
-              pairTalkBox.appendChild(doneBtn);
+              rowEl.appendChild(promptEl);
+              rowEl.appendChild(doneBtn);
+              pairTalkBox.appendChild(rowEl);
             }
           }
         } else {
