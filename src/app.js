@@ -1514,6 +1514,89 @@
       }
     }
 
+    // ==================== BACKGROUND MUSIC (BGM) & VOLUME CONTROLLER ====================
+    const BGM_PREF_KEY = "halloween_edu_bgm_v1";
+    let bgmOn = true;
+    let bgmVolume = 35;
+    let lastNonZeroBgmVolume = 35;
+    let isTtsSpeaking = false;
+
+    function loadBgmPrefs() {
+      try {
+        const raw = localStorage.getItem(BGM_PREF_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") {
+          if (typeof parsed.bgmOn === "boolean") bgmOn = parsed.bgmOn;
+          if (Number.isFinite(parsed.bgmVolume)) {
+            bgmVolume = Math.max(0, Math.min(100, Math.round(parsed.bgmVolume)));
+            if (bgmVolume > 0) lastNonZeroBgmVolume = bgmVolume;
+          }
+          if (Number.isFinite(parsed.lastNonZeroBgmVolume) && parsed.lastNonZeroBgmVolume > 0) {
+            lastNonZeroBgmVolume = Math.max(5, Math.min(100, Math.round(parsed.lastNonZeroBgmVolume)));
+          }
+        }
+      } catch (_) {}
+    }
+
+    function saveBgmPrefs() {
+      try {
+        localStorage.setItem(BGM_PREF_KEY, JSON.stringify({ bgmOn, bgmVolume, lastNonZeroBgmVolume }));
+      } catch (_) {}
+    }
+
+    function applyBgmVolume() {
+      const audio = document.getElementById("bgmAudio");
+      if (!audio) return;
+      const baseVol = bgmOn ? Math.max(0, Math.min(1, bgmVolume / 100)) : 0;
+      audio.volume = isTtsSpeaking ? baseVol * 0.25 : baseVol;
+      audio.muted = !bgmOn || bgmVolume <= 0;
+    }
+
+    function syncBgmUI() {
+      const btn = document.getElementById("btnBgmToggle");
+      const icon = document.getElementById("bgmIcon");
+      const label = document.getElementById("bgmLabel");
+      const slider = document.getElementById("bgmVolumeSlider");
+      const volText = document.getElementById("bgmVolumeText");
+      const active = bgmOn && bgmVolume > 0;
+      if (btn) {
+        btn.setAttribute("aria-pressed", String(active));
+        btn.classList.toggle("is-off", !active);
+        btn.title = active ? "배경음악 끄기 (클릭)" : "배경음악 켜기 (클릭)";
+      }
+      if (icon) icon.textContent = active ? "🎵" : "🔇";
+      if (label) label.textContent = active ? "BGM ON" : "BGM OFF";
+      if (slider) slider.value = String(active ? bgmVolume : 0);
+      if (volText) volText.textContent = `${active ? bgmVolume : 0}%`;
+      applyBgmVolume();
+    }
+
+    function syncBgmPlayback() {
+      const audio = document.getElementById("bgmAudio");
+      if (!audio) return;
+      applyBgmVolume();
+      const exitScreen = document.getElementById("exitScreen");
+      const isExited = exitScreen && !exitScreen.classList.contains("hidden");
+      if (bgmOn && bgmVolume > 0 && !isExited && document.visibilityState !== "hidden") {
+        if (audio.paused) {
+          const playPromise = audio.play();
+          if (playPromise && typeof playPromise.catch === "function") {
+            playPromise.catch(() => {});
+          }
+        }
+      } else if (!audio.paused) {
+        audio.pause();
+      }
+    }
+
+    function pauseBgmAudio() {
+      const audio = document.getElementById("bgmAudio");
+      if (audio && !audio.paused) {
+        try { audio.pause(); } catch (_) {}
+      }
+    }
+
     // ==================== SPEECH SYNTHESIS CLEANUP ====================
     function stopSpeaking() {
       try {
@@ -1521,6 +1604,8 @@
           window.speechSynthesis.cancel();
         }
       } catch (e) {}
+      isTtsSpeaking = false;
+      applyBgmVolume();
       const lbl = document.getElementById("speakBtnLabel");
       if (lbl) lbl.textContent = "소리 듣기";
       document.querySelectorAll(".tts-reading-active").forEach(el => el.classList.remove("tts-reading-active"));
@@ -1546,7 +1631,11 @@
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang='ko-KR';
       utterance.rate=currentSpeechRate();
-      try { window.speechSynthesis.speak(utterance); } catch (e) { showToast('음성을 사용할 수 없어 화면의 글로 진행해요.', '🔈'); }
+      isTtsSpeaking = true;
+      applyBgmVolume();
+      utterance.onend = () => { isTtsSpeaking = false; applyBgmVolume(); };
+      utterance.onerror = () => { isTtsSpeaking = false; applyBgmVolume(); };
+      try { window.speechSynthesis.speak(utterance); } catch (e) { isTtsSpeaking = false; applyBgmVolume(); showToast('음성을 사용할 수 없어 화면의 글로 진행해요.', '🔈'); }
     }
 
     // ==================== TAB 1: STORY & JACK-O'-LANTERN WORKSHOP ====================
@@ -2333,12 +2422,18 @@
       const keyBoxEl = document.getElementById("storyKeyPointBox");
       if (bodyEl) bodyEl.classList.add("tts-reading-active");
       if (keyBoxEl) keyBoxEl.classList.add("tts-reading-active");
+      isTtsSpeaking = true;
+      applyBgmVolume();
       utter.onend = () => {
+        isTtsSpeaking = false;
+        applyBgmVolume();
         document.getElementById("speakBtnLabel").textContent = "소리 듣기";
         if (bodyEl) bodyEl.classList.remove("tts-reading-active");
         if (keyBoxEl) keyBoxEl.classList.remove("tts-reading-active");
       };
       utter.onerror = () => {
+        isTtsSpeaking = false;
+        applyBgmVolume();
         document.getElementById("speakBtnLabel").textContent = "소리 듣기";
         if (bodyEl) bodyEl.classList.remove("tts-reading-active");
         if (keyBoxEl) keyBoxEl.classList.remove("tts-reading-active");
@@ -3779,6 +3874,7 @@
       });
       document.getElementById("btnConfirmExit").addEventListener("click", () => {
         stopSpeaking();
+        pauseBgmAudio();
         stopSafetyGameLoop();
         exitAppFullscreen();
         closeModal(exitModal);
@@ -3792,6 +3888,7 @@
       document.getElementById("btnRelaunchApp").addEventListener("click", () => {
         playSound("stamp");
         exitScreen.classList.add("hidden");
+        syncBgmPlayback();
         if (state.activeTab === "tab-safety") {
           setTimeout(resizeSafetyCanvas, 50);
         }
@@ -4109,6 +4206,67 @@
         document.getElementById("soundIcon").textContent = state.soundOn ? "🔊" : "🔇";
         document.getElementById("soundLabel").textContent = state.soundOn ? "소리 ON" : "꺼짐";
         if (state.soundOn) playSound("correct");
+      });
+
+      loadBgmPrefs();
+      syncBgmUI();
+      syncBgmPlayback();
+
+      const btnBgmToggle = document.getElementById("btnBgmToggle");
+      if (btnBgmToggle) {
+        btnBgmToggle.addEventListener("click", () => {
+          if (bgmOn && bgmVolume > 0) {
+            bgmOn = false;
+            saveBgmPrefs();
+            syncBgmUI();
+            pauseBgmAudio();
+            playSound("click");
+            showToast("배경음악을 껐어요.", "🔇");
+          } else {
+            bgmOn = true;
+            if (bgmVolume <= 0) bgmVolume = lastNonZeroBgmVolume || 35;
+            saveBgmPrefs();
+            syncBgmUI();
+            syncBgmPlayback();
+            playSound("click");
+            showToast(`배경음악을 켰어요! (볼륨 ${bgmVolume}%)`, "🎵");
+          }
+        });
+      }
+
+      const bgmVolumeSlider = document.getElementById("bgmVolumeSlider");
+      if (bgmVolumeSlider) {
+        bgmVolumeSlider.addEventListener("input", e => {
+          const val = Math.max(0, Math.min(100, Number(e.target.value) || 0));
+          bgmVolume = val;
+          if (val > 0) {
+            lastNonZeroBgmVolume = val;
+            bgmOn = true;
+            syncBgmUI();
+            syncBgmPlayback();
+          } else {
+            bgmOn = false;
+            syncBgmUI();
+            pauseBgmAudio();
+          }
+          saveBgmPrefs();
+        });
+      }
+
+      const unlockBgmOnGesture = () => {
+        if (bgmOn && bgmVolume > 0) {
+          syncBgmPlayback();
+        }
+      };
+      ["pointerdown", "keydown", "touchstart"].forEach(evt => {
+        window.addEventListener(evt, unlockBgmOnGesture, { passive: true });
+      });
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") {
+          pauseBgmAudio();
+        } else {
+          syncBgmPlayback();
+        }
       });
 
       const teacherModal = document.getElementById("teacherModal");

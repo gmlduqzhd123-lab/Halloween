@@ -9,7 +9,7 @@ import { chromium } from 'playwright';
 import vm from 'node:vm';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
-const types = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.json':'application/json', '.svg':'image/svg+xml' };
+const types = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.json':'application/json', '.svg':'image/svg+xml', '.mp3':'audio/mpeg', '.png':'image/png' };
 
 test('main browser flows and standalone file load without script errors', async t => {
   const server=createServer(async (req,res)=>{
@@ -82,6 +82,18 @@ test('main browser flows and standalone file load without script errors', async 
   assert.match(await welcome.locator('#btnStartFresh').innerText(),/처음부터 시작하기/);
   assert.match(await welcome.locator('#btnStartLesson').innerText(),/이어서 시작하기/);
   assert.equal(await welcome.locator('.welcome-copyright').count(),0);
+  assert.equal(await welcome.locator('#btnBgmToggle').getAttribute('aria-pressed'),'true');
+  assert.equal(await welcome.locator('#bgmVolumeText').innerText(),'35%');
+  await welcome.locator('#btnBgmToggle').click();
+  assert.equal(await welcome.locator('#btnBgmToggle').getAttribute('aria-pressed'),'false');
+  assert.equal(await welcome.locator('#bgmLabel').innerText(),'BGM OFF');
+  assert.equal(await welcome.locator('#bgmVolumeText').innerText(),'0%');
+  await welcome.locator('#bgmVolumeSlider').fill('60');
+  await welcome.locator('#bgmVolumeSlider').dispatchEvent('input');
+  assert.equal(await welcome.locator('#btnBgmToggle').getAttribute('aria-pressed'),'true');
+  assert.equal(await welcome.locator('#bgmLabel').innerText(),'BGM ON');
+  assert.equal(await welcome.locator('#bgmVolumeText').innerText(),'60%');
+  assert.equal(await welcome.evaluate(()=>Math.round(document.getElementById('bgmAudio').volume*100)),60);
   await welcome.locator('[data-welcome-theme="field"]').click();
   assert.match(await welcome.locator('.hero-kicker').innerText(),/현장체험학습/);
   await welcome.locator('[data-welcome-theme="halloween"]').click();

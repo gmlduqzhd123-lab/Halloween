@@ -718,15 +718,28 @@
       .storybook input[type="text"], .storybook select, .storybook textarea { font-size: 16px !important; }
     }
 
-    /* 📲 앱 설치 · 📱 QR (엽쌤 앱 공통 상단 버튼) — 메뉴를 열지 않아도 맨 윗줄 오른쪽에 늘 보임 */
+    /* 📲 앱 설치 · 📱 QR · 🎵 BGM 컨트롤 — 메뉴를 열지 않아도 맨 윗줄 오른쪽에 늘 보임 */
     #safetyGameCanvas { touch-action: none; -webkit-user-select: none; user-select: none; }
     .game-dpad-btn { touch-action: manipulation; -webkit-user-select: none; user-select: none; }
     .ys-row { flex-wrap: wrap; }
-    .ys-key { display: flex; gap: 6px; margin-left: auto; flex-shrink: 0; }
+    .ys-key { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 5px; margin-left: auto; min-width: 0; max-width: 100%; }
     .ys-chip { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; font: inherit; font-size: 13px; font-weight: 800; line-height: 1.3; padding: 5px 11px; border-radius: 999px; border: 1px solid #e8b98a; background: #fffaf3; color: #9a4a17; white-space: nowrap; cursor: pointer; }
     .ys-chip:hover { background: #ffefd9; }
+    .bgm-control-pill { display: inline-flex; align-items: center; gap: 5px; min-height: 34px; max-width: 100%; padding: 3px 9px 3px 5px; border-radius: 999px; border: 1px solid #e8b98a; background: #fffaf3; color: #493b59; }
+    .bgm-toggle-btn { display: inline-flex; align-items: center; gap: 3px; min-height: 26px; padding: 2px 8px; border-radius: 999px; border: 1px solid #e0c5a3; background: #fff3e0; color: #9a4a17 !important; font: inherit; font-size: 12px; font-weight: 800; line-height: 1.2; white-space: nowrap; cursor: pointer; transition: all .15s ease; }
+    .bgm-toggle-btn:hover { background: #ffe4bf; }
+    .bgm-toggle-btn.is-off { background: #f3ece4 !important; border-color: #d5c3b1 !important; color: #6e6279 !important; }
+    .bgm-volume-slider { width: 58px; height: 6px; accent-color: #c96a3b; cursor: pointer; margin: 0; }
+    .bgm-volume-text { min-width: 28px; text-align: right; font-size: 11px; font-weight: 800; color: #7a4b2a !important; white-space: nowrap; }
     .ys-credit a { text-decoration: underline; text-underline-offset: 2px; }
-    @media (max-width: 520px) { .ys-wide { display: none; } .ys-chip { font-size: 12.5px; padding: 5px 9px; } }
+    @media (max-width: 520px) {
+      .ys-wide { display: none; }
+      .ys-chip { font-size: 12px; padding: 4px 8px; min-height: 30px; }
+      .bgm-control-pill { min-height: 30px; padding: 2px 7px 2px 4px; gap: 4px; }
+      .bgm-volume-slider { width: 42px; }
+      .bgm-toggle-btn { font-size: 11px; padding: 2px 6px; min-height: 24px; }
+      .bgm-volume-text { min-width: 24px; font-size: 10px; }
+    }
 
     /* 칠판 집중 확대(Spotlight) 모드 및 6대 목표 히트맵 */
     body.spotlight-mode main .tab-panel:not(.hidden) > .glass-card:first-of-type {
@@ -884,7 +897,19 @@
             <h1 class="font-title text-base sm:text-xl text-white nowrap">할로윈 안전 놀이터</h1>
           </button>
 
-          <div class="ys-key"><button type="button" class="ys-chip" data-ys-install>📲 <span class="ys-wide">앱 </span>설치</button><button type="button" class="ys-chip" data-qr aria-label="QR 코드로 접속">📱 QR</button></div>
+          <div class="ys-key">
+            <div class="bgm-control-pill" role="group" aria-label="배경음악 설정">
+              <button type="button" id="btnBgmToggle" class="bgm-toggle-btn" aria-pressed="true" title="배경음악 켜기/끄기">
+                <span id="bgmIcon" aria-hidden="true">🎵</span>
+                <span id="bgmLabel">BGM ON</span>
+              </button>
+              <label for="bgmVolumeSlider" class="sr-only">배경음악 볼륨 조절</label>
+              <input type="range" id="bgmVolumeSlider" class="bgm-volume-slider" min="0" max="100" step="5" value="35" title="배경음악 볼륨 조절" aria-label="배경음악 볼륨 조절" />
+              <span id="bgmVolumeText" class="bgm-volume-text">35%</span>
+            </div>
+            <button type="button" class="ys-chip" data-ys-install>📲 <span class="ys-wide">앱 </span>설치</button>
+            <button type="button" class="ys-chip" data-qr aria-label="QR 코드로 접속">📱 QR</button>
+          </div>
           <div class="header-extra flex items-center gap-1 shrink-0">
             <button type="button" id="btnFullscreen" class="nowrap px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-800 hover:bg-indigo-700 text-amber-300 border border-indigo-600 transition flex items-center gap-1 min-h-[30px]" title="전체화면 전환">
               <span aria-hidden="true">⛶</span>
@@ -1869,6 +1894,7 @@
     </button>
   </div>
   <img id="printResultImage" alt="학습 결과지 인쇄 이미지" />
+  <audio id="bgmAudio" src="./bgm.mp3" loop preload="auto"></audio>
 
   <script>//---------------------------------------------------------------------
 //
@@ -6118,6 +6144,89 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       }
     }
 
+    // ==================== BACKGROUND MUSIC (BGM) & VOLUME CONTROLLER ====================
+    const BGM_PREF_KEY = "halloween_edu_bgm_v1";
+    let bgmOn = true;
+    let bgmVolume = 35;
+    let lastNonZeroBgmVolume = 35;
+    let isTtsSpeaking = false;
+
+    function loadBgmPrefs() {
+      try {
+        const raw = localStorage.getItem(BGM_PREF_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") {
+          if (typeof parsed.bgmOn === "boolean") bgmOn = parsed.bgmOn;
+          if (Number.isFinite(parsed.bgmVolume)) {
+            bgmVolume = Math.max(0, Math.min(100, Math.round(parsed.bgmVolume)));
+            if (bgmVolume > 0) lastNonZeroBgmVolume = bgmVolume;
+          }
+          if (Number.isFinite(parsed.lastNonZeroBgmVolume) && parsed.lastNonZeroBgmVolume > 0) {
+            lastNonZeroBgmVolume = Math.max(5, Math.min(100, Math.round(parsed.lastNonZeroBgmVolume)));
+          }
+        }
+      } catch (_) {}
+    }
+
+    function saveBgmPrefs() {
+      try {
+        localStorage.setItem(BGM_PREF_KEY, JSON.stringify({ bgmOn, bgmVolume, lastNonZeroBgmVolume }));
+      } catch (_) {}
+    }
+
+    function applyBgmVolume() {
+      const audio = document.getElementById("bgmAudio");
+      if (!audio) return;
+      const baseVol = bgmOn ? Math.max(0, Math.min(1, bgmVolume / 100)) : 0;
+      audio.volume = isTtsSpeaking ? baseVol * 0.25 : baseVol;
+      audio.muted = !bgmOn || bgmVolume <= 0;
+    }
+
+    function syncBgmUI() {
+      const btn = document.getElementById("btnBgmToggle");
+      const icon = document.getElementById("bgmIcon");
+      const label = document.getElementById("bgmLabel");
+      const slider = document.getElementById("bgmVolumeSlider");
+      const volText = document.getElementById("bgmVolumeText");
+      const active = bgmOn && bgmVolume > 0;
+      if (btn) {
+        btn.setAttribute("aria-pressed", String(active));
+        btn.classList.toggle("is-off", !active);
+        btn.title = active ? "배경음악 끄기 (클릭)" : "배경음악 켜기 (클릭)";
+      }
+      if (icon) icon.textContent = active ? "🎵" : "🔇";
+      if (label) label.textContent = active ? "BGM ON" : "BGM OFF";
+      if (slider) slider.value = String(active ? bgmVolume : 0);
+      if (volText) volText.textContent = `${active ? bgmVolume : 0}%`;
+      applyBgmVolume();
+    }
+
+    function syncBgmPlayback() {
+      const audio = document.getElementById("bgmAudio");
+      if (!audio) return;
+      applyBgmVolume();
+      const exitScreen = document.getElementById("exitScreen");
+      const isExited = exitScreen && !exitScreen.classList.contains("hidden");
+      if (bgmOn && bgmVolume > 0 && !isExited && document.visibilityState !== "hidden") {
+        if (audio.paused) {
+          const playPromise = audio.play();
+          if (playPromise && typeof playPromise.catch === "function") {
+            playPromise.catch(() => {});
+          }
+        }
+      } else if (!audio.paused) {
+        audio.pause();
+      }
+    }
+
+    function pauseBgmAudio() {
+      const audio = document.getElementById("bgmAudio");
+      if (audio && !audio.paused) {
+        try { audio.pause(); } catch (_) {}
+      }
+    }
+
     // ==================== SPEECH SYNTHESIS CLEANUP ====================
     function stopSpeaking() {
       try {
@@ -6125,6 +6234,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           window.speechSynthesis.cancel();
         }
       } catch (e) {}
+      isTtsSpeaking = false;
+      applyBgmVolume();
       const lbl = document.getElementById("speakBtnLabel");
       if (lbl) lbl.textContent = "소리 듣기";
       document.querySelectorAll(".tts-reading-active").forEach(el => el.classList.remove("tts-reading-active"));
@@ -6150,7 +6261,11 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang='ko-KR';
       utterance.rate=currentSpeechRate();
-      try { window.speechSynthesis.speak(utterance); } catch (e) { showToast('음성을 사용할 수 없어 화면의 글로 진행해요.', '🔈'); }
+      isTtsSpeaking = true;
+      applyBgmVolume();
+      utterance.onend = () => { isTtsSpeaking = false; applyBgmVolume(); };
+      utterance.onerror = () => { isTtsSpeaking = false; applyBgmVolume(); };
+      try { window.speechSynthesis.speak(utterance); } catch (e) { isTtsSpeaking = false; applyBgmVolume(); showToast('음성을 사용할 수 없어 화면의 글로 진행해요.', '🔈'); }
     }
 
     // ==================== TAB 1: STORY & JACK-O'-LANTERN WORKSHOP ====================
@@ -6937,12 +7052,18 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const keyBoxEl = document.getElementById("storyKeyPointBox");
       if (bodyEl) bodyEl.classList.add("tts-reading-active");
       if (keyBoxEl) keyBoxEl.classList.add("tts-reading-active");
+      isTtsSpeaking = true;
+      applyBgmVolume();
       utter.onend = () => {
+        isTtsSpeaking = false;
+        applyBgmVolume();
         document.getElementById("speakBtnLabel").textContent = "소리 듣기";
         if (bodyEl) bodyEl.classList.remove("tts-reading-active");
         if (keyBoxEl) keyBoxEl.classList.remove("tts-reading-active");
       };
       utter.onerror = () => {
+        isTtsSpeaking = false;
+        applyBgmVolume();
         document.getElementById("speakBtnLabel").textContent = "소리 듣기";
         if (bodyEl) bodyEl.classList.remove("tts-reading-active");
         if (keyBoxEl) keyBoxEl.classList.remove("tts-reading-active");
@@ -9858,6 +9979,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       });
       document.getElementById("btnConfirmExit").addEventListener("click", () => {
         stopSpeaking();
+        pauseBgmAudio();
         stopSafetyGameLoop();
         exitAppFullscreen();
         closeModal(exitModal);
@@ -9871,6 +9993,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       document.getElementById("btnRelaunchApp").addEventListener("click", () => {
         playSound("stamp");
         exitScreen.classList.add("hidden");
+        syncBgmPlayback();
         if (state.activeTab === "tab-safety") {
           setTimeout(resizeSafetyCanvas, 50);
         }
@@ -10188,6 +10311,67 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         document.getElementById("soundIcon").textContent = state.soundOn ? "🔊" : "🔇";
         document.getElementById("soundLabel").textContent = state.soundOn ? "소리 ON" : "꺼짐";
         if (state.soundOn) playSound("correct");
+      });
+
+      loadBgmPrefs();
+      syncBgmUI();
+      syncBgmPlayback();
+
+      const btnBgmToggle = document.getElementById("btnBgmToggle");
+      if (btnBgmToggle) {
+        btnBgmToggle.addEventListener("click", () => {
+          if (bgmOn && bgmVolume > 0) {
+            bgmOn = false;
+            saveBgmPrefs();
+            syncBgmUI();
+            pauseBgmAudio();
+            playSound("click");
+            showToast("배경음악을 껐어요.", "🔇");
+          } else {
+            bgmOn = true;
+            if (bgmVolume <= 0) bgmVolume = lastNonZeroBgmVolume || 35;
+            saveBgmPrefs();
+            syncBgmUI();
+            syncBgmPlayback();
+            playSound("click");
+            showToast(`배경음악을 켰어요! (볼륨 ${bgmVolume}%)`, "🎵");
+          }
+        });
+      }
+
+      const bgmVolumeSlider = document.getElementById("bgmVolumeSlider");
+      if (bgmVolumeSlider) {
+        bgmVolumeSlider.addEventListener("input", e => {
+          const val = Math.max(0, Math.min(100, Number(e.target.value) || 0));
+          bgmVolume = val;
+          if (val > 0) {
+            lastNonZeroBgmVolume = val;
+            bgmOn = true;
+            syncBgmUI();
+            syncBgmPlayback();
+          } else {
+            bgmOn = false;
+            syncBgmUI();
+            pauseBgmAudio();
+          }
+          saveBgmPrefs();
+        });
+      }
+
+      const unlockBgmOnGesture = () => {
+        if (bgmOn && bgmVolume > 0) {
+          syncBgmPlayback();
+        }
+      };
+      ["pointerdown", "keydown", "touchstart"].forEach(evt => {
+        window.addEventListener(evt, unlockBgmOnGesture, { passive: true });
+      });
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") {
+          pauseBgmAudio();
+        } else {
+          syncBgmPlayback();
+        }
       });
 
       const teacherModal = document.getElementById("teacherModal");

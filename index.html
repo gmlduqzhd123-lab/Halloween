@@ -24,7 +24,7 @@
   <script src="./ys-qr.js" defer></script>
   <link rel="manifest" href="./manifest.json" />
   <title>할로윈 안전 놀이터 | 초등 할로윈 수업</title>
-  <link rel="stylesheet" href="./styles.css?v=fc3fbb14c1b6dc61">
+  <link rel="stylesheet" href="./styles.css?v=0b7884462639dc88">
 </head>
 <body class="storybook lesson-not-started antialiased selection:bg-orange-200 selection:text-slate-900">
 
@@ -49,7 +49,19 @@
             <h1 class="font-title text-base sm:text-xl text-white nowrap">할로윈 안전 놀이터</h1>
           </button>
 
-          <div class="ys-key"><button type="button" class="ys-chip" data-ys-install>📲 <span class="ys-wide">앱 </span>설치</button><button type="button" class="ys-chip" data-qr aria-label="QR 코드로 접속">📱 QR</button></div>
+          <div class="ys-key">
+            <div class="bgm-control-pill" role="group" aria-label="배경음악 설정">
+              <button type="button" id="btnBgmToggle" class="bgm-toggle-btn" aria-pressed="true" title="배경음악 켜기/끄기">
+                <span id="bgmIcon" aria-hidden="true">🎵</span>
+                <span id="bgmLabel">BGM ON</span>
+              </button>
+              <label for="bgmVolumeSlider" class="sr-only">배경음악 볼륨 조절</label>
+              <input type="range" id="bgmVolumeSlider" class="bgm-volume-slider" min="0" max="100" step="5" value="35" title="배경음악 볼륨 조절" aria-label="배경음악 볼륨 조절" />
+              <span id="bgmVolumeText" class="bgm-volume-text">35%</span>
+            </div>
+            <button type="button" class="ys-chip" data-ys-install>📲 <span class="ys-wide">앱 </span>설치</button>
+            <button type="button" class="ys-chip" data-qr aria-label="QR 코드로 접속">📱 QR</button>
+          </div>
           <div class="header-extra flex items-center gap-1 shrink-0">
             <button type="button" id="btnFullscreen" class="nowrap px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-800 hover:bg-indigo-700 text-amber-300 border border-indigo-600 transition flex items-center gap-1 min-h-[30px]" title="전체화면 전환">
               <span aria-hidden="true">⛶</span>
@@ -1034,7 +1046,8 @@
     </button>
   </div>
   <img id="printResultImage" alt="학습 결과지 인쇄 이미지" />
+  <audio id="bgmAudio" src="./bgm.mp3" loop preload="auto"></audio>
 
-  <script src="./app.js?v=fc3fbb14c1b6dc61" defer></script>
+  <script src="./app.js?v=0b7884462639dc88" defer></script>
 </body>
 </html>
