@@ -81,7 +81,7 @@ test('main browser flows and standalone file load without script errors', async 
   assert.equal(await welcome.locator('#btnStartFresh').isVisible(),true);
   assert.match(await welcome.locator('#btnStartFresh').innerText(),/처음부터 시작하기/);
   assert.match(await welcome.locator('#btnStartLesson').innerText(),/이어서 시작하기/);
-  assert.match(await welcome.locator('.welcome-copyright').innerText(),/엽쌤/);
+  assert.equal(await welcome.locator('.welcome-copyright').count(),0);
   await welcome.locator('[data-welcome-theme="field"]').click();
   assert.match(await welcome.locator('.hero-kicker').innerText(),/현장체험학습/);
   await welcome.locator('[data-welcome-theme="halloween"]').click();
