@@ -1472,6 +1472,7 @@
         renderCandyHeader();
         renderLanternWorkshop();
         renderCertificateCanvas();
+        if (typeof renderLearningSummary === 'function') renderLearningSummary();
       }
     }
 
@@ -1522,6 +1523,7 @@
       } catch (e) {}
       const lbl = document.getElementById("speakBtnLabel");
       if (lbl) lbl.textContent = "소리 듣기";
+      document.querySelectorAll(".tts-reading-active").forEach(el => el.classList.remove("tts-reading-active"));
     }
     function currentSpeechRate() {
       if (state.speechSlow) return 0.78;
@@ -1859,6 +1861,16 @@
     const festivalStamps = {};
     let currentFestivalKey = 'halloween';
 
+    function syncCultureStepBadges() {
+      const doneMap = {
+        story: !!state.stamps?.s1,
+        craft: !!state.lantern?.lit,
+        compare: Object.keys(festivalStamps).length > 0
+      };
+      document.querySelectorAll('[data-culture-step]').forEach(btn => {
+        btn.classList.toggle('step-complete-bridge', !!doneMap[btn.dataset.cultureStep]);
+      });
+    }
     let cultureStage = 'story';
     function setCultureStage(stage, focus = false) {
       if (!['story','craft','compare'].includes(stage)) return;
@@ -1872,6 +1884,7 @@
         if (selected) button.setAttribute('aria-current', 'step');
         else button.removeAttribute('aria-current');
       });
+      syncCultureStepBadges();
       if (stage === 'compare') renderFestivalQuiz(currentFestivalKey);
       if (focus) {
         const heading = document.querySelector(`[data-culture-stage="${stage}"] h2, [data-culture-stage="${stage}"] h3`);
@@ -1992,6 +2005,7 @@
         fBox.className = 'hidden text-xs font-bold';
         fBox.textContent = '';
       }
+      syncCultureStepBadges();
     }
     const EASY_GLOSSARY = {
       "풍습·전통": "🏺 옛날부터 그 지역 사람들이 해마다 이어 온 생활 모습이나 기념 방식이에요.",
@@ -2227,6 +2241,7 @@
       renderGlossaryBox("storyGlossaryBox", halloween ? ["풍습·전통", "인류무형문화유산", "비상구(출구)"] : ["다중밀집", "병목 현상", "집결 장소", "비상구(출구)"]);
       syncAutoReadButtons();
       syncSpeechRateButton();
+      syncCultureStepBadges();
     }
 
     let currentRecipeIdx = 0;
@@ -2298,6 +2313,7 @@
         recipeEl.appendChild(nextBtn);
       }
       renderCertificateCanvas();
+      syncCultureStepBadges();
     }
 
     function toggleSpeakCurrentStory() {
@@ -2313,11 +2329,19 @@
       const utter = new SpeechSynthesisUtterance(`${current.title}. ${current.body}. 핵심 쏙쏙! ${current.keyPoint}`);
       utter.lang = "ko-KR";
       utter.rate = currentSpeechRate();
+      const bodyEl = document.getElementById("storySlideBody");
+      const keyBoxEl = document.getElementById("storyKeyPointBox");
+      if (bodyEl) bodyEl.classList.add("tts-reading-active");
+      if (keyBoxEl) keyBoxEl.classList.add("tts-reading-active");
       utter.onend = () => {
         document.getElementById("speakBtnLabel").textContent = "소리 듣기";
+        if (bodyEl) bodyEl.classList.remove("tts-reading-active");
+        if (keyBoxEl) keyBoxEl.classList.remove("tts-reading-active");
       };
       utter.onerror = () => {
         document.getElementById("speakBtnLabel").textContent = "소리 듣기";
+        if (bodyEl) bodyEl.classList.remove("tts-reading-active");
+        if (keyBoxEl) keyBoxEl.classList.remove("tts-reading-active");
       };
       document.getElementById("speakBtnLabel").textContent = "⏹️ 멈춤";
       window.speechSynthesis.speak(utter);
@@ -2679,7 +2703,18 @@
             feedbackBox.innerHTML = `<div class="font-black text-emerald-300">⭕ 적절한 선택이에요. 이유를 한 번 더 확인해요.</div><p>${choice.feedback}</p>${aftermathHtml}${scienceHtml}`;
           } else {
             playSound("wrong");
-            if (signalBar) signalBar.textContent = "🔴✖ [위험·빗금] 위험 주의 · 다시 안전한 길을 골라 봐요!";
+            if (signalBar) {
+              signalBar.textContent = "🔴✖ [위험·빗금] 위험 주의 · 다시 안전한 길을 골라 봐요!";
+              signalBar.classList.remove("scenario-alert-pulse");
+              void signalBar.offsetWidth;
+              signalBar.classList.add("scenario-alert-pulse");
+            }
+            const emEl = document.getElementById("scenarioEmoji");
+            if (emEl) {
+              emEl.classList.remove("scenario-alert-pulse");
+              void emEl.offsetWidth;
+              emEl.classList.add("scenario-alert-pulse");
+            }
             feedbackBox.className = "rounded-xl p-3 border bg-rose-950/80 border-rose-400/60 text-rose-100 text-xs sm:text-sm space-y-1";
             feedbackBox.innerHTML = `<div class="font-black text-rose-300">❌ 다시 골라 볼까요?</div><p>${choice.feedback}</p>${aftermathHtml}${scienceHtml}`;
           }
@@ -3448,6 +3483,7 @@
       renderCertificateCanvas();renderLearningSummary();
       setCultureStage('story');
       switchTab(state.activeTab);
+      syncStageButtons();
       resizeSafetyCanvas();renderGameChoices();
     }
     function startNewSession(kind) {
@@ -3546,7 +3582,7 @@
       if (!EDUCATION_DATA[gradeKey]) return;
       if (gradeKey === state.grade) return;
       stopSpeaking();
-      pauseSafetyGame();
+      stopSafetyGameLoop();
       stopClassTimerBanner(false);
       if (safetyDrillInterval) { clearInterval(safetyDrillInterval); safetyDrillInterval = null; }
       if (echoReadTimer) { clearInterval(echoReadTimer); echoReadTimer = null; }
@@ -3557,18 +3593,23 @@
       syncWelcomeGrade();
       state.teacher.grade = gradeKey;
       restoreGrade(gradeKey);
+      safetyGame.running = false; safetyGame.won = false; safetyGame.paused = false; safetyGame.route = null;
+      safetyGame.bonusCollected = false; safetyGame.friendRescued = false; safetyGame.companion = null; safetyGame.items = [];
+      safetyGame.player = { x: 42, y: 210, r: 13, targetX: null, targetY: null };
+      safetyGame.hazards = [];
       saveProgress();
 
       document.querySelectorAll(".grade-btn").forEach(btn => {
-        if (btn.getAttribute("data-grade") === gradeKey) {
-          btn.classList.add("grade-active");
-        } else {
-          btn.classList.remove("grade-active");
-        }
+        const isMatch = btn.getAttribute("data-grade") === gradeKey;
+        btn.classList.toggle("grade-active", isMatch);
+        btn.setAttribute("aria-pressed", String(isMatch));
       });
 
       document.getElementById("certClassInput").value = state.profile.className || EDUCATION_DATA[gradeKey].classDefault;
+      document.getElementById("avatarSafetyReason").value = state.avatarReason || "";
+      document.getElementById("avatarReasonText").value = state.avatarReasonText || "";
       setCultureStage('story');
+      syncStageButtons();
       renderStamps();
       renderStorySlide();
       renderLanternWorkshop();
@@ -3578,7 +3619,11 @@
       renderEtiquetteChecklist();
       renderThemeSituations();
       renderQuiz();
+      renderTeacherSettings();
+      renderPledgeBuilder();
       renderCertificateCanvas();
+      renderLearningSummary();
+      renderGameChoices();
       drawSafetyGame();
       updateStartLessonButtonLabel();
     }
@@ -4683,7 +4728,16 @@
         });
       }
       document.getElementById('btnExportProgress').addEventListener('click',exportProgressJSON);
-      document.getElementById('importProgressFile').addEventListener('change',event=>importProgressFiles([...event.target.files]));
+      document.getElementById('importProgressFile').addEventListener('change',async event=>{
+        await importProgressFiles([...event.target.files]);
+        event.target.value='';
+      });
+      document.querySelectorAll('[data-ys-install], [data-qr]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          pauseSafetyGame();
+          stopSpeaking();
+        });
+      });
 
       renderAllLearning();
     });

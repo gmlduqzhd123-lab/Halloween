@@ -30,12 +30,16 @@
     }
     function startQuizReview(onlyWrong) {
       const quizzes=EDUCATION_DATA[state.grade].quizzes;
-      state.quizReviewItems=quizzes.map((_,i)=>i).filter(i=>!onlyWrong || !state.quizFirst[quizQuestionId(i)]?.correct);
+      const items=quizzes.map((_,i)=>i).filter(i=>!onlyWrong || !state.quizFirst[quizQuestionId(i)]?.correct);
+      if(!items.length)return;
+      state.quizReviewItems=items;
       state.quizReview=true;
       state.quizAttemptRound=(state.quizAttemptRound||0)+1;
       state.quizIndex=0;
+      state.quizCombo=0;
       state.quizFiftyUsed=false;
       state.quizHints={};state.quizFifties={};
+      resetSpeedOxState();
       saveProgress();
       renderQuiz();
     }
@@ -282,7 +286,7 @@
           ? '처음 확인한 문항을 모두 맞혔어요. 안전 목표 확인은 길안전의 새 질문에서 따로 진행해요.'
           : `처음 틀리거나 확인하지 못한 문항 ${quizzes.length-first}개가 있어요(복습 확인 ${reviewed}개). 다시 판단해 보세요. 해설을 읽는 것만으로 이해 완료로 기록하지 않습니다.`;
         document.getElementById('btnReviewQuiz').disabled=first===quizzes.length;
-        if(!state.quizReview && Object.keys(state.quizFirst).length>=quizzes.length) unlockStamp('s4','퀴즈 참여');
+        if(Object.keys(state.quizFirst).length>=quizzes.length) unlockStamp('s4','퀴즈 참여');
         renderQuizWeaknessBridge();
         renderSpeedOxBonus();
         renderLearningSummary();

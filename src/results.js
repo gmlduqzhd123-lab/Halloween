@@ -709,11 +709,18 @@
         }
         if(records.length===1){
           const data=records[0];
+          stopSpeaking();
+          stopSafetyGameLoop();
+          if(typeof clearTransientInteractionState==='function')clearTransientInteractionState(false);
           state.sessionId=data.sessionId;state.grade=data.grade;state.gradeRecords=data.gradeRecords;
           state.rewardLedger=data.rewardLedger;state.candyPoints=data.candyPoints;
           state.legacy=data.legacy||null;state.teacher=sanitizeTeacher(data.teacher);
           state.profile=data.profile && typeof data.profile==='object' ? data.profile : {school:'',className:'',name:'',pledge:''};
           state.activeTab=['tab-culture','tab-safety','tab-costume','tab-quiz','tab-cert'].includes(data.activeTab) ? data.activeTab : state.teacher.start;
+          safetyGame.running=false;safetyGame.won=false;safetyGame.paused=false;safetyGame.route=null;
+          safetyGame.bonusCollected=false;safetyGame.friendRescued=false;safetyGame.companion=null;safetyGame.items=[];
+          safetyGame.player={x:42,y:210,r:13,targetX:null,targetY:null};
+          safetyGame.hazards=[];
           restoreGrade(state.grade);saveProgress();
           renderAllLearning();
           status.textContent='기록을 이 기기의 현재 회차로 가져왔어요.';

@@ -306,7 +306,11 @@ test('main browser flows and standalone file load without script errors', async 
   assert.match(await grades.locator('#storySlideTag').innerText(),/카드 2/);
   const storyPoints=await grades.evaluate(()=>JSON.parse(localStorage.getItem('halloween_edu_progress_v2')).candyPoints);
   await grades.locator('#gradeBtn56').click();
+  assert.equal(await grades.locator('#gradeBtn56').getAttribute('aria-pressed'),'true');
+  assert.equal(await grades.locator('#gradeBtn34').getAttribute('aria-pressed'),'false');
   await grades.locator('#gradeBtn34').click();
+  assert.equal(await grades.locator('#gradeBtn34').getAttribute('aria-pressed'),'true');
+  assert.equal(await grades.locator('#gradeBtn56').getAttribute('aria-pressed'),'false');
   await grades.locator('#gradeBtn34').click();
   await grades.reload();
   assert.match(await grades.locator('#storySlideTag').innerText(),/카드 2/);
