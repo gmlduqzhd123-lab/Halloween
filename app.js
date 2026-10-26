@@ -6146,7 +6146,10 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       }
       const togetherBanner = document.getElementById("costumeTogetherBanner");
       if (togetherBanner) {
-        togetherBanner.classList.toggle("hidden", state.teacher?.mode !== "together");
+        togetherBanner.classList.remove("hidden");
+        togetherBanner.innerHTML = state.teacher?.mode === "together"
+          ? '🙆‍♂️ <strong class="text-amber-300">다 함께 O/X:</strong> 시야·반사·걸림을 살피고, 실제 제복·장난감 무기는 피하기로 골라요!'
+          : '💡 <strong class="text-amber-300">옷 고르기 핵심:</strong> 시야·야광 반사·걸림을 먼저 살피고, 실제 제복·장난감 무기는 피하기로 골라요!';
       }
       let correctCount = 0;
 
@@ -6353,15 +6356,41 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       '🏛️ 깜짝 상식 박물관: 멕시코의 ‘죽은 자들의 날’에 장식하는 주황색 금잔화(마리골드)는 태양의 빛과 진한 향기로 가족들이 집으로 오는 길을 밝혀 준다는 따뜻한 뜻을 담고 있어요!'
     ];
     const QUIZ_GOAL_BRIDGE = [
-      { label: '문화의 기원과 다양성', tab: 'tab-culture', scenarioIdx: null },
-      { label: '보호자 동행·사전 약속', tab: 'tab-culture', scenarioIdx: null },
-      { label: '이동로와 출구 확인', tab: 'tab-safety', scenarioIdx: 0 },
-      { label: '혼잡 신호에 대응', tab: 'tab-safety', scenarioIdx: 2 },
-      { label: '물건보다 몸 먼저', tab: 'tab-safety', scenarioIdx: 4 },
-      { label: '떠밀림·넘어짐 몸 보호', tab: 'tab-safety', scenarioIdx: 3 },
-      { label: '다문화 고유 의미 존중', tab: 'tab-culture', scenarioIdx: null },
-      { label: '배려하는 복장과 축제 약속', tab: 'tab-costume', scenarioIdx: null }
+      { label: '문화의 기원과 다양성', tab: 'tab-culture', scenarioIdx: null, tag: '🏛️ 문화 탐정' },
+      { label: '보호자 동행·사전 약속', tab: 'tab-culture', scenarioIdx: null, tag: '🤝 안전한 약속' },
+      { label: '이동로와 출구 확인', tab: 'tab-safety', scenarioIdx: 0, tag: '🗺️ 동선 살피기' },
+      { label: '혼잡 신호에 대응', tab: 'tab-safety', scenarioIdx: 2, tag: '🔍 위험 신호 찾기' },
+      { label: '물건보다 몸 먼저', tab: 'tab-safety', scenarioIdx: 4, tag: '🛡️ 내 몸 지키기' },
+      { label: '떠밀림·넘어짐 몸 보호', tab: 'tab-safety', scenarioIdx: 3, tag: '🏃 위기 대처' },
+      { label: '다문화 고유 의미 존중', tab: 'tab-culture', scenarioIdx: null, tag: '🌏 다문화 존중' },
+      { label: '배려하는 복장과 축제 약속', tab: 'tab-costume', scenarioIdx: null, tag: '🧙 배려하는 복장' }
     ];
+    const QUIZ_GOAL_BY_CATEGORY = {
+      '할로윈 이야기': { label: '문화의 기원과 다양성', tab: 'tab-culture', scenarioIdx: null, tag: '🏛️ 문화 탐정' },
+      '문화의 변화': { label: '문화의 기원과 변화', tab: 'tab-culture', scenarioIdx: null, tag: '🏛️ 문화 탐정' },
+      '역사 읽기': { label: '문화의 기원과 변화', tab: 'tab-culture', scenarioIdx: null, tag: '🏛️ 문화 탐정' },
+      '함께 즐기기': { label: '보호자 동행·사전 약속', tab: 'tab-culture', scenarioIdx: null, tag: '🤝 안전한 약속' },
+      '참여 계획': { label: '보호자 동행·사전 약속', tab: 'tab-culture', scenarioIdx: null, tag: '🤝 안전한 약속' },
+      '사전 계획': { label: '보호자 동행·사전 약속', tab: 'tab-culture', scenarioIdx: null, tag: '🤝 안전한 약속' },
+      '길 살피기': { label: '이동로와 출구 확인', tab: 'tab-safety', scenarioIdx: 0, tag: '🗺️ 동선 살피기' },
+      '혼잡 신호': { label: '혼잡 신호에 대응', tab: 'tab-safety', scenarioIdx: 2, tag: '🔍 위험 신호 찾기' },
+      '위험 신호': { label: '혼잡 신호에 대응', tab: 'tab-safety', scenarioIdx: 2, tag: '🔍 위험 신호 찾기' },
+      '위험 판단': { label: '혼잡 신호에 대응', tab: 'tab-safety', scenarioIdx: 2, tag: '🔍 위험 신호 찾기' },
+      '몸 먼저': { label: '물건보다 몸 먼저', tab: 'tab-safety', scenarioIdx: 4, tag: '🛡️ 내 몸 지키기' },
+      '물건보다 몸': { label: '물건보다 몸 먼저', tab: 'tab-safety', scenarioIdx: 4, tag: '🛡️ 내 몸 지키기' },
+      '떠밀릴 때': { label: '떠밀림·호흡 공간 확보', tab: 'tab-safety', scenarioIdx: 3, tag: '🏃 위기 대처' },
+      '떠밀림 대응': { label: '떠밀림·호흡 공간 확보', tab: 'tab-safety', scenarioIdx: 3, tag: '🏃 위기 대처' },
+      '넘어짐 대응': { label: '넘어짐·위급 상황 몸 보호', tab: 'tab-safety', scenarioIdx: 5, tag: '🛟 위급 상황 대처' },
+      '옷 고르기': { label: '배려하는 복장과 소품', tab: 'tab-costume', scenarioIdx: null, tag: '🧙 배려하는 복장' },
+      '분장과 공공성': { label: '배려하는 복장과 공공성', tab: 'tab-costume', scenarioIdx: null, tag: '🧙 배려하는 복장' },
+      '다른 문화': { label: '다문화 고유 의미 존중', tab: 'tab-culture', scenarioIdx: null, tag: '🌏 다문화 존중' },
+      '문화 존중': { label: '다문화 고유 의미 존중', tab: 'tab-culture', scenarioIdx: null, tag: '🌏 다문화 존중' },
+      '우리 반 약속': { label: '배려하는 복장과 축제 약속', tab: 'tab-costume', scenarioIdx: null, tag: '🤝 배려 약속' },
+      '축제 설계': { label: '배려하는 복장과 축제 약속', tab: 'tab-costume', scenarioIdx: null, tag: '🤝 배려 약속' }
+    };
+    function getQuizGoalInfo(q, qi) {
+      return (q && QUIZ_GOAL_BY_CATEGORY[q.category]) || QUIZ_GOAL_BRIDGE[qi % QUIZ_GOAL_BRIDGE.length];
+    }
     function renderQuizWeaknessBridge() {
       const box = document.getElementById('quizWeaknessBridge');
       if (!box) return;
@@ -6384,7 +6413,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       wrap.className = 'flex flex-wrap gap-1.5 pt-1';
       const targetList = missedIndices.length ? missedIndices : [2, 3, 4];
       targetList.forEach(qi => {
-        const info = QUIZ_GOAL_BRIDGE[qi % QUIZ_GOAL_BRIDGE.length];
+        const info = getQuizGoalInfo(quizzes[qi], qi);
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'mini-chip quiz-bridge-btn';
@@ -6569,7 +6598,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       document.getElementById('quizCategoryBadge').textContent=q.category;
       const typeTagEl=document.getElementById('quizTypeTag');
       const isCore10=Number(state.teacher?.minutes)===10 && [0,2,3,5].includes(qi);
-      if(typeTagEl)typeTagEl.textContent=`${QUIZ_TYPE_TAGS[qi % QUIZ_TYPE_TAGS.length]}${isCore10?' · ⚡10분 핵심':''}`;
+      const goalInfo=getQuizGoalInfo(q, qi);
+      if(typeTagEl)typeTagEl.textContent=`${goalInfo.tag || QUIZ_TYPE_TAGS[qi % QUIZ_TYPE_TAGS.length]}${isCore10?' · ⚡10분 핵심':''}`;
       if(typeof updatePairBatonBanner==='function')updatePairBatonBanner(state.quizIndex);
       const cheerEl=document.getElementById('quizCheerText');
       if(cheerEl)cheerEl.textContent=quizCheerMessage(state.quizCombo);
@@ -6613,7 +6643,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         options.appendChild(btn);
       });
       if(existing){
-        const bridge = QUIZ_GOAL_BRIDGE[qi % QUIZ_GOAL_BRIDGE.length];
+        const bridge = getQuizGoalInfo(q, qi);
         explanation.className=`rounded-xl p-3 border ${existing.correct?'bg-emerald-950 border-emerald-400':'bg-rose-950 border-rose-400'} text-sm space-y-1.5`;
         const mainText = document.createElement('p');
         mainText.textContent = `${existing.correct?'⭕ 이번 판단은 맞았어요.':'❌ 이번 판단은 다시 살펴봐요.'} ${q.explanation}`;
@@ -7416,6 +7446,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     }
     function syncLessonStage() {
       const step = lessonStep(state.activeTab);
+      const numEl = document.getElementById('lessonStageNumber');
+      if (numEl) numEl.textContent = step[0];
       document.getElementById('lessonStageTitle').textContent = step[1];
       document.getElementById('lessonStageHint').textContent = step[2];
       updateLessonPacemaker(state.activeTab);
@@ -7482,6 +7514,12 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         nvBtn.setAttribute("aria-pressed", "false");
         nvBtn.classList.remove("is-picked");
         nvBtn.textContent = "🕶️ 시야 제한 OFF";
+      }
+      document.body.classList.remove("spotlight-mode");
+      const spotBtn = document.getElementById("btnSpotlightMode");
+      if (spotBtn) {
+        spotBtn.setAttribute("aria-pressed", "false");
+        spotBtn.textContent = "🔭 칠판 집중";
       }
       const stageEl = document.getElementById("avatarRunwayStage");
       const nightBtn = document.getElementById("btnNightLightTest");
@@ -8072,7 +8110,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         btnSpotlightMode.addEventListener('click', () => {
           const active = document.body.classList.toggle('spotlight-mode');
           btnSpotlightMode.setAttribute('aria-pressed', String(active));
-          btnSpotlightMode.textContent = active ? '🎯 기본 화면' : '🎯 집중 확대';
+          btnSpotlightMode.textContent = active ? '🔭 기본 화면' : '🔭 칠판 집중';
           playSound('click');
           showToast(active ? '전자칠판 집중 확대 모드가 켜졌어요!' : '기본 수업 화면으로 돌아왔어요.', '🎯');
         });

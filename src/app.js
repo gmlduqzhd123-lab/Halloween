@@ -3057,7 +3057,10 @@
       }
       const togetherBanner = document.getElementById("costumeTogetherBanner");
       if (togetherBanner) {
-        togetherBanner.classList.toggle("hidden", state.teacher?.mode !== "together");
+        togetherBanner.classList.remove("hidden");
+        togetherBanner.innerHTML = state.teacher?.mode === "together"
+          ? '🙆‍♂️ <strong class="text-amber-300">다 함께 O/X:</strong> 시야·반사·걸림을 살피고, 실제 제복·장난감 무기는 피하기로 골라요!'
+          : '💡 <strong class="text-amber-300">옷 고르기 핵심:</strong> 시야·야광 반사·걸림을 먼저 살피고, 실제 제복·장난감 무기는 피하기로 골라요!';
       }
       let correctCount = 0;
 
@@ -3270,6 +3273,8 @@
     }
     function syncLessonStage() {
       const step = lessonStep(state.activeTab);
+      const numEl = document.getElementById('lessonStageNumber');
+      if (numEl) numEl.textContent = step[0];
       document.getElementById('lessonStageTitle').textContent = step[1];
       document.getElementById('lessonStageHint').textContent = step[2];
       updateLessonPacemaker(state.activeTab);
@@ -3336,6 +3341,12 @@
         nvBtn.setAttribute("aria-pressed", "false");
         nvBtn.classList.remove("is-picked");
         nvBtn.textContent = "🕶️ 시야 제한 OFF";
+      }
+      document.body.classList.remove("spotlight-mode");
+      const spotBtn = document.getElementById("btnSpotlightMode");
+      if (spotBtn) {
+        spotBtn.setAttribute("aria-pressed", "false");
+        spotBtn.textContent = "🔭 칠판 집중";
       }
       const stageEl = document.getElementById("avatarRunwayStage");
       const nightBtn = document.getElementById("btnNightLightTest");
@@ -3926,7 +3937,7 @@
         btnSpotlightMode.addEventListener('click', () => {
           const active = document.body.classList.toggle('spotlight-mode');
           btnSpotlightMode.setAttribute('aria-pressed', String(active));
-          btnSpotlightMode.textContent = active ? '🎯 기본 화면' : '🎯 집중 확대';
+          btnSpotlightMode.textContent = active ? '🔭 기본 화면' : '🔭 칠판 집중';
           playSound('click');
           showToast(active ? '전자칠판 집중 확대 모드가 켜졌어요!' : '기본 수업 화면으로 돌아왔어요.', '🎯');
         });
