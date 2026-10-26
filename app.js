@@ -6128,6 +6128,19 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       renderCostumeWorldCup();
     }
 
+    function formatCostumeStoryForContext(item) {
+      if (!item || !item.story) return "";
+      const themeKey = state.teacher?.theme || "halloween";
+      const themeLabel = THEMES[themeKey]?.label || "할로윈";
+      let text = item.story;
+      if (themeKey !== "halloween") {
+        text = text.replace(/축제/g, themeLabel).replace(/할로윈/g, themeLabel);
+      }
+      if (state.grade === "1-2") {
+        return `${text} (🌱 1~2학년 핵심: ${item.checkPoint || "안전 확인"})`;
+      }
+      return text;
+    }
     let costumePage = 0;
     let costumeFocusMode = true;
     function renderCostumeCards() {
@@ -6174,7 +6187,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
             <div class="text-3xl sm:text-4xl select-none py-0.5">${item.emoji}</div>
             <h4 class="font-title text-xs sm:text-sm text-white nowrap">${item.name}</h4>
             ${item.checkPoint ? `<span class="inline-block px-2 py-0.5 rounded-full bg-indigo-950/90 border border-indigo-700 text-[11px] font-bold text-amber-300">${item.checkPoint}</span>` : ""}
-            ${item.story ? `<p class="text-[11px] text-indigo-100 font-bold leading-snug pt-1 px-1">${item.story}</p>` : ""}
+            ${item.story ? `<p class="text-[11px] text-indigo-100 font-bold leading-snug pt-1 px-1">${formatCostumeStoryForContext(item)}</p>` : ""}
           </div>
 
           <div class="mt-2.5 space-y-1.5">
@@ -6734,6 +6747,28 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
 
       return `🩺 AI 안전 코치 맞춤 처방: ${learnerName}님은 ${strength}! ${prescription}`;
     }
+    function syncRecommendedPledgePreset() {
+      const buttons = [...document.querySelectorAll('.preset-pledge-btn')];
+      if (!buttons.length) return;
+      const missedGoal = SAFETY_GOALS.find(g => state.safetyFirst && state.safetyFirst[g.id] && !state.safetyFirst[g.id].correct)
+        || SAFETY_GOALS.find(g => !state.safetyConfirmed || state.safetyConfirmed[g.id]?.contentVersion !== SAFETY_CONTENT_VERSION);
+      let recIdx = 0;
+      if (missedGoal) {
+        if (['route', 'right'].includes(missedGoal.id)) recIdx = 0;
+        else if (['crowd', 'drop'].includes(missedGoal.id)) recIdx = 1;
+        else if (['chest', 'fall'].includes(missedGoal.id)) recIdx = 2;
+      } else if (state.stamps && state.stamps.s3 && !state.stamps.s1) {
+        recIdx = 3;
+      }
+      buttons.forEach((btn, idx) => {
+        const baseText = btn.getAttribute('data-base-label') || btn.textContent.replace(/^⭐ 맞춤 추천 · /, '');
+        btn.setAttribute('data-base-label', baseText);
+        const isRec = idx === recIdx;
+        btn.dataset.recommended = String(isRec);
+        btn.classList.toggle('is-recommended-pledge', isRec);
+        btn.textContent = isRec ? `⭐ 맞춤 추천 · ${baseText}` : baseText;
+      });
+    }
     function renderLearningSummary() {
       const summary=document.getElementById('learningResultSummary');
       if(!summary)return;
@@ -6857,6 +6892,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const participationButton=document.getElementById('btnDownloadParticipation');
       if(certButton)certButton.disabled=!(canDownloadSafetyCertificate() || (classPosterActive && classPosterRecords.length>0));
       if(participationButton)participationButton.disabled=!canDownloadParticipation();
+      syncRecommendedPledgePreset();
     }
     let classPosterActive = false;
     let classPosterRecords = [];
@@ -8430,6 +8466,58 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         });
       });
 
+      // Enhancement 4: Scenario Emoji direct touch micro-interaction
+      const scenarioEmojiEl = document.getElementById("scenarioEmoji");
+      if (scenarioEmojiEl) {
+        scenarioEmojiEl.style.cursor = "pointer";
+        scenarioEmojiEl.title = "눌러서 안전 레이더 핵심 팁 보기";
+        scenarioEmojiEl.addEventListener("click", () => {
+          playSound("magic");
+          scenarioEmojiEl.classList.remove("story-art-pop");
+          void scenarioEmojiEl.offsetWidth;
+          scenarioEmojiEl.classList.add("story-art-pop");
+          const spotTip = SCENARIO_HAZARD_SPOTS[state.scenarioIndex]?.spots?.[0]?.tip || SAFETY_GOALS[state.scenarioIndex]?.title || "주변 이동로와 안전 거리를 먼저 살펴요!";
+          showToast(`🔎 안전 레이더: ${spotTip}`, "🛡️");
+        });
+      }
+
+      // Enhancement 5: Touch & Pointer horizontal swipe gestures for smartboards/tablets
+      function bindHorizontalSwipe(el, onPrev, onNext) {
+        if (!el) return;
+        let startX = null;
+        let startY = null;
+        el.addEventListener("touchstart", e => {
+          if (!e.touches || e.touches.length !== 1) return;
+          startX = e.touches[0].clientX;
+          startY = e.touches[0].clientY;
+        }, { passive: true });
+        el.addEventListener("touchend", e => {
+          if (startX === null || !e.changedTouches || !e.changedTouches.length) return;
+          const dx = e.changedTouches[0].clientX - startX;
+          const dy = e.changedTouches[0].clientY - startY;
+          startX = null;
+          startY = null;
+          if (Math.abs(dx) > 64 && Math.abs(dx) > Math.abs(dy) * 1.8) {
+            if (dx < 0 && onNext) onNext();
+            else if (dx > 0 && onPrev) onPrev();
+          }
+        }, { passive: true });
+      }
+      bindHorizontalSwipe(
+        document.getElementById("storyChapter"),
+        () => { const b = document.getElementById("btnPrevStory"); if (b && !b.disabled) b.click(); },
+        () => { const b = document.getElementById("btnNextStory"); if (b && !b.disabled) b.click(); }
+      );
+      bindHorizontalSwipe(
+        document.querySelector("#tab-safety > .glass-card:first-of-type"),
+        () => { const b = document.getElementById("btnPrevScenario"); if (b && !b.disabled) b.click(); },
+        () => { const b = document.getElementById("btnNextScenario"); if (b && !b.disabled) b.click(); }
+      );
+      bindHorizontalSwipe(
+        document.getElementById("costumeCardsGrid"),
+        () => { const b = document.getElementById("btnPrevCostumePage"); if (b && !b.disabled) b.click(); },
+        () => { const b = document.getElementById("btnNextCostumePage"); if (b && !b.disabled) b.click(); }
+      );
       document.getElementById("btnPrevScenario").addEventListener("click", () => {
         if (state.scenarioIndex > 0) {
           state.scenarioIndex--;

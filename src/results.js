@@ -51,6 +51,28 @@
 
       return `🩺 AI 안전 코치 맞춤 처방: ${learnerName}님은 ${strength}! ${prescription}`;
     }
+    function syncRecommendedPledgePreset() {
+      const buttons = [...document.querySelectorAll('.preset-pledge-btn')];
+      if (!buttons.length) return;
+      const missedGoal = SAFETY_GOALS.find(g => state.safetyFirst && state.safetyFirst[g.id] && !state.safetyFirst[g.id].correct)
+        || SAFETY_GOALS.find(g => !state.safetyConfirmed || state.safetyConfirmed[g.id]?.contentVersion !== SAFETY_CONTENT_VERSION);
+      let recIdx = 0;
+      if (missedGoal) {
+        if (['route', 'right'].includes(missedGoal.id)) recIdx = 0;
+        else if (['crowd', 'drop'].includes(missedGoal.id)) recIdx = 1;
+        else if (['chest', 'fall'].includes(missedGoal.id)) recIdx = 2;
+      } else if (state.stamps && state.stamps.s3 && !state.stamps.s1) {
+        recIdx = 3;
+      }
+      buttons.forEach((btn, idx) => {
+        const baseText = btn.getAttribute('data-base-label') || btn.textContent.replace(/^⭐ 맞춤 추천 · /, '');
+        btn.setAttribute('data-base-label', baseText);
+        const isRec = idx === recIdx;
+        btn.dataset.recommended = String(isRec);
+        btn.classList.toggle('is-recommended-pledge', isRec);
+        btn.textContent = isRec ? `⭐ 맞춤 추천 · ${baseText}` : baseText;
+      });
+    }
     function renderLearningSummary() {
       const summary=document.getElementById('learningResultSummary');
       if(!summary)return;
@@ -174,6 +196,7 @@
       const participationButton=document.getElementById('btnDownloadParticipation');
       if(certButton)certButton.disabled=!(canDownloadSafetyCertificate() || (classPosterActive && classPosterRecords.length>0));
       if(participationButton)participationButton.disabled=!canDownloadParticipation();
+      syncRecommendedPledgePreset();
     }
     let classPosterActive = false;
     let classPosterRecords = [];
