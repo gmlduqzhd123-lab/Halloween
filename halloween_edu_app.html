@@ -189,18 +189,48 @@
     .storybook [class*="bg-indigo-"],
     .storybook [class*="bg-slate-"],
     .storybook [class*="bg-purple-"],
-    .storybook [class*="bg-amber-950"],
-    .storybook [class*="bg-emerald-950"] { background-color: #f5ecdf !important; }
+    .storybook [class*="bg-amber-950"] { background-color: #f5ecdf !important; }
+    .storybook [class*="bg-emerald-950"] { background-color: #ebf6f0 !important; border-color: #b7dec9 !important; }
+    .storybook [class*="bg-rose-950"],
+    .storybook [class*="bg-pink-950"] { background-color: #fff0ea !important; border-color: #e8bec0 !important; }
     .storybook [class*="text-indigo-"],
     .storybook [class*="text-gray-"],
     .storybook [class*="text-slate-"],
     .storybook .text-white { color: var(--ink) !important; }
+    .storybook [class*="text-purple-"] { color: #4a276e !important; }
     .storybook [class*="text-amber-"], .storybook [class*="text-orange-"] { color: #9b502d !important; }
-    .storybook [class*="text-rose-"], .storybook [class*="text-pink-"] { color: #9b5061 !important; }
-    .storybook [class*="text-emerald-"] { color: #286c59 !important; }
-    .storybook [class*="text-sky-"] { color: #2e6380 !important; }
+    .storybook [class*="text-rose-"], .storybook [class*="text-pink-"] { color: #9b3048 !important; }
+    .storybook [class*="text-emerald-"] { color: #1f6350 !important; }
+    .storybook [class*="text-sky-"] { color: #245875 !important; }
     .storybook [class*="border-indigo-"], .storybook [class*="border-slate-"] { border-color: var(--line) !important; }
+    .storybook [class*="border-purple-"] { border-color: #b392d6 !important; }
     .storybook [class*="border-amber-"], .storybook [class*="border-orange-"] { border-color: #edc8a9 !important; }
+    .storybook #btnQuizHint {
+      background-color: #fff3db !important;
+      color: #8a431b !important;
+      border: 1.5px solid #dfa974 !important;
+      font-weight: 800 !important;
+    }
+    .storybook #btnQuizHint:hover:not(:disabled) {
+      background-color: #ffe7bd !important;
+    }
+    .storybook #btnQuizFifty {
+      background-color: #efe4fb !important;
+      color: #4a276e !important;
+      border: 1.5px solid #b392d6 !important;
+      font-weight: 800 !important;
+    }
+    .storybook #btnQuizFifty:hover:not(:disabled) {
+      background-color: #e3d0f7 !important;
+    }
+    .storybook #btnQuizHint:disabled,
+    .storybook #btnQuizFifty:disabled {
+      background-color: #eee7dd !important;
+      color: #635370 !important;
+      border-color: #cfc2b2 !important;
+      opacity: 1 !important;
+      cursor: not-allowed;
+    }
     .storybook .site-header .grade-btn,
     .storybook .site-header #btnBoardMode,
     .storybook .site-header #btnSoundToggle,
@@ -8654,7 +8684,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       hint.classList.toggle('hidden',!state.quizHints[id]);
       const fifty=document.getElementById('btnQuizFifty');
       fifty.disabled=state.quizFiftyUsed || order.length<=2 || !!existing;
-      fifty.style.opacity=fifty.disabled?'0.45':'1';
+      fifty.style.opacity='';
+      fifty.textContent=state.quizFiftyUsed ? '🔀 50:50 사용됨' : order.length<=2 ? '🔀 50:50 (4지선다용)' : '🔀 50:50 찬스';
       document.getElementById('btnQuizHint').disabled=!!existing;
       const options=document.getElementById('quizOptionsContainer');
       options.replaceChildren();

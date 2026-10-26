@@ -6756,7 +6756,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       hint.classList.toggle('hidden',!state.quizHints[id]);
       const fifty=document.getElementById('btnQuizFifty');
       fifty.disabled=state.quizFiftyUsed || order.length<=2 || !!existing;
-      fifty.style.opacity=fifty.disabled?'0.45':'1';
+      fifty.style.opacity='';
+      fifty.textContent=state.quizFiftyUsed ? '🔀 50:50 사용됨' : order.length<=2 ? '🔀 50:50 (4지선다용)' : '🔀 50:50 찬스';
       document.getElementById('btnQuizHint').disabled=!!existing;
       const options=document.getElementById('quizOptionsContainer');
       options.replaceChildren();
