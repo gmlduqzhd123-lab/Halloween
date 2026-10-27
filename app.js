@@ -2787,7 +2787,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
             "keyPoint": "순무 등불이 오늘날의 호박 등불(잭오랜턴)로 변했어요.",
             "question": "내가 호박 등불을 만든다면 어떤 표정을 그려 줄까요?",
             "sourceText": "스미스소니언",
-            "sourceUrl": "https://gardens.si.edu/american-garden-story/ghosts-of-pumpkins-past/"
+            "sourceUrl": "https://www.smithsonianmag.com/smart-news/when-people-carved-turnips-instead-of-pumpkins-for-halloween-180978922/"
           },
           {
             "art": "neighbor",
@@ -2951,7 +2951,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
             "keyPoint": "사람들이 이동하고 사는 환경이 달라지면 문화의 재료와 모습도 변해요.",
             "question": "순무에서 호박으로 재료가 달라져도 변하지 않고 이어진 것은 무엇일까요?",
             "sourceText": "스미스소니언",
-            "sourceUrl": "https://gardens.si.edu/american-garden-story/ghosts-of-pumpkins-past/"
+            "sourceUrl": "https://www.smithsonianmag.com/smart-news/when-people-carved-turnips-instead-of-pumpkins-for-halloween-180978922/"
           },
           {
             "art": "neighbor",
@@ -3123,7 +3123,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
             "keyPoint": "문화는 사람들의 이주와 자연·생태 환경에 맞추어 끊임없이 변화합니다.",
             "question": "재료의 변화가 문화의 전파·적응 과정과 어떻게 연결될까요?",
             "sourceText": "스미스소니언",
-            "sourceUrl": "https://gardens.si.edu/american-garden-story/ghosts-of-pumpkins-past/"
+            "sourceUrl": "https://www.smithsonianmag.com/smart-news/when-people-carved-turnips-instead-of-pumpkins-for-halloween-180978922/"
           },
           {
             "art": "neighbor",
