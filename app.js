@@ -3658,6 +3658,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       url.searchParams.set('req',t.required.join(','));
       url.searchParams.set('ord',t.order.join(','));
       url.searchParams.set('start',t.start);
+      if (typeof bgmOn === 'boolean' && (!bgmOn || bgmVolume <= 0)) {
+        url.searchParams.set('bgm', '0');
+      }
       return url.href;
     }
     function renderTeacherSettings() {
@@ -4150,6 +4153,32 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.62);
           osc.start(now);
           osc.stop(now + 0.62);
+        } else if (type === "clue1") {
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.08);
+          gain.gain.setValueAtTime(0.16, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+          osc.start(now);
+          osc.stop(now + 0.24);
+        } else if (type === "clue2") {
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(659.25, now);
+          osc.frequency.setValueAtTime(783.99, now + 0.08);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+          osc.start(now);
+          osc.stop(now + 0.28);
+        } else if (type === "clue3") {
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.06);
+          osc.frequency.setValueAtTime(783.99, now + 0.12);
+          osc.frequency.setValueAtTime(1046.5, now + 0.18);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+          osc.start(now);
+          osc.stop(now + 0.42);
         } else if (type === "stamp") {
           osc.type = "sine";
           osc.frequency.setValueAtTime(523.25, now);
@@ -4256,17 +4285,23 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     function loadBgmPrefs() {
       try {
         const raw = localStorage.getItem(BGM_PREF_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === "object") {
-          if (typeof parsed.bgmOn === "boolean") bgmOn = parsed.bgmOn;
-          if (Number.isFinite(parsed.bgmVolume)) {
-            bgmVolume = Math.max(0, Math.min(100, Math.round(parsed.bgmVolume)));
-            if (bgmVolume > 0) lastNonZeroBgmVolume = bgmVolume;
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object") {
+            if (typeof parsed.bgmOn === "boolean") bgmOn = parsed.bgmOn;
+            if (Number.isFinite(parsed.bgmVolume)) {
+              bgmVolume = Math.max(0, Math.min(100, Math.round(parsed.bgmVolume)));
+              if (bgmVolume > 0) lastNonZeroBgmVolume = bgmVolume;
+            }
+            if (Number.isFinite(parsed.lastNonZeroBgmVolume) && parsed.lastNonZeroBgmVolume > 0) {
+              lastNonZeroBgmVolume = Math.max(5, Math.min(100, Math.round(parsed.lastNonZeroBgmVolume)));
+            }
           }
-          if (Number.isFinite(parsed.lastNonZeroBgmVolume) && parsed.lastNonZeroBgmVolume > 0) {
-            lastNonZeroBgmVolume = Math.max(5, Math.min(100, Math.round(parsed.lastNonZeroBgmVolume)));
-          }
+        }
+      } catch (_) {}
+      try {
+        if (new URLSearchParams(location.search).get("bgm") === "0") {
+          bgmOn = false;
         }
       } catch (_) {}
     }
@@ -4281,7 +4316,11 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const audio = document.getElementById("bgmAudio");
       if (!audio) return;
       const baseVol = bgmOn ? Math.max(0, Math.min(1, bgmVolume / 100)) : 0;
-      audio.volume = isTtsSpeaking ? baseVol * 0.25 : baseVol;
+      const isFullMood = document.body.classList.contains("lesson-not-started") ||
+        state.activeTab === "tab-cert" ||
+        (typeof safetyGame !== "undefined" && safetyGame.running && !safetyGame.paused);
+      const tabScale = isFullMood ? 1 : 0.72;
+      audio.volume = isTtsSpeaking ? baseVol * 0.25 : baseVol * tabScale;
       audio.muted = !bgmOn || bgmVolume <= 0;
     }
 
@@ -5747,12 +5786,16 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     const safetyGame = {
       running:false, won:false, paused:false, route:null, lastFrame:0, visionMask:false,
       player:{x:42,y:210,r:13,targetX:null,targetY:null},
-      hazards:[], items:[], bonusCollected:false, friendRescued:false, companion:null, exitZone:{x:520,y:22,w:65,h:48}, keys:new Set(), decisionRecorded:false
+      hazards:[], items:[], bonusCollected:false, friendRescued:false, companion:null, coachBubble:null, exitZone:{x:520,y:22,w:65,h:48}, keys:new Set(), decisionRecorded:false
     };
+    function setGameCoachBubble(text, durationSec = 1.8) {
+      safetyGame.coachBubble = { text, remaining: durationSec };
+    }
     function stopSafetyGameLoop() {
       if (gameAnimId !== null) cancelAnimationFrame(gameAnimId);
       gameAnimId = null;
       safetyGame.lastFrame = 0;
+      if (typeof applyBgmVolume === 'function') applyBgmVolume();
     }
     function pauseSafetyGame() {
       if (!safetyGame.running || safetyGame.won) return;
@@ -5766,6 +5809,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       safetyGame.paused = false;
       document.getElementById('btnStartCanvasGame').textContent = '⏸ 일시정지';
       updateGameStatusText(STAGE_MISSIONS[state.gameStage] || '이동 중');
+      if (typeof applyBgmVolume === 'function') applyBgmVolume();
       gameLoop();
     }
     function initSafetyGame() {
@@ -5778,6 +5822,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       safetyGame.bonusCollected = false;
       safetyGame.friendRescued = false;
       safetyGame.companion = null;
+      safetyGame.coachBubble = null;
+      if (typeof applyBgmVolume === 'function') applyBgmVolume();
       safetyGame.player = {x:42,y:210,r:13,targetX:null,targetY:null};
       const isEasyGrade = typeof state !== 'undefined' && state.grade === '1-2';
       safetyGame.easyMode = isEasyGrade;
@@ -5849,6 +5895,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     function chooseGameRoute(choice) {
       safetyGame.route=choice;
       safetyGame.decisionRecorded=true;
+      setGameCoachBubble(choice==='wide' ? '↗️ 넓은 우회로 진입!' : '⚠️ 좁은 병목은 위험해요!');
       if (choice==='wide') updateGameStatusText('혼잡한 길을 피해 출구로 이동해요');
       else updateGameStatusText('혼잡한 길을 골랐어요. 경로를 다시 살펴보세요');
       updateGameCrowdMeter();
@@ -5891,6 +5938,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     }
     function updateSafetyGame(seconds) {
       if (!safetyGame.running || safetyGame.paused || safetyGame.won) return;
+      if (safetyGame.coachBubble && safetyGame.coachBubble.remaining > 0) {
+        safetyGame.coachBubble.remaining = Math.max(0, safetyGame.coachBubble.remaining - seconds);
+      }
       const p=safetyGame.player;
       const speed=110;
       let dx=0,dy=0;
@@ -5921,7 +5971,10 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       if(safetyGame.hazards.some(h=>Math.hypot(p.x-h.x,p.y-h.y)<p.r+h.r-3)) {
         p.x=42;p.y=210;p.targetX=null;p.targetY=null;
         if(safetyGame.companion){safetyGame.companion.x=22;safetyGame.companion.y=216;}
+        setGameCoachBubble('👐 가슴 앞 공간을 지키며 피해요!');
         updateGameStatusText('혼잡한 구역을 피해서 다시 이동해요');
+      } else if(safetyGame.hazards.some(h=>Math.hypot(p.x-h.x,p.y-h.y)<p.r+h.r+24) && (!safetyGame.coachBubble || safetyGame.coachBubble.remaining<=0)) {
+        setGameCoachBubble('↗️ 어깨가 닿기 전에 가장자리로!', 1.1);
       }
       if(Array.isArray(safetyGame.items)) {
         safetyGame.items.forEach(item=>{
@@ -5929,6 +5982,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
             if(item.kind==='candyTrap') {
               p.x=42;p.y=210;p.targetX=null;p.targetY=null;
               if(safetyGame.companion){safetyGame.companion.x=22;safetyGame.companion.y=216;}
+              setGameCoachBubble('🙅 물건보다 내 몸이 먼저!');
               updateGameStatusText('떨어진 물건은 줍지 않고 넓은 길로 이동해요!');
             } else if(!item.done) {
               item.done=true;
@@ -5936,8 +5990,10 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
               if(item.kind==='friend') {
                 safetyGame.friendRescued=true;
                 safetyGame.companion={x:Math.max(15,p.x-22),y:Math.min(235,p.y+6)};
+                setGameCoachBubble('🤝 친구와 손잡고 안전 동행!');
                 updateGameStatusText('🤝 친구와 합류 성공! 손을 잡고 함께 집결지·출구로 이동해요');
               } else {
+                setGameCoachBubble(`✅ ${item.label} 완료!`);
                 updateGameStatusText(`✅ ${item.label} 성공! 이제 출구로 이동해요`);
               }
             }
@@ -6021,6 +6077,20 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       ctx.fillStyle='white';ctx.font='16px "Gowun Dodum", sans-serif';ctx.fillText((typeof state!=='undefined' && state.avatar?.char) || '🧒',x-9,y+5);
       if(safetyGame.bonusCollected && !safetyGame.won){
         ctx.fillStyle='#fde68a';ctx.font='12px "Gowun Dodum", sans-serif';ctx.fillText('✨',x+10,y-8);
+      }
+      if(safetyGame.coachBubble && safetyGame.coachBubble.text && safetyGame.coachBubble.remaining>0 && !safetyGame.won){
+        const bx=Math.max(85,Math.min(515,x));
+        const by=y>52 ? y-24 : y+32;
+        ctx.font='bold 11px "Gowun Dodum", sans-serif';
+        const bw=Math.min(220,Math.max(108,ctx.measureText(safetyGame.coachBubble.text).width+18));
+        ctx.fillStyle='rgba(15, 23, 42, 0.92)';
+        ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+        ctx.beginPath();
+        if(ctx.roundRect)ctx.roundRect(bx-bw/2,by-14,bw,22,8); else ctx.rect(bx-bw/2,by-14,bw,22);
+        ctx.fill();ctx.stroke();
+        ctx.fillStyle='#fef08a';ctx.textAlign='center';
+        ctx.fillText(safetyGame.coachBubble.text,bx,by+1,bw-10);
+        ctx.textAlign='start';
       }
       if(safetyGame.visionMask && !safetyGame.won){
         const maskGrad=ctx.createRadialGradient(x,y,24,x,y,92);
@@ -6758,7 +6828,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       fifty.disabled=state.quizFiftyUsed || order.length<=2 || !!existing;
       fifty.style.opacity='';
       fifty.textContent=state.quizFiftyUsed ? '🔀 50:50 사용됨' : order.length<=2 ? '🔀 50:50 (4지선다용)' : '🔀 50:50 찬스';
-      document.getElementById('btnQuizHint').disabled=!!existing;
+      const hintBtn=document.getElementById('btnQuizHint');
+      hintBtn.disabled=!!(existing && existing.correct) || !!state.quizHints[id];
+      hintBtn.classList.toggle('hint-guide-pulse', !!(existing && !existing.correct && !state.quizHints[id]));
       const options=document.getElementById('quizOptionsContainer');
       options.replaceChildren();
       const explanation=document.getElementById('quizExplanationBox');
@@ -7129,7 +7201,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       syncButtonGroup('.cert-theme-btn','data-theme',state.certTheme);
       syncButtonGroup('.cert-sticker-btn','data-sticker',state.certSticker);
       ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font=`bold 17px ${RESULT_FONT}`;
-      const identity=[safeLabel(state.profile.school,'학교명 미입력',40),safeLabel(state.profile.className,'학급 미입력',30),safeLabel(state.profile.name,'별칭 없는 학습자',40)].join(' · ');
+      const defaultClassLabel=EDUCATION_DATA[state.grade]?.classDefault||'우리 반';
+      const defaultLearnerLabel=`${EDUCATION_DATA[state.grade]?.label||'3~4학년'} 안전 수호 대원`;
+      const identity=[safeLabel(state.profile.school,'우리 학교',40),safeLabel(state.profile.className,defaultClassLabel,30),safeLabel(state.profile.name,defaultLearnerLabel,40)].join(' · ');
       printLines(ctx,identity,canvas.width/2,188,680,24,2);
 
       // Left showcase card: Custom Jack-o'-Lantern or Theme Craft Item
@@ -7169,7 +7243,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       ctx.fillStyle='#111827';ctx.fillRect(65,356,670,244);
       ctx.fillStyle='#fde68a';ctx.font=`bold 16px ${RESULT_FONT}`;ctx.fillText('나의 안전 약속',canvas.width/2,386);
       ctx.fillStyle='#fff';ctx.font=`16px ${RESULT_FONT}`;
-      printLines(ctx,safeLabel(state.profile.pledge,'안전 약속을 적어 보세요.'),canvas.width/2,418,620,26,4);
+      printLines(ctx,safeLabel(state.profile.pledge,'오른쪽 길로 안전하게 걷고 서로를 배려하며 즐거운 축제를 만들겠습니다!'),canvas.width/2,418,620,26,4);
 
       // Collector badges & Special Title (Idea 10)
       const clueCount = Object.keys(typeof storyClueOpened === 'object' ? storyClueOpened : {}).length;
@@ -7233,7 +7307,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const ctx=drawSheetBase(canvas,'오늘의 활동 참여 확인서',`${THEMES[state.teacher.theme].label} · ${EDUCATION_DATA[state.grade].label}`);
       ctx.fillStyle='#fff';ctx.font=`21px ${RESULT_FONT}`;
       let y=205;
-      y=printLines(ctx,`${safeLabel(state.profile.name,'별칭 없는 학습자',40)} · ${safeLabel(state.profile.className,'학급 미입력',30)}`,70,y,760,35,2)+30;
+      const defaultClassLabel=EDUCATION_DATA[state.grade]?.classDefault||'우리 반';
+      const defaultLearnerLabel=`${EDUCATION_DATA[state.grade]?.label||'3~4학년'} 안전 수호 대원`;
+      y=printLines(ctx,`${safeLabel(state.profile.name,defaultLearnerLabel,40)} · ${safeLabel(state.profile.className,defaultClassLabel,30)}`,70,y,760,35,2)+30;
       ctx.fillText(`필수 활동 ${state.teacher.required.length}개 완료`,70,y);y+=50;
       state.teacher.required.forEach(id=>{ctx.fillText(`✓ ${{culture:'이야기',safety:'안전 판단',costume:'옷장',quiz:'퀴즈'}[id]}`,85,y);y+=40;});
       ctx.fillStyle='#fde68a';ctx.font=`16px ${RESULT_FONT}`;
@@ -7245,7 +7321,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const ctx=drawSheetBase(canvas,'나의 학습 결과지',`${THEMES[state.teacher.theme].label} · ${EDUCATION_DATA[state.grade].label} · ${state.teacher.minutes}분 수업`);
       let y=200;
       ctx.fillStyle='#fff';ctx.font=`24px ${RESULT_FONT}`;
-      y=printLines(ctx,`학습자: ${safeLabel(state.profile.name,'별칭 없는 학습자',40)} / ${safeLabel(state.profile.school,'학교명 미입력',40)} / ${safeLabel(state.profile.className,'학급 미입력',30)}`,75,y,950,36,3)+25;
+      const defaultClassLabel=EDUCATION_DATA[state.grade]?.classDefault||'우리 반';
+      const defaultLearnerLabel=`${EDUCATION_DATA[state.grade]?.label||'3~4학년'} 안전 수호 대원`;
+      y=printLines(ctx,`학습자: ${safeLabel(state.profile.name,defaultLearnerLabel,40)} / ${safeLabel(state.profile.school,'우리 학교',40)} / ${safeLabel(state.profile.className,defaultClassLabel,30)}`,75,y,950,36,3)+25;
       ctx.fillStyle='#fde68a';ctx.font=`bold 26px ${RESULT_FONT}`;ctx.fillText('내가 꾸민 모습',75,y);y+=58;
       ctx.font=`56px ${RESULT_FONT}`;ctx.fillText(`${state.avatar.costume}${state.avatar.char}${state.avatar.prop}`,85,y);y+=48;
       ctx.fillStyle='#fff';ctx.font=`22px ${RESULT_FONT}`;
@@ -7654,6 +7732,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     let classTimerHideTimeout = null;
     let pickedPresenterNumbers = [];
     let classVoteTally = { one: 0, two: 0 };
+    function clearClassVoteWinnerHighlight() {
+      document.querySelectorAll('.class-vote-winner').forEach(el => el.classList.remove('class-vote-winner'));
+    }
     function stopClassTimerBanner(resetTally = false) {
       if (classTimerInterval) { clearInterval(classTimerInterval); classTimerInterval = null; }
       if (classTimerHideTimeout) { clearTimeout(classTimerHideTimeout); classTimerHideTimeout = null; }
@@ -7661,6 +7742,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         pickedPresenterNumbers = [];
         classVoteTally = { one: 0, two: 0 };
       }
+      clearClassVoteWinnerHighlight();
       const btn = document.getElementById('btnClassTimer');
       if (btn) btn.textContent = '⏱️ 5초 투표';
       const banner = document.getElementById('classTimerBanner');
@@ -7744,6 +7826,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     function enterLesson() {
       document.body.classList.remove('lesson-not-started');
       try { sessionStorage.setItem('halloween-lesson-started', '1'); } catch (_) {}
+      applyBgmVolume();
       document.getElementById('lessonStageTitle').focus();
     }
     function returnToMainScreen() {
@@ -7761,6 +7844,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         sessionStorage.removeItem('halloween-lesson-started');
         sessionStorage.setItem('halloween-tools-open', 'false');
       } catch (_) {}
+      applyBgmVolume();
       syncWelcomeGrade();
       updateStartLessonButtonLabel();
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -7878,6 +7962,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         }
       }
       updatePairBatonBanner();
+      clearClassVoteWinnerHighlight();
+      applyBgmVolume();
       saveProgress();
     }
 
@@ -8002,14 +8088,14 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
 
       // Fun Story Emoji tap reaction + 3-stage Hidden Clue discovery
       document.getElementById("btnTapStoryEmoji").addEventListener("click", () => {
-        playSound("magic");
-        burstCandyConfetti(8);
         const storyIndex = storyProgress().storyIndex;
         const current = getStories()[storyIndex];
         const cKey = storyKey(storyIndex);
         const prevLevel = Number(storyClueOpened[cKey] || 0);
         const nextLevel = Math.min(3, prevLevel + 1);
         storyClueOpened[cKey] = nextLevel;
+        playSound(`clue${nextLevel}`);
+        burstCandyConfetti(8);
         const artEl = document.getElementById("storyEmojiGraphic");
         if (artEl) {
           artEl.dataset.clueLevel = String(nextLevel);
@@ -8136,9 +8222,47 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       });
       const btnClassTimer = document.getElementById('btnClassTimer');
       const classTimerBanner = document.getElementById('classTimerBanner');
+      function getActiveVoteOptionElements() {
+        if (state.activeTab === 'tab-culture') {
+          return [...document.querySelectorAll(cultureStage === 'compare' ? '#festivalQuizBox button' : '#storyPollBox button')];
+        }
+        if (state.activeTab === 'tab-safety') {
+          return [...document.querySelectorAll('#scenarioChoices button')];
+        }
+        if (state.activeTab === 'tab-costume') {
+          const wc = [...document.querySelectorAll('#costumeWorldCupBox .worldcup-cand-btn')];
+          if (wc.length >= 2) return wc;
+          return [...document.querySelectorAll('#costumeCardsGrid .costume-choice-btn')].slice(0, 2);
+        }
+        if (state.activeTab === 'tab-quiz') {
+          return [...document.querySelectorAll('#quizOptionsContainer .quiz-opt-btn')];
+        }
+        return [];
+      }
+      function shortVoteOptionLabel(el) {
+        if (!el) return '';
+        const cleaned = (el.textContent || '')
+          .replace(/^[0-9]+[.)번\s-]*/u, '')
+          .replace(/^[^\p{L}\p{N}]+/gu, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+        if (!cleaned) return '';
+        return cleaned.length > 7 ? `${cleaned.slice(0, 6)}…` : cleaned;
+      }
+      function syncClassVoteWinnerHighlight() {
+        clearClassVoteWinnerHighlight();
+        const total = classVoteTally.one + classVoteTally.two;
+        if (total <= 0 || classVoteTally.one === classVoteTally.two) return;
+        const opts = getActiveVoteOptionElements();
+        const winnerEl = classVoteTally.one > classVoteTally.two ? opts[0] : opts[1];
+        if (winnerEl) winnerEl.classList.add('class-vote-winner');
+      }
       function renderClassTimerBannerContent(messageText, buttonText = '🎲 발표 번호 뽑기') {
         if (!classTimerBanner) return;
         classTimerBanner.replaceChildren();
+        const opts = getActiveVoteOptionElements();
+        const lbl1 = shortVoteOptionLabel(opts[0]);
+        const lbl2 = shortVoteOptionLabel(opts[1]);
         const wrap = document.createElement('div');
         wrap.className = 'flex flex-wrap items-center justify-center gap-2';
         const span = document.createElement('span');
@@ -8168,6 +8292,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           burstCandyConfetti(10);
           renderClassTimerBannerContent(`🎉 발표 당첨: ${chosen}번 친구! 선택한 번호와 이유를 들려주세요!`, '🎲 다른 번호 뽑기');
           classTimerHideTimeout = setTimeout(() => {
+            clearClassVoteWinnerHighlight();
             classTimerBanner.classList.add('hidden');
           }, 8000);
         });
@@ -8175,7 +8300,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         tally1Btn.type = 'button';
         tally1Btn.id = 'btnVoteTally1';
         tally1Btn.className = 'mini-chip text-xs';
-        tally1Btn.textContent = `👆 1번 (${classVoteTally.one}명)`;
+        tally1Btn.textContent = `👆 1번${lbl1 ? `[${lbl1}]` : ''} (${classVoteTally.one}명)`;
         tally1Btn.addEventListener('click', () => {
           if (classTimerHideTimeout) clearTimeout(classTimerHideTimeout);
           classVoteTally.one++;
@@ -8186,7 +8311,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         tally2Btn.type = 'button';
         tally2Btn.id = 'btnVoteTally2';
         tally2Btn.className = 'mini-chip text-xs';
-        tally2Btn.textContent = `✌️ 2번 (${classVoteTally.two}명)`;
+        tally2Btn.textContent = `✌️ 2번${lbl2 ? `[${lbl2}]` : ''} (${classVoteTally.two}명)`;
         tally2Btn.addEventListener('click', () => {
           if (classTimerHideTimeout) clearTimeout(classTimerHideTimeout);
           classVoteTally.two++;
@@ -8206,6 +8331,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           ratioSpan.textContent = `📊 집계: 1번 ${pct1}% vs 2번 ${pct2}%`;
           wrap.appendChild(ratioSpan);
         }
+        syncClassVoteWinnerHighlight();
         wrap.appendChild(pickBtn);
         classTimerBanner.appendChild(wrap);
       }
@@ -8215,6 +8341,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
             clearInterval(classTimerInterval);
             classTimerInterval = null;
             if (classTimerHideTimeout) clearTimeout(classTimerHideTimeout);
+            clearClassVoteWinnerHighlight();
             classTimerBanner.classList.add('hidden');
             btnClassTimer.textContent = '⏱️ 5초 투표';
             playSound('click');
@@ -8240,6 +8367,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
               renderClassTimerBannerContent('✋ 하나, 둘, 셋! 손가락으로 정답 번호를 들어 주세요!');
               btnClassTimer.textContent = '⏱️ 5초 투표';
               classTimerHideTimeout = setTimeout(() => {
+                clearClassVoteWinnerHighlight();
                 classTimerBanner.classList.add('hidden');
               }, 6000);
             }
@@ -8272,6 +8400,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           burstCandyConfetti(8);
           renderClassTimerBannerContent(missionText, '🎲 발표 번호 뽑기');
           classTimerHideTimeout = setTimeout(() => {
+            clearClassVoteWinnerHighlight();
             classTimerBanner.classList.add('hidden');
           }, 8000);
         });
@@ -8855,6 +8984,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
               e.preventDefault();
               scenarioBtns[idx].click();
             }
+          } else if (state.activeTab === "tab-costume") {
+            const costumeBtns = document.querySelectorAll("#costumeCardsGrid .costume-choice-btn");
+            if (costumeBtns[idx]) { e.preventDefault(); costumeBtns[idx].click(); }
           } else if (state.activeTab === "tab-quiz") {
             const quizBtns = document.querySelectorAll("#quizOptionsContainer .quiz-opt-btn:not([disabled])");
             const targetBtn = [...document.querySelectorAll("#quizOptionsContainer .quiz-opt-btn")][idx];
@@ -8870,6 +9002,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         } else if (e.key === "t" || e.key === "T") {
           e.preventDefault();
           document.getElementById("btnClassTimer")?.click();
+        } else if (e.key === "m" || e.key === "M") {
+          e.preventDefault();
+          document.getElementById("btnBgmToggle")?.click();
         }
       });
       document.addEventListener('visibilitychange', () => {if(document.hidden) pauseSafetyGame();});
@@ -8926,7 +9061,24 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         awardOnce('avatar:runway','reason',20,'꾸미기 이유 설명');
         saveProgress();
       });
-      document.getElementById('avatarSafetyReason').addEventListener('change',e=>{state.avatarReason=e.target.value;saveProgress();renderAvatarDressup();});
+      const AVATAR_REASON_TEMPLATES = {
+        vision: '가면 대신 앞이 잘 보이는 모자와 야광 소품을 골라 어두운 밤길에서도 시야를 넓게 확보했어요.',
+        movement: '길게 끌리지 않는 활동하기 편한 옷차림을 골라 계단과 복도에서 넘어지지 않게 준비했어요.',
+        props: '뾰족하거나 딱딱한 장난감 대신 부드럽고 안전한 소품을 골라 친구와 부딪혀도 다치지 않아요.',
+        friends: '친구를 놀라게 하거나 길을 막지 않는 따뜻한 복장으로 모두가 즐거운 축제를 만들어요.'
+      };
+      document.getElementById('avatarSafetyReason').addEventListener('change', e => {
+        state.avatarReason = e.target.value;
+        const reasonInput = document.getElementById('avatarReasonText');
+        const currentText = (state.avatarReasonText || '').trim();
+        const isTemplate = Object.values(AVATAR_REASON_TEMPLATES).includes(currentText);
+        if (state.avatarReason && AVATAR_REASON_TEMPLATES[state.avatarReason] && (!currentText || isTemplate)) {
+          state.avatarReasonText = AVATAR_REASON_TEMPLATES[state.avatarReason];
+          if (reasonInput) reasonInput.value = state.avatarReasonText;
+        }
+        saveProgress();
+        renderAvatarDressup();
+      });
       document.getElementById('avatarReasonText').addEventListener('input',e=>{state.avatarReasonText=e.target.value.slice(0,120);saveProgress();});
 
       document.getElementById("btnResetCostume").addEventListener("click", () => {

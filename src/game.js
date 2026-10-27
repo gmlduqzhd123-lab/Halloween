@@ -52,12 +52,16 @@
     const safetyGame = {
       running:false, won:false, paused:false, route:null, lastFrame:0, visionMask:false,
       player:{x:42,y:210,r:13,targetX:null,targetY:null},
-      hazards:[], items:[], bonusCollected:false, friendRescued:false, companion:null, exitZone:{x:520,y:22,w:65,h:48}, keys:new Set(), decisionRecorded:false
+      hazards:[], items:[], bonusCollected:false, friendRescued:false, companion:null, coachBubble:null, exitZone:{x:520,y:22,w:65,h:48}, keys:new Set(), decisionRecorded:false
     };
+    function setGameCoachBubble(text, durationSec = 1.8) {
+      safetyGame.coachBubble = { text, remaining: durationSec };
+    }
     function stopSafetyGameLoop() {
       if (gameAnimId !== null) cancelAnimationFrame(gameAnimId);
       gameAnimId = null;
       safetyGame.lastFrame = 0;
+      if (typeof applyBgmVolume === 'function') applyBgmVolume();
     }
     function pauseSafetyGame() {
       if (!safetyGame.running || safetyGame.won) return;
@@ -71,6 +75,7 @@
       safetyGame.paused = false;
       document.getElementById('btnStartCanvasGame').textContent = '⏸ 일시정지';
       updateGameStatusText(STAGE_MISSIONS[state.gameStage] || '이동 중');
+      if (typeof applyBgmVolume === 'function') applyBgmVolume();
       gameLoop();
     }
     function initSafetyGame() {
@@ -83,6 +88,8 @@
       safetyGame.bonusCollected = false;
       safetyGame.friendRescued = false;
       safetyGame.companion = null;
+      safetyGame.coachBubble = null;
+      if (typeof applyBgmVolume === 'function') applyBgmVolume();
       safetyGame.player = {x:42,y:210,r:13,targetX:null,targetY:null};
       const isEasyGrade = typeof state !== 'undefined' && state.grade === '1-2';
       safetyGame.easyMode = isEasyGrade;
@@ -154,6 +161,7 @@
     function chooseGameRoute(choice) {
       safetyGame.route=choice;
       safetyGame.decisionRecorded=true;
+      setGameCoachBubble(choice==='wide' ? '↗️ 넓은 우회로 진입!' : '⚠️ 좁은 병목은 위험해요!');
       if (choice==='wide') updateGameStatusText('혼잡한 길을 피해 출구로 이동해요');
       else updateGameStatusText('혼잡한 길을 골랐어요. 경로를 다시 살펴보세요');
       updateGameCrowdMeter();
@@ -196,6 +204,9 @@
     }
     function updateSafetyGame(seconds) {
       if (!safetyGame.running || safetyGame.paused || safetyGame.won) return;
+      if (safetyGame.coachBubble && safetyGame.coachBubble.remaining > 0) {
+        safetyGame.coachBubble.remaining = Math.max(0, safetyGame.coachBubble.remaining - seconds);
+      }
       const p=safetyGame.player;
       const speed=110;
       let dx=0,dy=0;
@@ -226,7 +237,10 @@
       if(safetyGame.hazards.some(h=>Math.hypot(p.x-h.x,p.y-h.y)<p.r+h.r-3)) {
         p.x=42;p.y=210;p.targetX=null;p.targetY=null;
         if(safetyGame.companion){safetyGame.companion.x=22;safetyGame.companion.y=216;}
+        setGameCoachBubble('👐 가슴 앞 공간을 지키며 피해요!');
         updateGameStatusText('혼잡한 구역을 피해서 다시 이동해요');
+      } else if(safetyGame.hazards.some(h=>Math.hypot(p.x-h.x,p.y-h.y)<p.r+h.r+24) && (!safetyGame.coachBubble || safetyGame.coachBubble.remaining<=0)) {
+        setGameCoachBubble('↗️ 어깨가 닿기 전에 가장자리로!', 1.1);
       }
       if(Array.isArray(safetyGame.items)) {
         safetyGame.items.forEach(item=>{
@@ -234,6 +248,7 @@
             if(item.kind==='candyTrap') {
               p.x=42;p.y=210;p.targetX=null;p.targetY=null;
               if(safetyGame.companion){safetyGame.companion.x=22;safetyGame.companion.y=216;}
+              setGameCoachBubble('🙅 물건보다 내 몸이 먼저!');
               updateGameStatusText('떨어진 물건은 줍지 않고 넓은 길로 이동해요!');
             } else if(!item.done) {
               item.done=true;
@@ -241,8 +256,10 @@
               if(item.kind==='friend') {
                 safetyGame.friendRescued=true;
                 safetyGame.companion={x:Math.max(15,p.x-22),y:Math.min(235,p.y+6)};
+                setGameCoachBubble('🤝 친구와 손잡고 안전 동행!');
                 updateGameStatusText('🤝 친구와 합류 성공! 손을 잡고 함께 집결지·출구로 이동해요');
               } else {
+                setGameCoachBubble(`✅ ${item.label} 완료!`);
                 updateGameStatusText(`✅ ${item.label} 성공! 이제 출구로 이동해요`);
               }
             }
@@ -326,6 +343,20 @@
       ctx.fillStyle='white';ctx.font='16px "Gowun Dodum", sans-serif';ctx.fillText((typeof state!=='undefined' && state.avatar?.char) || '🧒',x-9,y+5);
       if(safetyGame.bonusCollected && !safetyGame.won){
         ctx.fillStyle='#fde68a';ctx.font='12px "Gowun Dodum", sans-serif';ctx.fillText('✨',x+10,y-8);
+      }
+      if(safetyGame.coachBubble && safetyGame.coachBubble.text && safetyGame.coachBubble.remaining>0 && !safetyGame.won){
+        const bx=Math.max(85,Math.min(515,x));
+        const by=y>52 ? y-24 : y+32;
+        ctx.font='bold 11px "Gowun Dodum", sans-serif';
+        const bw=Math.min(220,Math.max(108,ctx.measureText(safetyGame.coachBubble.text).width+18));
+        ctx.fillStyle='rgba(15, 23, 42, 0.92)';
+        ctx.strokeStyle='#fbbf24';ctx.lineWidth=1.5;
+        ctx.beginPath();
+        if(ctx.roundRect)ctx.roundRect(bx-bw/2,by-14,bw,22,8); else ctx.rect(bx-bw/2,by-14,bw,22);
+        ctx.fill();ctx.stroke();
+        ctx.fillStyle='#fef08a';ctx.textAlign='center';
+        ctx.fillText(safetyGame.coachBubble.text,bx,by+1,bw-10);
+        ctx.textAlign='start';
       }
       if(safetyGame.visionMask && !safetyGame.won){
         const maskGrad=ctx.createRadialGradient(x,y,24,x,y,92);

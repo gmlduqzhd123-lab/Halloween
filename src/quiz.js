@@ -319,7 +319,9 @@
       fifty.disabled=state.quizFiftyUsed || order.length<=2 || !!existing;
       fifty.style.opacity='';
       fifty.textContent=state.quizFiftyUsed ? '🔀 50:50 사용됨' : order.length<=2 ? '🔀 50:50 (4지선다용)' : '🔀 50:50 찬스';
-      document.getElementById('btnQuizHint').disabled=!!existing;
+      const hintBtn=document.getElementById('btnQuizHint');
+      hintBtn.disabled=!!(existing && existing.correct) || !!state.quizHints[id];
+      hintBtn.classList.toggle('hint-guide-pulse', !!(existing && !existing.correct && !state.quizHints[id]));
       const options=document.getElementById('quizOptionsContainer');
       options.replaceChildren();
       const explanation=document.getElementById('quizExplanationBox');

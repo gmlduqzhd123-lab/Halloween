@@ -926,6 +926,9 @@
       url.searchParams.set('req',t.required.join(','));
       url.searchParams.set('ord',t.order.join(','));
       url.searchParams.set('start',t.start);
+      if (typeof bgmOn === 'boolean' && (!bgmOn || bgmVolume <= 0)) {
+        url.searchParams.set('bgm', '0');
+      }
       return url.href;
     }
     function renderTeacherSettings() {
@@ -1418,6 +1421,32 @@
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.62);
           osc.start(now);
           osc.stop(now + 0.62);
+        } else if (type === "clue1") {
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.08);
+          gain.gain.setValueAtTime(0.16, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+          osc.start(now);
+          osc.stop(now + 0.24);
+        } else if (type === "clue2") {
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(659.25, now);
+          osc.frequency.setValueAtTime(783.99, now + 0.08);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+          osc.start(now);
+          osc.stop(now + 0.28);
+        } else if (type === "clue3") {
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.06);
+          osc.frequency.setValueAtTime(783.99, now + 0.12);
+          osc.frequency.setValueAtTime(1046.5, now + 0.18);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+          osc.start(now);
+          osc.stop(now + 0.42);
         } else if (type === "stamp") {
           osc.type = "sine";
           osc.frequency.setValueAtTime(523.25, now);
@@ -1524,17 +1553,23 @@
     function loadBgmPrefs() {
       try {
         const raw = localStorage.getItem(BGM_PREF_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === "object") {
-          if (typeof parsed.bgmOn === "boolean") bgmOn = parsed.bgmOn;
-          if (Number.isFinite(parsed.bgmVolume)) {
-            bgmVolume = Math.max(0, Math.min(100, Math.round(parsed.bgmVolume)));
-            if (bgmVolume > 0) lastNonZeroBgmVolume = bgmVolume;
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object") {
+            if (typeof parsed.bgmOn === "boolean") bgmOn = parsed.bgmOn;
+            if (Number.isFinite(parsed.bgmVolume)) {
+              bgmVolume = Math.max(0, Math.min(100, Math.round(parsed.bgmVolume)));
+              if (bgmVolume > 0) lastNonZeroBgmVolume = bgmVolume;
+            }
+            if (Number.isFinite(parsed.lastNonZeroBgmVolume) && parsed.lastNonZeroBgmVolume > 0) {
+              lastNonZeroBgmVolume = Math.max(5, Math.min(100, Math.round(parsed.lastNonZeroBgmVolume)));
+            }
           }
-          if (Number.isFinite(parsed.lastNonZeroBgmVolume) && parsed.lastNonZeroBgmVolume > 0) {
-            lastNonZeroBgmVolume = Math.max(5, Math.min(100, Math.round(parsed.lastNonZeroBgmVolume)));
-          }
+        }
+      } catch (_) {}
+      try {
+        if (new URLSearchParams(location.search).get("bgm") === "0") {
+          bgmOn = false;
         }
       } catch (_) {}
     }
@@ -1549,7 +1584,11 @@
       const audio = document.getElementById("bgmAudio");
       if (!audio) return;
       const baseVol = bgmOn ? Math.max(0, Math.min(1, bgmVolume / 100)) : 0;
-      audio.volume = isTtsSpeaking ? baseVol * 0.25 : baseVol;
+      const isFullMood = document.body.classList.contains("lesson-not-started") ||
+        state.activeTab === "tab-cert" ||
+        (typeof safetyGame !== "undefined" && safetyGame.running && !safetyGame.paused);
+      const tabScale = isFullMood ? 1 : 0.72;
+      audio.volume = isTtsSpeaking ? baseVol * 0.25 : baseVol * tabScale;
       audio.muted = !bgmOn || bgmVolume <= 0;
     }
 
@@ -3446,6 +3485,9 @@
     let classTimerHideTimeout = null;
     let pickedPresenterNumbers = [];
     let classVoteTally = { one: 0, two: 0 };
+    function clearClassVoteWinnerHighlight() {
+      document.querySelectorAll('.class-vote-winner').forEach(el => el.classList.remove('class-vote-winner'));
+    }
     function stopClassTimerBanner(resetTally = false) {
       if (classTimerInterval) { clearInterval(classTimerInterval); classTimerInterval = null; }
       if (classTimerHideTimeout) { clearTimeout(classTimerHideTimeout); classTimerHideTimeout = null; }
@@ -3453,6 +3495,7 @@
         pickedPresenterNumbers = [];
         classVoteTally = { one: 0, two: 0 };
       }
+      clearClassVoteWinnerHighlight();
       const btn = document.getElementById('btnClassTimer');
       if (btn) btn.textContent = '⏱️ 5초 투표';
       const banner = document.getElementById('classTimerBanner');
@@ -3536,6 +3579,7 @@
     function enterLesson() {
       document.body.classList.remove('lesson-not-started');
       try { sessionStorage.setItem('halloween-lesson-started', '1'); } catch (_) {}
+      applyBgmVolume();
       document.getElementById('lessonStageTitle').focus();
     }
     function returnToMainScreen() {
@@ -3553,6 +3597,7 @@
         sessionStorage.removeItem('halloween-lesson-started');
         sessionStorage.setItem('halloween-tools-open', 'false');
       } catch (_) {}
+      applyBgmVolume();
       syncWelcomeGrade();
       updateStartLessonButtonLabel();
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -3670,6 +3715,8 @@
         }
       }
       updatePairBatonBanner();
+      clearClassVoteWinnerHighlight();
+      applyBgmVolume();
       saveProgress();
     }
 
@@ -3794,14 +3841,14 @@
 
       // Fun Story Emoji tap reaction + 3-stage Hidden Clue discovery
       document.getElementById("btnTapStoryEmoji").addEventListener("click", () => {
-        playSound("magic");
-        burstCandyConfetti(8);
         const storyIndex = storyProgress().storyIndex;
         const current = getStories()[storyIndex];
         const cKey = storyKey(storyIndex);
         const prevLevel = Number(storyClueOpened[cKey] || 0);
         const nextLevel = Math.min(3, prevLevel + 1);
         storyClueOpened[cKey] = nextLevel;
+        playSound(`clue${nextLevel}`);
+        burstCandyConfetti(8);
         const artEl = document.getElementById("storyEmojiGraphic");
         if (artEl) {
           artEl.dataset.clueLevel = String(nextLevel);
@@ -3928,9 +3975,47 @@
       });
       const btnClassTimer = document.getElementById('btnClassTimer');
       const classTimerBanner = document.getElementById('classTimerBanner');
+      function getActiveVoteOptionElements() {
+        if (state.activeTab === 'tab-culture') {
+          return [...document.querySelectorAll(cultureStage === 'compare' ? '#festivalQuizBox button' : '#storyPollBox button')];
+        }
+        if (state.activeTab === 'tab-safety') {
+          return [...document.querySelectorAll('#scenarioChoices button')];
+        }
+        if (state.activeTab === 'tab-costume') {
+          const wc = [...document.querySelectorAll('#costumeWorldCupBox .worldcup-cand-btn')];
+          if (wc.length >= 2) return wc;
+          return [...document.querySelectorAll('#costumeCardsGrid .costume-choice-btn')].slice(0, 2);
+        }
+        if (state.activeTab === 'tab-quiz') {
+          return [...document.querySelectorAll('#quizOptionsContainer .quiz-opt-btn')];
+        }
+        return [];
+      }
+      function shortVoteOptionLabel(el) {
+        if (!el) return '';
+        const cleaned = (el.textContent || '')
+          .replace(/^[0-9]+[.)번\s-]*/u, '')
+          .replace(/^[^\p{L}\p{N}]+/gu, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+        if (!cleaned) return '';
+        return cleaned.length > 7 ? `${cleaned.slice(0, 6)}…` : cleaned;
+      }
+      function syncClassVoteWinnerHighlight() {
+        clearClassVoteWinnerHighlight();
+        const total = classVoteTally.one + classVoteTally.two;
+        if (total <= 0 || classVoteTally.one === classVoteTally.two) return;
+        const opts = getActiveVoteOptionElements();
+        const winnerEl = classVoteTally.one > classVoteTally.two ? opts[0] : opts[1];
+        if (winnerEl) winnerEl.classList.add('class-vote-winner');
+      }
       function renderClassTimerBannerContent(messageText, buttonText = '🎲 발표 번호 뽑기') {
         if (!classTimerBanner) return;
         classTimerBanner.replaceChildren();
+        const opts = getActiveVoteOptionElements();
+        const lbl1 = shortVoteOptionLabel(opts[0]);
+        const lbl2 = shortVoteOptionLabel(opts[1]);
         const wrap = document.createElement('div');
         wrap.className = 'flex flex-wrap items-center justify-center gap-2';
         const span = document.createElement('span');
@@ -3960,6 +4045,7 @@
           burstCandyConfetti(10);
           renderClassTimerBannerContent(`🎉 발표 당첨: ${chosen}번 친구! 선택한 번호와 이유를 들려주세요!`, '🎲 다른 번호 뽑기');
           classTimerHideTimeout = setTimeout(() => {
+            clearClassVoteWinnerHighlight();
             classTimerBanner.classList.add('hidden');
           }, 8000);
         });
@@ -3967,7 +4053,7 @@
         tally1Btn.type = 'button';
         tally1Btn.id = 'btnVoteTally1';
         tally1Btn.className = 'mini-chip text-xs';
-        tally1Btn.textContent = `👆 1번 (${classVoteTally.one}명)`;
+        tally1Btn.textContent = `👆 1번${lbl1 ? `[${lbl1}]` : ''} (${classVoteTally.one}명)`;
         tally1Btn.addEventListener('click', () => {
           if (classTimerHideTimeout) clearTimeout(classTimerHideTimeout);
           classVoteTally.one++;
@@ -3978,7 +4064,7 @@
         tally2Btn.type = 'button';
         tally2Btn.id = 'btnVoteTally2';
         tally2Btn.className = 'mini-chip text-xs';
-        tally2Btn.textContent = `✌️ 2번 (${classVoteTally.two}명)`;
+        tally2Btn.textContent = `✌️ 2번${lbl2 ? `[${lbl2}]` : ''} (${classVoteTally.two}명)`;
         tally2Btn.addEventListener('click', () => {
           if (classTimerHideTimeout) clearTimeout(classTimerHideTimeout);
           classVoteTally.two++;
@@ -3998,6 +4084,7 @@
           ratioSpan.textContent = `📊 집계: 1번 ${pct1}% vs 2번 ${pct2}%`;
           wrap.appendChild(ratioSpan);
         }
+        syncClassVoteWinnerHighlight();
         wrap.appendChild(pickBtn);
         classTimerBanner.appendChild(wrap);
       }
@@ -4007,6 +4094,7 @@
             clearInterval(classTimerInterval);
             classTimerInterval = null;
             if (classTimerHideTimeout) clearTimeout(classTimerHideTimeout);
+            clearClassVoteWinnerHighlight();
             classTimerBanner.classList.add('hidden');
             btnClassTimer.textContent = '⏱️ 5초 투표';
             playSound('click');
@@ -4032,6 +4120,7 @@
               renderClassTimerBannerContent('✋ 하나, 둘, 셋! 손가락으로 정답 번호를 들어 주세요!');
               btnClassTimer.textContent = '⏱️ 5초 투표';
               classTimerHideTimeout = setTimeout(() => {
+                clearClassVoteWinnerHighlight();
                 classTimerBanner.classList.add('hidden');
               }, 6000);
             }
@@ -4064,6 +4153,7 @@
           burstCandyConfetti(8);
           renderClassTimerBannerContent(missionText, '🎲 발표 번호 뽑기');
           classTimerHideTimeout = setTimeout(() => {
+            clearClassVoteWinnerHighlight();
             classTimerBanner.classList.add('hidden');
           }, 8000);
         });
@@ -4647,6 +4737,9 @@
               e.preventDefault();
               scenarioBtns[idx].click();
             }
+          } else if (state.activeTab === "tab-costume") {
+            const costumeBtns = document.querySelectorAll("#costumeCardsGrid .costume-choice-btn");
+            if (costumeBtns[idx]) { e.preventDefault(); costumeBtns[idx].click(); }
           } else if (state.activeTab === "tab-quiz") {
             const quizBtns = document.querySelectorAll("#quizOptionsContainer .quiz-opt-btn:not([disabled])");
             const targetBtn = [...document.querySelectorAll("#quizOptionsContainer .quiz-opt-btn")][idx];
@@ -4662,6 +4755,9 @@
         } else if (e.key === "t" || e.key === "T") {
           e.preventDefault();
           document.getElementById("btnClassTimer")?.click();
+        } else if (e.key === "m" || e.key === "M") {
+          e.preventDefault();
+          document.getElementById("btnBgmToggle")?.click();
         }
       });
       document.addEventListener('visibilitychange', () => {if(document.hidden) pauseSafetyGame();});
@@ -4718,7 +4814,24 @@
         awardOnce('avatar:runway','reason',20,'꾸미기 이유 설명');
         saveProgress();
       });
-      document.getElementById('avatarSafetyReason').addEventListener('change',e=>{state.avatarReason=e.target.value;saveProgress();renderAvatarDressup();});
+      const AVATAR_REASON_TEMPLATES = {
+        vision: '가면 대신 앞이 잘 보이는 모자와 야광 소품을 골라 어두운 밤길에서도 시야를 넓게 확보했어요.',
+        movement: '길게 끌리지 않는 활동하기 편한 옷차림을 골라 계단과 복도에서 넘어지지 않게 준비했어요.',
+        props: '뾰족하거나 딱딱한 장난감 대신 부드럽고 안전한 소품을 골라 친구와 부딪혀도 다치지 않아요.',
+        friends: '친구를 놀라게 하거나 길을 막지 않는 따뜻한 복장으로 모두가 즐거운 축제를 만들어요.'
+      };
+      document.getElementById('avatarSafetyReason').addEventListener('change', e => {
+        state.avatarReason = e.target.value;
+        const reasonInput = document.getElementById('avatarReasonText');
+        const currentText = (state.avatarReasonText || '').trim();
+        const isTemplate = Object.values(AVATAR_REASON_TEMPLATES).includes(currentText);
+        if (state.avatarReason && AVATAR_REASON_TEMPLATES[state.avatarReason] && (!currentText || isTemplate)) {
+          state.avatarReasonText = AVATAR_REASON_TEMPLATES[state.avatarReason];
+          if (reasonInput) reasonInput.value = state.avatarReasonText;
+        }
+        saveProgress();
+        renderAvatarDressup();
+      });
       document.getElementById('avatarReasonText').addEventListener('input',e=>{state.avatarReasonText=e.target.value.slice(0,120);saveProgress();});
 
       document.getElementById("btnResetCostume").addEventListener("click", () => {

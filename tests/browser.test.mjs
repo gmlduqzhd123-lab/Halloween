@@ -661,6 +661,18 @@ test('main browser flows and standalone file load without script errors', async 
   await game.locator('#festivalTimelineBar [data-timeline-festival="korea"]').click();
   assert.match(await game.locator('#festivalCompareTitle').innerText(),/추석/);
   assert.equal(await game.locator('#festivalQuizBox button').count(),2);
+  await game.locator('#btnRandomMission').click();
+  assert.match(await game.locator('#btnVoteTally1').innerText(),/1번\[/);
+  await game.locator('#btnVoteTally1').click();
+  assert.equal(await game.locator('#festivalQuizBox button.class-vote-winner').count(),1);
+  await game.locator('[data-tab="tab-costume"]').first().click();
+  await game.locator('#avatarSafetyReason').selectOption('vision');
+  assert.match(await game.locator('#avatarReasonText').inputValue(),/시야/);
+  await game.keyboard.press('m');
+  assert.equal(await game.locator('#btnBgmToggle').getAttribute('aria-pressed'),'false');
+  assert.match(await game.evaluate(()=>shareLessonUrl()),/bgm=0/);
+  await game.keyboard.press('m');
+  assert.equal(await game.locator('#btnBgmToggle').getAttribute('aria-pressed'),'true');
   await game.close();
 
   const scoped=await browser.newContext();

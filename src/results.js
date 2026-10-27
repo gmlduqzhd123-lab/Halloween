@@ -298,7 +298,9 @@
       syncButtonGroup('.cert-theme-btn','data-theme',state.certTheme);
       syncButtonGroup('.cert-sticker-btn','data-sticker',state.certSticker);
       ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font=`bold 17px ${RESULT_FONT}`;
-      const identity=[safeLabel(state.profile.school,'학교명 미입력',40),safeLabel(state.profile.className,'학급 미입력',30),safeLabel(state.profile.name,'별칭 없는 학습자',40)].join(' · ');
+      const defaultClassLabel=EDUCATION_DATA[state.grade]?.classDefault||'우리 반';
+      const defaultLearnerLabel=`${EDUCATION_DATA[state.grade]?.label||'3~4학년'} 안전 수호 대원`;
+      const identity=[safeLabel(state.profile.school,'우리 학교',40),safeLabel(state.profile.className,defaultClassLabel,30),safeLabel(state.profile.name,defaultLearnerLabel,40)].join(' · ');
       printLines(ctx,identity,canvas.width/2,188,680,24,2);
 
       // Left showcase card: Custom Jack-o'-Lantern or Theme Craft Item
@@ -338,7 +340,7 @@
       ctx.fillStyle='#111827';ctx.fillRect(65,356,670,244);
       ctx.fillStyle='#fde68a';ctx.font=`bold 16px ${RESULT_FONT}`;ctx.fillText('나의 안전 약속',canvas.width/2,386);
       ctx.fillStyle='#fff';ctx.font=`16px ${RESULT_FONT}`;
-      printLines(ctx,safeLabel(state.profile.pledge,'안전 약속을 적어 보세요.'),canvas.width/2,418,620,26,4);
+      printLines(ctx,safeLabel(state.profile.pledge,'오른쪽 길로 안전하게 걷고 서로를 배려하며 즐거운 축제를 만들겠습니다!'),canvas.width/2,418,620,26,4);
 
       // Collector badges & Special Title (Idea 10)
       const clueCount = Object.keys(typeof storyClueOpened === 'object' ? storyClueOpened : {}).length;
@@ -402,7 +404,9 @@
       const ctx=drawSheetBase(canvas,'오늘의 활동 참여 확인서',`${THEMES[state.teacher.theme].label} · ${EDUCATION_DATA[state.grade].label}`);
       ctx.fillStyle='#fff';ctx.font=`21px ${RESULT_FONT}`;
       let y=205;
-      y=printLines(ctx,`${safeLabel(state.profile.name,'별칭 없는 학습자',40)} · ${safeLabel(state.profile.className,'학급 미입력',30)}`,70,y,760,35,2)+30;
+      const defaultClassLabel=EDUCATION_DATA[state.grade]?.classDefault||'우리 반';
+      const defaultLearnerLabel=`${EDUCATION_DATA[state.grade]?.label||'3~4학년'} 안전 수호 대원`;
+      y=printLines(ctx,`${safeLabel(state.profile.name,defaultLearnerLabel,40)} · ${safeLabel(state.profile.className,defaultClassLabel,30)}`,70,y,760,35,2)+30;
       ctx.fillText(`필수 활동 ${state.teacher.required.length}개 완료`,70,y);y+=50;
       state.teacher.required.forEach(id=>{ctx.fillText(`✓ ${{culture:'이야기',safety:'안전 판단',costume:'옷장',quiz:'퀴즈'}[id]}`,85,y);y+=40;});
       ctx.fillStyle='#fde68a';ctx.font=`16px ${RESULT_FONT}`;
@@ -414,7 +418,9 @@
       const ctx=drawSheetBase(canvas,'나의 학습 결과지',`${THEMES[state.teacher.theme].label} · ${EDUCATION_DATA[state.grade].label} · ${state.teacher.minutes}분 수업`);
       let y=200;
       ctx.fillStyle='#fff';ctx.font=`24px ${RESULT_FONT}`;
-      y=printLines(ctx,`학습자: ${safeLabel(state.profile.name,'별칭 없는 학습자',40)} / ${safeLabel(state.profile.school,'학교명 미입력',40)} / ${safeLabel(state.profile.className,'학급 미입력',30)}`,75,y,950,36,3)+25;
+      const defaultClassLabel=EDUCATION_DATA[state.grade]?.classDefault||'우리 반';
+      const defaultLearnerLabel=`${EDUCATION_DATA[state.grade]?.label||'3~4학년'} 안전 수호 대원`;
+      y=printLines(ctx,`학습자: ${safeLabel(state.profile.name,defaultLearnerLabel,40)} / ${safeLabel(state.profile.school,'우리 학교',40)} / ${safeLabel(state.profile.className,defaultClassLabel,30)}`,75,y,950,36,3)+25;
       ctx.fillStyle='#fde68a';ctx.font=`bold 26px ${RESULT_FONT}`;ctx.fillText('내가 꾸민 모습',75,y);y+=58;
       ctx.font=`56px ${RESULT_FONT}`;ctx.fillText(`${state.avatar.costume}${state.avatar.char}${state.avatar.prop}`,85,y);y+=48;
       ctx.fillStyle='#fff';ctx.font=`22px ${RESULT_FONT}`;
