@@ -194,6 +194,7 @@ test('main browser flows and standalone file load without script errors', async 
   assert.match(await page.locator('#scenarioDesc').innerText(),/근거를 비교/);
   await page.getByRole('button',{name:/1~2학년/}).first().click();
   assert.match(await page.locator('#scenarioTitle').innerText(),/먼저 어디를 볼까요/);
+  assert.equal(await page.locator('#scenarioChoices button > span:first-child').first().evaluate(el=>getComputedStyle(el).whiteSpace),'nowrap');
   await page.getByRole('button',{name:/5~6학년/}).first().click();
   await page.locator('#btnTeacherGuide').click();
   assert.equal(await page.locator('#teacherModal').isVisible(),true);

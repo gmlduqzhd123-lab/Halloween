@@ -61,6 +61,28 @@
       white-space: normal;
       flex-shrink: 1;
     }
+    .badge-nowrap,
+    #scenarioChoices button > span:first-child,
+    #btnEchoRead,
+    #btnFillWholeClass {
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+    }
+    @media (min-width: 360px) {
+      .whitespace-nowrap,
+      .preset-pledge-btn {
+        white-space: nowrap !important;
+      }
+    }
+    @media (max-width: 359px) {
+      .whitespace-nowrap,
+      .preset-pledge-btn {
+        white-space: normal !important;
+      }
+    }
+    .cert-identity-row {
+      grid-template-columns: 1fr !important;
+    }
     #storySourceLink { overflow-wrap: anywhere; }
     @keyframes floatSlow {
       0%, 100% { transform: translateY(0px); }

@@ -65,12 +65,13 @@
         recIdx = 3;
       }
       buttons.forEach((btn, idx) => {
-        const baseText = btn.getAttribute('data-base-label') || btn.textContent.replace(/^⭐ 맞춤 추천 · /, '');
+        const baseText = (btn.getAttribute('data-base-label') || btn.textContent.replace(/^⭐ (맞춤 추천 · )?/, '')).trim();
         btn.setAttribute('data-base-label', baseText);
         const isRec = idx === recIdx;
         btn.dataset.recommended = String(isRec);
         btn.classList.toggle('is-recommended-pledge', isRec);
-        btn.textContent = isRec ? `⭐ 맞춤 추천 · ${baseText}` : baseText;
+        btn.title = isRec ? 'AI 안전 코치 맞춤 추천 약속' : '';
+        btn.textContent = isRec ? `⭐ ${baseText}` : baseText;
       });
     }
     function renderLearningSummary() {
@@ -164,9 +165,10 @@
         const rowTop=document.createElement('div');
         rowTop.className='flex items-center justify-between gap-1 text-[11px] font-bold';
         const nameSpan=document.createElement('span');
+        nameSpan.className='whitespace-nowrap';
         nameSpan.textContent=`${pct===100?'🟢⭕':pct>=50?'🟡⚠️':'🔴✖'} ${goal.title}`;
         const pctSpan=document.createElement('span');
-        pctSpan.className='text-amber-300';
+        pctSpan.className='text-amber-300 whitespace-nowrap shrink-0';
         pctSpan.textContent=`${pct}%`;
         rowTop.appendChild(nameSpan);
         rowTop.appendChild(pctSpan);

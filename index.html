@@ -24,7 +24,7 @@
   <script src="./ys-qr.js" defer></script>
   <link rel="manifest" href="./manifest.json" />
   <title>할로윈 안전 놀이터 | 초등 할로윈 수업</title>
-  <link rel="stylesheet" href="./styles.css?v=a282d9df73c1f4e7">
+  <link rel="stylesheet" href="./styles.css?v=096db15b3ff57578">
 </head>
 <body class="storybook lesson-not-started antialiased selection:bg-orange-200 selection:text-slate-900">
 
@@ -810,13 +810,13 @@
                 <input id="certSchoolInput" type="text" value="" maxlength="40" placeholder="학교명은 선택 사항" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
               </div>
 
-              <div class="cert-identity-row grid grid-cols-2 gap-2">
+              <div class="cert-identity-row grid grid-cols-1 gap-2">
                 <div class="cert-advanced">
                   <label for="certClassInput" class="block text-xs font-bold text-indigo-200 mb-1">학년 / 반</label>
                   <input id="certClassInput" type="text" value="3학년 1반" maxlength="15" placeholder="예: 3학년 1반" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
                 </div>
                 <div>
-                  <div class="flex items-center justify-between gap-2 mb-1"><label for="certNameInput" class="block text-xs font-bold text-indigo-200">1️⃣ 내 이름 (또는 별칭)</label><button type="button" id="btnFillWholeClass" class="mini-chip text-[11px] px-2 py-0.5">+ 우리 반 전체</button></div>
+                  <div class="flex items-center justify-between gap-2 mb-1"><label for="certNameInput" class="block text-xs font-bold text-indigo-200 whitespace-nowrap">1️⃣ 내 이름 (또는 별칭)</label><button type="button" id="btnFillWholeClass" class="mini-chip whitespace-nowrap shrink-0 text-[11px] px-2 py-0.5">+ 우리 반 전체</button></div>
                   <input id="certNameInput" type="text" value="" maxlength="40" placeholder="예: 김안전 또는 3학년 1반" class="w-full px-3 py-2 rounded-xl bg-indigo-950 border border-indigo-700 text-white text-sm focus:outline-none focus:border-orange-400" />
                 </div>
               </div>
@@ -868,15 +868,15 @@
                   </div>
                 </div>
               </div>
-              <div class="cert-advanced grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <button type="button" id="btnDownloadParticipation" class="rounded-xl bg-emerald-600 px-3 py-2 font-bold">참여 확인서 PNG</button>
-                <button type="button" id="btnDownloadResult" class="rounded-xl bg-indigo-600 px-3 py-2 font-bold">학습 결과지 PNG</button>
-                <button type="button" id="btnPrintResult" class="rounded-xl bg-indigo-700 px-3 py-2 font-bold">결과지 인쇄</button>
-                <button type="button" id="btnAddClassPoster" class="rounded-xl bg-amber-600 px-3 py-2 font-bold">🏆 협동 포스터에 추가</button>
-                <button type="button" id="btnDownloadWallPoster" class="rounded-xl bg-orange-600 px-3 py-2 font-bold text-xs">🪧 교실 게시용 안전수칙 포스터 PNG</button>
-                <button type="button" id="btnDownloadParentCard" class="rounded-xl bg-sky-600 px-3 py-2 font-bold text-xs">💌 가정통신문 요약 카드뉴스 PNG</button>
-                <button type="button" id="btnExportProgress" class="rounded-xl bg-indigo-700 px-3 py-2 font-bold">기록 JSON 내보내기</button>
-                <label class="rounded-xl bg-indigo-700 px-3 py-2 font-bold">기록 JSON 가져오기 <input id="importProgressFile" type="file" accept="application/json,.json" multiple class="w-full text-xs"></label>
+              <div class="cert-advanced grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <button type="button" id="btnDownloadParticipation" class="rounded-xl bg-emerald-600 px-3 py-2 font-bold whitespace-nowrap">참여 확인서 PNG</button>
+                <button type="button" id="btnDownloadResult" class="rounded-xl bg-indigo-600 px-3 py-2 font-bold whitespace-nowrap">학습 결과지 PNG</button>
+                <button type="button" id="btnPrintResult" class="rounded-xl bg-indigo-700 px-3 py-2 font-bold whitespace-nowrap">결과지 인쇄</button>
+                <button type="button" id="btnAddClassPoster" class="rounded-xl bg-amber-600 px-3 py-2 font-bold whitespace-nowrap">🏆 협동 포스터 추가</button>
+                <button type="button" id="btnDownloadWallPoster" class="rounded-xl bg-orange-600 px-2.5 py-2 font-bold text-xs whitespace-nowrap">🪧 안전수칙 포스터 PNG</button>
+                <button type="button" id="btnDownloadParentCard" class="rounded-xl bg-sky-600 px-2.5 py-2 font-bold text-xs whitespace-nowrap">💌 가정통신문 카드 PNG</button>
+                <button type="button" id="btnExportProgress" class="rounded-xl bg-indigo-700 px-3 py-2 font-bold whitespace-nowrap">기록 JSON 내보내기</button>
+                <label class="rounded-xl bg-indigo-700 px-3 py-2 font-bold block"><span class="whitespace-nowrap">기록 JSON 가져오기</span> <input id="importProgressFile" type="file" accept="application/json,.json" multiple class="w-full text-xs mt-1"></label>
                 <div class="sm:col-span-2 rounded-xl bg-indigo-950/90 border border-indigo-700 p-2.5 space-y-2 text-xs">
                   <div class="font-extrabold text-amber-300">⚡ 무서버 배움 코드 · 학급 포스터 즉시 합산</div>
                   <div class="flex flex-wrap items-center gap-1.5">
@@ -1048,6 +1048,6 @@
   <img id="printResultImage" alt="학습 결과지 인쇄 이미지" />
   <audio id="bgmAudio" src="./bgm.mp3" loop preload="auto"></audio>
 
-  <script src="./app.js?v=a282d9df73c1f4e7" defer></script>
+  <script src="./app.js?v=096db15b3ff57578" defer></script>
 </body>
 </html>
