@@ -769,6 +769,13 @@
       .bgm-volume-slider { width: 42px; }
       .bgm-toggle-btn { font-size: 11px; padding: 2px 6px; min-height: 24px; }
       .bgm-volume-text { min-width: 24px; font-size: 10px; }
+      /* 휴대폰: 맨 윗줄 = 앱 이름 + 설치·QR, 둘째 줄 = 배경음악 조절 */
+      .ys-row .ys-key { display: contents; }
+      .ys-row .ys-key > button.ys-chip { order: 2; }
+      .ys-row .ys-key > button.ys-chip:first-of-type { margin-left: auto; }
+      .ys-row .ys-key > .bgm-control-pill { order: 3; margin-left: auto; }
+      .ys-row { column-gap: 5px; row-gap: 6px; }
+      .ys-row::after { content: ""; order: 2; flex-basis: 100%; height: 0; }
     }
 
     /* 칠판 집중 확대(Spotlight) 모드 및 6대 목표 히트맵 */
