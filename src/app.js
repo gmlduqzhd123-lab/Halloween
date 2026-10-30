@@ -816,6 +816,132 @@
       { id: "e4", icon: "🤝", title: "친구가 싫어하는 무서운 장난 금지", desc: "모두가 기분 좋게 웃을 수 있도록 친구의 마음을 먼저 배려해요." }
     ];
 
+    const COSTUME_REASON_BY_GRADE = {
+      "1-2": {
+        c1: "가면 눈구멍이 작으면 앞과 옆이 안 보여서 계단에서 넘어지기 쉬워요!",
+        c2: "길게 끌리는 망토는 내 발이나 친구 발에 밟혀 넘어질 수 있어요!",
+        c3: "어두운 곳에서 반짝이는 야광 팔찌를 차면 멀리서도 나를 잘 볼 수 있어요!",
+        c4: "끝이 뾰족한 장난감은 친구와 부딪혔을 때 눈이나 몸을 다치게 해요!",
+        c5: "앞이 훤히 보이는 모자는 계단과 길을 잘 보면서 걸을 수 있어요!",
+        c6: "진짜 경찰관·소방관 옷과 똑같으면 도와줄 어른을 찾기 어려워요!",
+        c7: "바닥에 끌리지 않는 옷은 계단과 복도에서 넘어지지 않아 안전해요!",
+        c8: "진짜 무기처럼 보이는 장난감은 주변 친구들을 깜짝 놀라게 해요!",
+        c9: "너무 무서운 분장은 어린 동생이나 친구를 울리거나 놀라게 할 수 있어요!",
+        c10: "가볍고 폭신한 머리띠는 시야도 넓고 부딪혀도 아프지 않아요!",
+        c11: "목에 감기는 긴 끈은 문이나 난간에 걸려 목이 졸릴 수 있어 위험해요!",
+        c12: "두 손이 자유롭고 앞이 잘 보이는 옷에 운동화를 신으면 정말 안전해요!"
+      },
+      "5-6": {
+        c1: "시야각을 좁히는 전면 가면은 혼잡한 통로나 계단에서 주변 위험 인지를 늦춰 충돌·낙상 위험을 높입니다.",
+        c2: "바닥에 끌리는 긴 의상은 다중밀집 보행 중 뒤따르는 사람에게 밟혀 연쇄 전도 사고를 유발할 수 있습니다.",
+        c3: "야간이나 조도가 낮은 행사장에서는 반사·야광 소품이 시인성을 높여 보행 충돌을 예방합니다.",
+        c4: "좁은 공간에서 뾰족하고 단단한 소품은 군중 밀집 시 타인에게 신체 손상을 줄 수 있어 휴대를 피해야 합니다.",
+        c5: "시야를 가리지 않는 모자·장식은 전방과 바닥 장애물을 즉시 확인할 수 있어 안전한 이동을 돕습니다.",
+        c6: "실제 경찰·소방·안전요원 제복과 유사한 복장은 비상 상황 시 구조 요청 대상을 혼동시켜 현장 대응을 지연시킵니다.",
+        c7: "발목 위로 단정하게 정리된 활동복은 보행 걸림 요소를 줄여 계단·경사로 이동 시 균형 유지에 유리합니다.",
+        c8: "실제 무기와 구별하기 어려운 모형 소품은 공공장소에서 공포감과 대피 혼란을 유발할 수 있으므로 금지됩니다.",
+        c9: "공공 행사에서는 타인의 정서적 안전과 참여 선택권을 존중해 과도한 공포·혐오 분장을 자제해야 합니다.",
+        c10: "부드럽고 가벼운 소재의 머리띠는 시야 방해가 없고 밀집 구간에서도 접촉 부상 위험이 낮습니다.",
+        c11: "목에 감기는 긴 끈이나 장식은 인파 속 걸림·끼임 시 질식 사고로 이어질 수 있어 벨크로(찍찍이)형으로 대체해야 합니다.",
+        c12: "시야 확보·양손 자유·운동화 착용의 3박자를 갖춘 복장은 돌발 상황에서도 신속히 균형을 잡고 대피할 수 있습니다."
+      }
+    };
+
+    const THEME_ETIQUETTE_RULES = {
+      school: [
+        { id: "e1", icon: "🏫", title: "부스 체험 줄은 차근차근 순서 지키기", desc: "인기 있는 교실 부스 앞에서도 새치기하거나 밀지 않고 한 줄로 기다려요." },
+        { id: "e2", icon: "🔇", title: "수업·공연 중인 교실 옆 복도에서 정숙하기", desc: "다른 학년의 발표와 전시 관람을 방해하지 않도록 복도에서는 조용히 걸어요." },
+        { id: "e3", icon: "🗑️", title: "체험 재료와 간식 쓰레기는 분리배출하기", desc: "교실과 복도에 쓰레기를 남기지 않고 머문 자리를 스스로 정리해요." },
+        { id: "e4", icon: "🤝", title: "친구의 발표와 작품을 다정하게 응원하기", desc: "실수하더라도 놀리지 않고 따뜻한 박수와 격려로 모두가 즐거운 축제를 만들어요." }
+      ],
+      field: [
+        { id: "e1", icon: "🏛️", title: "전시물 눈으로만 감상하고 보호선 지키기", desc: "박물관·전시관의 소중한 유물과 작품은 손으로 만지지 않고 안전선 밖에서 봐요." },
+        { id: "e2", icon: "🤫", title: "공공 관람 예절 지키며 소곤소곤 대화하기", desc: "다른 관람객들도 함께 이용하는 공간이므로 뛰거나 큰 소리를 내지 않아요." },
+        { id: "e3", icon: "🎒", title: "도시락·간식 자리는 깨끗하게 되돌려 놓기", desc: "식사 후 남은 쓰레기는 내 가방이나 지정된 쓰레기통에 깔끔하게 정리해요." },
+        { id: "e4", icon: "👫", title: "모둠 친구와 간격 맞추고 이탈하지 않기", desc: "혼자 다른 전시실로 가지 않고 모둠 친구·선생님과 함께 이동해요." }
+      ],
+      trip: [
+        { id: "e1", icon: "🛏️", title: "숙소 복도·계단에서 밤늦게 뛰거나 떠들지 않기", desc: "여러 학교와 투숙객이 함께 쉬는 숙소에서는 밤 시간 정숙 예절을 지켜요." },
+        { id: "e2", icon: "🚪", title: "숙소 도착 즉시 비상구와 완강기 위치 확인하기", desc: "짐을 풀기 전에 내 방에서 가장 가까운 비상 계단 두 곳을 먼저 확인해요." },
+        { id: "e3", icon: "🧹", title: "머문 방과 이동 버스의 쓰레기 스스로 정리하기", desc: "다음 사람을 배려해 사용한 공간과 버스 좌석을 깨끗하게 정돈해요." },
+        { id: "e4", icon: "🤝", title: "방 친구의 휴식 시간과 개인 공간 존중하기", desc: "친구가 싫어하는 장난이나 촬영을 하지 않고 서로 배려하는 여행을 만들어요." }
+      ],
+      sports: [
+        { id: "e1", icon: "💧", title: "경기 전후 충분한 수분 섭취와 준비운동하기", desc: "갑자기 전력 질주하기 전에 몸을 풀고 그늘에서 물을 마시며 건강을 지켜요." },
+        { id: "e2", icon: "📣", title: "이긴 팀도 진 팀도 서로 박수 보내기", desc: "결과보다 최선을 다한 과정을 칭찬하고 넘어졌을 때 손을 잡아 일으켜 줘요." },
+        { id: "e3", icon: "🗑️", title: "응원석 주변 물병과 응원 도구 정리하기", desc: "경기가 끝난 뒤 우리 반 응원석 자리에 쓰레기가 남지 않도록 함께 치워요." },
+        { id: "e4", icon: "🚶", title: "트랙 안쪽 경기 구역에 무단으로 들어가지 않기", desc: "달리는 선수와 부딪히지 않도록 응원석과 이동 통로 약속선을 꼭 지켜요." }
+      ],
+      local: [
+        { id: "e1", icon: "🍡", title: "위생적으로 조리·포장된 안전한 먹거리 고르기", desc: "길거리에서는 걸으며 꼬치 등 뾰족한 음식을 먹지 않고 안전한 자리에서 먹어요." },
+        { id: "e2", icon: "🏘️", title: "행사장 주변 이웃 주민에게 소음 피해 주지 않기", desc: "저녁 시간 주택가 주변에서는 큰 소리를 내거나 통행을 막지 않도록 배려해요." },
+        { id: "e3", icon: "🗑️", title: "머문 자리 쓰레기는 되가져오거나 분리배출하기", desc: "공원과 광장이 깨끗하게 유지되도록 내 쓰레기는 끝까지 책임지고 챙겨요." },
+        { id: "e4", icon: "👨‍👩‍👧", title: "보호자와 손잡고 약속한 구역 안에서만 이동하기", desc: "불꽃놀이나 공연 인파 속에서는 어른의 손을 놓지 않고 집결 장소를 기억해요." }
+      ]
+    };
+
+    function getCostumeReasonForGrade(item) {
+      if (!item) return "";
+      const byGrade = COSTUME_REASON_BY_GRADE[state.grade]?.[item.id];
+      return byGrade || item.reason;
+    }
+
+    function getActiveEtiquetteRules() {
+      const themeKey = state.teacher?.theme || "halloween";
+      const baseRules = isHalloweenTheme()
+        ? ETIQUETTE_RULES
+        : (THEME_ETIQUETTE_RULES[themeKey] || ETIQUETTE_RULES);
+      if (state.grade === "1-2") {
+        return baseRules.map(r => ({
+          ...r,
+          desc: r.desc
+            .replace("알레르기 성분이 있는 간식은 먹지 않아요.", "몸에 안 맞는 간식은 먹지 않아요.")
+            .replace("분리배출하기", "깨끗이 버리기")
+            .replace("정숙 예절을 지켜요.", "조용히 쉬어요.")
+        }));
+      }
+      if (state.grade === "5-6") {
+        return baseRules.map(r => ({
+          ...r,
+          desc: `${r.desc} (공공 안전과 타인의 권리를 함께 지키는 시민 약속)`
+        }));
+      }
+      return baseRules;
+    }
+
+    function adaptTextForTheme(rawText) {
+      if (!rawText || typeof rawText !== "string" || isHalloweenTheme()) return rawText;
+      const cfg = typeof THEME_SCENARIO_ADAPT !== "undefined" ? THEME_SCENARIO_ADAPT[state.teacher?.theme] : null;
+      if (!cfg) return rawText;
+      const pairs = Array.isArray(cfg)
+        ? cfg
+        : [
+            ["할로윈 축제 거리", cfg.placeWord],
+            ["할로윈 축제", cfg.shortPlace],
+            ["축제에 도착했어요", `${cfg.shortPlace}에 도착했어요`],
+            ["반짝이 호박 풍선", cfg.giftWord],
+            ["반짝이 풍선", cfg.giftWord],
+            ["풍선보다", `${cfg.shortGift}보다`],
+            ["풍선이", `${cfg.shortGift}이(가)`],
+            ["화려한 할로윈 퍼레이드 행렬", cfg.paradeWord],
+            ["멋진 퍼레이드 행렬", cfg.paradeWord],
+            ["멋진 분장 행렬", cfg.paradeWord],
+            ["사탕 나눔 부스", cfg.boothWord],
+            ["사탕 부스", cfg.boothWord],
+            ["한정판 호박 키링", cfg.keyringWord],
+            ["호박 열쇠고리", cfg.keyringWord],
+            ["호박 키링", cfg.droppedWord],
+            ["저녁 축제", cfg.shortPlace]
+          ];
+      let out = rawText;
+      pairs.forEach(([fromStr, toStr]) => {
+        if (fromStr && toStr && out.includes(fromStr)) {
+          out = out.split(fromStr).join(toStr);
+        }
+      });
+      return out;
+    }
+
     // ==================== APPLICATION STATE ====================
     const state = {
       sessionId: (globalThis.crypto && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
@@ -1058,11 +1184,16 @@
       state.teacher = next;
       switchGrade(next.grade);
       setCultureStage('story');
+      syncWelcomeGrade();
+      syncLessonStage();
       renderStorySlide();
       renderLanternWorkshop();
       renderScenario();
+      renderAvatarDressup();
       renderCostumeCards();
+      renderEtiquetteChecklist();
       renderQuiz();
+      renderCertificateCanvas();
       switchTab(next.start);
       saveProgress();
       renderTeacherSettings();
@@ -1101,7 +1232,10 @@
 
     function syncStageButtons() {
       document.querySelectorAll(".game-stage-btn").forEach(btn => {
-        const isCurrent = parseInt(btn.getAttribute("data-stage"), 10) === state.gameStage;
+        const stageNum = parseInt(btn.getAttribute("data-stage"), 10);
+        const isCurrent = stageNum === state.gameStage;
+        const isCleared = typeof safetyGame !== "undefined" && safetyGame.clearedStages && safetyGame.clearedStages[stageNum];
+        btn.textContent = isCleared ? `✅ ${stageNum}단계` : `${stageNum}단계`;
         btn.className = isCurrent
           ? "game-stage-btn nowrap px-2 py-0.5 rounded-lg bg-amber-400 text-indigo-950 text-xs font-black"
           : "game-stage-btn nowrap px-2 py-0.5 rounded-lg bg-indigo-900 text-indigo-200 border border-indigo-700 text-xs font-bold";
@@ -1305,6 +1439,7 @@
             state.teacher = sanitizeTeacher(parsed.teacher);
             state.activeTab = ['tab-culture','tab-safety','tab-costume','tab-quiz','tab-cert'].includes(parsed.activeTab) ? parsed.activeTab : state.teacher.start;
             restoreGrade(state.grade);
+            if (typeof loadClassPosterRecords === 'function') loadClassPosterRecords();
             if (contentMigrated && !preserveExistingProgress) saveProgress();
             return;
           }
@@ -1549,6 +1684,70 @@
     let bgmVolume = 35;
     let lastNonZeroBgmVolume = 35;
     let isTtsSpeaking = false;
+    let bgmFallbackActive = false;
+    let bgmSynthTimer = null;
+    let bgmSynthNoteIdx = 0;
+    const BGM_SYNTH_NOTES = [
+      659.25, 783.99, 987.77, 783.99,
+      659.25, 587.33, 493.88, 587.33,
+      523.25, 659.25, 783.99, 659.25,
+      493.88, 587.33, 659.25, 493.88
+    ];
+
+    function playSynthMusicBoxNote() {
+      if (!bgmOn || bgmVolume <= 0 || document.visibilityState === "hidden") return;
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return;
+          audioCtx = new AudioContextClass();
+        }
+        if (audioCtx.state === "suspended") {
+          audioCtx.resume().catch(() => {});
+        }
+        if (audioCtx.state !== "running") return;
+        const now = audioCtx.currentTime;
+        const freq = BGM_SYNTH_NOTES[bgmSynthNoteIdx % BGM_SYNTH_NOTES.length];
+        bgmSynthNoteIdx = (bgmSynthNoteIdx + 1) % BGM_SYNTH_NOTES.length;
+        const baseVol = Math.max(0, Math.min(1, bgmVolume / 100));
+        const isFullMood = document.body.classList.contains("lesson-not-started") ||
+          state.activeTab === "tab-cert" ||
+          (typeof safetyGame !== "undefined" && safetyGame.running && !safetyGame.paused);
+        const tabScale = isFullMood ? 1 : 0.72;
+        const effectiveGain = (isTtsSpeaking ? baseVol * 0.25 : baseVol * tabScale) * 0.08;
+        if (effectiveGain <= 0.0005) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(effectiveGain, now);
+        gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.42);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.44);
+      } catch (_) {}
+    }
+
+    function startSynthBgmLoop() {
+      bgmFallbackActive = true;
+      if (bgmSynthTimer) return;
+      playSynthMusicBoxNote();
+      bgmSynthTimer = setInterval(() => {
+        if (!bgmOn || bgmVolume <= 0) {
+          stopSynthBgmLoop();
+          return;
+        }
+        playSynthMusicBoxNote();
+      }, 480);
+    }
+
+    function stopSynthBgmLoop() {
+      if (bgmSynthTimer) {
+        clearInterval(bgmSynthTimer);
+        bgmSynthTimer = null;
+      }
+    }
 
     function loadBgmPrefs() {
       try {
@@ -1618,18 +1817,30 @@
       const exitScreen = document.getElementById("exitScreen");
       const isExited = exitScreen && !exitScreen.classList.contains("hidden");
       if (bgmOn && bgmVolume > 0 && !isExited && document.visibilityState !== "hidden") {
+        if (bgmFallbackActive) {
+          startSynthBgmLoop();
+          return;
+        }
         if (audio.paused) {
           const playPromise = audio.play();
           if (playPromise && typeof playPromise.catch === "function") {
-            playPromise.catch(() => {});
+            playPromise.catch(err => {
+              if (audio.error || audio.networkState === 3 || (err && err.name === "NotSupportedError")) {
+                startSynthBgmLoop();
+              }
+            });
           }
         }
-      } else if (!audio.paused) {
-        audio.pause();
+      } else {
+        stopSynthBgmLoop();
+        if (!audio.paused) {
+          audio.pause();
+        }
       }
     }
 
     function pauseBgmAudio() {
+      stopSynthBgmLoop();
       const audio = document.getElementById("bgmAudio");
       if (audio && !audio.paused) {
         try { audio.pause(); } catch (_) {}
@@ -2650,7 +2861,7 @@
 
       const titleEl = document.createElement("div");
       titleEl.className = "font-extrabold text-amber-300";
-      titleEl.textContent = drill.title;
+      titleEl.textContent = adaptTextForTheme(drill.title);
       row.appendChild(titleEl);
 
       const btn = document.createElement("button");
@@ -2677,11 +2888,12 @@
       if (isDone) {
         const descEl = document.createElement("p");
         descEl.className = "text-xs font-bold text-emerald-300 mt-1";
+        const adaptedDoneText = adaptTextForTheme(drill.doneText);
         descEl.textContent = countdown > 0
-          ? `${drill.doneText} · 🙌 지금 자리에서 3초 동안 몸동작을 따라 해 봐요! (${countdown}초)`
+          ? `${adaptedDoneText} · 🙌 지금 자리에서 3초 동안 몸동작을 따라 해 봐요! (${countdown}초)`
           : countdown === 0
-          ? `${drill.doneText} · 👏 3초 몸동작 따라 하기 성공!`
-          : drill.doneText;
+          ? `${adaptedDoneText} · 👏 3초 몸동작 따라 하기 성공!`
+          : adaptedDoneText;
         box.appendChild(descEl);
       }
 
@@ -2789,12 +3001,16 @@
       const item = SAFETY_SCENARIOS[state.scenarioIndex];
       const goal = SAFETY_GOALS[state.scenarioIndex];
       const low = state.grade === '1-2' ? SAFETY_SCENARIO_LOW[state.scenarioIndex] : null;
+      const high = state.grade === '5-6' && typeof SAFETY_SCENARIO_HIGH !== 'undefined' ? SAFETY_SCENARIO_HIGH[state.scenarioIndex] : null;
       const isScenarioCore10 = Number(state.teacher?.minutes) === 10 && [0, 2, 3].includes(state.scenarioIndex);
       document.getElementById("scenarioStepBadge").textContent = `약속 ${state.scenarioIndex + 1} / ${SAFETY_SCENARIOS.length}${pairTurnSuffix(state.scenarioIndex)}`;
       document.getElementById("scenarioEmoji").textContent = item.emoji;
       document.getElementById("scenarioStageTag").textContent = `${item.stage}${isScenarioCore10 ? ' · ⚡10분 핵심' : ''}`;
-      document.getElementById("scenarioTitle").textContent = low?.title || item.title;
-      renderHighlightedText(document.getElementById("scenarioDesc"), low?.desc || (state.grade === '5-6' ? `${item.desc} 두 행동의 위험과 근거를 비교해 보세요.` : item.desc));
+      document.getElementById("scenarioTitle").textContent = adaptTextForTheme(low?.title || high?.title || item.title);
+      renderHighlightedText(
+        document.getElementById("scenarioDesc"),
+        adaptTextForTheme(low?.desc || high?.desc || (state.grade === '5-6' ? `${item.desc} 두 행동의 위험과 근거를 비교해 보세요.` : item.desc))
+      );
       updatePairBatonBanner(state.scenarioIndex);
       const signalBar = document.getElementById("scenarioSignalBar");
       if (signalBar) {
@@ -2811,17 +3027,20 @@
       document.getElementById('btnSpeakSafetyFeedback').classList.add('hidden');
 
       item.choices.forEach((choice, idx) => {
+        const choiceLabel = adaptTextForTheme(low?.choices[idx] || high?.choices?.[idx] || choice.text);
+        const choiceFeedback = adaptTextForTheme(high?.feedbacks?.[idx] || choice.feedback);
+        const choiceAftermath = adaptTextForTheme(choice.aftermath || "");
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "w-full text-left p-3 rounded-xl bg-indigo-950/90 hover:bg-indigo-900 border border-indigo-700 hover:border-amber-400 transition flex items-center gap-2.5 min-h-[48px]";
         btn.innerHTML = `
           <span class="nowrap badge-nowrap shrink-0 whitespace-nowrap px-2.5 py-0.5 rounded-lg bg-indigo-800 text-amber-300 font-black text-xs">선택 ${idx + 1}</span>
-          <span class="text-xs sm:text-sm font-bold text-white leading-snug">${low?.choices[idx] || choice.text}</span>
+          <span class="text-xs sm:text-sm font-bold text-white leading-snug">${choiceLabel}</span>
         `;
         btn.addEventListener("click", () => {
           if (!state.safetyFirst[goal.id]) state.safetyFirst[goal.id] = {correct: !!choice.correct, at: Date.now()};
-          const aftermathHtml = choice.aftermath
-            ? `<div class="pt-1.5 mt-1 border-t border-white/15 font-bold text-amber-200">${choice.aftermath}</div>`
+          const aftermathHtml = choiceAftermath
+            ? `<div class="pt-1.5 mt-1 border-t border-white/15 font-bold text-amber-200">${choiceAftermath}</div>`
             : "";
           const scienceHtml = item.scienceTip
             ? `<div class="pt-1 text-[11px] font-bold text-sky-200">${item.scienceTip}</div>`
@@ -2834,7 +3053,7 @@
             }
             if (signalBar) signalBar.textContent = "🟢⭕ [안전·실선] 안전 확보 · 올바른 판단이에요!";
             feedbackBox.className = "rounded-xl p-3 border bg-emerald-950/80 border-emerald-400/60 text-emerald-100 text-xs sm:text-sm space-y-1";
-            feedbackBox.innerHTML = `<div class="font-black text-emerald-300">⭕ 적절한 선택이에요. 이유를 한 번 더 확인해요.</div><p>${choice.feedback}</p>${aftermathHtml}${scienceHtml}`;
+            feedbackBox.innerHTML = `<div class="font-black text-emerald-300">⭕ 적절한 선택이에요. 이유를 한 번 더 확인해요.</div><p>${choiceFeedback}</p>${aftermathHtml}${scienceHtml}`;
           } else {
             playSound("wrong");
             if (signalBar) {
@@ -2850,9 +3069,9 @@
               emEl.classList.add("scenario-alert-pulse");
             }
             feedbackBox.className = "rounded-xl p-3 border bg-rose-950/80 border-rose-400/60 text-rose-100 text-xs sm:text-sm space-y-1";
-            feedbackBox.innerHTML = `<div class="font-black text-rose-300">❌ 다시 골라 볼까요?</div><p>${choice.feedback}</p>${aftermathHtml}${scienceHtml}`;
+            feedbackBox.innerHTML = `<div class="font-black text-rose-300">❌ 다시 골라 볼까요?</div><p>${choiceFeedback}</p>${aftermathHtml}${scienceHtml}`;
           }
-          document.getElementById('importantStatus').textContent = choice.feedback;
+          document.getElementById('importantStatus').textContent = choiceFeedback;
           document.getElementById('btnSpeakSafetyFeedback').classList.remove('hidden');
           saveProgress();
           renderSafetyFollowup();
@@ -3161,6 +3380,21 @@
     }
 
     function renderAvatarDressup() {
+      const themeKey = state.teacher?.theme || "halloween";
+      const themeLabel = THEMES[themeKey]?.label || "할로윈";
+      const avatarBadge = document.getElementById("avatarCardSubBadge");
+      if (avatarBadge) {
+        avatarBadge.textContent = isHalloweenTheme()
+          ? "트렌드 놀이터 · 아바타 코디 스튜디오"
+          : `트렌드 놀이터 · ${themeLabel} 안전 코디 스튜디오`;
+      }
+      const step2Label = document.getElementById("avatarStep2Label");
+      if (step2Label) {
+        step2Label.textContent = isHalloweenTheme()
+          ? "2단계: 안전한 할로윈 의상 고르기"
+          : `2단계: 안전한 ${themeLabel} 복장 고르기`;
+      }
+
       document.getElementById("avatarCharIcon").textContent = state.avatar.char;
       document.getElementById("avatarCostumeIcon").textContent = state.avatar.costume;
       document.getElementById("avatarPropIcon").textContent = state.avatar.prop;
@@ -3175,10 +3409,10 @@
         const mission = AVATAR_MISSIONS[avatarMissionIndex % AVATAR_MISSIONS.length];
         missionBox.innerHTML = `
           <div class="flex flex-wrap items-center justify-between gap-1.5">
-            <span id="avatarMissionTitle" class="font-extrabold text-amber-200">🎯 오늘의 코디 미션 (${(avatarMissionIndex % AVATAR_MISSIONS.length) + 1}/${AVATAR_MISSIONS.length}): ${mission.title}</span>
+            <span id="avatarMissionTitle" class="font-extrabold text-amber-200">🎯 오늘의 코디 미션 (${(avatarMissionIndex % AVATAR_MISSIONS.length) + 1}/${AVATAR_MISSIONS.length}): ${adaptTextForTheme(mission.title)}</span>
             <button id="btnNextAvatarMission" type="button" class="mini-chip text-[11px]">🔄 다음 미션</button>
           </div>
-          <p class="text-[11px] text-indigo-200">${mission.tip}</p>
+          <p class="text-[11px] text-indigo-200">${adaptTextForTheme(mission.tip)}</p>
         `;
         const nextMissionBtn = document.getElementById("btnNextAvatarMission");
         if (nextMissionBtn) {
@@ -3224,6 +3458,20 @@
     let costumePage = 0;
     let costumeFocusMode = true;
     function renderCostumeCards() {
+      const themeKey = state.teacher?.theme || "halloween";
+      const themeLabel = THEMES[themeKey]?.label || "할로윈";
+      const closetBadge = document.getElementById("costumeClosetBadge");
+      if (closetBadge) {
+        closetBadge.textContent = isHalloweenTheme()
+          ? "놀이 3 · 할로윈 옷장 안전 분류"
+          : `놀이 3 · ${themeLabel} 복장·소품 안전 분류`;
+      }
+      const toggleEtqBtn = document.getElementById("btnToggleEtiquette");
+      if (toggleEtqBtn) {
+        toggleEtqBtn.textContent = isHalloweenTheme()
+          ? "배려하는 할로윈 에티켓 4가지"
+          : `배려하는 ${themeLabel} 에티켓 4가지`;
+      }
       const grid = document.getElementById("costumeCardsGrid");
       grid.innerHTML = "";
       const perPage = costumeFocusMode ? 1 : 4;
@@ -3253,6 +3501,7 @@
         if (isCorrect) correctCount++;
 
         if (Math.floor(itemIndex / perPage) !== costumePage) return;
+        const reasonText = adaptTextForTheme(getCostumeReasonForGrade(item));
         const card = document.createElement("div");
         card.className = `glass-panel rounded-2xl p-3 flex flex-col justify-between border transition ${
           !hasAnswered
@@ -3293,7 +3542,7 @@
                     isCorrect ? "bg-emerald-950/90 text-emerald-200" : "bg-rose-950/90 text-rose-200"
                   }">
                     <div class="font-black mb-0.5 nowrap">${isCorrect ? "딩동댕! 👏" : "다시 확인!"}</div>
-                    <div>${item.reason}</div>
+                    <div class="costume-reason-text">${reasonText}</div>
                     ${item.afterLook ? `<div class="pt-1 font-extrabold text-emerald-300">${item.afterLook}</div>` : ""}
                     ${item.reform ? `<div class="costume-reform-tip pt-1.5 mt-1 border-t border-amber-400/40 font-extrabold text-amber-200">${item.reform}</div>` : ""}
                   </div><button type="button" class="speak-costume-feedback w-full rounded-lg bg-indigo-800 p-2 text-xs" data-id="${item.id}">🔈 이유와 대체 코디 읽기</button>`
@@ -3324,7 +3573,7 @@
       grid.querySelectorAll('.speak-costume-feedback').forEach(button=>{
         button.addEventListener('click',()=>{
           const item=COSTUME_ITEMS.find(row=>row.id===button.dataset.id);
-          if(item)speakText(`${item.name}. ${item.reason} ${item.reform || ''}`);
+          if(item)speakText(`${item.name}. ${adaptTextForTheme(getCostumeReasonForGrade(item))} ${item.reform || ''}`);
         });
       });
 
@@ -3352,10 +3601,19 @@
     function renderEtiquetteChecklist() {
       const box = document.getElementById("etiquetteChecklist");
       if (!box) return;
+      const themeKey = state.teacher?.theme || "halloween";
+      const themeLabel = THEMES[themeKey]?.label || "할로윈";
+      const etqTitle = document.getElementById("etiquetteSectionTitle");
+      if (etqTitle) {
+        etqTitle.textContent = isHalloweenTheme()
+          ? "🤝 배려하는 할로윈 에티켓 4가지"
+          : `🤝 배려하는 ${themeLabel} 에티켓 4가지`;
+      }
       box.innerHTML = "";
       let checkedCount = 0;
+      const activeRules = getActiveEtiquetteRules();
 
-      ETIQUETTE_RULES.forEach(rule => {
+      activeRules.forEach(rule => {
         const isChecked = !!state.etiquetteChecked[rule.id];
         if (isChecked) checkedCount++;
         const btn = document.createElement("button");
@@ -3384,7 +3642,7 @@
         box.appendChild(btn);
       });
 
-      document.getElementById("etiquetteCheckBadge").textContent = `약속 체크 ${checkedCount} / ${ETIQUETTE_RULES.length}`;
+      document.getElementById("etiquetteCheckBadge").textContent = `약속 체크 ${checkedCount} / ${activeRules.length}`;
     }
 
     // QUIZ_MODULE
@@ -3541,8 +3799,11 @@
       if (nightBtn) nightBtn.textContent = "🌙 밤길 야광 반사 테스트";
       if (judgeEl) judgeEl.textContent = "시야 확보 OK! 밤길 안전 반사 OK!";
       if (!keepClassPoster) {
-        if (typeof classPosterActive !== 'undefined') classPosterActive = false;
-        if (typeof classPosterRecords !== 'undefined' && Array.isArray(classPosterRecords)) classPosterRecords.length = 0;
+        if (typeof clearClassPosterRecords === 'function') clearClassPosterRecords();
+        else {
+          if (typeof classPosterActive !== 'undefined') classPosterActive = false;
+          if (typeof classPosterRecords !== 'undefined' && Array.isArray(classPosterRecords)) classPosterRecords.length = 0;
+        }
         const importStatus = document.getElementById("importResults");
         if (importStatus) importStatus.textContent = "";
       }
@@ -3569,6 +3830,7 @@
       safetyGame.friendRescued = false;
       safetyGame.companion = null;
       safetyGame.items = [];
+      safetyGame.clearedStages = { 1: false, 2: false, 3: false };
       safetyGame.player = {x:42, y:210, r:13, targetX:null, targetY:null};
       safetyGame.hazards = [];
       saveProgress();
@@ -3644,6 +3906,7 @@
       state.activeTab=state.teacher.start;
       safetyGame.running=false;safetyGame.won=false;safetyGame.paused=false;safetyGame.route=null;
       safetyGame.bonusCollected=false;safetyGame.friendRescued=false;safetyGame.companion=null;safetyGame.items=[];
+      safetyGame.clearedStages={1:false,2:false,3:false};
       safetyGame.player={x:42,y:210,r:13,targetX:null,targetY:null};
       safetyGame.hazards=[];
       saveProgress();renderAllLearning();
@@ -3967,6 +4230,10 @@
           syncLessonStage();
           renderScenario();
           renderThemeSituations();
+          renderAvatarDressup();
+          renderCostumeCards();
+          renderEtiquetteChecklist();
+          renderQuiz();
           drawSafetyGame();
           renderLearningSummary();
           renderCertificateCanvas();
@@ -4299,6 +4566,13 @@
       });
 
       loadBgmPrefs();
+      const bgmAudioEl = document.getElementById("bgmAudio");
+      if (bgmAudioEl) {
+        bgmAudioEl.addEventListener("error", () => {
+          bgmFallbackActive = true;
+          if (bgmOn && bgmVolume > 0) startSynthBgmLoop();
+        });
+      }
       syncBgmUI();
       syncBgmPlayback();
 
@@ -4845,7 +5119,7 @@
       document.getElementById('btnSpeakQuiz').addEventListener('click', () => {
         const index=currentQuizIndex();
         if(index===undefined)return;
-        const q=EDUCATION_DATA[state.grade].quizzes[index];
+        const q=getActiveQuizzes()[index];
         const order=quizOrder(index);
         speakText(`${q.q}. ${order.map((original,i)=>`${i+1}번. ${q.options[original]}`).join('. ')}`);
       });
@@ -4860,7 +5134,7 @@
       });
       document.getElementById("btnQuizFifty").addEventListener("click", () => {
         const id = quizQuestionId(currentQuizIndex());
-        if (state.quizFiftyUsed || EDUCATION_DATA[state.grade].quizzes[currentQuizIndex()].options.length <= 2) return;
+        if (state.quizFiftyUsed || getActiveQuizzes()[currentQuizIndex()].options.length <= 2) return;
         state.quizFiftyUsed = true;
         state.quizFifties[id] = true;
         playSound("correct");

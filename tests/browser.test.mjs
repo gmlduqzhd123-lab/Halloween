@@ -674,6 +674,81 @@ test('main browser flows and standalone file load without script errors', async 
   assert.match(await game.evaluate(()=>shareLessonUrl()),/bgm=0/);
   await game.keyboard.press('m');
   assert.equal(await game.locator('#btnBgmToggle').getAttribute('aria-pressed'),'true');
+
+  // Verify the 5 additional development areas (Theme Adaptation, Grade Differentiation, Class Poster Persistence, Stage-Specific Game Questions, Synth BGM Fallback)
+  const fiveAreasCheck = await game.evaluate(() => {
+    // 1. Non-Halloween theme adaptation across Tabs 2~5
+    state.teacher.theme = 'field';
+    state.grade = '3-4';
+    state.scenarioIndex = 0;
+    renderScenario();
+    renderAvatarDressup();
+    renderCostumeCards();
+    renderEtiquetteChecklist();
+    renderQuiz();
+    renderCertificateCanvas();
+    const adaptedScenarioDesc = document.getElementById('scenarioDesc').textContent;
+    const adaptedClosetBadge = document.getElementById('costumeClosetBadge').textContent;
+    const adaptedEtqTitle = document.getElementById('etiquetteSectionTitle').textContent;
+    const adaptedQuizQ = getActiveQuizzes('3-4')[0].q;
+    const adaptedCertTitle = document.getElementById('certSectionTitle').textContent;
+
+    // 2. Grade-level differentiation (1-2 vs 5-6)
+    state.teacher.theme = 'halloween';
+    state.grade = '1-2';
+    const lowCostumeReason = getCostumeReasonForGrade(COSTUME_ITEMS[0]);
+    const lowSpeedOxQ = getSpeedOxQuestions(false)[0].q;
+    state.grade = '5-6';
+    renderScenario();
+    const highScenarioTitle = document.getElementById('scenarioTitle').textContent;
+    const highCostumeReason = getCostumeReasonForGrade(COSTUME_ITEMS[0]);
+    const highSpeedOxQ = getSpeedOxQuestions(false)[0].q;
+
+    // 3. Class poster persistence & roster UI
+    const savedPosterRaw = localStorage.getItem('halloween_edu_class_poster_v1');
+    renderClassPosterRoster();
+    const rosterText = document.getElementById('classPosterRosterBox')?.textContent || '';
+
+    // 4. Stage-specific mini-game questions & cleared stage badge
+    safetyGame.clearedStages[2] = true;
+    renderGameChoices();
+    const stage2BtnText = document.querySelector('.game-stage-btn[data-stage="2"]')?.textContent || '';
+    const hasStageQuestions = Boolean(STAGE_REASON_QUESTIONS[1] && STAGE_REASON_QUESTIONS[2] && STAGE_REASON_QUESTIONS[3]);
+
+    // 5. Web Audio synth BGM fallback functions
+    const hasSynthFallback = typeof startSynthBgmLoop === 'function' && typeof stopSynthBgmLoop === 'function';
+
+    return {
+      adaptedScenarioDesc,
+      adaptedClosetBadge,
+      adaptedEtqTitle,
+      adaptedQuizQ,
+      adaptedCertTitle,
+      lowCostumeReason,
+      highCostumeReason,
+      lowSpeedOxQ,
+      highSpeedOxQ,
+      highScenarioTitle,
+      savedPosterRaw,
+      rosterText,
+      stage2BtnText,
+      hasStageQuestions,
+      hasSynthFallback
+    };
+  });
+  assert.match(fiveAreasCheck.adaptedScenarioDesc, /박물관|기념 스티커/);
+  assert.match(fiveAreasCheck.adaptedClosetBadge, /현장체험학습/);
+  assert.match(fiveAreasCheck.adaptedEtqTitle, /현장체험학습/);
+  assert.match(fiveAreasCheck.adaptedQuizQ, /현장체험학습/);
+  assert.match(fiveAreasCheck.adaptedCertTitle, /현장체험학습 안전 대장 임명장/);
+  assert.notEqual(fiveAreasCheck.lowCostumeReason, fiveAreasCheck.highCostumeReason);
+  assert.notEqual(fiveAreasCheck.lowSpeedOxQ, fiveAreasCheck.highSpeedOxQ);
+  assert.match(fiveAreasCheck.highScenarioTitle, /병목 위험 점검/);
+  assert.ok(fiveAreasCheck.savedPosterRaw && fiveAreasCheck.savedPosterRaw.includes('records'));
+  assert.match(fiveAreasCheck.rosterText, /협동 포스터 명단/);
+  assert.match(fiveAreasCheck.stage2BtnText, /✅/);
+  assert.equal(fiveAreasCheck.hasStageQuestions, true);
+  assert.equal(fiveAreasCheck.hasSynthFallback, true);
   await game.close();
 
   const scoped=await browser.newContext();

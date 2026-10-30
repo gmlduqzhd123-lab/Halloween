@@ -1520,7 +1520,7 @@
           <div id="avatarContents" class="space-y-3.5">
           <div class="flex items-center justify-between gap-2 border-b border-indigo-800 pb-2">
             <div>
-              <span class="nowrap text-xs font-bold text-pink-400">코디 놀이터 · 안전한 코스프레 패션쇼</span>
+              <span id="avatarCardSubBadge" class="nowrap text-xs font-bold text-pink-400">코디 놀이터 · 안전한 코스프레 패션쇼</span>
               <h3 class="font-title text-base sm:text-lg text-white nowrap">안전한 옷차림 꾸미기</h3>
             </div>
             <button type="button" id="btnRunwayShow" class="nowrap px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-amber-500 text-indigo-950 font-black text-xs shadow-lg transition min-h-[34px]">
@@ -1562,7 +1562,7 @@
               </div>
 
               <div class="space-y-1">
-                <div class="font-bold text-indigo-200 nowrap">🧙 2. 안전한 할로윈 의상 입히기 (제복 제외!)</div>
+                <div id="avatarStep2Label" class="font-bold text-indigo-200 nowrap">🧙 2. 안전한 할로윈 의상 입히기 (제복 제외!)</div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                   <button type="button" data-costume="🎃" class="avatar-costume-btn nowrap py-1.5 px-2 rounded-lg bg-indigo-900 border border-amber-400 text-white font-bold">🎃 호박망토</button>
                   <button type="button" data-costume="🧙" class="avatar-costume-btn nowrap py-1.5 px-2 rounded-lg bg-indigo-900 border border-indigo-700 text-white font-bold">🧙 별마법사</button>
@@ -1593,7 +1593,7 @@
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
           <div class="border-b border-indigo-800 pb-2.5 space-y-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="nowrap text-xs font-bold text-amber-400">놀이 3 · 할로윈 옷장 고르기 (12종)</span>
+              <span id="costumeClosetBadge" class="nowrap text-xs font-bold text-amber-400">놀이 3 · 할로윈 옷장 고르기 (12종)</span>
               <div class="flex flex-wrap items-center gap-1.5 shrink-0">
                 <span id="costumeScoreBadge" class="nowrap px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-200 text-xs font-bold">
                   0 / 12
@@ -1624,7 +1624,7 @@
           <button type="button" id="btnToggleEtiquette" class="optional-toggle" aria-expanded="false" aria-controls="etiquetteContents">더 해보기 · 친구를 배려하는 간식 약속 4가지 <span aria-hidden="true">＋</span></button>
           <div id="etiquetteContents" class="space-y-3 pt-2">
             <div class="flex items-center justify-between gap-2">
-              <h3 class="font-title text-sm sm:text-lg text-amber-300 nowrap">친구를 배려하는 간식 약속</h3>
+              <h3 id="etiquetteSectionTitle" class="font-title text-sm sm:text-lg text-amber-300 nowrap">친구를 배려하는 간식 약속</h3>
               <span id="etiquetteCheckBadge" class="nowrap text-xs font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2.5 py-0.5 rounded-full">
                 약속 체크 0 / 4
               </span>
@@ -1718,7 +1718,7 @@
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
           <div class="border-b border-indigo-800 pb-2.5 space-y-1">
             <span class="nowrap text-xs font-bold text-amber-400">배움 기록 · 이름과 약속을 적고 상장을 저장해요</span>
-            <h2 class="font-title text-base sm:text-xl text-white nowrap">🎖️ 할로윈 안전 대장 임명장</h2>
+            <h2 id="certSectionTitle" class="font-title text-base sm:text-xl text-white nowrap">🎖️ 할로윈 안전 대장 임명장</h2>
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
@@ -1807,6 +1807,7 @@
                   </div>
                 </div>
                 <p id="importResults" class="sm:col-span-2 text-sm text-indigo-100"></p>
+                <div id="classPosterRosterBox" class="sm:col-span-2 hidden rounded-xl bg-indigo-950/90 border border-amber-400/40 p-2.5 space-y-1.5 text-xs"></div>
               </div>
             </div>
 
@@ -4343,6 +4344,68 @@ const SAFETY_SCENARIO_LOW = [
   {title:'넘어져서 바로 일어날 수 없어요.', desc:'위급한 순간! 내 머리와 가슴(숨 쉴 곳)을 어떻게 보호할까요?', choices:['어른·119에 알리고 두 팔로 머리를 감싼 채 무릎을 당겨 둥글게 말아요.','넘어진 자리에서 떨어진 가방을 찾거나 팔다리를 길게 뻗고 있어요.']}
 ];
 
+const SAFETY_SCENARIO_HIGH = [
+  {title:'병목 위험 점검 · 행사장 진입 전 최우선 판단은?', desc:'입구는 넓지만 안쪽 골목 폭이 절반으로 줄어드는 행사장입니다. 친구는 "선착순 반짝이 호박 풍선을 받으러 안쪽 골목으로 바로 뛰어가자"고 합니다. 두 행동의 위험과 근거를 비교해 보세요.', choices:['병목 구간의 밀집 위험을 고려해 비상 출구·우회 이동로·집결 장소를 먼저 확인한다.','입구가 넓으니 안쪽도 안전할 것이라 단정하고 좁은 골목 끝으로 빠르게 진입한다.']},
+  {title:'보행 흐름 관리 · 양방향 통로에서 멈춰야 할 때는?', desc:'양방향 보행자 행렬이 이어지는 통로 한복판에서 멋진 퍼레이드 행렬이 지나가자 친구가 "지금 자리에서 멈춰 단체 사진을 촬영하자"고 제안합니다. 두 행동의 위험과 근거를 비교해 보세요.', choices:['우측통행 흐름을 유지하며 가장자리 안전 구역으로 먼저 이동한 뒤 촬영한다.','보행 흐름 한가운데서 즉시 멈춰 서서 뒤따르는 사람들의 동선을 가로막는다.']},
+  {title:'군중 밀도 임계점 · 보행 감속과 신체 접촉이 시작될 때는?', desc:'인기 부스 앞에서 1㎡당 인원이 급증하며 보행 속도가 느려지고 어깨가 계속 부딪힙니다. 친구는 "기다린 시간이 아까우니 중심부로 더 파고들자"고 합니다. 두 행동의 위험과 근거를 비교해 보세요.', choices:['밀집 위험 초기 신호로 판단하고 인파 흐름에 맞춰 대각선 가장자리 넓은 곳으로 이탈한다.','흐름을 정면으로 거슬러 역행하거나 밀집도가 높은 중심부로 무리하게 진입한다.']},
+  {title:'흉강 압박 대비 · 군중의 힘에 떠밀리기 시작할 때는?', desc:'뒤쪽 관람객이 몰리며 내 의지와 무관하게 군중 유체 흐름에 떠밀리는 상황입니다. 호흡을 유지하고 연쇄 전도를 예방하기 위한 적절한 대처는 무엇일까요?', choices:['군중의 힘에 무리하게 저항하지 않고 두 팔·가방을 가슴 앞에 모아 흉강 호흡 공간을 확보한다.','양팔을 내린 채 앞사람을 강하게 밀쳐 내며 반대 방향으로 버틴다.']},
+  {title:'연쇄 전도 예방 · 빽빽한 보행 행렬 중 소지품을 떨어뜨렸다면?', desc:'밀집해 이동하는 흐름 속에서 친구의 한정판 호박 키링과 신발 한 짝이 떨어졌습니다. 친구는 "1초만 허리를 숙여 주워 달라"고 요청합니다. 두 행동의 위험과 근거를 비교해 보세요.', choices:['인파 속에서 허리를 숙이면 도미노 연쇄 전도가 발생할 수 있으므로 안전한 곳으로 먼저 대피한다.','뒤따르는 보행자 발 사이로 즉시 허리를 숙여 소지품을 회수한다.']},
+  {title:'위기 생존 자세 · 넘어져 즉시 일어날 수 없는 긴급 상황에서는?', desc:'군중 속에서 중심을 잃어 넘어졌고 주변 압력으로 즉시 일어나기 어려운 위급 상황입니다. 주요 장기와 머리를 보호하고 구조를 요청하는 가장 합리적인 방법은?', choices:['112·119 및 주변에 위급 상황을 알리고 두 팔로 머리를 감싼 채 무릎을 당겨 태아 자세로 보호한다.','넘어진 자리에서 떨어진 가방을 찾거나 팔다리를 길게 뻗어 공간을 차지하려 한다.']}
+];
+
+const THEME_SCENARIO_ADAPT = {
+  school: {
+    placeWord: '학교 축제 강당',
+    shortPlace: '학교 축제',
+    giftWord: '인기 학급 부스 쿠폰',
+    shortGift: '부스 쿠폰',
+    paradeWord: '동아리 공연 행렬',
+    boothWord: '체육관 체험 부스',
+    keyringWord: '축제 스탬프 카드',
+    droppedWord: '스탬프 카드'
+  },
+  field: {
+    placeWord: '현장체험 박물관',
+    shortPlace: '박물관',
+    giftWord: '기획전시실 기념 스티커',
+    shortGift: '기념 스티커',
+    paradeWord: '대형 공룡 화석 전시물',
+    boothWord: '인기 체험관 입구',
+    keyringWord: '박물관 기념 배지',
+    droppedWord: '기념 배지'
+  },
+  trip: {
+    placeWord: '수학여행 유적지',
+    shortPlace: '수학여행지',
+    giftWord: '전망대 기념 스탬프',
+    shortGift: '기념 스탬프',
+    paradeWord: '야간 성곽 미디어아트',
+    boothWord: '기념품 상점 골목',
+    keyringWord: '여행지 기념 열쇠고리',
+    droppedWord: '기념 열쇠고리'
+  },
+  sports: {
+    placeWord: '체육대회 운동장',
+    shortPlace: '체육대회장',
+    giftWord: '응원석 막대풍선',
+    shortGift: '막대풍선',
+    paradeWord: '학급 응원단 입장 행렬',
+    boothWord: '운동장 본부석 통로',
+    keyringWord: '우리 반 응원 머리띠',
+    droppedWord: '응원 머리띠'
+  },
+  local: {
+    placeWord: '지역 문화제 광장',
+    shortPlace: '지역 행사장',
+    giftWord: '지역 축제 기념 풍선',
+    shortGift: '기념 풍선',
+    paradeWord: '거리 음악대 행진',
+    boothWord: '야시장 푸드트럭 골목',
+    keyringWord: '행사 기념 열쇠고리',
+    droppedWord: '기념 열쇠고리'
+  }
+};
+
 // Each theme is a distinct setting with three complete decisions. They reuse the reviewed crowd objectives.
 const THEMES = {
   halloween: {label:'할로윈', icon:'🎃', situations:[]},
@@ -5516,6 +5579,132 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       { id: "e4", icon: "🤝", title: "친구가 싫어하는 무서운 장난 금지", desc: "모두가 기분 좋게 웃을 수 있도록 친구의 마음을 먼저 배려해요." }
     ];
 
+    const COSTUME_REASON_BY_GRADE = {
+      "1-2": {
+        c1: "가면 눈구멍이 작으면 앞과 옆이 안 보여서 계단에서 넘어지기 쉬워요!",
+        c2: "길게 끌리는 망토는 내 발이나 친구 발에 밟혀 넘어질 수 있어요!",
+        c3: "어두운 곳에서 반짝이는 야광 팔찌를 차면 멀리서도 나를 잘 볼 수 있어요!",
+        c4: "끝이 뾰족한 장난감은 친구와 부딪혔을 때 눈이나 몸을 다치게 해요!",
+        c5: "앞이 훤히 보이는 모자는 계단과 길을 잘 보면서 걸을 수 있어요!",
+        c6: "진짜 경찰관·소방관 옷과 똑같으면 도와줄 어른을 찾기 어려워요!",
+        c7: "바닥에 끌리지 않는 옷은 계단과 복도에서 넘어지지 않아 안전해요!",
+        c8: "진짜 무기처럼 보이는 장난감은 주변 친구들을 깜짝 놀라게 해요!",
+        c9: "너무 무서운 분장은 어린 동생이나 친구를 울리거나 놀라게 할 수 있어요!",
+        c10: "가볍고 폭신한 머리띠는 시야도 넓고 부딪혀도 아프지 않아요!",
+        c11: "목에 감기는 긴 끈은 문이나 난간에 걸려 목이 졸릴 수 있어 위험해요!",
+        c12: "두 손이 자유롭고 앞이 잘 보이는 옷에 운동화를 신으면 정말 안전해요!"
+      },
+      "5-6": {
+        c1: "시야각을 좁히는 전면 가면은 혼잡한 통로나 계단에서 주변 위험 인지를 늦춰 충돌·낙상 위험을 높입니다.",
+        c2: "바닥에 끌리는 긴 의상은 다중밀집 보행 중 뒤따르는 사람에게 밟혀 연쇄 전도 사고를 유발할 수 있습니다.",
+        c3: "야간이나 조도가 낮은 행사장에서는 반사·야광 소품이 시인성을 높여 보행 충돌을 예방합니다.",
+        c4: "좁은 공간에서 뾰족하고 단단한 소품은 군중 밀집 시 타인에게 신체 손상을 줄 수 있어 휴대를 피해야 합니다.",
+        c5: "시야를 가리지 않는 모자·장식은 전방과 바닥 장애물을 즉시 확인할 수 있어 안전한 이동을 돕습니다.",
+        c6: "실제 경찰·소방·안전요원 제복과 유사한 복장은 비상 상황 시 구조 요청 대상을 혼동시켜 현장 대응을 지연시킵니다.",
+        c7: "발목 위로 단정하게 정리된 활동복은 보행 걸림 요소를 줄여 계단·경사로 이동 시 균형 유지에 유리합니다.",
+        c8: "실제 무기와 구별하기 어려운 모형 소품은 공공장소에서 공포감과 대피 혼란을 유발할 수 있으므로 금지됩니다.",
+        c9: "공공 행사에서는 타인의 정서적 안전과 참여 선택권을 존중해 과도한 공포·혐오 분장을 자제해야 합니다.",
+        c10: "부드럽고 가벼운 소재의 머리띠는 시야 방해가 없고 밀집 구간에서도 접촉 부상 위험이 낮습니다.",
+        c11: "목에 감기는 긴 끈이나 장식은 인파 속 걸림·끼임 시 질식 사고로 이어질 수 있어 벨크로(찍찍이)형으로 대체해야 합니다.",
+        c12: "시야 확보·양손 자유·운동화 착용의 3박자를 갖춘 복장은 돌발 상황에서도 신속히 균형을 잡고 대피할 수 있습니다."
+      }
+    };
+
+    const THEME_ETIQUETTE_RULES = {
+      school: [
+        { id: "e1", icon: "🏫", title: "부스 체험 줄은 차근차근 순서 지키기", desc: "인기 있는 교실 부스 앞에서도 새치기하거나 밀지 않고 한 줄로 기다려요." },
+        { id: "e2", icon: "🔇", title: "수업·공연 중인 교실 옆 복도에서 정숙하기", desc: "다른 학년의 발표와 전시 관람을 방해하지 않도록 복도에서는 조용히 걸어요." },
+        { id: "e3", icon: "🗑️", title: "체험 재료와 간식 쓰레기는 분리배출하기", desc: "교실과 복도에 쓰레기를 남기지 않고 머문 자리를 스스로 정리해요." },
+        { id: "e4", icon: "🤝", title: "친구의 발표와 작품을 다정하게 응원하기", desc: "실수하더라도 놀리지 않고 따뜻한 박수와 격려로 모두가 즐거운 축제를 만들어요." }
+      ],
+      field: [
+        { id: "e1", icon: "🏛️", title: "전시물 눈으로만 감상하고 보호선 지키기", desc: "박물관·전시관의 소중한 유물과 작품은 손으로 만지지 않고 안전선 밖에서 봐요." },
+        { id: "e2", icon: "🤫", title: "공공 관람 예절 지키며 소곤소곤 대화하기", desc: "다른 관람객들도 함께 이용하는 공간이므로 뛰거나 큰 소리를 내지 않아요." },
+        { id: "e3", icon: "🎒", title: "도시락·간식 자리는 깨끗하게 되돌려 놓기", desc: "식사 후 남은 쓰레기는 내 가방이나 지정된 쓰레기통에 깔끔하게 정리해요." },
+        { id: "e4", icon: "👫", title: "모둠 친구와 간격 맞추고 이탈하지 않기", desc: "혼자 다른 전시실로 가지 않고 모둠 친구·선생님과 함께 이동해요." }
+      ],
+      trip: [
+        { id: "e1", icon: "🛏️", title: "숙소 복도·계단에서 밤늦게 뛰거나 떠들지 않기", desc: "여러 학교와 투숙객이 함께 쉬는 숙소에서는 밤 시간 정숙 예절을 지켜요." },
+        { id: "e2", icon: "🚪", title: "숙소 도착 즉시 비상구와 완강기 위치 확인하기", desc: "짐을 풀기 전에 내 방에서 가장 가까운 비상 계단 두 곳을 먼저 확인해요." },
+        { id: "e3", icon: "🧹", title: "머문 방과 이동 버스의 쓰레기 스스로 정리하기", desc: "다음 사람을 배려해 사용한 공간과 버스 좌석을 깨끗하게 정돈해요." },
+        { id: "e4", icon: "🤝", title: "방 친구의 휴식 시간과 개인 공간 존중하기", desc: "친구가 싫어하는 장난이나 촬영을 하지 않고 서로 배려하는 여행을 만들어요." }
+      ],
+      sports: [
+        { id: "e1", icon: "💧", title: "경기 전후 충분한 수분 섭취와 준비운동하기", desc: "갑자기 전력 질주하기 전에 몸을 풀고 그늘에서 물을 마시며 건강을 지켜요." },
+        { id: "e2", icon: "📣", title: "이긴 팀도 진 팀도 서로 박수 보내기", desc: "결과보다 최선을 다한 과정을 칭찬하고 넘어졌을 때 손을 잡아 일으켜 줘요." },
+        { id: "e3", icon: "🗑️", title: "응원석 주변 물병과 응원 도구 정리하기", desc: "경기가 끝난 뒤 우리 반 응원석 자리에 쓰레기가 남지 않도록 함께 치워요." },
+        { id: "e4", icon: "🚶", title: "트랙 안쪽 경기 구역에 무단으로 들어가지 않기", desc: "달리는 선수와 부딪히지 않도록 응원석과 이동 통로 약속선을 꼭 지켜요." }
+      ],
+      local: [
+        { id: "e1", icon: "🍡", title: "위생적으로 조리·포장된 안전한 먹거리 고르기", desc: "길거리에서는 걸으며 꼬치 등 뾰족한 음식을 먹지 않고 안전한 자리에서 먹어요." },
+        { id: "e2", icon: "🏘️", title: "행사장 주변 이웃 주민에게 소음 피해 주지 않기", desc: "저녁 시간 주택가 주변에서는 큰 소리를 내거나 통행을 막지 않도록 배려해요." },
+        { id: "e3", icon: "🗑️", title: "머문 자리 쓰레기는 되가져오거나 분리배출하기", desc: "공원과 광장이 깨끗하게 유지되도록 내 쓰레기는 끝까지 책임지고 챙겨요." },
+        { id: "e4", icon: "👨‍👩‍👧", title: "보호자와 손잡고 약속한 구역 안에서만 이동하기", desc: "불꽃놀이나 공연 인파 속에서는 어른의 손을 놓지 않고 집결 장소를 기억해요." }
+      ]
+    };
+
+    function getCostumeReasonForGrade(item) {
+      if (!item) return "";
+      const byGrade = COSTUME_REASON_BY_GRADE[state.grade]?.[item.id];
+      return byGrade || item.reason;
+    }
+
+    function getActiveEtiquetteRules() {
+      const themeKey = state.teacher?.theme || "halloween";
+      const baseRules = isHalloweenTheme()
+        ? ETIQUETTE_RULES
+        : (THEME_ETIQUETTE_RULES[themeKey] || ETIQUETTE_RULES);
+      if (state.grade === "1-2") {
+        return baseRules.map(r => ({
+          ...r,
+          desc: r.desc
+            .replace("알레르기 성분이 있는 간식은 먹지 않아요.", "몸에 안 맞는 간식은 먹지 않아요.")
+            .replace("분리배출하기", "깨끗이 버리기")
+            .replace("정숙 예절을 지켜요.", "조용히 쉬어요.")
+        }));
+      }
+      if (state.grade === "5-6") {
+        return baseRules.map(r => ({
+          ...r,
+          desc: `${r.desc} (공공 안전과 타인의 권리를 함께 지키는 시민 약속)`
+        }));
+      }
+      return baseRules;
+    }
+
+    function adaptTextForTheme(rawText) {
+      if (!rawText || typeof rawText !== "string" || isHalloweenTheme()) return rawText;
+      const cfg = typeof THEME_SCENARIO_ADAPT !== "undefined" ? THEME_SCENARIO_ADAPT[state.teacher?.theme] : null;
+      if (!cfg) return rawText;
+      const pairs = Array.isArray(cfg)
+        ? cfg
+        : [
+            ["할로윈 축제 거리", cfg.placeWord],
+            ["할로윈 축제", cfg.shortPlace],
+            ["축제에 도착했어요", `${cfg.shortPlace}에 도착했어요`],
+            ["반짝이 호박 풍선", cfg.giftWord],
+            ["반짝이 풍선", cfg.giftWord],
+            ["풍선보다", `${cfg.shortGift}보다`],
+            ["풍선이", `${cfg.shortGift}이(가)`],
+            ["화려한 할로윈 퍼레이드 행렬", cfg.paradeWord],
+            ["멋진 퍼레이드 행렬", cfg.paradeWord],
+            ["멋진 분장 행렬", cfg.paradeWord],
+            ["사탕 나눔 부스", cfg.boothWord],
+            ["사탕 부스", cfg.boothWord],
+            ["한정판 호박 키링", cfg.keyringWord],
+            ["호박 열쇠고리", cfg.keyringWord],
+            ["호박 키링", cfg.droppedWord],
+            ["저녁 축제", cfg.shortPlace]
+          ];
+      let out = rawText;
+      pairs.forEach(([fromStr, toStr]) => {
+        if (fromStr && toStr && out.includes(fromStr)) {
+          out = out.split(fromStr).join(toStr);
+        }
+      });
+      return out;
+    }
+
     // ==================== APPLICATION STATE ====================
     const state = {
       sessionId: (globalThis.crypto && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
@@ -5758,11 +5947,16 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       state.teacher = next;
       switchGrade(next.grade);
       setCultureStage('story');
+      syncWelcomeGrade();
+      syncLessonStage();
       renderStorySlide();
       renderLanternWorkshop();
       renderScenario();
+      renderAvatarDressup();
       renderCostumeCards();
+      renderEtiquetteChecklist();
       renderQuiz();
+      renderCertificateCanvas();
       switchTab(next.start);
       saveProgress();
       renderTeacherSettings();
@@ -5801,7 +5995,10 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
 
     function syncStageButtons() {
       document.querySelectorAll(".game-stage-btn").forEach(btn => {
-        const isCurrent = parseInt(btn.getAttribute("data-stage"), 10) === state.gameStage;
+        const stageNum = parseInt(btn.getAttribute("data-stage"), 10);
+        const isCurrent = stageNum === state.gameStage;
+        const isCleared = typeof safetyGame !== "undefined" && safetyGame.clearedStages && safetyGame.clearedStages[stageNum];
+        btn.textContent = isCleared ? `✅ ${stageNum}단계` : `${stageNum}단계`;
         btn.className = isCurrent
           ? "game-stage-btn nowrap px-2 py-0.5 rounded-lg bg-amber-400 text-indigo-950 text-xs font-black"
           : "game-stage-btn nowrap px-2 py-0.5 rounded-lg bg-indigo-900 text-indigo-200 border border-indigo-700 text-xs font-bold";
@@ -6005,6 +6202,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
             state.teacher = sanitizeTeacher(parsed.teacher);
             state.activeTab = ['tab-culture','tab-safety','tab-costume','tab-quiz','tab-cert'].includes(parsed.activeTab) ? parsed.activeTab : state.teacher.start;
             restoreGrade(state.grade);
+            if (typeof loadClassPosterRecords === 'function') loadClassPosterRecords();
             if (contentMigrated && !preserveExistingProgress) saveProgress();
             return;
           }
@@ -6249,6 +6447,70 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     let bgmVolume = 35;
     let lastNonZeroBgmVolume = 35;
     let isTtsSpeaking = false;
+    let bgmFallbackActive = false;
+    let bgmSynthTimer = null;
+    let bgmSynthNoteIdx = 0;
+    const BGM_SYNTH_NOTES = [
+      659.25, 783.99, 987.77, 783.99,
+      659.25, 587.33, 493.88, 587.33,
+      523.25, 659.25, 783.99, 659.25,
+      493.88, 587.33, 659.25, 493.88
+    ];
+
+    function playSynthMusicBoxNote() {
+      if (!bgmOn || bgmVolume <= 0 || document.visibilityState === "hidden") return;
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return;
+          audioCtx = new AudioContextClass();
+        }
+        if (audioCtx.state === "suspended") {
+          audioCtx.resume().catch(() => {});
+        }
+        if (audioCtx.state !== "running") return;
+        const now = audioCtx.currentTime;
+        const freq = BGM_SYNTH_NOTES[bgmSynthNoteIdx % BGM_SYNTH_NOTES.length];
+        bgmSynthNoteIdx = (bgmSynthNoteIdx + 1) % BGM_SYNTH_NOTES.length;
+        const baseVol = Math.max(0, Math.min(1, bgmVolume / 100));
+        const isFullMood = document.body.classList.contains("lesson-not-started") ||
+          state.activeTab === "tab-cert" ||
+          (typeof safetyGame !== "undefined" && safetyGame.running && !safetyGame.paused);
+        const tabScale = isFullMood ? 1 : 0.72;
+        const effectiveGain = (isTtsSpeaking ? baseVol * 0.25 : baseVol * tabScale) * 0.08;
+        if (effectiveGain <= 0.0005) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(effectiveGain, now);
+        gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.42);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.44);
+      } catch (_) {}
+    }
+
+    function startSynthBgmLoop() {
+      bgmFallbackActive = true;
+      if (bgmSynthTimer) return;
+      playSynthMusicBoxNote();
+      bgmSynthTimer = setInterval(() => {
+        if (!bgmOn || bgmVolume <= 0) {
+          stopSynthBgmLoop();
+          return;
+        }
+        playSynthMusicBoxNote();
+      }, 480);
+    }
+
+    function stopSynthBgmLoop() {
+      if (bgmSynthTimer) {
+        clearInterval(bgmSynthTimer);
+        bgmSynthTimer = null;
+      }
+    }
 
     function loadBgmPrefs() {
       try {
@@ -6318,18 +6580,30 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const exitScreen = document.getElementById("exitScreen");
       const isExited = exitScreen && !exitScreen.classList.contains("hidden");
       if (bgmOn && bgmVolume > 0 && !isExited && document.visibilityState !== "hidden") {
+        if (bgmFallbackActive) {
+          startSynthBgmLoop();
+          return;
+        }
         if (audio.paused) {
           const playPromise = audio.play();
           if (playPromise && typeof playPromise.catch === "function") {
-            playPromise.catch(() => {});
+            playPromise.catch(err => {
+              if (audio.error || audio.networkState === 3 || (err && err.name === "NotSupportedError")) {
+                startSynthBgmLoop();
+              }
+            });
           }
         }
-      } else if (!audio.paused) {
-        audio.pause();
+      } else {
+        stopSynthBgmLoop();
+        if (!audio.paused) {
+          audio.pause();
+        }
       }
     }
 
     function pauseBgmAudio() {
+      stopSynthBgmLoop();
       const audio = document.getElementById("bgmAudio");
       if (audio && !audio.paused) {
         try { audio.pause(); } catch (_) {}
@@ -7350,7 +7624,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
 
       const titleEl = document.createElement("div");
       titleEl.className = "font-extrabold text-amber-300";
-      titleEl.textContent = drill.title;
+      titleEl.textContent = adaptTextForTheme(drill.title);
       row.appendChild(titleEl);
 
       const btn = document.createElement("button");
@@ -7377,11 +7651,12 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       if (isDone) {
         const descEl = document.createElement("p");
         descEl.className = "text-xs font-bold text-emerald-300 mt-1";
+        const adaptedDoneText = adaptTextForTheme(drill.doneText);
         descEl.textContent = countdown > 0
-          ? `${drill.doneText} · 🙌 지금 자리에서 3초 동안 몸동작을 따라 해 봐요! (${countdown}초)`
+          ? `${adaptedDoneText} · 🙌 지금 자리에서 3초 동안 몸동작을 따라 해 봐요! (${countdown}초)`
           : countdown === 0
-          ? `${drill.doneText} · 👏 3초 몸동작 따라 하기 성공!`
-          : drill.doneText;
+          ? `${adaptedDoneText} · 👏 3초 몸동작 따라 하기 성공!`
+          : adaptedDoneText;
         box.appendChild(descEl);
       }
 
@@ -7489,12 +7764,16 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const item = SAFETY_SCENARIOS[state.scenarioIndex];
       const goal = SAFETY_GOALS[state.scenarioIndex];
       const low = state.grade === '1-2' ? SAFETY_SCENARIO_LOW[state.scenarioIndex] : null;
+      const high = state.grade === '5-6' && typeof SAFETY_SCENARIO_HIGH !== 'undefined' ? SAFETY_SCENARIO_HIGH[state.scenarioIndex] : null;
       const isScenarioCore10 = Number(state.teacher?.minutes) === 10 && [0, 2, 3].includes(state.scenarioIndex);
       document.getElementById("scenarioStepBadge").textContent = `약속 ${state.scenarioIndex + 1} / ${SAFETY_SCENARIOS.length}${pairTurnSuffix(state.scenarioIndex)}`;
       document.getElementById("scenarioEmoji").textContent = item.emoji;
       document.getElementById("scenarioStageTag").textContent = `${item.stage}${isScenarioCore10 ? ' · ⚡10분 핵심' : ''}`;
-      document.getElementById("scenarioTitle").textContent = low?.title || item.title;
-      renderHighlightedText(document.getElementById("scenarioDesc"), low?.desc || (state.grade === '5-6' ? `${item.desc} 두 행동의 위험과 근거를 비교해 보세요.` : item.desc));
+      document.getElementById("scenarioTitle").textContent = adaptTextForTheme(low?.title || high?.title || item.title);
+      renderHighlightedText(
+        document.getElementById("scenarioDesc"),
+        adaptTextForTheme(low?.desc || high?.desc || (state.grade === '5-6' ? `${item.desc} 두 행동의 위험과 근거를 비교해 보세요.` : item.desc))
+      );
       updatePairBatonBanner(state.scenarioIndex);
       const signalBar = document.getElementById("scenarioSignalBar");
       if (signalBar) {
@@ -7511,17 +7790,20 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       document.getElementById('btnSpeakSafetyFeedback').classList.add('hidden');
 
       item.choices.forEach((choice, idx) => {
+        const choiceLabel = adaptTextForTheme(low?.choices[idx] || high?.choices?.[idx] || choice.text);
+        const choiceFeedback = adaptTextForTheme(high?.feedbacks?.[idx] || choice.feedback);
+        const choiceAftermath = adaptTextForTheme(choice.aftermath || "");
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "w-full text-left p-3 rounded-xl bg-indigo-950/90 hover:bg-indigo-900 border border-indigo-700 hover:border-amber-400 transition flex items-center gap-2.5 min-h-[48px]";
         btn.innerHTML = `
           <span class="nowrap badge-nowrap shrink-0 whitespace-nowrap px-2.5 py-0.5 rounded-lg bg-indigo-800 text-amber-300 font-black text-xs">선택 ${idx + 1}</span>
-          <span class="text-xs sm:text-sm font-bold text-white leading-snug">${low?.choices[idx] || choice.text}</span>
+          <span class="text-xs sm:text-sm font-bold text-white leading-snug">${choiceLabel}</span>
         `;
         btn.addEventListener("click", () => {
           if (!state.safetyFirst[goal.id]) state.safetyFirst[goal.id] = {correct: !!choice.correct, at: Date.now()};
-          const aftermathHtml = choice.aftermath
-            ? `<div class="pt-1.5 mt-1 border-t border-white/15 font-bold text-amber-200">${choice.aftermath}</div>`
+          const aftermathHtml = choiceAftermath
+            ? `<div class="pt-1.5 mt-1 border-t border-white/15 font-bold text-amber-200">${choiceAftermath}</div>`
             : "";
           const scienceHtml = item.scienceTip
             ? `<div class="pt-1 text-[11px] font-bold text-sky-200">${item.scienceTip}</div>`
@@ -7534,7 +7816,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
             }
             if (signalBar) signalBar.textContent = "🟢⭕ [안전·실선] 안전 확보 · 올바른 판단이에요!";
             feedbackBox.className = "rounded-xl p-3 border bg-emerald-950/80 border-emerald-400/60 text-emerald-100 text-xs sm:text-sm space-y-1";
-            feedbackBox.innerHTML = `<div class="font-black text-emerald-300">⭕ 적절한 선택이에요. 이유를 한 번 더 확인해요.</div><p>${choice.feedback}</p>${aftermathHtml}${scienceHtml}`;
+            feedbackBox.innerHTML = `<div class="font-black text-emerald-300">⭕ 적절한 선택이에요. 이유를 한 번 더 확인해요.</div><p>${choiceFeedback}</p>${aftermathHtml}${scienceHtml}`;
           } else {
             playSound("wrong");
             if (signalBar) {
@@ -7550,9 +7832,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
               emEl.classList.add("scenario-alert-pulse");
             }
             feedbackBox.className = "rounded-xl p-3 border bg-rose-950/80 border-rose-400/60 text-rose-100 text-xs sm:text-sm space-y-1";
-            feedbackBox.innerHTML = `<div class="font-black text-rose-300">❌ 다시 골라 볼까요?</div><p>${choice.feedback}</p>${aftermathHtml}${scienceHtml}`;
+            feedbackBox.innerHTML = `<div class="font-black text-rose-300">❌ 다시 골라 볼까요?</div><p>${choiceFeedback}</p>${aftermathHtml}${scienceHtml}`;
           }
-          document.getElementById('importantStatus').textContent = choice.feedback;
+          document.getElementById('importantStatus').textContent = choiceFeedback;
           document.getElementById('btnSpeakSafetyFeedback').classList.remove('hidden');
           saveProgress();
           renderSafetyFollowup();
@@ -7754,7 +8036,26 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     const safetyGame = {
       running:false, won:false, paused:false, route:null, lastFrame:0, visionMask:false,
       player:{x:42,y:210,r:13,targetX:null,targetY:null},
-      hazards:[], items:[], bonusCollected:false, friendRescued:false, companion:null, coachBubble:null, exitZone:{x:520,y:22,w:65,h:48}, keys:new Set(), decisionRecorded:false
+      hazards:[], items:[], bonusCollected:false, friendRescued:false, companion:null, coachBubble:null,
+      clearedStages:{1:false,2:false,3:false},
+      exitZone:{x:520,y:22,w:65,h:48}, keys:new Set(), decisionRecorded:false
+    };
+    const STAGE_REASON_QUESTIONS = {
+      1: {
+        '1-2': ['1단계 확인 · 들어가자마자 넓은 길과 비상구를 먼저 찾은 까닭은?', '위급할 때 안전하게 나갈 수 있는 길을 미리 알아 두려고', '비상구만 한 번 보면 좁고 막힌 길로 달려가도 괜찮아서'],
+        '3-4': ['1단계 확인 · 행사장에서 넓은 우회로와 비상구 표지판을 먼저 확인한 까닭은?', '혼잡을 피하고 이동 가능한 출구를 미리 확인했기 때문', '표지판만 확인하면 밀집 구역에 들어가도 안전해지기 때문'],
+        '5-6': ['1단계 확인 · 진입 초기 비상구와 우회 동선을 먼저 스캔한 까닭은?', '병목 구간의 밀집을 피하고 위급 시 대피 가능한 출구를 확보하기 때문', '출구 위치만 알면 좁은 병목 중심으로 진입해도 위험이 없기 때문']
+      },
+      2: {
+        '1-2': ['2단계 확인 · 떨어진 물건을 줍지 않고 오른쪽 넓은 길로 걸은 까닭은?', '사람 많은 길에서 숙이면 부딪혀 넘어질 수 있어 내 몸을 먼저 지키려고', '방패 자세만 하면 사람이 꽉 찬 길에서 물건을 주워도 괜찮아서'],
+        '3-4': ['2단계 확인 · 떨어진 소지품을 패스하고 우측통행·가슴 공간을 지킨 까닭은?', '붐비는 길에서 숙이면 위험하므로 호흡 공간과 내 몸을 먼저 지키기 때문', '방패를 모으면 밀집 구역 한가운데서 멈춰도 안전해지기 때문'],
+        '5-6': ['2단계 확인 · 소지품 회수를 포기하고 우측통행과 흉강 보호를 선택한 근거는?', '도미노 연쇄 전도를 예방하고 압박 시 최소 호흡 공간을 확보하기 때문', '가슴 방어 자세가 군중 밀집 사고를 완벽히 막아 주기 때문']
+      },
+      3: {
+        '1-2': ['3단계 확인 · 친구와 손을 잡고 약속한 깃발(집결지)로 함께 이동한 까닭은?', '사람이 많은 곳에서 길을 잃지 않고 안전하게 출구로 나가려고', '친구와 손잡으면 위험한 좁은 길로 뛰어가도 안전하기 때문'],
+        '3-4': ['3단계 확인 · 친구와 동행해 비상 집결지를 거쳐 넓은 출구로 나간 까닭은?', '인파 속에서 흩어지지 않고 약속한 안전 동선으로 대피하기 때문', '친구와 함께라면 좁고 붐비는 병목 구간을 가로질러도 되기 때문'],
+        '5-6': ['3단계 확인 · 동행자와 비상 집결지를 경유해 여유 출구로 분산 이동한 근거는?', '대열 이탈과 2차 혼잡을 막고 사전에 합의된 대피 경로를 따르기 때문', '인원이 모이면 밀집 위험 구역을 정면 돌파해도 안전하기 때문']
+      }
     };
     function setGameCoachBubble(text, durationSec = 1.8) {
       safetyGame.coachBubble = { text, remaining: durationSec };
@@ -7871,6 +8172,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       drawSafetyGame();
     }
     function renderGameChoices() {
+      if (typeof syncStageButtons === 'function') syncStageButtons();
       const routeBox=document.getElementById('gameRouteChoices');
       routeBox.replaceChildren();
       const prompt=document.createElement('p');
@@ -7887,18 +8189,28 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const reason=document.getElementById('gameReasonChoices');
       reason.replaceChildren();
       if (!safetyGame.won) return;
+      const stageNum=(typeof state!=='undefined' && state.gameStage) ? state.gameStage : 1;
+      const gradeKey=(typeof state!=='undefined' && state.grade) ? state.grade : '3-4';
+      const stageSet=STAGE_REASON_QUESTIONS[stageNum] || STAGE_REASON_QUESTIONS[1];
+      const [qPrompt, safeLabelText, unsafeLabelText]=stageSet[gradeKey] || stageSet['3-4'];
       const title=document.createElement('p');
-      title.textContent='왜 이 경로가 더 적절할까요?';
+      title.className='font-bold text-amber-200 text-xs';
+      title.textContent=qPrompt;
       reason.appendChild(title);
-      [['safe','혼잡을 피하고 이동 가능한 출구를 확인했기 때문'],['unsafe','방패를 모으면 밀집 구역도 안전해지기 때문']].forEach(([value,label])=>{
+      [['safe',`⭕ ${safeLabelText}`],['unsafe',`❌ ${unsafeLabelText}`]].forEach(([value,label])=>{
         const btn=document.createElement('button');
-        btn.type='button';btn.className='w-full rounded-xl border border-indigo-500 bg-indigo-900 p-2 text-left';
+        btn.type='button';btn.className='w-full rounded-xl border border-indigo-500 bg-indigo-900 p-2 text-left text-xs font-bold';
         btn.textContent=label;
         btn.addEventListener('click',()=>{
           if(value==='safe') {
-            awardOnce(`game:${state.gameStage}`,'reason',10,'경로 선택 이유 확인');
-            document.getElementById('importantStatus').textContent='혼잡한 곳을 피해 이동로를 확인하는 이유를 설명했어요.';
-          } else document.getElementById('importantStatus').textContent='방패나 자세가 밀집 사고를 막아 주지는 않아요. 다시 생각해 보세요.';
+            if (typeof playSound === 'function') playSound('correct');
+            awardOnce(`game:${stageNum}`,'reason',10,`${stageNum}단계 경로 선택 이유 확인`);
+            document.getElementById('importantStatus').textContent=`${stageNum}단계 안전 이동 원칙과 이유를 정확히 확인했어요.`;
+            title.textContent=`✅ ${stageNum}단계 이유 확인 완료!`;
+          } else {
+            if (typeof playSound === 'function') playSound('wrong');
+            document.getElementById('importantStatus').textContent='방패나 자세가 밀집 사고를 막아 주지는 않아요. 다시 생각해 보세요.';
+          }
           saveProgress();
         });
         reason.appendChild(btn);
@@ -7975,6 +8287,9 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const e=safetyGame.exitZone;
       if(safetyGame.route==='wide' && p.x>e.x && p.x<e.x+e.w && p.y>e.y && p.y<e.y+e.h) {
         safetyGame.won=true;safetyGame.running=false;
+        const curStage=(typeof state !== 'undefined' && state.gameStage) ? state.gameStage : 1;
+        if (safetyGame.clearedStages) safetyGame.clearedStages[curStage] = true;
+        if (typeof syncStageButtons === 'function') syncStageButtons();
         updateGameStatusText(safetyGame.bonusCollected ? '🌟 미션 달성! 안전하게 출구에 도착했어요' : '이동 가능한 출구에 도착했어요 · 이유도 확인해요');
         if (typeof document !== 'undefined') {
           const startBtn = document.getElementById('btnStartCanvasGame');
@@ -8249,6 +8564,21 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     }
 
     function renderAvatarDressup() {
+      const themeKey = state.teacher?.theme || "halloween";
+      const themeLabel = THEMES[themeKey]?.label || "할로윈";
+      const avatarBadge = document.getElementById("avatarCardSubBadge");
+      if (avatarBadge) {
+        avatarBadge.textContent = isHalloweenTheme()
+          ? "트렌드 놀이터 · 아바타 코디 스튜디오"
+          : `트렌드 놀이터 · ${themeLabel} 안전 코디 스튜디오`;
+      }
+      const step2Label = document.getElementById("avatarStep2Label");
+      if (step2Label) {
+        step2Label.textContent = isHalloweenTheme()
+          ? "2단계: 안전한 할로윈 의상 고르기"
+          : `2단계: 안전한 ${themeLabel} 복장 고르기`;
+      }
+
       document.getElementById("avatarCharIcon").textContent = state.avatar.char;
       document.getElementById("avatarCostumeIcon").textContent = state.avatar.costume;
       document.getElementById("avatarPropIcon").textContent = state.avatar.prop;
@@ -8263,10 +8593,10 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         const mission = AVATAR_MISSIONS[avatarMissionIndex % AVATAR_MISSIONS.length];
         missionBox.innerHTML = `
           <div class="flex flex-wrap items-center justify-between gap-1.5">
-            <span id="avatarMissionTitle" class="font-extrabold text-amber-200">🎯 오늘의 코디 미션 (${(avatarMissionIndex % AVATAR_MISSIONS.length) + 1}/${AVATAR_MISSIONS.length}): ${mission.title}</span>
+            <span id="avatarMissionTitle" class="font-extrabold text-amber-200">🎯 오늘의 코디 미션 (${(avatarMissionIndex % AVATAR_MISSIONS.length) + 1}/${AVATAR_MISSIONS.length}): ${adaptTextForTheme(mission.title)}</span>
             <button id="btnNextAvatarMission" type="button" class="mini-chip text-[11px]">🔄 다음 미션</button>
           </div>
-          <p class="text-[11px] text-indigo-200">${mission.tip}</p>
+          <p class="text-[11px] text-indigo-200">${adaptTextForTheme(mission.tip)}</p>
         `;
         const nextMissionBtn = document.getElementById("btnNextAvatarMission");
         if (nextMissionBtn) {
@@ -8312,6 +8642,20 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     let costumePage = 0;
     let costumeFocusMode = true;
     function renderCostumeCards() {
+      const themeKey = state.teacher?.theme || "halloween";
+      const themeLabel = THEMES[themeKey]?.label || "할로윈";
+      const closetBadge = document.getElementById("costumeClosetBadge");
+      if (closetBadge) {
+        closetBadge.textContent = isHalloweenTheme()
+          ? "놀이 3 · 할로윈 옷장 안전 분류"
+          : `놀이 3 · ${themeLabel} 복장·소품 안전 분류`;
+      }
+      const toggleEtqBtn = document.getElementById("btnToggleEtiquette");
+      if (toggleEtqBtn) {
+        toggleEtqBtn.textContent = isHalloweenTheme()
+          ? "배려하는 할로윈 에티켓 4가지"
+          : `배려하는 ${themeLabel} 에티켓 4가지`;
+      }
       const grid = document.getElementById("costumeCardsGrid");
       grid.innerHTML = "";
       const perPage = costumeFocusMode ? 1 : 4;
@@ -8341,6 +8685,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         if (isCorrect) correctCount++;
 
         if (Math.floor(itemIndex / perPage) !== costumePage) return;
+        const reasonText = adaptTextForTheme(getCostumeReasonForGrade(item));
         const card = document.createElement("div");
         card.className = `glass-panel rounded-2xl p-3 flex flex-col justify-between border transition ${
           !hasAnswered
@@ -8381,7 +8726,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
                     isCorrect ? "bg-emerald-950/90 text-emerald-200" : "bg-rose-950/90 text-rose-200"
                   }">
                     <div class="font-black mb-0.5 nowrap">${isCorrect ? "딩동댕! 👏" : "다시 확인!"}</div>
-                    <div>${item.reason}</div>
+                    <div class="costume-reason-text">${reasonText}</div>
                     ${item.afterLook ? `<div class="pt-1 font-extrabold text-emerald-300">${item.afterLook}</div>` : ""}
                     ${item.reform ? `<div class="costume-reform-tip pt-1.5 mt-1 border-t border-amber-400/40 font-extrabold text-amber-200">${item.reform}</div>` : ""}
                   </div><button type="button" class="speak-costume-feedback w-full rounded-lg bg-indigo-800 p-2 text-xs" data-id="${item.id}">🔈 이유와 대체 코디 읽기</button>`
@@ -8412,7 +8757,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       grid.querySelectorAll('.speak-costume-feedback').forEach(button=>{
         button.addEventListener('click',()=>{
           const item=COSTUME_ITEMS.find(row=>row.id===button.dataset.id);
-          if(item)speakText(`${item.name}. ${item.reason} ${item.reform || ''}`);
+          if(item)speakText(`${item.name}. ${adaptTextForTheme(getCostumeReasonForGrade(item))} ${item.reform || ''}`);
         });
       });
 
@@ -8440,10 +8785,19 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     function renderEtiquetteChecklist() {
       const box = document.getElementById("etiquetteChecklist");
       if (!box) return;
+      const themeKey = state.teacher?.theme || "halloween";
+      const themeLabel = THEMES[themeKey]?.label || "할로윈";
+      const etqTitle = document.getElementById("etiquetteSectionTitle");
+      if (etqTitle) {
+        etqTitle.textContent = isHalloweenTheme()
+          ? "🤝 배려하는 할로윈 에티켓 4가지"
+          : `🤝 배려하는 ${themeLabel} 에티켓 4가지`;
+      }
       box.innerHTML = "";
       let checkedCount = 0;
+      const activeRules = getActiveEtiquetteRules();
 
-      ETIQUETTE_RULES.forEach(rule => {
+      activeRules.forEach(rule => {
         const isChecked = !!state.etiquetteChecked[rule.id];
         if (isChecked) checkedCount++;
         const btn = document.createElement("button");
@@ -8472,13 +8826,105 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         box.appendChild(btn);
       });
 
-      document.getElementById("etiquetteCheckBadge").textContent = `약속 체크 ${checkedCount} / ${ETIQUETTE_RULES.length}`;
+      document.getElementById("etiquetteCheckBadge").textContent = `약속 체크 ${checkedCount} / ${activeRules.length}`;
     }
 
+    function getEventQuizOverrides(themeKey, gradeKey) {
+      const themeLabel = (typeof THEMES !== 'undefined' && THEMES[themeKey]?.label) || '행사';
+      const byGrade = {
+        '1-2': {
+          0: {
+            category: `${themeLabel} 준비`,
+            q: `${themeLabel}에 출발하기 전에 가장 먼저 확인할 약속은 무엇일까요?`,
+            options: ['모둠 친구·선생님과 만날 집결 장소', '혼자 몰래 가 볼 숨은 장소', '장난감만 가득 챙기기'],
+            answer: 0,
+            hint: '길을 잃거나 흩어졌을 때 다시 만날 수 있는 약속 장소를 먼저 알아 두어요.',
+            explanation: '출발 전에 선생님·보호자와 집결 장소와 이동 순서를 먼저 확인해요.'
+          },
+          1: {
+            category: '함께 이동하기',
+            q: `${themeLabel} 장소에서 이동할 때 안전한 행동은 무엇일까요?`,
+            options: ['선생님·보호자의 안내를 따라 질서 있게 이동해요', '혼자 줄에서 빠져나와 낯선 길로 가요', '앞 친구의 가방을 밀며 빨리 달려가요'],
+            answer: 0,
+            hint: '여러 사람이 함께 움직일 때는 인솔하는 어른의 안내를 따라 차근차근 걸어요.',
+            explanation: '인솔 교사·보호자와 함께 정해진 동선으로 안전하게 이동해요.'
+          },
+          6: {
+            category: '공공장소 배려',
+            q: `${themeLabel}에서 다른 반이나 이웃 사람들을 만났을 때 알맞은 태도는?`,
+            options: ['통로를 비워 주고 차례와 질서를 서로 존중해요', '우리 모둠만 빨리 가려고 길을 막아요', '큰 소리로 떠들며 줄 사이로 끼어들어요'],
+            answer: 0,
+            hint: '모두가 함께 쓰는 공간에서는 서로 양보하고 통로를 넓게 비워 주어야 안전해요.',
+            explanation: '공공장소에서는 서로의 이동 동선과 차례를 배려해요.'
+          }
+        },
+        '3-4': {
+          0: {
+            category: '사전 동선 점검',
+            q: `${themeLabel} 장소에 도착했을 때 모둠원들과 가장 먼저 확인할 것은?`,
+            options: ['주변 이동로와 비상 출구·비상 집결지 위치', '가장 줄이 긴 인기 코너 순서', '사진이 잘 나오는 좁은 계단 자리', '기념품을 많이 살 수 있는 상점'],
+            answer: 0,
+            hint: '사람이 갑자기 몰릴 때 당황하지 않고 빠져나갈 수 있는 출구와 만날 장소를 먼저 확인해요.',
+            explanation: '행사장 도착 직후 비상 출구와 이동로, 집결 장소를 먼저 파악해요.'
+          },
+          1: {
+            category: '참여 계획',
+            q: `${themeLabel} 활동을 시작하기 전 인솔 선생님·보호자와 꼭 정할 약속은?`,
+            options: ['이동 범위와 다시 모일 시간·비상 연락 방법', '누가 가장 먼저 뛰어갈지 순서', '간식을 가장 많이 먹는 방법', '혼자 구경할 비밀 코스'],
+            answer: 0,
+            hint: '혼자 대열에서 이탈하지 않도록 활동 구역과 모이는 시간을 미리 약속해야 해요.',
+            explanation: '인솔자와 활동 범위·집결 시간·연락 방법을 사전에 약속해요.'
+          },
+          7: {
+            category: '공공 질서 존중',
+            q: `${themeLabel}에서 여러 단체와 관람객이 함께 이용할 때 올바른 태도는?`,
+            options: ['안내 표지판과 우측통행 질서를 지키며 서로 배려한다', '우리 반이 먼저 보려고 좁은 입구를 가로막는다', '줄을 서지 않고 빈틈으로 비집고 들어간다', '통로 한가운데 앉아 쉬면서 길을 막는다'],
+            answer: 0,
+            hint: '여러 사람이 모이는 곳에서는 규칙과 동선을 함께 지켜야 모두가 안전해요.',
+            explanation: '공공장소의 안내와 질서를 존중할 때 모두가 안전하게 즐길 수 있어요.'
+          }
+        },
+        '5-6': {
+          0: {
+            category: '안전 동선 설계',
+            q: `${themeLabel}을(를) 안전하게 운영하기 위해 사전 답사·안내에서 가장 중요한 기준은?`,
+            options: ['병목 예상 구간 파악과 분산 이동로·비상 출구 확보', '모든 인원을 가장 좁은 입구 한 곳으로 동시 입장시키기', '비상 집결지 없이 자율적으로 흩어져 이동하기', '안내 표지판보다 구두 전달에만 의존하기'],
+            answer: 0,
+            hint: '인파가 한곳에 집중되지 않도록 병목 구간과 우회 출구를 사전에 설계해야 해요.',
+            explanation: '다중밀집 예방을 위해 병목 구간과 분산 동선, 비상 출구를 먼저 확보합니다.'
+          },
+          1: {
+            category: '공동체 배려',
+            q: `${themeLabel} 중 단체 이동과 관람 예절을 지키는 성숙한 시민 의식은?`,
+            options: ['공공시설의 안전 수칙을 준수하고 타인의 이동권과 선택권을 존중한다', '우리 모둠의 편의를 위해 관람 통로 중앙을 점유한다', '혼잡한 계단에서 속도를 높여 앞사람을 추월한다', '안전요원의 우회 안내를 무시하고 직진한다'],
+            answer: 0,
+            hint: '나와 공동체 모두의 안전을 위해 공공 안전 수칙과 배려 원칙을 함께 실천해요.',
+            explanation: '공공 안전 수칙 준수와 타인 배려는 다중밀집 사고 예방의 핵심입니다.'
+          }
+        }
+      };
+      return (byGrade[gradeKey] && byGrade[gradeKey]) || {};
+    }
+    function getActiveQuizzes(gradeKey = state.grade) {
+      const base = EDUCATION_DATA[gradeKey]?.quizzes || EDUCATION_DATA['3-4'].quizzes;
+      if (typeof isHalloweenTheme === 'function' && isHalloweenTheme()) return base;
+      const themeKey = state.teacher?.theme || 'halloween';
+      if (themeKey === 'halloween') return base;
+      const themeLabel = (typeof THEMES !== 'undefined' && THEMES[themeKey]?.label) || '행사';
+      const overrides = getEventQuizOverrides(themeKey, gradeKey);
+      return base.map((item, idx) => {
+        if (overrides[idx]) return overrides[idx];
+        return {
+          ...item,
+          q: item.q.replace(/할로윈/g, themeLabel).replace(/축제장/g, `${themeLabel} 장소`),
+          explanation: item.explanation.replace(/할로윈/g, themeLabel)
+        };
+      });
+    }
     function quizQuestionId(index) { return `${state.grade}:q${index+1}`; }
     function quizOrder(index) {
       const id=quizQuestionId(index);
-      const q=EDUCATION_DATA[state.grade].quizzes[index];
+      const q=getActiveQuizzes()[index];
       if (!Array.isArray(state.quizOrders[id]) || state.quizOrders[id].length!==q.options.length) {
         const order=q.options.map((_,i)=>i);
         if(order.length>2) for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
@@ -8491,22 +8937,22 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       return state.quizReview ? state.quizReviewItems[state.quizIndex] : state.quizIndex;
     }
     function firstQuizScore() {
-      return EDUCATION_DATA[state.grade].quizzes.reduce((total,_,i)=>total+(state.quizFirst[quizQuestionId(i)]?.correct?1:0),0);
+      return getActiveQuizzes().reduce((total,_,i)=>total+(state.quizFirst[quizQuestionId(i)]?.correct?1:0),0);
     }
     function firstUnassistedScore() {
-      return EDUCATION_DATA[state.grade].quizzes.reduce((total,_,i)=>{
+      return getActiveQuizzes().reduce((total,_,i)=>{
         const answer=state.quizFirst[quizQuestionId(i)];
         return total+(answer?.correct && !answer.hintUsed && !answer.fiftyUsed ? 1:0);
       },0);
     }
     function reviewedQuizScore() {
-      return EDUCATION_DATA[state.grade].quizzes.reduce((total,_,i)=>{
+      return getActiveQuizzes().reduce((total,_,i)=>{
         const attempts=state.quizAttempts[quizQuestionId(i)] || [];
         return total+(attempts.length>1 && attempts.at(-1).correct ? 1:0);
       },0);
     }
     function startQuizReview(onlyWrong) {
-      const quizzes=EDUCATION_DATA[state.grade].quizzes;
+      const quizzes=getActiveQuizzes();
       const items=quizzes.map((_,i)=>i).filter(i=>!onlyWrong || !state.quizFirst[quizQuestionId(i)]?.correct);
       if(!items.length)return;
       state.quizReviewItems=items;
@@ -8539,6 +8985,16 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       '🏛️ 깜짝 상식 박물관: 붐비는 길에서 한 사람이 물건을 주우려 멈춰 허리를 숙이면 뒤따라오던 사람들의 시야가 가려져 단 3초 만에 도미노처럼 연쇄 넘어짐이 일어날 수 있어요!',
       '🏛️ 깜짝 상식 박물관: 기네스북에 오른 세계에서 가장 무거운 호박은 무려 1,246kg으로, 소형 자동차 한 대 무게와 비슷하대요!',
       '🏛️ 깜짝 상식 박물관: 멕시코의 ‘죽은 자들의 날’에 장식하는 주황색 금잔화(마리골드)는 태양의 빛과 진한 향기로 가족들이 집으로 오는 길을 밝혀 준다는 따뜻한 뜻을 담고 있어요!'
+    ];
+    const EVENT_QUIZ_FUN_FACTS = [
+      '🏛️ 깜짝 상식 박물관: 초록색 비상구(EXIT) 유도등은 정전이 되어도 내부 배터리로 최소 20~60분 이상 밝게 빛나도록 안전 기준이 정해져 있어요!',
+      '🏛️ 깜짝 상식 박물관: 양방향 통로에서 모두가 오른쪽으로 걸으면 마주 오는 사람과의 충돌 위험이 70% 이상 줄어들고 이동 속도도 훨씬 안정돼요!',
+      '🏛️ 깜짝 상식 박물관: 비상구 표지판이 초록색인 이유는 연기가 자욱하거나 어두운 곳에서도 우리 눈의 망막이 가장 또렷하게 구별할 수 있는 빛의 파장이 초록색(약 500~550nm)이기 때문이에요!',
+      '🏛️ 깜짝 상식 박물관: 1㎡(가로·세로 1m) 안에 5명 이상이 모이면 내 힘으로 걷기 어렵고 물결처럼 흔들리기 시작해요. 그래서 어깨가 자꾸 닿을 때 미리 대각선 가장자리로 빠져나와야 해요!',
+      '🏛️ 깜짝 상식 박물관: 두 손으로 가슴 앞 공간(흉강)을 감싸면 갈비뼈가 움직일 수 있는 최소 3~5cm의 공간이 유지되어 압박 속에서도 소중한 호흡을 지킬 수 있어요!',
+      '🏛️ 깜짝 상식 박물관: 붐비는 길에서 한 사람이 물건을 주우려 멈춰 허리를 숙이면 뒤따라오던 사람들의 시야가 가려져 단 3초 만에 도미노처럼 연쇄 넘어짐이 일어날 수 있어요!',
+      '🏛️ 깜짝 상식 박물관: 큰 행사장이나 박물관에서는 입구보다 출구 쪽이 좁아지는 병목 구간이 많아서, 들어가기 전에 대체 출구를 하나 더 봐 두는 것이 안전해요!',
+      '🏛️ 깜짝 상식 박물관: 위급할 때 112·119에 신고할 때는 "어디(건물·지형지물 이름)에서 무슨 일이 났는지"를 가장 먼저 말해야 출동 대원이 가장 빠르게 도착할 수 있어요!'
     ];
     const QUIZ_GOAL_BRIDGE = [
       { label: '문화의 기원과 다양성', tab: 'tab-culture', scenarioIdx: null, tag: '🏛️ 문화 탐정' },
@@ -8580,7 +9036,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const box = document.getElementById('quizWeaknessBridge');
       if (!box) return;
       box.replaceChildren();
-      const quizzes = EDUCATION_DATA[state.grade].quizzes;
+      const quizzes = getActiveQuizzes();
       const missedIndices = quizzes
         .map((_, idx) => idx)
         .filter(idx => !state.quizFirst[quizQuestionId(idx)]?.correct);
@@ -8623,25 +9079,66 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       { q: '어깨가 자꾸 부딪히고 걸음이 느려지면 흐름을 보며 대각선 가장자리 넓은 곳으로 벗어나야 한다.', answer: true, exp: '맞아요(O)! 신체 접촉과 감속은 혼잡 위험 신호이므로 즉시 넓은 곳으로 이동해요.' },
       { q: '인파에게 떠밀릴 때는 두 팔로 가슴 앞 공간을 감싸 숨 쉴 공간(흉강)을 확보하는 것이 좋다.', answer: true, exp: '맞아요(O)! 팔짱이나 가방 안기 자세로 가슴 앞 호흡 공간을 지켜요.' }
     ];
-    let speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false };
+    const SPEED_OX_BY_GRADE = {
+      '1-2': [
+        { q: '축제장에 들어가면 사탕 가게보다 초록색 비상구(나가는 문)부터 눈으로 찾아봐요.', answer: true, exp: '딩동댕(O)! 위급할 때 나갈 수 있는 초록색 비상구와 넓은 길을 먼저 봐 두어요.' },
+        { q: '사람이 꽉 찬 길에서 장난감이 떨어지면 그 자리에서 바로 허리를 숙여 주워요.', answer: false, exp: '아니에요(X)! 걸어오는 사람들과 부딪혀 위험하니 숙이지 않고 내 몸부터 지켜요.' },
+        { q: '앞이 잘 안 보이는 가면이나 바닥에 길게 끌리는 망토는 넘어질 수 있어 피해야 해요.', answer: true, exp: '딩동댕(O)! 눈이 잘 보이고 발에 걸리지 않는 편한 옷을 입어야 안전해요.' },
+        { q: '옆 친구와 어깨가 자꾸 닿고 걸음이 느려지면 더 좁은 안쪽으로 비집고 들어가요.', answer: false, exp: '아니에요(X)! 어깨가 자꾸 닿는 건 위험 신호라서 넓은 길가로 나와야 해요.' },
+        { q: '사람들에게 밀릴 때는 두 손이나 가방을 가슴 앞에 모아 숨 쉴 곳을 지켜요.', answer: true, exp: '딩동댕(O)! 가슴 앞 공간을 지키면 답답하지 않게 숨을 쉴 수 있어요.' }
+      ],
+      '3-4': SPEED_OX_QUESTIONS,
+      '5-6': [
+        { q: '입구가 넓더라도 안쪽 통로가 좁아지는 병목 구간에서는 사전에 대체 출구와 우회 동선을 확인해야 한다.', answer: true, exp: '맞아요(O)! 병목 구간은 짧은 시간에 밀집도가 급증하므로 사전 대피 동선 파악이 필수예요.' },
+        { q: '1㎡당 5명 이상 밀집해 떠밀리는 상황에서는 군중의 흐름을 정면으로 거슬러 강하게 밀고 나가야 한다.', answer: false, exp: '아니에요(X)! 정면 역행은 연쇄 전도를 유발하므로 흐름을 따라 대각선 가장자리로 이탈해야 해요.' },
+        { q: '비슷한 시기에 열리는 세계의 명절·축제는 겉모습이 닮았다면 하나의 기원으로 단정해도 된다.', answer: false, exp: '아니에요(X)! 각 문화가 형성된 역사적 맥락과 고유한 의미를 각각 존중해야 해요.' },
+        { q: '실제 경찰·소방·군인의 제복과 혼동되는 복장은 긴급 구조 현장의 식별을 방해할 수 있어 피해야 한다.', answer: true, exp: '맞아요(O)! 위급 상황에서 실제 대원을 즉시 구별할 수 있도록 공공성과 관련 법규를 살펴야 해요.' },
+        { q: '군중 속에서 넘어져 바로 일어날 수 없을 때는 두 팔로 머리를 감싸고 무릎을 당겨 태아 자세로 장기를 보호한다.', answer: true, exp: '맞아요(O)! 머리와 흉강·복부 장기가 압박받지 않도록 몸을 둥글게 말아 보호해요.' }
+      ]
+    };
+    function getSpeedOxQuestions(shuffle = false) {
+      const gradeKey = (typeof state !== 'undefined' && state.grade) || '3-4';
+      const themeKey = (typeof state !== 'undefined' && state.teacher?.theme) || 'halloween';
+      const themeLabel = (typeof THEMES !== 'undefined' && THEMES[themeKey]?.label) || '행사';
+      const basePool = SPEED_OX_BY_GRADE[gradeKey] || SPEED_OX_QUESTIONS;
+      const adapted = basePool.map((item, idx) => {
+        if (themeKey !== 'halloween' && idx === 2 && gradeKey !== '1-2') {
+          return {
+            q: `${themeLabel} 이동 중 모둠 친구나 선생님을 놓치면 혼자 찾아다니지 않고 약속한 집결 장소에서 기다려야 한다.`,
+            answer: true,
+            exp: `맞아요(O)! ${themeLabel}에서 대열과 떨어졌을 때는 미리 약속한 집결지에서 기다리거나 인솔 교사·112에 알려요.`
+          };
+        }
+        return item;
+      });
+      if (!shuffle) return adapted;
+      const copy = [...adapted];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+    let speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false, questions: null };
     let speedOxInterval = null;
     function stopSpeedOxTimer() {
       if (speedOxInterval) { clearInterval(speedOxInterval); speedOxInterval = null; }
     }
     function resetSpeedOxState() {
       stopSpeedOxTimer();
-      speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false };
+      speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false, questions: null };
     }
     function renderSpeedOxBonus() {
       const box = document.getElementById('speedOxBonusBox');
       if (!box) return;
       box.replaceChildren();
+      const activeQuestions = speedOxState.questions || getSpeedOxQuestions(false);
       if (!speedOxState.active && !speedOxState.done) {
         const row = document.createElement('div');
         row.className = 'flex flex-wrap items-center justify-between gap-2';
         const title = document.createElement('span');
         title.className = 'font-extrabold text-amber-300';
-        title.textContent = '⚡ 보너스 미션 · 30초 스피드 OX 진실 혹은 거짓 (5문항)';
+        title.textContent = `⚡ 보너스 미션 · ${EDUCATION_DATA[state.grade]?.label || ''} 30초 스피드 OX (${activeQuestions.length}문항)`;
         const startBtn = document.createElement('button');
         startBtn.type = 'button';
         startBtn.id = 'btnStartSpeedOx';
@@ -8649,7 +9146,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         startBtn.textContent = '⚡ 30초 스피드 OX 시작!';
         startBtn.addEventListener('click', () => {
           stopSpeedOxTimer();
-          speedOxState = { active: true, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false };
+          speedOxState = { active: true, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false, questions: getSpeedOxQuestions(false) };
           playSound('whistle');
           speedOxInterval = setInterval(() => {
             if (speedOxState.secondsLeft > 1) {
@@ -8677,13 +9174,13 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         wrap.className = 'space-y-1.5';
         const head = document.createElement('div');
         head.className = 'font-extrabold text-amber-300 text-sm';
-        head.textContent = `🏆 스피드 OX 완주 결과: ${speedOxState.score} / ${SPEED_OX_QUESTIONS.length} 정답!`;
+        head.textContent = `🏆 스피드 OX 완주 결과: ${speedOxState.score} / ${activeQuestions.length} 정답!`;
         const retryBtn = document.createElement('button');
         retryBtn.type = 'button';
         retryBtn.className = 'mini-chip text-[11px]';
-        retryBtn.textContent = '🔄 스피드 OX 다시 도전';
+        retryBtn.textContent = '🔄 스피드 OX 다른 순서로 다시 도전';
         retryBtn.addEventListener('click', () => {
-          speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false };
+          speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false, questions: getSpeedOxQuestions(true) };
           renderSpeedOxBonus();
         });
         wrap.appendChild(head);
@@ -8697,10 +9194,10 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         box.appendChild(wrap);
         return;
       }
-      const item = SPEED_OX_QUESTIONS[speedOxState.idx];
+      const item = activeQuestions[speedOxState.idx];
       const top = document.createElement('div');
       top.className = 'flex items-center justify-between gap-2 font-extrabold text-amber-300';
-      top.innerHTML = `<span>⚡ 스피드 OX (${speedOxState.idx + 1}/${SPEED_OX_QUESTIONS.length})</span><span id="speedOxTimerText">⏱️ ${speedOxState.secondsLeft}초</span>`;
+      top.innerHTML = `<span>⚡ 스피드 OX (${speedOxState.idx + 1}/${activeQuestions.length})</span><span id="speedOxTimerText">⏱️ ${speedOxState.secondsLeft}초</span>`;
       const qEl = document.createElement('p');
       qEl.className = 'font-bold text-white text-xs sm:text-sm py-1';
       qEl.textContent = `Q. ${item.q}`;
@@ -8716,7 +9213,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           if (right) speedOxState.score++;
           speedOxState.feedback = item.exp;
           playSound(right ? 'correct' : 'wrong');
-          if (speedOxState.idx + 1 < SPEED_OX_QUESTIONS.length) {
+          if (speedOxState.idx + 1 < activeQuestions.length) {
             speedOxState.idx++;
           } else {
             stopSpeedOxTimer();
@@ -8748,9 +9245,12 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       return '🎃 차근차근 이유를 생각하며 알맞은 답을 골라 봐요!';
     }
     function renderQuiz() {
-      const quizzes=EDUCATION_DATA[state.grade].quizzes;
+      const quizzes=getActiveQuizzes();
       const limit=state.quizReview ? state.quizReviewItems.length : quizzes.length;
-      document.getElementById('quizGradeLabel').textContent=`생각 확인 · ${EDUCATION_DATA[state.grade].label} · ${quizzes.length}가지 질문`;
+      const themePrefix=(typeof isHalloweenTheme === 'function' && !isHalloweenTheme() && typeof THEMES !== 'undefined')
+        ? `${THEMES[state.teacher.theme]?.label || '행사'} · `
+        : '';
+      document.getElementById('quizGradeLabel').textContent=`${themePrefix}생각 확인 · ${EDUCATION_DATA[state.grade].label} · ${quizzes.length}가지 질문`;
       const active=document.getElementById('quizActiveContainer');
       const result=document.getElementById('quizResultContainer');
       if(state.quizIndex>=limit){
@@ -8836,7 +9336,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         const mainText = document.createElement('p');
         mainText.textContent = `${existing.correct?'⭕ 이번 판단은 맞았어요.':'❌ 이번 판단은 다시 살펴봐요.'} ${q.explanation}`;
         explanation.appendChild(mainText);
-        const funFactText = QUIZ_FUN_FACTS[qi % QUIZ_FUN_FACTS.length];
+        const factPool = (typeof isHalloweenTheme === 'function' && !isHalloweenTheme()) ? EVENT_QUIZ_FUN_FACTS : QUIZ_FUN_FACTS;
+        const funFactText = factPool[qi % factPool.length];
         if (funFactText) {
           const factEl = document.createElement('div');
           factEl.className = 'rounded-lg bg-indigo-950/70 border border-amber-400/40 px-2.5 py-1.5 text-xs font-bold text-amber-200 leading-snug';
@@ -9071,8 +9572,106 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       if(participationButton)participationButton.disabled=!canDownloadParticipation();
       syncRecommendedPledgePreset();
     }
+    const CLASS_POSTER_STORAGE_KEY = 'halloween_edu_class_poster_v1';
     let classPosterActive = false;
     let classPosterRecords = [];
+    function saveClassPosterRecords() {
+      try {
+        if (!classPosterRecords.length) {
+          localStorage.removeItem(CLASS_POSTER_STORAGE_KEY);
+          return;
+        }
+        localStorage.setItem(CLASS_POSTER_STORAGE_KEY, JSON.stringify({
+          sessionId: state.sessionId,
+          records: classPosterRecords.slice(0, 30)
+        }));
+      } catch (_) {}
+    }
+    function loadClassPosterRecords() {
+      try {
+        const raw = localStorage.getItem(CLASS_POSTER_STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.sessionId === state.sessionId && Array.isArray(parsed.records) && parsed.records.length > 0) {
+          classPosterRecords = parsed.records.slice(0, 30);
+        }
+      } catch (_) {}
+    }
+    function clearClassPosterRecords() {
+      classPosterActive = false;
+      classPosterRecords = [];
+      try { localStorage.removeItem(CLASS_POSTER_STORAGE_KEY); } catch (_) {}
+      renderClassPosterRoster();
+    }
+    function renderClassPosterRoster() {
+      const box = document.getElementById('classPosterRosterBox');
+      if (!box) return;
+      box.replaceChildren();
+      if (!classPosterRecords.length) {
+        box.classList.add('hidden');
+        return;
+      }
+      box.classList.remove('hidden');
+      const topRow = document.createElement('div');
+      topRow.className = 'flex flex-wrap items-center justify-between gap-1.5';
+      const title = document.createElement('span');
+      title.className = 'font-extrabold text-amber-300';
+      title.textContent = `🏆 협동 포스터 명단 (${classPosterRecords.length}명 · 새로고침해도 유지됨)`;
+      const btnWrap = document.createElement('div');
+      btnWrap.className = 'flex flex-wrap items-center gap-1';
+      const viewBtn = document.createElement('button');
+      viewBtn.type = 'button';
+      viewBtn.id = 'btnViewClassPoster';
+      viewBtn.className = 'mini-chip text-[11px]';
+      viewBtn.textContent = '🖼️ 포스터 보기';
+      viewBtn.addEventListener('click', () => {
+        if (typeof playSound === 'function') playSound('click');
+        renderClassPosterCanvas(classPosterRecords);
+      });
+      const clearBtn = document.createElement('button');
+      clearBtn.type = 'button';
+      clearBtn.id = 'btnClearClassPoster';
+      clearBtn.className = 'mini-chip text-[11px] text-rose-200';
+      clearBtn.textContent = '🗑️ 명단 비우기';
+      clearBtn.addEventListener('click', () => {
+        if (typeof playSound === 'function') playSound('click');
+        clearClassPosterRecords();
+        const status = document.getElementById('importResults');
+        if (status) status.textContent = '협동 포스터 명단을 비웠어요.';
+        renderCertificateCanvas();
+      });
+      btnWrap.appendChild(viewBtn);
+      btnWrap.appendChild(clearBtn);
+      topRow.appendChild(title);
+      topRow.appendChild(btnWrap);
+      box.appendChild(topRow);
+
+      const chipsWrap = document.createElement('div');
+      chipsWrap.className = 'flex flex-wrap items-center gap-1 pt-0.5';
+      classPosterRecords.forEach((rec, idx) => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'mini-chip poster-student-chip text-[11px]';
+        const sName = safeLabel(rec.profile?.name, `안전대장 ${idx + 1}`, 14);
+        chip.textContent = `${idx + 1}. ${sName} ✕`;
+        chip.title = '누르면 이 학생을 협동 포스터에서 제외해요';
+        chip.addEventListener('click', () => {
+          if (typeof playSound === 'function') playSound('click');
+          classPosterRecords.splice(idx, 1);
+          saveClassPosterRecords();
+          const status = document.getElementById('importResults');
+          if (classPosterRecords.length > 0) {
+            if (status) status.textContent = `🏆 협동 포스터에 ${classPosterRecords.length}명 등록됨: ${classPosterRecords.map(r => r.profile?.name || '안전대장').join(', ')}`;
+            renderClassPosterCanvas(classPosterRecords);
+          } else {
+            if (status) status.textContent = '협동 포스터 명단을 모두 비웠어요.';
+            renderCertificateCanvas();
+          }
+        });
+        chipsWrap.appendChild(chip);
+      });
+      box.appendChild(chipsWrap);
+    }
     function drawCanvasQr(ctx, url, x, y, size) {
       try {
         if (typeof qrcode !== 'function') return;
@@ -9098,16 +9697,23 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       const canvas = document.getElementById('certificateCanvas');
       if (!canvas || !Array.isArray(records) || !records.length) return;
       classPosterActive = true;
-      classPosterRecords = records;
+      classPosterRecords = records.slice(0, 30);
+      saveClassPosterRecords();
+      renderClassPosterRoster();
+      const certHeading = document.getElementById('certSectionTitle');
+      if (certHeading && typeof THEMES !== 'undefined' && THEMES[state.teacher?.theme]) {
+        certHeading.textContent = `🎖️ ${THEMES[state.teacher.theme].label} 안전 대장 임명장`;
+      }
       const clsLabel = safeLabel(records[0]?.profile?.className || state.profile.className, EDUCATION_DATA[state.grade].classDefault, 30);
       const ctx = drawSheetBase(canvas, '🏆 우리 반 안전 대장 협동 포스터', `${THEMES[state.teacher.theme].label} · ${clsLabel} (${records.length}명 참여)`);
-      const items = records.slice(0, 12);
-      const cols = items.length <= 4 ? 2 : 3;
+      const items = classPosterRecords;
+      const cols = items.length <= 4 ? 2 : items.length <= 12 ? 3 : items.length <= 20 ? 4 : 5;
       const rows = Math.ceil(items.length / cols);
-      const startX = 52, startY = 182, gridW = canvas.width - 104, gridH = 445;
-      const gap = 10;
+      const startX = 48, startY = 180, gridW = canvas.width - 96, gridH = 448;
+      const gap = items.length > 12 ? 6 : 10;
       const cellW = (gridW - gap * (cols - 1)) / cols;
       const cellH = Math.min(138, (gridH - gap * Math.max(0, rows - 1)) / Math.max(1, rows));
+      const compact = items.length > 12;
       items.forEach((rec, idx) => {
         const col = idx % cols;
         const row = Math.floor(idx / cols);
@@ -9116,23 +9722,23 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         ctx.fillStyle = 'rgba(15, 23, 42, 0.78)';
         ctx.fillRect(cx, cy, cellW, cellH);
         ctx.strokeStyle = '#fbbf24';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = compact ? 1.2 : 1.5;
         ctx.strokeRect(cx, cy, cellW, cellH);
         const g = rec.grade || state.grade;
         const gRec = (rec.gradeRecords && rec.gradeRecords[g]) || {};
         const av = gRec.avatar || state.avatar || {costume:'🎃', char:'🧒', prop:'🕯️'};
-        const name = safeLabel(rec.profile?.name, `안전대장 ${idx + 1}`, 16);
-        const pledge = safeLabel(rec.profile?.pledge, '안전 약속을 실천해요!', 38);
+        const name = safeLabel(rec.profile?.name, `안전대장 ${idx + 1}`, compact ? 10 : 16);
+        const pledge = safeLabel(rec.profile?.pledge, '안전 약속을 실천해요!', compact ? 24 : 38);
         ctx.textAlign = 'left';
-        ctx.font = `22px ${RESULT_FONT}`;
+        ctx.font = `${compact ? 15 : 22}px ${RESULT_FONT}`;
         ctx.fillStyle = '#fff';
-        ctx.fillText(`${av.costume || '🎃'}${av.char || '🧒'}${av.prop || '🕯️'}`, cx + 10, cy + 30);
-        ctx.font = `bold 14px ${RESULT_FONT}`;
+        ctx.fillText(`${av.costume || '🎃'}${av.char || '🧒'}${av.prop || '🕯️'}`, cx + 6, cy + (compact ? 21 : 30));
+        ctx.font = `bold ${compact ? 11 : 14}px ${RESULT_FONT}`;
         ctx.fillStyle = '#fde68a';
-        ctx.fillText(`${name} (${rec.candyPoints ?? 0}🍬)`, cx + 82, cy + 28, cellW - 90);
-        ctx.font = `12px ${RESULT_FONT}`;
+        ctx.fillText(`${name} (${rec.candyPoints ?? 0}🍬)`, cx + (compact ? 56 : 82), cy + (compact ? 20 : 28), cellW - (compact ? 62 : 90));
+        ctx.font = `${compact ? 10 : 12}px ${RESULT_FONT}`;
         ctx.fillStyle = '#e0e7ff';
-        printLines(ctx, pledge, cx + 10, cy + 56, cellW - 20, 18, 3);
+        printLines(ctx, pledge, cx + 6, cy + (compact ? 40 : 56), cellW - 12, compact ? 14 : 18, compact ? 2 : 3);
       });
       ctx.textAlign = 'center';
       ctx.fillStyle = '#fde68a';
@@ -9156,6 +9762,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         gradeRecords: JSON.parse(JSON.stringify(state.gradeRecords))
       };
       classPosterRecords.push(snapshot);
+      saveClassPosterRecords();
       renderClassPosterCanvas(classPosterRecords);
       const status = document.getElementById('importResults');
       if (status) {
@@ -9165,6 +9772,11 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
     }
     function renderCertificateCanvas() {
       classPosterActive = false;
+      renderClassPosterRoster();
+      const certHeading = document.getElementById('certSectionTitle');
+      if (certHeading && typeof THEMES !== 'undefined' && THEMES[state.teacher?.theme]) {
+        certHeading.textContent = `🎖️ ${THEMES[state.teacher.theme].label} 안전 대장 임명장`;
+      }
       const canvas=document.getElementById('certificateCanvas');
       if(!canvas)return;
       const ctx=drawSheetBase(canvas,canDownloadSafetyCertificate()?'안전 대장 임명장':'안전 목표 확인 현황 · 미완료',`${THEMES[state.teacher.theme].label} · ${EDUCATION_DATA[state.grade].label} · ${getLevelTitle(state.candyPoints)}`);
@@ -9347,7 +9959,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       });
       y+=18;
       ctx.font=`bold 24px ${RESULT_FONT}`;ctx.fillText(`2. 스스로 풀어 보는 생각 확인 문제 (${EDUCATION_DATA[state.grade].label} 핵심 4문항)`,65,y);y+=38;
-      const quizzes=EDUCATION_DATA[state.grade].quizzes.slice(0,4);
+      const activeQuizList = typeof getActiveQuizzes === 'function' ? getActiveQuizzes() : EDUCATION_DATA[state.grade].quizzes;
+      const quizzes=activeQuizList.slice(0,4);
       const quizAnswerKeys=[];
       quizzes.forEach((q,idx)=>{
         quizAnswerKeys.push(`문항${idx+1}: ${['①','②','③','④'][q.answer]||q.answer+1}`);
@@ -9452,6 +10065,8 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
         if (status) status.textContent = '유효한 배움 코드(HW1:...)를 찾지 못했어요.';
         return false;
       }
+      saveClassPosterRecords();
+      renderClassPosterRoster();
       renderClassPosterCanvas(classPosterRecords);
       if (status) {
         status.textContent = `⚡ 배움 코드로 ${added}명 추가 완료! (총 ${classPosterRecords.length}명: ${classPosterRecords.map(r => r.profile.name).join(', ')})`;
@@ -9582,7 +10197,10 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           records.push(data);
         }
         if(records.length>1){
-          renderClassPosterCanvas(records);
+          classPosterRecords.splice(0, classPosterRecords.length, ...records.slice(0, 30));
+          saveClassPosterRecords();
+          renderClassPosterRoster();
+          renderClassPosterCanvas(classPosterRecords);
           status.textContent=`이 기기에서 ${records.length}개 결과를 확인해 협동 포스터로 합쳤어요: ${records.map(r=>`${r.profile?.name||'별칭 없음'} (${r.grade}, ${r.candyPoints}점)`).join(' · ')}`;
           return;
         }
@@ -9758,8 +10376,11 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       if (nightBtn) nightBtn.textContent = "🌙 밤길 야광 반사 테스트";
       if (judgeEl) judgeEl.textContent = "시야 확보 OK! 밤길 안전 반사 OK!";
       if (!keepClassPoster) {
-        if (typeof classPosterActive !== 'undefined') classPosterActive = false;
-        if (typeof classPosterRecords !== 'undefined' && Array.isArray(classPosterRecords)) classPosterRecords.length = 0;
+        if (typeof clearClassPosterRecords === 'function') clearClassPosterRecords();
+        else {
+          if (typeof classPosterActive !== 'undefined') classPosterActive = false;
+          if (typeof classPosterRecords !== 'undefined' && Array.isArray(classPosterRecords)) classPosterRecords.length = 0;
+        }
         const importStatus = document.getElementById("importResults");
         if (importStatus) importStatus.textContent = "";
       }
@@ -9786,6 +10407,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       safetyGame.friendRescued = false;
       safetyGame.companion = null;
       safetyGame.items = [];
+      safetyGame.clearedStages = { 1: false, 2: false, 3: false };
       safetyGame.player = {x:42, y:210, r:13, targetX:null, targetY:null};
       safetyGame.hazards = [];
       saveProgress();
@@ -9861,6 +10483,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       state.activeTab=state.teacher.start;
       safetyGame.running=false;safetyGame.won=false;safetyGame.paused=false;safetyGame.route=null;
       safetyGame.bonusCollected=false;safetyGame.friendRescued=false;safetyGame.companion=null;safetyGame.items=[];
+      safetyGame.clearedStages={1:false,2:false,3:false};
       safetyGame.player={x:42,y:210,r:13,targetX:null,targetY:null};
       safetyGame.hazards=[];
       saveProgress();renderAllLearning();
@@ -10184,6 +10807,10 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
           syncLessonStage();
           renderScenario();
           renderThemeSituations();
+          renderAvatarDressup();
+          renderCostumeCards();
+          renderEtiquetteChecklist();
+          renderQuiz();
           drawSafetyGame();
           renderLearningSummary();
           renderCertificateCanvas();
@@ -10516,6 +11143,13 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       });
 
       loadBgmPrefs();
+      const bgmAudioEl = document.getElementById("bgmAudio");
+      if (bgmAudioEl) {
+        bgmAudioEl.addEventListener("error", () => {
+          bgmFallbackActive = true;
+          if (bgmOn && bgmVolume > 0) startSynthBgmLoop();
+        });
+      }
       syncBgmUI();
       syncBgmPlayback();
 
@@ -11062,7 +11696,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       document.getElementById('btnSpeakQuiz').addEventListener('click', () => {
         const index=currentQuizIndex();
         if(index===undefined)return;
-        const q=EDUCATION_DATA[state.grade].quizzes[index];
+        const q=getActiveQuizzes()[index];
         const order=quizOrder(index);
         speakText(`${q.q}. ${order.map((original,i)=>`${i+1}번. ${q.options[original]}`).join('. ')}`);
       });
@@ -11077,7 +11711,7 @@ const THEME_STORIES = Object.fromEntries(Object.entries(THEME_STORY_ROWS).map(([
       });
       document.getElementById("btnQuizFifty").addEventListener("click", () => {
         const id = quizQuestionId(currentQuizIndex());
-        if (state.quizFiftyUsed || EDUCATION_DATA[state.grade].quizzes[currentQuizIndex()].options.length <= 2) return;
+        if (state.quizFiftyUsed || getActiveQuizzes()[currentQuizIndex()].options.length <= 2) return;
         state.quizFiftyUsed = true;
         state.quizFifties[id] = true;
         playSound("correct");

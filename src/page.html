@@ -602,7 +602,7 @@
           <div id="avatarContents" class="space-y-3.5">
           <div class="flex items-center justify-between gap-2 border-b border-indigo-800 pb-2">
             <div>
-              <span class="nowrap text-xs font-bold text-pink-400">코디 놀이터 · 안전한 코스프레 패션쇼</span>
+              <span id="avatarCardSubBadge" class="nowrap text-xs font-bold text-pink-400">코디 놀이터 · 안전한 코스프레 패션쇼</span>
               <h3 class="font-title text-base sm:text-lg text-white nowrap">안전한 옷차림 꾸미기</h3>
             </div>
             <button type="button" id="btnRunwayShow" class="nowrap px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-amber-500 text-indigo-950 font-black text-xs shadow-lg transition min-h-[34px]">
@@ -644,7 +644,7 @@
               </div>
 
               <div class="space-y-1">
-                <div class="font-bold text-indigo-200 nowrap">🧙 2. 안전한 할로윈 의상 입히기 (제복 제외!)</div>
+                <div id="avatarStep2Label" class="font-bold text-indigo-200 nowrap">🧙 2. 안전한 할로윈 의상 입히기 (제복 제외!)</div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                   <button type="button" data-costume="🎃" class="avatar-costume-btn nowrap py-1.5 px-2 rounded-lg bg-indigo-900 border border-amber-400 text-white font-bold">🎃 호박망토</button>
                   <button type="button" data-costume="🧙" class="avatar-costume-btn nowrap py-1.5 px-2 rounded-lg bg-indigo-900 border border-indigo-700 text-white font-bold">🧙 별마법사</button>
@@ -675,7 +675,7 @@
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
           <div class="border-b border-indigo-800 pb-2.5 space-y-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="nowrap text-xs font-bold text-amber-400">놀이 3 · 할로윈 옷장 고르기 (12종)</span>
+              <span id="costumeClosetBadge" class="nowrap text-xs font-bold text-amber-400">놀이 3 · 할로윈 옷장 고르기 (12종)</span>
               <div class="flex flex-wrap items-center gap-1.5 shrink-0">
                 <span id="costumeScoreBadge" class="nowrap px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-200 text-xs font-bold">
                   0 / 12
@@ -706,7 +706,7 @@
           <button type="button" id="btnToggleEtiquette" class="optional-toggle" aria-expanded="false" aria-controls="etiquetteContents">더 해보기 · 친구를 배려하는 간식 약속 4가지 <span aria-hidden="true">＋</span></button>
           <div id="etiquetteContents" class="space-y-3 pt-2">
             <div class="flex items-center justify-between gap-2">
-              <h3 class="font-title text-sm sm:text-lg text-amber-300 nowrap">친구를 배려하는 간식 약속</h3>
+              <h3 id="etiquetteSectionTitle" class="font-title text-sm sm:text-lg text-amber-300 nowrap">친구를 배려하는 간식 약속</h3>
               <span id="etiquetteCheckBadge" class="nowrap text-xs font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2.5 py-0.5 rounded-full">
                 약속 체크 0 / 4
               </span>
@@ -800,7 +800,7 @@
         <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5">
           <div class="border-b border-indigo-800 pb-2.5 space-y-1">
             <span class="nowrap text-xs font-bold text-amber-400">배움 기록 · 이름과 약속을 적고 상장을 저장해요</span>
-            <h2 class="font-title text-base sm:text-xl text-white nowrap">🎖️ 할로윈 안전 대장 임명장</h2>
+            <h2 id="certSectionTitle" class="font-title text-base sm:text-xl text-white nowrap">🎖️ 할로윈 안전 대장 임명장</h2>
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
@@ -889,6 +889,7 @@
                   </div>
                 </div>
                 <p id="importResults" class="sm:col-span-2 text-sm text-indigo-100"></p>
+                <div id="classPosterRosterBox" class="sm:col-span-2 hidden rounded-xl bg-indigo-950/90 border border-amber-400/40 p-2.5 space-y-1.5 text-xs"></div>
               </div>
             </div>
 

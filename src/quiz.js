@@ -1,7 +1,99 @@
+    function getEventQuizOverrides(themeKey, gradeKey) {
+      const themeLabel = (typeof THEMES !== 'undefined' && THEMES[themeKey]?.label) || '행사';
+      const byGrade = {
+        '1-2': {
+          0: {
+            category: `${themeLabel} 준비`,
+            q: `${themeLabel}에 출발하기 전에 가장 먼저 확인할 약속은 무엇일까요?`,
+            options: ['모둠 친구·선생님과 만날 집결 장소', '혼자 몰래 가 볼 숨은 장소', '장난감만 가득 챙기기'],
+            answer: 0,
+            hint: '길을 잃거나 흩어졌을 때 다시 만날 수 있는 약속 장소를 먼저 알아 두어요.',
+            explanation: '출발 전에 선생님·보호자와 집결 장소와 이동 순서를 먼저 확인해요.'
+          },
+          1: {
+            category: '함께 이동하기',
+            q: `${themeLabel} 장소에서 이동할 때 안전한 행동은 무엇일까요?`,
+            options: ['선생님·보호자의 안내를 따라 질서 있게 이동해요', '혼자 줄에서 빠져나와 낯선 길로 가요', '앞 친구의 가방을 밀며 빨리 달려가요'],
+            answer: 0,
+            hint: '여러 사람이 함께 움직일 때는 인솔하는 어른의 안내를 따라 차근차근 걸어요.',
+            explanation: '인솔 교사·보호자와 함께 정해진 동선으로 안전하게 이동해요.'
+          },
+          6: {
+            category: '공공장소 배려',
+            q: `${themeLabel}에서 다른 반이나 이웃 사람들을 만났을 때 알맞은 태도는?`,
+            options: ['통로를 비워 주고 차례와 질서를 서로 존중해요', '우리 모둠만 빨리 가려고 길을 막아요', '큰 소리로 떠들며 줄 사이로 끼어들어요'],
+            answer: 0,
+            hint: '모두가 함께 쓰는 공간에서는 서로 양보하고 통로를 넓게 비워 주어야 안전해요.',
+            explanation: '공공장소에서는 서로의 이동 동선과 차례를 배려해요.'
+          }
+        },
+        '3-4': {
+          0: {
+            category: '사전 동선 점검',
+            q: `${themeLabel} 장소에 도착했을 때 모둠원들과 가장 먼저 확인할 것은?`,
+            options: ['주변 이동로와 비상 출구·비상 집결지 위치', '가장 줄이 긴 인기 코너 순서', '사진이 잘 나오는 좁은 계단 자리', '기념품을 많이 살 수 있는 상점'],
+            answer: 0,
+            hint: '사람이 갑자기 몰릴 때 당황하지 않고 빠져나갈 수 있는 출구와 만날 장소를 먼저 확인해요.',
+            explanation: '행사장 도착 직후 비상 출구와 이동로, 집결 장소를 먼저 파악해요.'
+          },
+          1: {
+            category: '참여 계획',
+            q: `${themeLabel} 활동을 시작하기 전 인솔 선생님·보호자와 꼭 정할 약속은?`,
+            options: ['이동 범위와 다시 모일 시간·비상 연락 방법', '누가 가장 먼저 뛰어갈지 순서', '간식을 가장 많이 먹는 방법', '혼자 구경할 비밀 코스'],
+            answer: 0,
+            hint: '혼자 대열에서 이탈하지 않도록 활동 구역과 모이는 시간을 미리 약속해야 해요.',
+            explanation: '인솔자와 활동 범위·집결 시간·연락 방법을 사전에 약속해요.'
+          },
+          7: {
+            category: '공공 질서 존중',
+            q: `${themeLabel}에서 여러 단체와 관람객이 함께 이용할 때 올바른 태도는?`,
+            options: ['안내 표지판과 우측통행 질서를 지키며 서로 배려한다', '우리 반이 먼저 보려고 좁은 입구를 가로막는다', '줄을 서지 않고 빈틈으로 비집고 들어간다', '통로 한가운데 앉아 쉬면서 길을 막는다'],
+            answer: 0,
+            hint: '여러 사람이 모이는 곳에서는 규칙과 동선을 함께 지켜야 모두가 안전해요.',
+            explanation: '공공장소의 안내와 질서를 존중할 때 모두가 안전하게 즐길 수 있어요.'
+          }
+        },
+        '5-6': {
+          0: {
+            category: '안전 동선 설계',
+            q: `${themeLabel}을(를) 안전하게 운영하기 위해 사전 답사·안내에서 가장 중요한 기준은?`,
+            options: ['병목 예상 구간 파악과 분산 이동로·비상 출구 확보', '모든 인원을 가장 좁은 입구 한 곳으로 동시 입장시키기', '비상 집결지 없이 자율적으로 흩어져 이동하기', '안내 표지판보다 구두 전달에만 의존하기'],
+            answer: 0,
+            hint: '인파가 한곳에 집중되지 않도록 병목 구간과 우회 출구를 사전에 설계해야 해요.',
+            explanation: '다중밀집 예방을 위해 병목 구간과 분산 동선, 비상 출구를 먼저 확보합니다.'
+          },
+          1: {
+            category: '공동체 배려',
+            q: `${themeLabel} 중 단체 이동과 관람 예절을 지키는 성숙한 시민 의식은?`,
+            options: ['공공시설의 안전 수칙을 준수하고 타인의 이동권과 선택권을 존중한다', '우리 모둠의 편의를 위해 관람 통로 중앙을 점유한다', '혼잡한 계단에서 속도를 높여 앞사람을 추월한다', '안전요원의 우회 안내를 무시하고 직진한다'],
+            answer: 0,
+            hint: '나와 공동체 모두의 안전을 위해 공공 안전 수칙과 배려 원칙을 함께 실천해요.',
+            explanation: '공공 안전 수칙 준수와 타인 배려는 다중밀집 사고 예방의 핵심입니다.'
+          }
+        }
+      };
+      return (byGrade[gradeKey] && byGrade[gradeKey]) || {};
+    }
+    function getActiveQuizzes(gradeKey = state.grade) {
+      const base = EDUCATION_DATA[gradeKey]?.quizzes || EDUCATION_DATA['3-4'].quizzes;
+      if (typeof isHalloweenTheme === 'function' && isHalloweenTheme()) return base;
+      const themeKey = state.teacher?.theme || 'halloween';
+      if (themeKey === 'halloween') return base;
+      const themeLabel = (typeof THEMES !== 'undefined' && THEMES[themeKey]?.label) || '행사';
+      const overrides = getEventQuizOverrides(themeKey, gradeKey);
+      return base.map((item, idx) => {
+        if (overrides[idx]) return overrides[idx];
+        return {
+          ...item,
+          q: item.q.replace(/할로윈/g, themeLabel).replace(/축제장/g, `${themeLabel} 장소`),
+          explanation: item.explanation.replace(/할로윈/g, themeLabel)
+        };
+      });
+    }
     function quizQuestionId(index) { return `${state.grade}:q${index+1}`; }
     function quizOrder(index) {
       const id=quizQuestionId(index);
-      const q=EDUCATION_DATA[state.grade].quizzes[index];
+      const q=getActiveQuizzes()[index];
       if (!Array.isArray(state.quizOrders[id]) || state.quizOrders[id].length!==q.options.length) {
         const order=q.options.map((_,i)=>i);
         if(order.length>2) for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
@@ -14,22 +106,22 @@
       return state.quizReview ? state.quizReviewItems[state.quizIndex] : state.quizIndex;
     }
     function firstQuizScore() {
-      return EDUCATION_DATA[state.grade].quizzes.reduce((total,_,i)=>total+(state.quizFirst[quizQuestionId(i)]?.correct?1:0),0);
+      return getActiveQuizzes().reduce((total,_,i)=>total+(state.quizFirst[quizQuestionId(i)]?.correct?1:0),0);
     }
     function firstUnassistedScore() {
-      return EDUCATION_DATA[state.grade].quizzes.reduce((total,_,i)=>{
+      return getActiveQuizzes().reduce((total,_,i)=>{
         const answer=state.quizFirst[quizQuestionId(i)];
         return total+(answer?.correct && !answer.hintUsed && !answer.fiftyUsed ? 1:0);
       },0);
     }
     function reviewedQuizScore() {
-      return EDUCATION_DATA[state.grade].quizzes.reduce((total,_,i)=>{
+      return getActiveQuizzes().reduce((total,_,i)=>{
         const attempts=state.quizAttempts[quizQuestionId(i)] || [];
         return total+(attempts.length>1 && attempts.at(-1).correct ? 1:0);
       },0);
     }
     function startQuizReview(onlyWrong) {
-      const quizzes=EDUCATION_DATA[state.grade].quizzes;
+      const quizzes=getActiveQuizzes();
       const items=quizzes.map((_,i)=>i).filter(i=>!onlyWrong || !state.quizFirst[quizQuestionId(i)]?.correct);
       if(!items.length)return;
       state.quizReviewItems=items;
@@ -62,6 +154,16 @@
       '🏛️ 깜짝 상식 박물관: 붐비는 길에서 한 사람이 물건을 주우려 멈춰 허리를 숙이면 뒤따라오던 사람들의 시야가 가려져 단 3초 만에 도미노처럼 연쇄 넘어짐이 일어날 수 있어요!',
       '🏛️ 깜짝 상식 박물관: 기네스북에 오른 세계에서 가장 무거운 호박은 무려 1,246kg으로, 소형 자동차 한 대 무게와 비슷하대요!',
       '🏛️ 깜짝 상식 박물관: 멕시코의 ‘죽은 자들의 날’에 장식하는 주황색 금잔화(마리골드)는 태양의 빛과 진한 향기로 가족들이 집으로 오는 길을 밝혀 준다는 따뜻한 뜻을 담고 있어요!'
+    ];
+    const EVENT_QUIZ_FUN_FACTS = [
+      '🏛️ 깜짝 상식 박물관: 초록색 비상구(EXIT) 유도등은 정전이 되어도 내부 배터리로 최소 20~60분 이상 밝게 빛나도록 안전 기준이 정해져 있어요!',
+      '🏛️ 깜짝 상식 박물관: 양방향 통로에서 모두가 오른쪽으로 걸으면 마주 오는 사람과의 충돌 위험이 70% 이상 줄어들고 이동 속도도 훨씬 안정돼요!',
+      '🏛️ 깜짝 상식 박물관: 비상구 표지판이 초록색인 이유는 연기가 자욱하거나 어두운 곳에서도 우리 눈의 망막이 가장 또렷하게 구별할 수 있는 빛의 파장이 초록색(약 500~550nm)이기 때문이에요!',
+      '🏛️ 깜짝 상식 박물관: 1㎡(가로·세로 1m) 안에 5명 이상이 모이면 내 힘으로 걷기 어렵고 물결처럼 흔들리기 시작해요. 그래서 어깨가 자꾸 닿을 때 미리 대각선 가장자리로 빠져나와야 해요!',
+      '🏛️ 깜짝 상식 박물관: 두 손으로 가슴 앞 공간(흉강)을 감싸면 갈비뼈가 움직일 수 있는 최소 3~5cm의 공간이 유지되어 압박 속에서도 소중한 호흡을 지킬 수 있어요!',
+      '🏛️ 깜짝 상식 박물관: 붐비는 길에서 한 사람이 물건을 주우려 멈춰 허리를 숙이면 뒤따라오던 사람들의 시야가 가려져 단 3초 만에 도미노처럼 연쇄 넘어짐이 일어날 수 있어요!',
+      '🏛️ 깜짝 상식 박물관: 큰 행사장이나 박물관에서는 입구보다 출구 쪽이 좁아지는 병목 구간이 많아서, 들어가기 전에 대체 출구를 하나 더 봐 두는 것이 안전해요!',
+      '🏛️ 깜짝 상식 박물관: 위급할 때 112·119에 신고할 때는 "어디(건물·지형지물 이름)에서 무슨 일이 났는지"를 가장 먼저 말해야 출동 대원이 가장 빠르게 도착할 수 있어요!'
     ];
     const QUIZ_GOAL_BRIDGE = [
       { label: '문화의 기원과 다양성', tab: 'tab-culture', scenarioIdx: null, tag: '🏛️ 문화 탐정' },
@@ -103,7 +205,7 @@
       const box = document.getElementById('quizWeaknessBridge');
       if (!box) return;
       box.replaceChildren();
-      const quizzes = EDUCATION_DATA[state.grade].quizzes;
+      const quizzes = getActiveQuizzes();
       const missedIndices = quizzes
         .map((_, idx) => idx)
         .filter(idx => !state.quizFirst[quizQuestionId(idx)]?.correct);
@@ -146,25 +248,66 @@
       { q: '어깨가 자꾸 부딪히고 걸음이 느려지면 흐름을 보며 대각선 가장자리 넓은 곳으로 벗어나야 한다.', answer: true, exp: '맞아요(O)! 신체 접촉과 감속은 혼잡 위험 신호이므로 즉시 넓은 곳으로 이동해요.' },
       { q: '인파에게 떠밀릴 때는 두 팔로 가슴 앞 공간을 감싸 숨 쉴 공간(흉강)을 확보하는 것이 좋다.', answer: true, exp: '맞아요(O)! 팔짱이나 가방 안기 자세로 가슴 앞 호흡 공간을 지켜요.' }
     ];
-    let speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false };
+    const SPEED_OX_BY_GRADE = {
+      '1-2': [
+        { q: '축제장에 들어가면 사탕 가게보다 초록색 비상구(나가는 문)부터 눈으로 찾아봐요.', answer: true, exp: '딩동댕(O)! 위급할 때 나갈 수 있는 초록색 비상구와 넓은 길을 먼저 봐 두어요.' },
+        { q: '사람이 꽉 찬 길에서 장난감이 떨어지면 그 자리에서 바로 허리를 숙여 주워요.', answer: false, exp: '아니에요(X)! 걸어오는 사람들과 부딪혀 위험하니 숙이지 않고 내 몸부터 지켜요.' },
+        { q: '앞이 잘 안 보이는 가면이나 바닥에 길게 끌리는 망토는 넘어질 수 있어 피해야 해요.', answer: true, exp: '딩동댕(O)! 눈이 잘 보이고 발에 걸리지 않는 편한 옷을 입어야 안전해요.' },
+        { q: '옆 친구와 어깨가 자꾸 닿고 걸음이 느려지면 더 좁은 안쪽으로 비집고 들어가요.', answer: false, exp: '아니에요(X)! 어깨가 자꾸 닿는 건 위험 신호라서 넓은 길가로 나와야 해요.' },
+        { q: '사람들에게 밀릴 때는 두 손이나 가방을 가슴 앞에 모아 숨 쉴 곳을 지켜요.', answer: true, exp: '딩동댕(O)! 가슴 앞 공간을 지키면 답답하지 않게 숨을 쉴 수 있어요.' }
+      ],
+      '3-4': SPEED_OX_QUESTIONS,
+      '5-6': [
+        { q: '입구가 넓더라도 안쪽 통로가 좁아지는 병목 구간에서는 사전에 대체 출구와 우회 동선을 확인해야 한다.', answer: true, exp: '맞아요(O)! 병목 구간은 짧은 시간에 밀집도가 급증하므로 사전 대피 동선 파악이 필수예요.' },
+        { q: '1㎡당 5명 이상 밀집해 떠밀리는 상황에서는 군중의 흐름을 정면으로 거슬러 강하게 밀고 나가야 한다.', answer: false, exp: '아니에요(X)! 정면 역행은 연쇄 전도를 유발하므로 흐름을 따라 대각선 가장자리로 이탈해야 해요.' },
+        { q: '비슷한 시기에 열리는 세계의 명절·축제는 겉모습이 닮았다면 하나의 기원으로 단정해도 된다.', answer: false, exp: '아니에요(X)! 각 문화가 형성된 역사적 맥락과 고유한 의미를 각각 존중해야 해요.' },
+        { q: '실제 경찰·소방·군인의 제복과 혼동되는 복장은 긴급 구조 현장의 식별을 방해할 수 있어 피해야 한다.', answer: true, exp: '맞아요(O)! 위급 상황에서 실제 대원을 즉시 구별할 수 있도록 공공성과 관련 법규를 살펴야 해요.' },
+        { q: '군중 속에서 넘어져 바로 일어날 수 없을 때는 두 팔로 머리를 감싸고 무릎을 당겨 태아 자세로 장기를 보호한다.', answer: true, exp: '맞아요(O)! 머리와 흉강·복부 장기가 압박받지 않도록 몸을 둥글게 말아 보호해요.' }
+      ]
+    };
+    function getSpeedOxQuestions(shuffle = false) {
+      const gradeKey = (typeof state !== 'undefined' && state.grade) || '3-4';
+      const themeKey = (typeof state !== 'undefined' && state.teacher?.theme) || 'halloween';
+      const themeLabel = (typeof THEMES !== 'undefined' && THEMES[themeKey]?.label) || '행사';
+      const basePool = SPEED_OX_BY_GRADE[gradeKey] || SPEED_OX_QUESTIONS;
+      const adapted = basePool.map((item, idx) => {
+        if (themeKey !== 'halloween' && idx === 2 && gradeKey !== '1-2') {
+          return {
+            q: `${themeLabel} 이동 중 모둠 친구나 선생님을 놓치면 혼자 찾아다니지 않고 약속한 집결 장소에서 기다려야 한다.`,
+            answer: true,
+            exp: `맞아요(O)! ${themeLabel}에서 대열과 떨어졌을 때는 미리 약속한 집결지에서 기다리거나 인솔 교사·112에 알려요.`
+          };
+        }
+        return item;
+      });
+      if (!shuffle) return adapted;
+      const copy = [...adapted];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+    let speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false, questions: null };
     let speedOxInterval = null;
     function stopSpeedOxTimer() {
       if (speedOxInterval) { clearInterval(speedOxInterval); speedOxInterval = null; }
     }
     function resetSpeedOxState() {
       stopSpeedOxTimer();
-      speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false };
+      speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false, questions: null };
     }
     function renderSpeedOxBonus() {
       const box = document.getElementById('speedOxBonusBox');
       if (!box) return;
       box.replaceChildren();
+      const activeQuestions = speedOxState.questions || getSpeedOxQuestions(false);
       if (!speedOxState.active && !speedOxState.done) {
         const row = document.createElement('div');
         row.className = 'flex flex-wrap items-center justify-between gap-2';
         const title = document.createElement('span');
         title.className = 'font-extrabold text-amber-300';
-        title.textContent = '⚡ 보너스 미션 · 30초 스피드 OX 진실 혹은 거짓 (5문항)';
+        title.textContent = `⚡ 보너스 미션 · ${EDUCATION_DATA[state.grade]?.label || ''} 30초 스피드 OX (${activeQuestions.length}문항)`;
         const startBtn = document.createElement('button');
         startBtn.type = 'button';
         startBtn.id = 'btnStartSpeedOx';
@@ -172,7 +315,7 @@
         startBtn.textContent = '⚡ 30초 스피드 OX 시작!';
         startBtn.addEventListener('click', () => {
           stopSpeedOxTimer();
-          speedOxState = { active: true, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false };
+          speedOxState = { active: true, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false, questions: getSpeedOxQuestions(false) };
           playSound('whistle');
           speedOxInterval = setInterval(() => {
             if (speedOxState.secondsLeft > 1) {
@@ -200,13 +343,13 @@
         wrap.className = 'space-y-1.5';
         const head = document.createElement('div');
         head.className = 'font-extrabold text-amber-300 text-sm';
-        head.textContent = `🏆 스피드 OX 완주 결과: ${speedOxState.score} / ${SPEED_OX_QUESTIONS.length} 정답!`;
+        head.textContent = `🏆 스피드 OX 완주 결과: ${speedOxState.score} / ${activeQuestions.length} 정답!`;
         const retryBtn = document.createElement('button');
         retryBtn.type = 'button';
         retryBtn.className = 'mini-chip text-[11px]';
-        retryBtn.textContent = '🔄 스피드 OX 다시 도전';
+        retryBtn.textContent = '🔄 스피드 OX 다른 순서로 다시 도전';
         retryBtn.addEventListener('click', () => {
-          speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false };
+          speedOxState = { active: false, idx: 0, score: 0, secondsLeft: 30, feedback: '', done: false, questions: getSpeedOxQuestions(true) };
           renderSpeedOxBonus();
         });
         wrap.appendChild(head);
@@ -220,10 +363,10 @@
         box.appendChild(wrap);
         return;
       }
-      const item = SPEED_OX_QUESTIONS[speedOxState.idx];
+      const item = activeQuestions[speedOxState.idx];
       const top = document.createElement('div');
       top.className = 'flex items-center justify-between gap-2 font-extrabold text-amber-300';
-      top.innerHTML = `<span>⚡ 스피드 OX (${speedOxState.idx + 1}/${SPEED_OX_QUESTIONS.length})</span><span id="speedOxTimerText">⏱️ ${speedOxState.secondsLeft}초</span>`;
+      top.innerHTML = `<span>⚡ 스피드 OX (${speedOxState.idx + 1}/${activeQuestions.length})</span><span id="speedOxTimerText">⏱️ ${speedOxState.secondsLeft}초</span>`;
       const qEl = document.createElement('p');
       qEl.className = 'font-bold text-white text-xs sm:text-sm py-1';
       qEl.textContent = `Q. ${item.q}`;
@@ -239,7 +382,7 @@
           if (right) speedOxState.score++;
           speedOxState.feedback = item.exp;
           playSound(right ? 'correct' : 'wrong');
-          if (speedOxState.idx + 1 < SPEED_OX_QUESTIONS.length) {
+          if (speedOxState.idx + 1 < activeQuestions.length) {
             speedOxState.idx++;
           } else {
             stopSpeedOxTimer();
@@ -271,9 +414,12 @@
       return '🎃 차근차근 이유를 생각하며 알맞은 답을 골라 봐요!';
     }
     function renderQuiz() {
-      const quizzes=EDUCATION_DATA[state.grade].quizzes;
+      const quizzes=getActiveQuizzes();
       const limit=state.quizReview ? state.quizReviewItems.length : quizzes.length;
-      document.getElementById('quizGradeLabel').textContent=`생각 확인 · ${EDUCATION_DATA[state.grade].label} · ${quizzes.length}가지 질문`;
+      const themePrefix=(typeof isHalloweenTheme === 'function' && !isHalloweenTheme() && typeof THEMES !== 'undefined')
+        ? `${THEMES[state.teacher.theme]?.label || '행사'} · `
+        : '';
+      document.getElementById('quizGradeLabel').textContent=`${themePrefix}생각 확인 · ${EDUCATION_DATA[state.grade].label} · ${quizzes.length}가지 질문`;
       const active=document.getElementById('quizActiveContainer');
       const result=document.getElementById('quizResultContainer');
       if(state.quizIndex>=limit){
@@ -359,7 +505,8 @@
         const mainText = document.createElement('p');
         mainText.textContent = `${existing.correct?'⭕ 이번 판단은 맞았어요.':'❌ 이번 판단은 다시 살펴봐요.'} ${q.explanation}`;
         explanation.appendChild(mainText);
-        const funFactText = QUIZ_FUN_FACTS[qi % QUIZ_FUN_FACTS.length];
+        const factPool = (typeof isHalloweenTheme === 'function' && !isHalloweenTheme()) ? EVENT_QUIZ_FUN_FACTS : QUIZ_FUN_FACTS;
+        const funFactText = factPool[qi % factPool.length];
         if (funFactText) {
           const factEl = document.createElement('div');
           factEl.className = 'rounded-lg bg-indigo-950/70 border border-amber-400/40 px-2.5 py-1.5 text-xs font-bold text-amber-200 leading-snug';

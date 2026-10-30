@@ -52,7 +52,26 @@
     const safetyGame = {
       running:false, won:false, paused:false, route:null, lastFrame:0, visionMask:false,
       player:{x:42,y:210,r:13,targetX:null,targetY:null},
-      hazards:[], items:[], bonusCollected:false, friendRescued:false, companion:null, coachBubble:null, exitZone:{x:520,y:22,w:65,h:48}, keys:new Set(), decisionRecorded:false
+      hazards:[], items:[], bonusCollected:false, friendRescued:false, companion:null, coachBubble:null,
+      clearedStages:{1:false,2:false,3:false},
+      exitZone:{x:520,y:22,w:65,h:48}, keys:new Set(), decisionRecorded:false
+    };
+    const STAGE_REASON_QUESTIONS = {
+      1: {
+        '1-2': ['1단계 확인 · 들어가자마자 넓은 길과 비상구를 먼저 찾은 까닭은?', '위급할 때 안전하게 나갈 수 있는 길을 미리 알아 두려고', '비상구만 한 번 보면 좁고 막힌 길로 달려가도 괜찮아서'],
+        '3-4': ['1단계 확인 · 행사장에서 넓은 우회로와 비상구 표지판을 먼저 확인한 까닭은?', '혼잡을 피하고 이동 가능한 출구를 미리 확인했기 때문', '표지판만 확인하면 밀집 구역에 들어가도 안전해지기 때문'],
+        '5-6': ['1단계 확인 · 진입 초기 비상구와 우회 동선을 먼저 스캔한 까닭은?', '병목 구간의 밀집을 피하고 위급 시 대피 가능한 출구를 확보하기 때문', '출구 위치만 알면 좁은 병목 중심으로 진입해도 위험이 없기 때문']
+      },
+      2: {
+        '1-2': ['2단계 확인 · 떨어진 물건을 줍지 않고 오른쪽 넓은 길로 걸은 까닭은?', '사람 많은 길에서 숙이면 부딪혀 넘어질 수 있어 내 몸을 먼저 지키려고', '방패 자세만 하면 사람이 꽉 찬 길에서 물건을 주워도 괜찮아서'],
+        '3-4': ['2단계 확인 · 떨어진 소지품을 패스하고 우측통행·가슴 공간을 지킨 까닭은?', '붐비는 길에서 숙이면 위험하므로 호흡 공간과 내 몸을 먼저 지키기 때문', '방패를 모으면 밀집 구역 한가운데서 멈춰도 안전해지기 때문'],
+        '5-6': ['2단계 확인 · 소지품 회수를 포기하고 우측통행과 흉강 보호를 선택한 근거는?', '도미노 연쇄 전도를 예방하고 압박 시 최소 호흡 공간을 확보하기 때문', '가슴 방어 자세가 군중 밀집 사고를 완벽히 막아 주기 때문']
+      },
+      3: {
+        '1-2': ['3단계 확인 · 친구와 손을 잡고 약속한 깃발(집결지)로 함께 이동한 까닭은?', '사람이 많은 곳에서 길을 잃지 않고 안전하게 출구로 나가려고', '친구와 손잡으면 위험한 좁은 길로 뛰어가도 안전하기 때문'],
+        '3-4': ['3단계 확인 · 친구와 동행해 비상 집결지를 거쳐 넓은 출구로 나간 까닭은?', '인파 속에서 흩어지지 않고 약속한 안전 동선으로 대피하기 때문', '친구와 함께라면 좁고 붐비는 병목 구간을 가로질러도 되기 때문'],
+        '5-6': ['3단계 확인 · 동행자와 비상 집결지를 경유해 여유 출구로 분산 이동한 근거는?', '대열 이탈과 2차 혼잡을 막고 사전에 합의된 대피 경로를 따르기 때문', '인원이 모이면 밀집 위험 구역을 정면 돌파해도 안전하기 때문']
+      }
     };
     function setGameCoachBubble(text, durationSec = 1.8) {
       safetyGame.coachBubble = { text, remaining: durationSec };
@@ -169,6 +188,7 @@
       drawSafetyGame();
     }
     function renderGameChoices() {
+      if (typeof syncStageButtons === 'function') syncStageButtons();
       const routeBox=document.getElementById('gameRouteChoices');
       routeBox.replaceChildren();
       const prompt=document.createElement('p');
@@ -185,18 +205,28 @@
       const reason=document.getElementById('gameReasonChoices');
       reason.replaceChildren();
       if (!safetyGame.won) return;
+      const stageNum=(typeof state!=='undefined' && state.gameStage) ? state.gameStage : 1;
+      const gradeKey=(typeof state!=='undefined' && state.grade) ? state.grade : '3-4';
+      const stageSet=STAGE_REASON_QUESTIONS[stageNum] || STAGE_REASON_QUESTIONS[1];
+      const [qPrompt, safeLabelText, unsafeLabelText]=stageSet[gradeKey] || stageSet['3-4'];
       const title=document.createElement('p');
-      title.textContent='왜 이 경로가 더 적절할까요?';
+      title.className='font-bold text-amber-200 text-xs';
+      title.textContent=qPrompt;
       reason.appendChild(title);
-      [['safe','혼잡을 피하고 이동 가능한 출구를 확인했기 때문'],['unsafe','방패를 모으면 밀집 구역도 안전해지기 때문']].forEach(([value,label])=>{
+      [['safe',`⭕ ${safeLabelText}`],['unsafe',`❌ ${unsafeLabelText}`]].forEach(([value,label])=>{
         const btn=document.createElement('button');
-        btn.type='button';btn.className='w-full rounded-xl border border-indigo-500 bg-indigo-900 p-2 text-left';
+        btn.type='button';btn.className='w-full rounded-xl border border-indigo-500 bg-indigo-900 p-2 text-left text-xs font-bold';
         btn.textContent=label;
         btn.addEventListener('click',()=>{
           if(value==='safe') {
-            awardOnce(`game:${state.gameStage}`,'reason',10,'경로 선택 이유 확인');
-            document.getElementById('importantStatus').textContent='혼잡한 곳을 피해 이동로를 확인하는 이유를 설명했어요.';
-          } else document.getElementById('importantStatus').textContent='방패나 자세가 밀집 사고를 막아 주지는 않아요. 다시 생각해 보세요.';
+            if (typeof playSound === 'function') playSound('correct');
+            awardOnce(`game:${stageNum}`,'reason',10,`${stageNum}단계 경로 선택 이유 확인`);
+            document.getElementById('importantStatus').textContent=`${stageNum}단계 안전 이동 원칙과 이유를 정확히 확인했어요.`;
+            title.textContent=`✅ ${stageNum}단계 이유 확인 완료!`;
+          } else {
+            if (typeof playSound === 'function') playSound('wrong');
+            document.getElementById('importantStatus').textContent='방패나 자세가 밀집 사고를 막아 주지는 않아요. 다시 생각해 보세요.';
+          }
           saveProgress();
         });
         reason.appendChild(btn);
@@ -273,6 +303,9 @@
       const e=safetyGame.exitZone;
       if(safetyGame.route==='wide' && p.x>e.x && p.x<e.x+e.w && p.y>e.y && p.y<e.y+e.h) {
         safetyGame.won=true;safetyGame.running=false;
+        const curStage=(typeof state !== 'undefined' && state.gameStage) ? state.gameStage : 1;
+        if (safetyGame.clearedStages) safetyGame.clearedStages[curStage] = true;
+        if (typeof syncStageButtons === 'function') syncStageButtons();
         updateGameStatusText(safetyGame.bonusCollected ? '🌟 미션 달성! 안전하게 출구에 도착했어요' : '이동 가능한 출구에 도착했어요 · 이유도 확인해요');
         if (typeof document !== 'undefined') {
           const startBtn = document.getElementById('btnStartCanvasGame');

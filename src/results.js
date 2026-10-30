@@ -200,8 +200,106 @@
       if(participationButton)participationButton.disabled=!canDownloadParticipation();
       syncRecommendedPledgePreset();
     }
+    const CLASS_POSTER_STORAGE_KEY = 'halloween_edu_class_poster_v1';
     let classPosterActive = false;
     let classPosterRecords = [];
+    function saveClassPosterRecords() {
+      try {
+        if (!classPosterRecords.length) {
+          localStorage.removeItem(CLASS_POSTER_STORAGE_KEY);
+          return;
+        }
+        localStorage.setItem(CLASS_POSTER_STORAGE_KEY, JSON.stringify({
+          sessionId: state.sessionId,
+          records: classPosterRecords.slice(0, 30)
+        }));
+      } catch (_) {}
+    }
+    function loadClassPosterRecords() {
+      try {
+        const raw = localStorage.getItem(CLASS_POSTER_STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.sessionId === state.sessionId && Array.isArray(parsed.records) && parsed.records.length > 0) {
+          classPosterRecords = parsed.records.slice(0, 30);
+        }
+      } catch (_) {}
+    }
+    function clearClassPosterRecords() {
+      classPosterActive = false;
+      classPosterRecords = [];
+      try { localStorage.removeItem(CLASS_POSTER_STORAGE_KEY); } catch (_) {}
+      renderClassPosterRoster();
+    }
+    function renderClassPosterRoster() {
+      const box = document.getElementById('classPosterRosterBox');
+      if (!box) return;
+      box.replaceChildren();
+      if (!classPosterRecords.length) {
+        box.classList.add('hidden');
+        return;
+      }
+      box.classList.remove('hidden');
+      const topRow = document.createElement('div');
+      topRow.className = 'flex flex-wrap items-center justify-between gap-1.5';
+      const title = document.createElement('span');
+      title.className = 'font-extrabold text-amber-300';
+      title.textContent = `🏆 협동 포스터 명단 (${classPosterRecords.length}명 · 새로고침해도 유지됨)`;
+      const btnWrap = document.createElement('div');
+      btnWrap.className = 'flex flex-wrap items-center gap-1';
+      const viewBtn = document.createElement('button');
+      viewBtn.type = 'button';
+      viewBtn.id = 'btnViewClassPoster';
+      viewBtn.className = 'mini-chip text-[11px]';
+      viewBtn.textContent = '🖼️ 포스터 보기';
+      viewBtn.addEventListener('click', () => {
+        if (typeof playSound === 'function') playSound('click');
+        renderClassPosterCanvas(classPosterRecords);
+      });
+      const clearBtn = document.createElement('button');
+      clearBtn.type = 'button';
+      clearBtn.id = 'btnClearClassPoster';
+      clearBtn.className = 'mini-chip text-[11px] text-rose-200';
+      clearBtn.textContent = '🗑️ 명단 비우기';
+      clearBtn.addEventListener('click', () => {
+        if (typeof playSound === 'function') playSound('click');
+        clearClassPosterRecords();
+        const status = document.getElementById('importResults');
+        if (status) status.textContent = '협동 포스터 명단을 비웠어요.';
+        renderCertificateCanvas();
+      });
+      btnWrap.appendChild(viewBtn);
+      btnWrap.appendChild(clearBtn);
+      topRow.appendChild(title);
+      topRow.appendChild(btnWrap);
+      box.appendChild(topRow);
+
+      const chipsWrap = document.createElement('div');
+      chipsWrap.className = 'flex flex-wrap items-center gap-1 pt-0.5';
+      classPosterRecords.forEach((rec, idx) => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'mini-chip poster-student-chip text-[11px]';
+        const sName = safeLabel(rec.profile?.name, `안전대장 ${idx + 1}`, 14);
+        chip.textContent = `${idx + 1}. ${sName} ✕`;
+        chip.title = '누르면 이 학생을 협동 포스터에서 제외해요';
+        chip.addEventListener('click', () => {
+          if (typeof playSound === 'function') playSound('click');
+          classPosterRecords.splice(idx, 1);
+          saveClassPosterRecords();
+          const status = document.getElementById('importResults');
+          if (classPosterRecords.length > 0) {
+            if (status) status.textContent = `🏆 협동 포스터에 ${classPosterRecords.length}명 등록됨: ${classPosterRecords.map(r => r.profile?.name || '안전대장').join(', ')}`;
+            renderClassPosterCanvas(classPosterRecords);
+          } else {
+            if (status) status.textContent = '협동 포스터 명단을 모두 비웠어요.';
+            renderCertificateCanvas();
+          }
+        });
+        chipsWrap.appendChild(chip);
+      });
+      box.appendChild(chipsWrap);
+    }
     function drawCanvasQr(ctx, url, x, y, size) {
       try {
         if (typeof qrcode !== 'function') return;
@@ -227,16 +325,23 @@
       const canvas = document.getElementById('certificateCanvas');
       if (!canvas || !Array.isArray(records) || !records.length) return;
       classPosterActive = true;
-      classPosterRecords = records;
+      classPosterRecords = records.slice(0, 30);
+      saveClassPosterRecords();
+      renderClassPosterRoster();
+      const certHeading = document.getElementById('certSectionTitle');
+      if (certHeading && typeof THEMES !== 'undefined' && THEMES[state.teacher?.theme]) {
+        certHeading.textContent = `🎖️ ${THEMES[state.teacher.theme].label} 안전 대장 임명장`;
+      }
       const clsLabel = safeLabel(records[0]?.profile?.className || state.profile.className, EDUCATION_DATA[state.grade].classDefault, 30);
       const ctx = drawSheetBase(canvas, '🏆 우리 반 안전 대장 협동 포스터', `${THEMES[state.teacher.theme].label} · ${clsLabel} (${records.length}명 참여)`);
-      const items = records.slice(0, 12);
-      const cols = items.length <= 4 ? 2 : 3;
+      const items = classPosterRecords;
+      const cols = items.length <= 4 ? 2 : items.length <= 12 ? 3 : items.length <= 20 ? 4 : 5;
       const rows = Math.ceil(items.length / cols);
-      const startX = 52, startY = 182, gridW = canvas.width - 104, gridH = 445;
-      const gap = 10;
+      const startX = 48, startY = 180, gridW = canvas.width - 96, gridH = 448;
+      const gap = items.length > 12 ? 6 : 10;
       const cellW = (gridW - gap * (cols - 1)) / cols;
       const cellH = Math.min(138, (gridH - gap * Math.max(0, rows - 1)) / Math.max(1, rows));
+      const compact = items.length > 12;
       items.forEach((rec, idx) => {
         const col = idx % cols;
         const row = Math.floor(idx / cols);
@@ -245,23 +350,23 @@
         ctx.fillStyle = 'rgba(15, 23, 42, 0.78)';
         ctx.fillRect(cx, cy, cellW, cellH);
         ctx.strokeStyle = '#fbbf24';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = compact ? 1.2 : 1.5;
         ctx.strokeRect(cx, cy, cellW, cellH);
         const g = rec.grade || state.grade;
         const gRec = (rec.gradeRecords && rec.gradeRecords[g]) || {};
         const av = gRec.avatar || state.avatar || {costume:'🎃', char:'🧒', prop:'🕯️'};
-        const name = safeLabel(rec.profile?.name, `안전대장 ${idx + 1}`, 16);
-        const pledge = safeLabel(rec.profile?.pledge, '안전 약속을 실천해요!', 38);
+        const name = safeLabel(rec.profile?.name, `안전대장 ${idx + 1}`, compact ? 10 : 16);
+        const pledge = safeLabel(rec.profile?.pledge, '안전 약속을 실천해요!', compact ? 24 : 38);
         ctx.textAlign = 'left';
-        ctx.font = `22px ${RESULT_FONT}`;
+        ctx.font = `${compact ? 15 : 22}px ${RESULT_FONT}`;
         ctx.fillStyle = '#fff';
-        ctx.fillText(`${av.costume || '🎃'}${av.char || '🧒'}${av.prop || '🕯️'}`, cx + 10, cy + 30);
-        ctx.font = `bold 14px ${RESULT_FONT}`;
+        ctx.fillText(`${av.costume || '🎃'}${av.char || '🧒'}${av.prop || '🕯️'}`, cx + 6, cy + (compact ? 21 : 30));
+        ctx.font = `bold ${compact ? 11 : 14}px ${RESULT_FONT}`;
         ctx.fillStyle = '#fde68a';
-        ctx.fillText(`${name} (${rec.candyPoints ?? 0}🍬)`, cx + 82, cy + 28, cellW - 90);
-        ctx.font = `12px ${RESULT_FONT}`;
+        ctx.fillText(`${name} (${rec.candyPoints ?? 0}🍬)`, cx + (compact ? 56 : 82), cy + (compact ? 20 : 28), cellW - (compact ? 62 : 90));
+        ctx.font = `${compact ? 10 : 12}px ${RESULT_FONT}`;
         ctx.fillStyle = '#e0e7ff';
-        printLines(ctx, pledge, cx + 10, cy + 56, cellW - 20, 18, 3);
+        printLines(ctx, pledge, cx + 6, cy + (compact ? 40 : 56), cellW - 12, compact ? 14 : 18, compact ? 2 : 3);
       });
       ctx.textAlign = 'center';
       ctx.fillStyle = '#fde68a';
@@ -285,6 +390,7 @@
         gradeRecords: JSON.parse(JSON.stringify(state.gradeRecords))
       };
       classPosterRecords.push(snapshot);
+      saveClassPosterRecords();
       renderClassPosterCanvas(classPosterRecords);
       const status = document.getElementById('importResults');
       if (status) {
@@ -294,6 +400,11 @@
     }
     function renderCertificateCanvas() {
       classPosterActive = false;
+      renderClassPosterRoster();
+      const certHeading = document.getElementById('certSectionTitle');
+      if (certHeading && typeof THEMES !== 'undefined' && THEMES[state.teacher?.theme]) {
+        certHeading.textContent = `🎖️ ${THEMES[state.teacher.theme].label} 안전 대장 임명장`;
+      }
       const canvas=document.getElementById('certificateCanvas');
       if(!canvas)return;
       const ctx=drawSheetBase(canvas,canDownloadSafetyCertificate()?'안전 대장 임명장':'안전 목표 확인 현황 · 미완료',`${THEMES[state.teacher.theme].label} · ${EDUCATION_DATA[state.grade].label} · ${getLevelTitle(state.candyPoints)}`);
@@ -476,7 +587,8 @@
       });
       y+=18;
       ctx.font=`bold 24px ${RESULT_FONT}`;ctx.fillText(`2. 스스로 풀어 보는 생각 확인 문제 (${EDUCATION_DATA[state.grade].label} 핵심 4문항)`,65,y);y+=38;
-      const quizzes=EDUCATION_DATA[state.grade].quizzes.slice(0,4);
+      const activeQuizList = typeof getActiveQuizzes === 'function' ? getActiveQuizzes() : EDUCATION_DATA[state.grade].quizzes;
+      const quizzes=activeQuizList.slice(0,4);
       const quizAnswerKeys=[];
       quizzes.forEach((q,idx)=>{
         quizAnswerKeys.push(`문항${idx+1}: ${['①','②','③','④'][q.answer]||q.answer+1}`);
@@ -581,6 +693,8 @@
         if (status) status.textContent = '유효한 배움 코드(HW1:...)를 찾지 못했어요.';
         return false;
       }
+      saveClassPosterRecords();
+      renderClassPosterRoster();
       renderClassPosterCanvas(classPosterRecords);
       if (status) {
         status.textContent = `⚡ 배움 코드로 ${added}명 추가 완료! (총 ${classPosterRecords.length}명: ${classPosterRecords.map(r => r.profile.name).join(', ')})`;
@@ -711,7 +825,10 @@
           records.push(data);
         }
         if(records.length>1){
-          renderClassPosterCanvas(records);
+          classPosterRecords.splice(0, classPosterRecords.length, ...records.slice(0, 30));
+          saveClassPosterRecords();
+          renderClassPosterRoster();
+          renderClassPosterCanvas(classPosterRecords);
           status.textContent=`이 기기에서 ${records.length}개 결과를 확인해 협동 포스터로 합쳤어요: ${records.map(r=>`${r.profile?.name||'별칭 없음'} (${r.grade}, ${r.candyPoints}점)`).join(' · ')}`;
           return;
         }
